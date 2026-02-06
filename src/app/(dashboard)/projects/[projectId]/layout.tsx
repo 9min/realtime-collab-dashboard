@@ -4,7 +4,9 @@ import { use, type ReactNode } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
 import { ArrowLeft, LayoutDashboard, Columns3, Settings } from 'lucide-react'
 
+import { OnlineUsers } from '@/components/presence/online-users'
 import { Button } from '@/components/ui/button'
+import { usePresence } from '@/hooks/use-presence'
 import { useProject } from '@/queries/use-projects'
 import { cn } from '@/lib/utils'
 
@@ -24,6 +26,7 @@ export default function ProjectLayout({ children, params }: ProjectLayoutProps) 
   const router = useRouter()
   const pathname = usePathname()
   const { data: project, isLoading } = useProject(projectId)
+  const { onlineUsers } = usePresence(projectId)
 
   const basePath = `/projects/${projectId}`
 
@@ -39,7 +42,7 @@ export default function ProjectLayout({ children, params }: ProjectLayoutProps) 
         >
           <ArrowLeft className="h-4 w-4" />
         </Button>
-        <div>
+        <div className="min-w-0 flex-1">
           {isLoading ? (
             <div className="bg-muted h-7 w-48 animate-pulse rounded" />
           ) : (
@@ -51,6 +54,8 @@ export default function ProjectLayout({ children, params }: ProjectLayoutProps) 
             </>
           )}
         </div>
+        {/* 온라인 유저 */}
+        <OnlineUsers users={onlineUsers} />
       </div>
 
       {/* 서브 네비게이션 */}
