@@ -1,6 +1,6 @@
 {
   "version": "2.0",
-  "lastUpdated": "2026-02-06T14:09:20.550Z",
+  "lastUpdated": "2026-02-06T16:46:50.409Z",
   "activeFeatures": [
     "realtime-collab-dashboard",
     "supabase",
@@ -12,7 +12,15 @@
     "projects",
     "[projectId]",
     "board",
-    "settings"
+    "settings",
+    "queries",
+    "kanban",
+    "layout",
+    "project",
+    "stores",
+    "charts",
+    "dashboard",
+    "presence"
   ],
   "primaryFeature": "realtime-collab-dashboard",
   "features": {
@@ -25,9 +33,9 @@
       "documents": {},
       "timestamps": {
         "started": "2026-02-06T14:06:08.402Z",
-        "lastUpdated": "2026-02-06T14:09:20.550Z"
+        "lastUpdated": "2026-02-06T16:46:50.409Z"
       },
-      "lastFile": "D:\\바이브코딩\\realtime-collab-dashboard\\src\\app\\layout.tsx"
+      "lastFile": "D:\\바이브코딩\\realtime-collab-dashboard\\src\\types\\database.ts"
     },
     "supabase": {
       "phase": "do",
@@ -51,7 +59,7 @@
       "documents": {},
       "timestamps": {
         "started": "2026-02-06T14:07:47.954Z",
-        "lastUpdated": "2026-02-06T14:07:53.197Z"
+        "lastUpdated": "2026-02-06T16:34:51.437Z"
       },
       "lastFile": "D:\\바이브코딩\\realtime-collab-dashboard\\src\\components\\providers\\supabase-provider.tsx"
     },
@@ -64,7 +72,7 @@
       "documents": {},
       "timestamps": {
         "started": "2026-02-06T14:08:41.816Z",
-        "lastUpdated": "2026-02-06T14:08:41.817Z"
+        "lastUpdated": "2026-02-06T14:27:00.928Z"
       },
       "lastFile": "D:\\바이브코딩\\realtime-collab-dashboard\\src\\app\\(auth)\\layout.tsx"
     },
@@ -77,7 +85,7 @@
       "documents": {},
       "timestamps": {
         "started": "2026-02-06T14:08:44.775Z",
-        "lastUpdated": "2026-02-06T14:08:44.775Z"
+        "lastUpdated": "2026-02-06T14:28:57.721Z"
       },
       "lastFile": "D:\\바이브코딩\\realtime-collab-dashboard\\src\\app\\(auth)\\login\\page.tsx"
     },
@@ -103,7 +111,7 @@
       "documents": {},
       "timestamps": {
         "started": "2026-02-06T14:08:55.548Z",
-        "lastUpdated": "2026-02-06T14:08:55.548Z"
+        "lastUpdated": "2026-02-06T14:26:46.374Z"
       },
       "lastFile": "D:\\바이브코딩\\realtime-collab-dashboard\\src\\app\\(dashboard)\\layout.tsx"
     },
@@ -116,7 +124,7 @@
       "documents": {},
       "timestamps": {
         "started": "2026-02-06T14:08:58.152Z",
-        "lastUpdated": "2026-02-06T14:08:58.152Z"
+        "lastUpdated": "2026-02-06T15:24:39.072Z"
       },
       "lastFile": "D:\\바이브코딩\\realtime-collab-dashboard\\src\\app\\(dashboard)\\projects\\page.tsx"
     },
@@ -129,9 +137,9 @@
       "documents": {},
       "timestamps": {
         "started": "2026-02-06T14:08:59.970Z",
-        "lastUpdated": "2026-02-06T14:08:59.970Z"
+        "lastUpdated": "2026-02-06T16:24:12.747Z"
       },
-      "lastFile": "D:\\바이브코딩\\realtime-collab-dashboard\\src\\app\\(dashboard)\\projects\\[projectId]\\page.tsx"
+      "lastFile": "D:\\바이브코딩\\realtime-collab-dashboard\\src\\app\\(dashboard)\\projects\\[projectId]\\layout.tsx"
     },
     "board": {
       "phase": "do",
@@ -142,7 +150,7 @@
       "documents": {},
       "timestamps": {
         "started": "2026-02-06T14:09:01.686Z",
-        "lastUpdated": "2026-02-06T14:09:01.686Z"
+        "lastUpdated": "2026-02-06T16:03:12.228Z"
       },
       "lastFile": "D:\\바이브코딩\\realtime-collab-dashboard\\src\\app\\(dashboard)\\projects\\[projectId]\\board\\page.tsx"
     },
@@ -158,6 +166,110 @@
         "lastUpdated": "2026-02-06T14:09:03.359Z"
       },
       "lastFile": "D:\\바이브코딩\\realtime-collab-dashboard\\src\\app\\(dashboard)\\projects\\[projectId]\\settings\\page.tsx"
+    },
+    "queries": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-02-06T14:16:22.530Z",
+        "lastUpdated": "2026-02-06T16:17:17.181Z"
+      },
+      "lastFile": "D:\\바이브코딩\\realtime-collab-dashboard\\src\\queries\\use-chart-data.ts"
+    },
+    "kanban": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-02-06T14:16:47.541Z",
+        "lastUpdated": "2026-02-06T16:03:55.908Z"
+      },
+      "lastFile": "D:\\바이브코딩\\realtime-collab-dashboard\\src\\components\\kanban\\create-task-form.tsx"
+    },
+    "layout": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-02-06T14:26:29.715Z",
+        "lastUpdated": "2026-02-06T14:29:36.181Z"
+      },
+      "lastFile": "D:\\바이브코딩\\realtime-collab-dashboard\\src\\components\\layout\\header.tsx"
+    },
+    "project": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-02-06T15:23:49.929Z",
+        "lastUpdated": "2026-02-06T15:56:17.228Z"
+      },
+      "lastFile": "D:\\바이브코딩\\realtime-collab-dashboard\\src\\components\\project\\project-card.tsx"
+    },
+    "stores": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-02-06T16:16:08.655Z",
+        "lastUpdated": "2026-02-06T16:16:08.655Z"
+      },
+      "lastFile": "D:\\바이브코딩\\realtime-collab-dashboard\\src\\stores\\dashboard-store.ts"
+    },
+    "charts": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-02-06T16:17:29.949Z",
+        "lastUpdated": "2026-02-06T16:17:52.396Z"
+      },
+      "lastFile": "D:\\바이브코딩\\realtime-collab-dashboard\\src\\components\\charts\\burndown-chart.tsx"
+    },
+    "dashboard": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-02-06T16:18:06.852Z",
+        "lastUpdated": "2026-02-06T16:20:56.953Z"
+      },
+      "lastFile": "D:\\바이브코딩\\realtime-collab-dashboard\\src\\components\\dashboard\\add-widget-dialog.tsx"
+    },
+    "presence": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-02-06T16:23:49.796Z",
+        "lastUpdated": "2026-02-06T16:23:49.796Z"
+      },
+      "lastFile": "D:\\바이브코딩\\realtime-collab-dashboard\\src\\components\\presence\\online-users.tsx"
     }
   },
   "pipeline": {
@@ -168,7 +280,7 @@
   "session": {
     "startedAt": "2026-02-06T13:43:57.728Z",
     "onboardingCompleted": false,
-    "lastActivity": "2026-02-06T14:09:20.550Z"
+    "lastActivity": "2026-02-06T16:46:50.409Z"
   },
   "history": [
     {
@@ -305,6 +417,498 @@
     },
     {
       "timestamp": "2026-02-06T14:09:20.550Z",
+      "feature": "realtime-collab-dashboard",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-06T14:15:47.514Z",
+      "feature": "realtime-collab-dashboard",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-06T14:16:01.673Z",
+      "feature": "realtime-collab-dashboard",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-06T14:16:11.168Z",
+      "feature": "realtime-collab-dashboard",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-06T14:16:22.530Z",
+      "feature": "queries",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-06T14:16:27.202Z",
+      "feature": "queries",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-06T14:16:47.541Z",
+      "feature": "kanban",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-06T14:16:57.073Z",
+      "feature": "kanban",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-06T14:17:17.410Z",
+      "feature": "kanban",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-06T14:17:42.554Z",
+      "feature": "kanban",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-06T14:18:00.295Z",
+      "feature": "kanban",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-06T14:18:19.506Z",
+      "feature": "board",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-06T14:19:03.789Z",
+      "feature": "kanban",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-06T14:19:18.580Z",
+      "feature": "kanban",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-06T14:19:33.655Z",
+      "feature": "kanban",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-06T14:26:29.715Z",
+      "feature": "layout",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-06T14:26:32.154Z",
+      "feature": "layout",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-06T14:26:46.374Z",
+      "feature": "(dashboard)",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-06T14:27:00.928Z",
+      "feature": "(auth)",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-06T14:28:57.721Z",
+      "feature": "login",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-06T14:29:15.173Z",
+      "feature": "realtime-collab-dashboard",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-06T14:29:36.181Z",
+      "feature": "layout",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-06T15:23:07.942Z",
+      "feature": "realtime-collab-dashboard",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-06T15:23:21.509Z",
+      "feature": "queries",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-06T15:23:49.929Z",
+      "feature": "project",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-06T15:24:02.031Z",
+      "feature": "project",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-06T15:24:16.281Z",
+      "feature": "project",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-06T15:24:26.701Z",
+      "feature": "project",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-06T15:24:39.072Z",
+      "feature": "projects",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-06T15:43:14.762Z",
+      "feature": "[projectId]",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-06T15:43:28.152Z",
+      "feature": "board",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-06T15:49:08.769Z",
+      "feature": "realtime-collab-dashboard",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-06T15:49:27.638Z",
+      "feature": "project",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-06T15:49:41.550Z",
+      "feature": "project",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-06T15:50:33.607Z",
+      "feature": "realtime-collab-dashboard",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-06T15:53:10.829Z",
+      "feature": "realtime-collab-dashboard",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-06T15:54:46.094Z",
+      "feature": "project",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-06T15:54:49.548Z",
+      "feature": "project",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-06T15:55:14.390Z",
+      "feature": "queries",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-06T15:55:29.040Z",
+      "feature": "realtime-collab-dashboard",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-06T15:56:10.684Z",
+      "feature": "project",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-06T15:56:17.228Z",
+      "feature": "project",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-06T15:56:32.697Z",
+      "feature": "queries",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-06T16:01:51.341Z",
+      "feature": "realtime-collab-dashboard",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-06T16:02:01.913Z",
+      "feature": "realtime-collab-dashboard",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-06T16:02:23.524Z",
+      "feature": "queries",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-06T16:02:29.328Z",
+      "feature": "queries",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-06T16:02:57.264Z",
+      "feature": "realtime-collab-dashboard",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-06T16:03:12.228Z",
+      "feature": "board",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-06T16:03:33.653Z",
+      "feature": "kanban",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-06T16:03:41.483Z",
+      "feature": "kanban",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-06T16:03:48.791Z",
+      "feature": "kanban",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-06T16:03:55.908Z",
+      "feature": "kanban",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-06T16:15:43.109Z",
+      "feature": "realtime-collab-dashboard",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-06T16:15:57.131Z",
+      "feature": "queries",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-06T16:16:08.655Z",
+      "feature": "stores",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-06T16:16:23.534Z",
+      "feature": "realtime-collab-dashboard",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-06T16:16:39.994Z",
+      "feature": "realtime-collab-dashboard",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-06T16:17:06.410Z",
+      "feature": "realtime-collab-dashboard",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-06T16:17:17.181Z",
+      "feature": "queries",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-06T16:17:29.949Z",
+      "feature": "charts",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-06T16:17:41.422Z",
+      "feature": "charts",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-06T16:17:52.396Z",
+      "feature": "charts",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-06T16:18:06.853Z",
+      "feature": "dashboard",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-06T16:18:27.141Z",
+      "feature": "dashboard",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-06T16:18:40.871Z",
+      "feature": "dashboard",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-06T16:19:09.808Z",
+      "feature": "dashboard",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-06T16:19:24.744Z",
+      "feature": "[projectId]",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-06T16:19:42.669Z",
+      "feature": "realtime-collab-dashboard",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-06T16:19:51.360Z",
+      "feature": "realtime-collab-dashboard",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-06T16:20:15.528Z",
+      "feature": "dashboard",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-06T16:20:23.267Z",
+      "feature": "dashboard",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-06T16:20:56.953Z",
+      "feature": "dashboard",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-06T16:23:37.059Z",
+      "feature": "realtime-collab-dashboard",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-06T16:23:49.796Z",
+      "feature": "presence",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-06T16:24:00.317Z",
+      "feature": "[projectId]",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-06T16:24:12.747Z",
+      "feature": "[projectId]",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-06T16:34:51.437Z",
+      "feature": "providers",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-06T16:40:47.721Z",
+      "feature": "realtime-collab-dashboard",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-06T16:46:00.231Z",
+      "feature": "realtime-collab-dashboard",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-06T16:46:05.453Z",
+      "feature": "realtime-collab-dashboard",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-06T16:46:19.729Z",
+      "feature": "realtime-collab-dashboard",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-06T16:46:50.409Z",
       "feature": "realtime-collab-dashboard",
       "phase": "do",
       "action": "updated"
