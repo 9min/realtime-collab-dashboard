@@ -5,6 +5,7 @@ import { useQueryClient } from '@tanstack/react-query'
 
 import { useSupabase } from '@/components/providers/supabase-provider'
 import { CHANNEL_PREFIX } from '@/lib/constants'
+import { chartKeys } from '@/queries/use-chart-data'
 import { columnKeys } from '@/queries/use-columns'
 import { taskKeys } from '@/queries/use-tasks'
 
@@ -41,6 +42,10 @@ export function useRealtimeSubscription(projectId: string) {
         () => {
           // LWW: 서버 변경 수신 시 캐시 무효화 → refetch
           queryClient.invalidateQueries({ queryKey: taskKeys.list(projectId) })
+          // 차트 데이터도 함께 갱신
+          queryClient.invalidateQueries({ queryKey: chartKeys.taskStatus(projectId) })
+          queryClient.invalidateQueries({ queryKey: chartKeys.weeklyProgress(projectId) })
+          queryClient.invalidateQueries({ queryKey: chartKeys.burndown(projectId) })
         },
       )
       // kanban_columns 테이블 변경 감지

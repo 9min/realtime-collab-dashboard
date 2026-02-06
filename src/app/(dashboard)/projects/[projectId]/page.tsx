@@ -1,9 +1,19 @@
-// TODO: F3 Dashboard Layout 구현 시 위젯 그리드 추가
+'use client'
+
+import { useParams } from 'next/navigation'
+
+import { WidgetGrid } from '@/components/dashboard/widget-grid'
+import { useRealtimeSubscription } from '@/hooks/use-realtime-subscription'
+
 export default function ProjectDashboardPage() {
+  const params = useParams<{ projectId: string }>()
+
+  // 실시간 동기화: 태스크/컬럼 변경 시 차트 데이터도 갱신
+  useRealtimeSubscription(params.projectId)
+
   return (
-    <div>
-      <h1 className="text-2xl font-bold">대시보드</h1>
-      <p className="text-muted-foreground mt-2">프로젝트 대시보드 위젯</p>
+    <div className="flex h-full flex-col gap-4">
+      <WidgetGrid projectId={params.projectId} />
     </div>
   )
 }

@@ -43,3 +43,15 @@ export const WIDGET_TYPE = {
   BURNDOWN: 'burndown',
   MEMBER_LIST: 'member-list',
 } as const
+
+// 위젯 그리드 설정
+export const GRID_COLS = 12 as const
+export const GRID_ROW_HEIGHT = 80 as const
+
+// 기본 대시보드 레이아웃 (신규 유저용)
+export const DEFAULT_DASHBOARD_LAYOUT = [
+  { widget_id: 'default-task-status', type: WIDGET_TYPE.TASK_STATUS, x: 0, y: 0, w: 4, h: 3 },
+  { widget_id: 'default-weekly-progress', type: WIDGET_TYPE.WEEKLY_PROGRESS, x: 4, y: 0, w: 4, h: 3 },
+  { widget_id: 'default-burndown', type: WIDGET_TYPE.BURNDOWN, x: 8, y: 0, w: 4, h: 3 },
+  { widget_id: 'default-member-list', type: WIDGET_TYPE.MEMBER_LIST, x: 0, y: 3, w: 4, h: 3 },
+] as const
