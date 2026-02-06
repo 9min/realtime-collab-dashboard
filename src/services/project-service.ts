@@ -1,6 +1,5 @@
 import type { SupabaseClient } from '@supabase/supabase-js'
 
-import { DEFAULT_COLUMNS, MEMBER_ROLE } from '@/lib/constants'
 import type { ServiceResult } from '@/types/common'
 import type { Database, Tables, InsertTables } from '@/types/database'
 
@@ -74,57 +73,39 @@ export async function getProject(
   return { data, error: null }
 }
 
-// 프로젝트 생성 + owner 멤버 등록 + 기본 칸반 컬럼 생성
+// 프로젝트 생성 (SECURITY DEFINER RPC로 원자적 처리)
+// RPC가 프로젝트 + owner 멤버 + 기본 칸반 컬럼을 단일 트랜잭션으로 생성
 export async function createProject(
   supabase: Client,
   input: Pick<InsertTables<'projects'>, 'name' | 'description'>,
 ): Promise<ServiceResult<Project>> {
-  // 현재 유저 확인
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) {
-    return { data: null, error: { code: 'UNAUTHORIZED', message: '로그인이 필요합니다' } }
-  }
+  // RPC 호출: create_project_with_defaults → UUID 반환
+  const { data: projectId, error: rpcError } = await supabase.rpc(
+    'create_project_with_defaults',
+    { p_name: input.name, p_description: input.description ?? null },
+  )
 
-  // 1. 프로젝트 생성
-  const { data: project, error: projectError } = await supabase
-    .from('projects')
-    .insert({ name: input.name, description: input.description ?? null, owner_id: user.id })
-    .select('*')
-    .returns<Project[]>()
-    .single()
-
-  if (projectError || !project) {
+  if (rpcError || !projectId) {
     return {
       data: null,
-      error: { code: projectError?.code ?? 'UNKNOWN', message: projectError?.message ?? '프로젝트 생성 실패' },
+      error: { code: rpcError?.code ?? 'UNKNOWN', message: rpcError?.message ?? '프로젝트 생성 실패' },
     }
   }
 
-  // 2. owner를 project_members에 등록
-  const { error: memberError } = await supabase
-    .from('project_members')
-    .insert({ project_id: project.id, user_id: user.id, role: MEMBER_ROLE.OWNER })
+  // 생성된 프로젝트 전체 데이터 조회 (RPC는 UUID만 반환)
+  // 이 시점에는 멤버가 이미 등록되어 있으므로 SELECT RLS 통과
+  const { data: project, error: fetchError } = await supabase
+    .from('projects')
+    .select('*')
+    .eq('id', projectId)
+    .returns<Project[]>()
+    .single()
 
-  if (memberError) {
-    // 롤백: 프로젝트 삭제
-    await supabase.from('projects').delete().eq('id', project.id)
-    return { data: null, error: { code: memberError.code, message: memberError.message } }
-  }
-
-  // 3. 기본 칸반 컬럼 생성
-  const columns = DEFAULT_COLUMNS.map((col) => ({
-    project_id: project.id,
-    title: col.title as string,
-    position: col.position as number,
-  }))
-
-  const { error: columnError } = await supabase
-    .from('kanban_columns')
-    .insert(columns)
-
-  if (columnError) {
-    // 컬럼 생성 실패는 치명적이지 않음 — 무시하고 진행
-    void columnError
+  if (fetchError || !project) {
+    return {
+      data: null,
+      error: { code: fetchError?.code ?? 'UNKNOWN', message: fetchError?.message ?? '프로젝트 조회 실패' },
+    }
   }
 
   return { data: project, error: null }

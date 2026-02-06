@@ -248,7 +248,20 @@ export interface Database {
       }
     }
     Views: Record<string, never>
-    Functions: Record<string, never>
+    Functions: {
+      create_project_with_defaults: {
+        Args: { p_name: string; p_description?: string | null }
+        Returns: string // UUID
+      }
+      has_project_role: {
+        Args: { p_project_id: string; p_roles: Database['public']['Enums']['member_role'][] }
+        Returns: boolean
+      }
+      is_project_member: {
+        Args: { p_project_id: string }
+        Returns: boolean
+      }
+    }
     Enums: {
       member_role: 'owner' | 'admin' | 'member' | 'viewer'
       task_priority: 'low' | 'medium' | 'high' | 'urgent'
