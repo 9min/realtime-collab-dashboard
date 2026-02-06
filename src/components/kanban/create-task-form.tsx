@@ -15,8 +15,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { useCreateTask } from '@/queries/use-tasks'
-import { useTasks } from '@/queries/use-tasks'
+import { useAuth } from '@/hooks/use-auth'
+import { useCreateTask, useTasks } from '@/queries/use-tasks'
 
 // 폼 스키마
 const createTaskSchema = z.object({
@@ -36,6 +36,7 @@ interface CreateTaskFormProps {
 }
 
 export function CreateTaskForm({ projectId, columnId, open, onOpenChange }: CreateTaskFormProps) {
+  const { user } = useAuth()
   const createTaskMutation = useCreateTask(projectId)
   const { data: tasks } = useTasks(projectId)
 
@@ -56,7 +57,7 @@ export function CreateTaskForm({ projectId, columnId, open, onOpenChange }: Crea
   })
 
   const onSubmit = (data: CreateTaskFormData) => {
-    if (!columnId) return
+    if (!columnId || !user) return
 
     // 해당 컬럼의 마지막 위치 계산
     const columnTasks = tasks?.filter((t) => t.column_id === columnId) ?? []
@@ -71,7 +72,7 @@ export function CreateTaskForm({ projectId, columnId, open, onOpenChange }: Crea
         priority: data.priority,
         position: nextPosition,
         due_date: data.due_date || undefined,
-        created_by: 'mock-user-001', // TODO: Auth 연결 후 실제 유저 ID
+        created_by: user.id,
       },
       {
         onSuccess: () => {

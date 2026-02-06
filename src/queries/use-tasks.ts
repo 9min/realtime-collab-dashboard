@@ -2,17 +2,23 @@
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 
+import { useSupabase } from '@/components/providers/supabase-provider'
 import { getTasksByProject, createTask, updateTask, deleteTask, moveTask } from '@/services/task-service'
 import type { InsertTables, UpdateTables } from '@/types/database'
 import type { MoveTaskPayload } from '@/types/kanban'
 
-const TASKS_KEY = (projectId: string) => ['tasks', projectId] as const
+export const taskKeys = {
+  list: (projectId: string) => ['tasks', projectId] as const,
+}
 
 export function useTasks(projectId: string) {
+  const supabase = useSupabase()
+
   return useQuery({
-    queryKey: TASKS_KEY(projectId),
+    // eslint-disable-next-line @tanstack/query/exhaustive-deps
+    queryKey: taskKeys.list(projectId),
     queryFn: async () => {
-      const result = await getTasksByProject(projectId)
+      const result = await getTasksByProject(supabase, projectId)
       if (result.error) throw new Error(result.error.message)
       return result.data
     },
@@ -20,46 +26,50 @@ export function useTasks(projectId: string) {
 }
 
 export function useCreateTask(projectId: string) {
+  const supabase = useSupabase()
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: (input: InsertTables<'tasks'>) => createTask(input),
+    mutationFn: (input: InsertTables<'tasks'>) => createTask(supabase, input),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: TASKS_KEY(projectId) })
+      queryClient.invalidateQueries({ queryKey: taskKeys.list(projectId) })
     },
   })
 }
 
 export function useUpdateTask(projectId: string) {
+  const supabase = useSupabase()
   const queryClient = useQueryClient()
 
   return useMutation({
     mutationFn: ({ taskId, input }: { taskId: string; input: UpdateTables<'tasks'> }) =>
-      updateTask(taskId, input),
+      updateTask(supabase, taskId, input),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: TASKS_KEY(projectId) })
+      queryClient.invalidateQueries({ queryKey: taskKeys.list(projectId) })
     },
   })
 }
 
 export function useDeleteTask(projectId: string) {
+  const supabase = useSupabase()
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: (taskId: string) => deleteTask(taskId),
+    mutationFn: (taskId: string) => deleteTask(supabase, taskId),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: TASKS_KEY(projectId) })
+      queryClient.invalidateQueries({ queryKey: taskKeys.list(projectId) })
     },
   })
 }
 
 export function useMoveTask(projectId: string) {
+  const supabase = useSupabase()
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: (payload: MoveTaskPayload) => moveTask(payload),
+    mutationFn: (payload: MoveTaskPayload) => moveTask(supabase, payload),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: TASKS_KEY(projectId) })
+      queryClient.invalidateQueries({ queryKey: taskKeys.list(projectId) })
     },
   })
 }
