@@ -37,6 +37,7 @@ export interface Database {
           avatar_url?: string | null
           updated_at?: string
         }
+        Relationships: []
       }
       projects: {
         Row: {
@@ -60,6 +61,15 @@ export interface Database {
           description?: string | null
           updated_at?: string
         }
+        Relationships: [
+          {
+            foreignKeyName: 'projects_owner_id_fkey'
+            columns: ['owner_id']
+            isOneToOne: false
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          },
+        ]
       }
       project_members: {
         Row: {
@@ -79,6 +89,22 @@ export interface Database {
         Update: {
           role?: 'owner' | 'admin' | 'member' | 'viewer'
         }
+        Relationships: [
+          {
+            foreignKeyName: 'project_members_project_id_fkey'
+            columns: ['project_id']
+            isOneToOne: false
+            referencedRelation: 'projects'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'project_members_user_id_fkey'
+            columns: ['user_id']
+            isOneToOne: false
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          },
+        ]
       }
       kanban_columns: {
         Row: {
@@ -102,6 +128,15 @@ export interface Database {
           position?: number
           updated_at?: string
         }
+        Relationships: [
+          {
+            foreignKeyName: 'kanban_columns_project_id_fkey'
+            columns: ['project_id']
+            isOneToOne: false
+            referencedRelation: 'projects'
+            referencedColumns: ['id']
+          },
+        ]
       }
       tasks: {
         Row: {
@@ -142,6 +177,36 @@ export interface Database {
           due_date?: string | null
           updated_at?: string
         }
+        Relationships: [
+          {
+            foreignKeyName: 'tasks_project_id_fkey'
+            columns: ['project_id']
+            isOneToOne: false
+            referencedRelation: 'projects'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'tasks_column_id_fkey'
+            columns: ['column_id']
+            isOneToOne: false
+            referencedRelation: 'kanban_columns'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'tasks_assignee_id_fkey'
+            columns: ['assignee_id']
+            isOneToOne: false
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'tasks_created_by_fkey'
+            columns: ['created_by']
+            isOneToOne: false
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          },
+        ]
       }
       dashboard_layouts: {
         Row: {
@@ -164,8 +229,31 @@ export interface Database {
           layout?: Json
           updated_at?: string
         }
+        Relationships: [
+          {
+            foreignKeyName: 'dashboard_layouts_project_id_fkey'
+            columns: ['project_id']
+            isOneToOne: false
+            referencedRelation: 'projects'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'dashboard_layouts_user_id_fkey'
+            columns: ['user_id']
+            isOneToOne: false
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          },
+        ]
       }
     }
+    Views: Record<string, never>
+    Functions: Record<string, never>
+    Enums: {
+      member_role: 'owner' | 'admin' | 'member' | 'viewer'
+      task_priority: 'low' | 'medium' | 'high' | 'urgent'
+    }
+    CompositeTypes: Record<string, never>
   }
 }
 

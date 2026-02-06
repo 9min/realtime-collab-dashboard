@@ -1,0 +1,82 @@
+'use client'
+
+import { use, type ReactNode } from 'react'
+import { useRouter, usePathname } from 'next/navigation'
+import { ArrowLeft, LayoutDashboard, Columns3, Settings } from 'lucide-react'
+
+import { Button } from '@/components/ui/button'
+import { useProject } from '@/queries/use-projects'
+import { cn } from '@/lib/utils'
+
+interface ProjectLayoutProps {
+  children: ReactNode
+  params: Promise<{ projectId: string }>
+}
+
+const NAV_ITEMS = [
+  { label: '대시보드', href: '', icon: LayoutDashboard },
+  { label: '칸반 보드', href: '/board', icon: Columns3 },
+  { label: '설정', href: '/settings', icon: Settings },
+] as const
+
+export default function ProjectLayout({ children, params }: ProjectLayoutProps) {
+  const { projectId } = use(params)
+  const router = useRouter()
+  const pathname = usePathname()
+  const { data: project, isLoading } = useProject(projectId)
+
+  const basePath = `/projects/${projectId}`
+
+  return (
+    <div className="space-y-6">
+      {/* 프로젝트 헤더 */}
+      <div className="flex items-center gap-3">
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-8 w-8"
+          onClick={() => router.push('/projects')}
+        >
+          <ArrowLeft className="h-4 w-4" />
+        </Button>
+        <div>
+          {isLoading ? (
+            <div className="bg-muted h-7 w-48 animate-pulse rounded" />
+          ) : (
+            <>
+              <h1 className="text-xl font-bold">{project?.name ?? '프로젝트'}</h1>
+              {project?.description && (
+                <p className="text-muted-foreground text-sm">{project.description}</p>
+              )}
+            </>
+          )}
+        </div>
+      </div>
+
+      {/* 서브 네비게이션 */}
+      <nav className="border-border flex gap-1 border-b">
+        {NAV_ITEMS.map(({ label, href, icon: Icon }) => {
+          const fullPath = `${basePath}${href}`
+          const isActive = pathname === fullPath
+
+          return (
+            <button
+              key={href}
+              onClick={() => router.push(fullPath)}
+              className={cn(
+                'text-muted-foreground hover:text-foreground flex items-center gap-2 border-b-2 border-transparent px-4 py-2 text-sm font-medium transition-colors',
+                isActive && 'text-foreground border-primary',
+              )}
+            >
+              <Icon className="h-4 w-4" />
+              {label}
+            </button>
+          )
+        })}
+      </nav>
+
+      {/* 페이지 콘텐츠 */}
+      {children}
+    </div>
+  )
+}
