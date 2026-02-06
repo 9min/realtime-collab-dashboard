@@ -127,7 +127,29 @@ CREATE TRIGGER on_auth_user_created
   AFTER INSERT ON auth.users
   FOR EACH ROW EXECUTE FUNCTION handle_new_user();
 
--- 4. Row Level Security
+-- 4. RLS 헬퍼 함수
+-- ──────────────────────────────────────────
+-- SECURITY DEFINER로 RLS 우회하여 멤버십 체크 (무한 재귀 방지)
+
+CREATE OR REPLACE FUNCTION is_project_member(p_project_id UUID)
+RETURNS BOOLEAN AS $$
+  SELECT EXISTS (
+    SELECT 1 FROM project_members
+    WHERE project_id = p_project_id AND user_id = auth.uid()
+  );
+$$ LANGUAGE sql SECURITY DEFINER STABLE;
+
+CREATE OR REPLACE FUNCTION has_project_role(p_project_id UUID, p_roles member_role[])
+RETURNS BOOLEAN AS $$
+  SELECT EXISTS (
+    SELECT 1 FROM project_members
+    WHERE project_id = p_project_id
+      AND user_id = auth.uid()
+      AND role = ANY(p_roles)
+  );
+$$ LANGUAGE sql SECURITY DEFINER STABLE;
+
+-- 5. Row Level Security
 -- ──────────────────────────────────────────
 
 ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
@@ -146,16 +168,13 @@ CREATE POLICY "profiles_update" ON profiles
 -- projects
 CREATE POLICY "projects_select" ON projects
   FOR SELECT TO authenticated
-  USING (id IN (SELECT project_id FROM project_members WHERE user_id = auth.uid()));
+  USING (is_project_member(id));
 CREATE POLICY "projects_insert" ON projects
   FOR INSERT TO authenticated
   WITH CHECK (owner_id = auth.uid());
 CREATE POLICY "projects_update" ON projects
   FOR UPDATE TO authenticated
-  USING (id IN (
-    SELECT project_id FROM project_members
-    WHERE user_id = auth.uid() AND role IN ('owner', 'admin')
-  ));
+  USING (has_project_role(id, ARRAY['owner', 'admin']::member_role[]));
 CREATE POLICY "projects_delete" ON projects
   FOR DELETE TO authenticated
   USING (owner_id = auth.uid());
@@ -163,14 +182,11 @@ CREATE POLICY "projects_delete" ON projects
 -- project_members
 CREATE POLICY "members_select" ON project_members
   FOR SELECT TO authenticated
-  USING (project_id IN (SELECT project_id FROM project_members WHERE user_id = auth.uid()));
+  USING (is_project_member(project_id));
 CREATE POLICY "members_insert" ON project_members
   FOR INSERT TO authenticated
   WITH CHECK (
-    project_id IN (
-      SELECT project_id FROM project_members
-      WHERE user_id = auth.uid() AND role IN ('owner', 'admin')
-    )
+    has_project_role(project_id, ARRAY['owner', 'admin']::member_role[])
     OR
     -- 프로젝트 생성자가 자기 자신을 owner로 추가하는 경우 허용
     (user_id = auth.uid() AND role = 'owner')
@@ -178,58 +194,37 @@ CREATE POLICY "members_insert" ON project_members
 CREATE POLICY "members_delete" ON project_members
   FOR DELETE TO authenticated
   USING (
-    user_id = auth.uid() OR
-    project_id IN (
-      SELECT project_id FROM project_members
-      WHERE user_id = auth.uid() AND role IN ('owner', 'admin')
-    )
+    user_id = auth.uid()
+    OR has_project_role(project_id, ARRAY['owner', 'admin']::member_role[])
   );
 
 -- kanban_columns
 CREATE POLICY "columns_select" ON kanban_columns
   FOR SELECT TO authenticated
-  USING (project_id IN (SELECT project_id FROM project_members WHERE user_id = auth.uid()));
+  USING (is_project_member(project_id));
 CREATE POLICY "columns_insert" ON kanban_columns
   FOR INSERT TO authenticated
-  WITH CHECK (project_id IN (
-    SELECT project_id FROM project_members
-    WHERE user_id = auth.uid() AND role IN ('owner', 'admin', 'member')
-  ));
+  WITH CHECK (has_project_role(project_id, ARRAY['owner', 'admin', 'member']::member_role[]));
 CREATE POLICY "columns_update" ON kanban_columns
   FOR UPDATE TO authenticated
-  USING (project_id IN (
-    SELECT project_id FROM project_members
-    WHERE user_id = auth.uid() AND role IN ('owner', 'admin', 'member')
-  ));
+  USING (has_project_role(project_id, ARRAY['owner', 'admin', 'member']::member_role[]));
 CREATE POLICY "columns_delete" ON kanban_columns
   FOR DELETE TO authenticated
-  USING (project_id IN (
-    SELECT project_id FROM project_members
-    WHERE user_id = auth.uid() AND role IN ('owner', 'admin', 'member')
-  ));
+  USING (has_project_role(project_id, ARRAY['owner', 'admin', 'member']::member_role[]));
 
 -- tasks
 CREATE POLICY "tasks_select" ON tasks
   FOR SELECT TO authenticated
-  USING (project_id IN (SELECT project_id FROM project_members WHERE user_id = auth.uid()));
+  USING (is_project_member(project_id));
 CREATE POLICY "tasks_insert" ON tasks
   FOR INSERT TO authenticated
-  WITH CHECK (project_id IN (
-    SELECT project_id FROM project_members
-    WHERE user_id = auth.uid() AND role IN ('owner', 'admin', 'member')
-  ));
+  WITH CHECK (has_project_role(project_id, ARRAY['owner', 'admin', 'member']::member_role[]));
 CREATE POLICY "tasks_update" ON tasks
   FOR UPDATE TO authenticated
-  USING (project_id IN (
-    SELECT project_id FROM project_members
-    WHERE user_id = auth.uid() AND role IN ('owner', 'admin', 'member')
-  ));
+  USING (has_project_role(project_id, ARRAY['owner', 'admin', 'member']::member_role[]));
 CREATE POLICY "tasks_delete" ON tasks
   FOR DELETE TO authenticated
-  USING (project_id IN (
-    SELECT project_id FROM project_members
-    WHERE user_id = auth.uid() AND role IN ('owner', 'admin', 'member')
-  ));
+  USING (has_project_role(project_id, ARRAY['owner', 'admin', 'member']::member_role[]));
 
 -- dashboard_layouts
 CREATE POLICY "layouts_all" ON dashboard_layouts
