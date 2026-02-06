@@ -1,0 +1,313 @@
+{
+  "version": "2.0",
+  "lastUpdated": "2026-02-06T14:09:20.550Z",
+  "activeFeatures": [
+    "realtime-collab-dashboard",
+    "supabase",
+    "providers",
+    "(auth)",
+    "login",
+    "callback",
+    "(dashboard)",
+    "projects",
+    "[projectId]",
+    "board",
+    "settings"
+  ],
+  "primaryFeature": "realtime-collab-dashboard",
+  "features": {
+    "realtime-collab-dashboard": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-02-06T14:06:08.402Z",
+        "lastUpdated": "2026-02-06T14:09:20.550Z"
+      },
+      "lastFile": "D:\\바이브코딩\\realtime-collab-dashboard\\src\\app\\layout.tsx"
+    },
+    "supabase": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-02-06T14:07:21.755Z",
+        "lastUpdated": "2026-02-06T14:07:32.320Z"
+      },
+      "lastFile": "D:\\바이브코딩\\realtime-collab-dashboard\\src\\lib\\supabase\\middleware.ts"
+    },
+    "providers": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-02-06T14:07:47.954Z",
+        "lastUpdated": "2026-02-06T14:07:53.197Z"
+      },
+      "lastFile": "D:\\바이브코딩\\realtime-collab-dashboard\\src\\components\\providers\\supabase-provider.tsx"
+    },
+    "(auth)": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-02-06T14:08:41.816Z",
+        "lastUpdated": "2026-02-06T14:08:41.817Z"
+      },
+      "lastFile": "D:\\바이브코딩\\realtime-collab-dashboard\\src\\app\\(auth)\\layout.tsx"
+    },
+    "login": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-02-06T14:08:44.775Z",
+        "lastUpdated": "2026-02-06T14:08:44.775Z"
+      },
+      "lastFile": "D:\\바이브코딩\\realtime-collab-dashboard\\src\\app\\(auth)\\login\\page.tsx"
+    },
+    "callback": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-02-06T14:08:47.186Z",
+        "lastUpdated": "2026-02-06T14:08:47.186Z"
+      },
+      "lastFile": "D:\\바이브코딩\\realtime-collab-dashboard\\src\\app\\(auth)\\callback\\route.ts"
+    },
+    "(dashboard)": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-02-06T14:08:55.548Z",
+        "lastUpdated": "2026-02-06T14:08:55.548Z"
+      },
+      "lastFile": "D:\\바이브코딩\\realtime-collab-dashboard\\src\\app\\(dashboard)\\layout.tsx"
+    },
+    "projects": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-02-06T14:08:58.152Z",
+        "lastUpdated": "2026-02-06T14:08:58.152Z"
+      },
+      "lastFile": "D:\\바이브코딩\\realtime-collab-dashboard\\src\\app\\(dashboard)\\projects\\page.tsx"
+    },
+    "[projectId]": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-02-06T14:08:59.970Z",
+        "lastUpdated": "2026-02-06T14:08:59.970Z"
+      },
+      "lastFile": "D:\\바이브코딩\\realtime-collab-dashboard\\src\\app\\(dashboard)\\projects\\[projectId]\\page.tsx"
+    },
+    "board": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-02-06T14:09:01.686Z",
+        "lastUpdated": "2026-02-06T14:09:01.686Z"
+      },
+      "lastFile": "D:\\바이브코딩\\realtime-collab-dashboard\\src\\app\\(dashboard)\\projects\\[projectId]\\board\\page.tsx"
+    },
+    "settings": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-02-06T14:09:03.359Z",
+        "lastUpdated": "2026-02-06T14:09:03.359Z"
+      },
+      "lastFile": "D:\\바이브코딩\\realtime-collab-dashboard\\src\\app\\(dashboard)\\projects\\[projectId]\\settings\\page.tsx"
+    }
+  },
+  "pipeline": {
+    "currentPhase": 1,
+    "level": "Dynamic",
+    "phaseHistory": []
+  },
+  "session": {
+    "startedAt": "2026-02-06T13:43:57.728Z",
+    "onboardingCompleted": false,
+    "lastActivity": "2026-02-06T14:09:20.550Z"
+  },
+  "history": [
+    {
+      "timestamp": "2026-02-06T14:06:08.402Z",
+      "feature": "realtime-collab-dashboard",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-06T14:06:12.220Z",
+      "feature": "realtime-collab-dashboard",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-06T14:06:24.350Z",
+      "feature": "realtime-collab-dashboard",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-06T14:06:28.038Z",
+      "feature": "realtime-collab-dashboard",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-06T14:06:30.076Z",
+      "feature": "realtime-collab-dashboard",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-06T14:07:21.756Z",
+      "feature": "supabase",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-06T14:07:25.339Z",
+      "feature": "supabase",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-06T14:07:32.320Z",
+      "feature": "supabase",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-06T14:07:47.954Z",
+      "feature": "providers",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-06T14:07:49.852Z",
+      "feature": "providers",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-06T14:07:53.197Z",
+      "feature": "providers",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-06T14:07:55.263Z",
+      "feature": "realtime-collab-dashboard",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-06T14:08:05.668Z",
+      "feature": "realtime-collab-dashboard",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-06T14:08:40.146Z",
+      "feature": "realtime-collab-dashboard",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-06T14:08:41.817Z",
+      "feature": "(auth)",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-06T14:08:44.775Z",
+      "feature": "login",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-06T14:08:47.186Z",
+      "feature": "callback",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-06T14:08:55.548Z",
+      "feature": "(dashboard)",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-06T14:08:58.152Z",
+      "feature": "projects",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-06T14:08:59.970Z",
+      "feature": "[projectId]",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-06T14:09:01.686Z",
+      "feature": "board",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-06T14:09:03.359Z",
+      "feature": "settings",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-06T14:09:20.550Z",
+      "feature": "realtime-collab-dashboard",
+      "phase": "do",
+      "action": "updated"
+    }
+  ]
+}
