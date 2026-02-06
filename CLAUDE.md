@@ -260,7 +260,19 @@ SUPABASE_SERVICE_ROLE_KEY=
 
 ---
 
-## Commit Convention
+## Commit Strategy
+
+### 커밋 시점
+- **피처 단위로 커밋**: PRD 기준 하나의 피처(F1~F8) 구현이 완료되면 커밋
+- **빌드 가능한 상태에서만 커밋**: `type-check` + `lint` 통과 필수
+- 초기 세팅, 문서 변경 등 피처 외 작업도 완료 시 커밋
+
+### 커밋 전 체크리스트
+```bash
+pnpm type-check && pnpm lint  # 통과 후 커밋
+```
+
+### 커밋 메시지 형식
 
 ```
 <type>: <subject>
