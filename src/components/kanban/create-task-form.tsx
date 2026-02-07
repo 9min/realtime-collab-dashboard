@@ -7,6 +7,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import {
   Select,
@@ -98,67 +99,76 @@ export function CreateTaskForm({ projectId, columnId, open, onOpenChange }: Crea
         </DialogHeader>
         <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
           {/* 제목 */}
-          <div>
-            <Input placeholder="태스크 제목" {...register('title')} autoFocus />
+          <div className="space-y-1.5">
+            <Label htmlFor="task-title">제목</Label>
+            <Input id="task-title" placeholder="태스크 제목" {...register('title')} autoFocus />
             {errors.title && (
-              <p className="text-destructive mt-1 text-xs">{errors.title.message}</p>
+              <p className="text-destructive text-xs">{errors.title.message}</p>
             )}
           </div>
 
           {/* 설명 */}
-          <div>
-            <Textarea placeholder="설명 (선택)" rows={3} {...register('description')} />
+          <div className="space-y-1.5">
+            <Label htmlFor="task-description">설명</Label>
+            <Textarea id="task-description" placeholder="설명 (선택)" rows={3} {...register('description')} />
             {errors.description && (
-              <p className="text-destructive mt-1 text-xs">{errors.description.message}</p>
+              <p className="text-destructive text-xs">{errors.description.message}</p>
             )}
           </div>
 
           {/* 우선순위 */}
-          <Controller
-            control={control}
-            name="priority"
-            render={({ field }) => (
-              <Select value={field.value} onValueChange={field.onChange}>
-                <SelectTrigger>
-                  <SelectValue placeholder="우선순위" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="low">낮음</SelectItem>
-                  <SelectItem value="medium">보통</SelectItem>
-                  <SelectItem value="high">높음</SelectItem>
-                  <SelectItem value="urgent">긴급</SelectItem>
-                </SelectContent>
-              </Select>
-            )}
-          />
+          <div className="space-y-1.5">
+            <Label>우선순위</Label>
+            <Controller
+              control={control}
+              name="priority"
+              render={({ field }) => (
+                <Select value={field.value} onValueChange={field.onChange}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="우선순위" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="low">낮음</SelectItem>
+                    <SelectItem value="medium">보통</SelectItem>
+                    <SelectItem value="high">높음</SelectItem>
+                    <SelectItem value="urgent">긴급</SelectItem>
+                  </SelectContent>
+                </Select>
+              )}
+            />
+          </div>
 
           {/* 담당자 */}
-          <Controller
-            control={control}
-            name="assignee_id"
-            render={({ field }) => (
-              <Select
-                value={field.value || UNASSIGNED_VALUE}
-                onValueChange={(v) => field.onChange(v === UNASSIGNED_VALUE ? '' : v)}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="담당자 (선택)" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value={UNASSIGNED_VALUE}>미배정</SelectItem>
-                  {members?.map((m) => (
-                    <SelectItem key={m.user_id} value={m.user_id}>
-                      {m.profiles.full_name ?? m.profiles.email}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            )}
-          />
+          <div className="space-y-1.5">
+            <Label>담당자</Label>
+            <Controller
+              control={control}
+              name="assignee_id"
+              render={({ field }) => (
+                <Select
+                  value={field.value || UNASSIGNED_VALUE}
+                  onValueChange={(v) => field.onChange(v === UNASSIGNED_VALUE ? '' : v)}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="담당자 (선택)" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value={UNASSIGNED_VALUE}>미배정</SelectItem>
+                    {members?.map((m) => (
+                      <SelectItem key={m.user_id} value={m.user_id}>
+                        {m.profiles.full_name ?? m.profiles.email}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
+            />
+          </div>
 
           {/* 마감일 */}
-          <div>
-            <Input type="date" {...register('due_date')} />
+          <div className="space-y-1.5">
+            <Label htmlFor="task-due-date">마감일</Label>
+            <Input id="task-due-date" type="date" {...register('due_date')} />
           </div>
 
           {/* 제출 */}

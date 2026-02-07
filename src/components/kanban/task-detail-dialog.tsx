@@ -7,8 +7,8 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
-import { MarkdownEditor } from '@/components/ui/markdown-editor'
 import { MarkdownRenderer } from '@/components/ui/markdown-renderer'
+import { Textarea } from '@/components/ui/textarea'
 import {
   Select,
   SelectContent,
@@ -106,7 +106,7 @@ export function TaskDetailDialog({ projectId, task, open, onOpenChange, canEdit 
   }
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={(v) => { if (!v) setIsEditing(false); onOpenChange(v) }}>
       <DialogContent className="sm:max-w-xl">
         <DialogHeader>
           <DialogTitle className="pr-8">
@@ -202,11 +202,12 @@ export function TaskDetailDialog({ projectId, task, open, onOpenChange, canEdit 
           <div>
             <span className="text-muted-foreground mb-1 block text-sm">설명</span>
             {isEditing ? (
-              <MarkdownEditor
+              <Textarea
                 value={editDescription}
-                onChange={setEditDescription}
-                placeholder="설명을 입력하세요 (Markdown 지원)"
+                onChange={(e) => setEditDescription(e.target.value)}
+                placeholder="설명을 입력하세요"
                 rows={4}
+                className="resize-none"
               />
             ) : task.description ? (
               <MarkdownRenderer content={task.description} className="text-sm" />

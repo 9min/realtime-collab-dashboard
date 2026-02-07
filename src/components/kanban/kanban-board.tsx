@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button'
 import { useAuth } from '@/hooks/use-auth'
 import { MEMBER_ROLE } from '@/lib/constants'
 import { filterTasks } from '@/lib/task-filter'
-import { useColumns, useCreateColumn, useDeleteColumn } from '@/queries/use-columns'
+import { useColumns, useCreateColumn, useUpdateColumn, useDeleteColumn } from '@/queries/use-columns'
 import { useProjectMembers } from '@/queries/use-projects'
 import { useTasks, useMoveTask } from '@/queries/use-tasks'
 import { useKanbanFilterStore } from '@/stores/kanban-filter-store'
@@ -31,6 +31,7 @@ export function KanbanBoard({ projectId }: KanbanBoardProps) {
   const { data: members } = useProjectMembers(projectId)
   const moveTaskMutation = useMoveTask(projectId)
   const createColumnMutation = useCreateColumn(projectId)
+  const updateColumnMutation = useUpdateColumn(projectId)
   const deleteColumnMutation = useDeleteColumn(projectId)
 
   // 현재 유저 역할 확인 — 뷰어는 수정 불가
@@ -84,6 +85,14 @@ export function KanbanBoard({ projectId }: KanbanBoardProps) {
     createColumnMutation.mutate({ title, position: columns.length })
   }, [columns, createColumnMutation])
 
+  // 컬럼 이름 변경
+  const handleRenameColumn = useCallback(
+    (columnId: string, title: string) => {
+      updateColumnMutation.mutate({ columnId, input: { title } })
+    },
+    [updateColumnMutation],
+  )
+
   // 컬럼 삭제
   const handleDeleteColumn = useCallback(
     (columnId: string) => {
@@ -114,14 +123,16 @@ export function KanbanBoard({ projectId }: KanbanBoardProps) {
               tasks={column.tasks}
               onAddTask={setCreateTaskColumnId}
               onTaskClick={setSelectedTask}
+              onRenameColumn={handleRenameColumn}
               onDeleteColumn={handleDeleteColumn}
               canEdit={canEdit}
+              canDeleteColumn={canDeleteAll}
               members={members}
             />
           ))}
 
-          {/* 컬럼 추가 버튼 — 뷰어에게 숨김 */}
-          {canEdit && (
+          {/* 컬럼 추가 버튼 — owner/admin만 */}
+          {canDeleteAll && (
             <Button
               variant="outline"
               className="h-12 w-72 shrink-0 border-dashed"
