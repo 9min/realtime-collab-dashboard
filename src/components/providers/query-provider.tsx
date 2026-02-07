@@ -21,6 +21,7 @@ export function QueryProvider({ children }: QueryProviderProps) {
             refetchOnWindowFocus: false,
             refetchOnReconnect: true,
             retry: 2,
+            retryDelay: (attempt) => Math.min(1000 * 2 ** attempt, 30000),
           },
         },
       }),
