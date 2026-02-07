@@ -5,28 +5,8 @@ describe('useUiStore', () => {
   beforeEach(() => {
     // 상태 초기화
     useUiStore.setState({
-      isSidebarOpen: true,
       activeModal: null,
       isMobileMenuOpen: false,
-    })
-  })
-
-  describe('sidebar', () => {
-    it('초기 상태: 사이드바 열림', () => {
-      expect(useUiStore.getState().isSidebarOpen).toBe(true)
-    })
-
-    it('toggleSidebar: 열림/닫힘 토글', () => {
-      useUiStore.getState().toggleSidebar()
-      expect(useUiStore.getState().isSidebarOpen).toBe(false)
-
-      useUiStore.getState().toggleSidebar()
-      expect(useUiStore.getState().isSidebarOpen).toBe(true)
-    })
-
-    it('setSidebarOpen: 명시적 설정', () => {
-      useUiStore.getState().setSidebarOpen(false)
-      expect(useUiStore.getState().isSidebarOpen).toBe(false)
     })
   })
 

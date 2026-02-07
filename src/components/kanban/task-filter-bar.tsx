@@ -1,10 +1,10 @@
 'use client'
 
-import { Search, X } from 'lucide-react'
+import { Check, ChevronDown, Search, X } from 'lucide-react'
 
-import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { TASK_PRIORITY } from '@/lib/constants'
 import { UNASSIGNED_ID } from '@/lib/task-filter'
 import { cn } from '@/lib/utils'
@@ -19,18 +19,11 @@ const PRIORITY_LABELS: Record<TaskPriority, string> = {
   urgent: '긴급',
 }
 
-const PRIORITY_STYLES: Record<TaskPriority, string> = {
-  low: 'border-slate-300 text-slate-700 dark:border-slate-600 dark:text-slate-300',
-  medium: 'border-blue-300 text-blue-700 dark:border-blue-600 dark:text-blue-300',
-  high: 'border-orange-300 text-orange-700 dark:border-orange-600 dark:text-orange-300',
-  urgent: 'border-red-300 text-red-700 dark:border-red-600 dark:text-red-300',
-}
-
-const PRIORITY_ACTIVE_STYLES: Record<TaskPriority, string> = {
-  low: 'bg-slate-100 border-slate-500 dark:bg-slate-800',
-  medium: 'bg-blue-100 border-blue-500 dark:bg-blue-900',
-  high: 'bg-orange-100 border-orange-500 dark:bg-orange-900',
-  urgent: 'bg-red-100 border-red-500 dark:bg-red-900',
+const PRIORITY_DOT_COLORS: Record<TaskPriority, string> = {
+  low: 'bg-slate-400',
+  medium: 'bg-blue-500',
+  high: 'bg-orange-500',
+  urgent: 'bg-red-500',
 }
 
 interface MemberOption {
@@ -67,6 +60,20 @@ export function TaskFilterBar({ members }: TaskFilterBarProps) {
 
   const allPriorities = Object.values(TASK_PRIORITY) as TaskPriority[]
 
+  const priorityLabel =
+    priorities.length === 0
+      ? '전체'
+      : priorities.length === 1
+        ? PRIORITY_LABELS[priorities[0]]
+        : `${priorities.length}개 선택`
+
+  const assigneeLabel =
+    assigneeIds.length === 0
+      ? '전체'
+      : assigneeIds.length === 1
+        ? (memberOptions.find((m) => m.id === assigneeIds[0])?.label ?? '1명')
+        : `${assigneeIds.length}명 선택`
+
   return (
     <div className="flex flex-wrap items-center gap-3 pb-4">
       {/* 검색 Input */}
@@ -80,50 +87,80 @@ export function TaskFilterBar({ members }: TaskFilterBarProps) {
         />
       </div>
 
-      {/* 우선순위 Badge 토글 */}
-      <div className="flex items-center gap-1.5">
-        <span className="text-muted-foreground text-xs">우선순위:</span>
-        {allPriorities.map((priority) => {
-          const isActive = priorities.includes(priority)
-          return (
-            <Badge
-              key={priority}
-              variant="outline"
-              className={cn(
-                'cursor-pointer select-none transition-colors',
-                PRIORITY_STYLES[priority],
-                isActive && PRIORITY_ACTIVE_STYLES[priority],
-              )}
-              onClick={() => togglePriority(priority)}
-            >
-              {PRIORITY_LABELS[priority]}
-            </Badge>
-          )
-        })}
-      </div>
+      {/* 우선순위 셀렉트 */}
+      <Popover>
+        <PopoverTrigger asChild>
+          <Button variant="outline" size="sm" className="h-9 gap-1.5 text-sm font-normal">
+            <span className="text-muted-foreground">우선순위:</span>
+            <span>{priorityLabel}</span>
+            <ChevronDown className="text-muted-foreground h-3.5 w-3.5" />
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent align="start" className="w-44 p-1">
+          {allPriorities.map((priority) => {
+            const isActive = priorities.includes(priority)
+            return (
+              <button
+                key={priority}
+                onClick={() => togglePriority(priority)}
+                className={cn(
+                  'flex w-full items-center gap-2 rounded-sm px-2 py-1.5 text-sm transition-colors',
+                  'hover:bg-accent hover:text-accent-foreground',
+                  isActive && 'bg-accent/50',
+                )}
+              >
+                <div
+                  className={cn(
+                    'flex h-4 w-4 shrink-0 items-center justify-center rounded-sm border',
+                    isActive ? 'border-primary bg-primary text-primary-foreground' : 'border-muted-foreground/30',
+                  )}
+                >
+                  {isActive && <Check className="h-3 w-3" />}
+                </div>
+                <span className={cn('h-2 w-2 rounded-full', PRIORITY_DOT_COLORS[priority])} />
+                {PRIORITY_LABELS[priority]}
+              </button>
+            )
+          })}
+        </PopoverContent>
+      </Popover>
 
-      {/* 담당자 Badge 토글 */}
-      <div className="flex items-center gap-1.5">
-        <span className="text-muted-foreground text-xs">담당자:</span>
-        <div className="flex flex-wrap gap-1">
+      {/* 담당자 셀렉트 */}
+      <Popover>
+        <PopoverTrigger asChild>
+          <Button variant="outline" size="sm" className="h-9 gap-1.5 text-sm font-normal">
+            <span className="text-muted-foreground">담당자:</span>
+            <span>{assigneeLabel}</span>
+            <ChevronDown className="text-muted-foreground h-3.5 w-3.5" />
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent align="start" className="w-48 p-1">
           {memberOptions.map((option) => {
             const isActive = assigneeIds.includes(option.id)
             return (
-              <Badge
+              <button
                 key={option.id}
-                variant="outline"
-                className={cn(
-                  'cursor-pointer select-none transition-colors',
-                  isActive && 'border-primary bg-primary/10',
-                )}
                 onClick={() => toggleAssigneeId(option.id)}
+                className={cn(
+                  'flex w-full items-center gap-2 rounded-sm px-2 py-1.5 text-sm transition-colors',
+                  'hover:bg-accent hover:text-accent-foreground',
+                  isActive && 'bg-accent/50',
+                )}
               >
+                <div
+                  className={cn(
+                    'flex h-4 w-4 shrink-0 items-center justify-center rounded-sm border',
+                    isActive ? 'border-primary bg-primary text-primary-foreground' : 'border-muted-foreground/30',
+                  )}
+                >
+                  {isActive && <Check className="h-3 w-3" />}
+                </div>
                 {option.label}
-              </Badge>
+              </button>
             )
           })}
-        </div>
-      </div>
+        </PopoverContent>
+      </Popover>
 
       {/* 마감일 범위 */}
       <div className="flex items-center gap-1.5">
