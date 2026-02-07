@@ -39,9 +39,10 @@ interface TaskDetailDialogProps {
   task: Tables<'tasks'> | null
   open: boolean
   onOpenChange: (open: boolean) => void
+  canEdit?: boolean
 }
 
-export function TaskDetailDialog({ projectId, task, open, onOpenChange }: TaskDetailDialogProps) {
+export function TaskDetailDialog({ projectId, task, open, onOpenChange, canEdit = true }: TaskDetailDialogProps) {
   const updateTaskMutation = useUpdateTask(projectId)
   const deleteTaskMutation = useDeleteTask(projectId)
 
@@ -180,29 +181,31 @@ export function TaskDetailDialog({ projectId, task, open, onOpenChange }: TaskDe
             </span>
           </div>
 
-          {/* 액션 버튼 */}
-          <div className="flex justify-between">
-            <Button variant="destructive" size="sm" onClick={handleDelete}>
-              <Trash2 className="mr-1 h-4 w-4" />
-              삭제
-            </Button>
-            <div className="flex gap-2">
-              {isEditing ? (
-                <>
-                  <Button variant="outline" size="sm" onClick={() => setIsEditing(false)}>
-                    취소
+          {/* 액션 버튼 — 뷰어에게 숨김 */}
+          {canEdit && (
+            <div className="flex justify-between">
+              <Button variant="destructive" size="sm" onClick={handleDelete}>
+                <Trash2 className="mr-1 h-4 w-4" />
+                삭제
+              </Button>
+              <div className="flex gap-2">
+                {isEditing ? (
+                  <>
+                    <Button variant="outline" size="sm" onClick={() => setIsEditing(false)}>
+                      취소
+                    </Button>
+                    <Button size="sm" onClick={handleSave} disabled={updateTaskMutation.isPending}>
+                      저장
+                    </Button>
+                  </>
+                ) : (
+                  <Button variant="outline" size="sm" onClick={startEdit}>
+                    편집
                   </Button>
-                  <Button size="sm" onClick={handleSave} disabled={updateTaskMutation.isPending}>
-                    저장
-                  </Button>
-                </>
-              ) : (
-                <Button variant="outline" size="sm" onClick={startEdit}>
-                  편집
-                </Button>
-              )}
+                )}
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </DialogContent>
     </Dialog>

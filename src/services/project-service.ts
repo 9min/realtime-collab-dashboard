@@ -227,6 +227,30 @@ export async function inviteMember(
   return { data, error: null }
 }
 
+// 멤버 역할 변경
+export async function updateMemberRole(
+  supabase: Client,
+  memberId: string,
+  role: 'admin' | 'member' | 'viewer',
+): Promise<ServiceResult<ProjectMember>> {
+  const { data, error } = await supabase
+    .from('project_members')
+    .update({ role })
+    .eq('id', memberId)
+    .select('*')
+    .returns<ProjectMember[]>()
+    .single()
+
+  if (error || !data) {
+    return {
+      data: null,
+      error: { code: error?.code ?? 'UNKNOWN', message: error?.message ?? '역할 변경 실패' },
+    }
+  }
+
+  return { data, error: null }
+}
+
 // 멤버 제거
 export async function removeMember(
   supabase: Client,

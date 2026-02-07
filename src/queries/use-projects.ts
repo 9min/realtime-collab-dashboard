@@ -12,6 +12,7 @@ import {
   deleteProject,
   getProjectMembers,
   inviteMember,
+  updateMemberRole,
   removeMember,
 } from '@/services/project-service'
 import type { InsertTables } from '@/types/database'
@@ -152,6 +153,27 @@ export function useInviteMember(projectId: string) {
     },
     onError: (error) => {
       toast.error(error.message || '멤버 초대에 실패했습니다')
+    },
+  })
+}
+
+// 멤버 역할 변경
+export function useUpdateMemberRole(projectId: string) {
+  const supabase = useSupabase()
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: async ({ memberId, role }: { memberId: string; role: 'admin' | 'member' | 'viewer' }) => {
+      const result = await updateMemberRole(supabase, memberId, role)
+      if (result.error) throw new Error(result.error.message)
+      return result.data
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: projectKeys.members(projectId) })
+      toast.success('역할이 변경되었습니다')
+    },
+    onError: () => {
+      toast.error('역할 변경에 실패했습니다')
     },
   })
 }

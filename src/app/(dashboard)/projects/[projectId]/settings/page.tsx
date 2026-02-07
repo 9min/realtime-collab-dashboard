@@ -13,7 +13,7 @@ import { Card } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { useAuth } from '@/hooks/use-auth'
-import { useProject, useProjectMembers, useInviteMember, useRemoveMember, useUpdateProject, useDeleteProject } from '@/queries/use-projects'
+import { useProject, useProjectMembers, useInviteMember, useUpdateMemberRole, useRemoveMember, useUpdateProject, useDeleteProject } from '@/queries/use-projects'
 import { MEMBER_ROLE } from '@/lib/constants'
 import type { MemberRole } from '@/types/common'
 
@@ -43,6 +43,7 @@ export default function ProjectSettingsPage({ params }: ProjectSettingsPageProps
   const { data: project, isLoading: projectLoading, isError: projectError } = useProject(projectId)
   const { data: members, isLoading: membersLoading, isError: membersError } = useProjectMembers(projectId)
   const inviteMutation = useInviteMember(projectId)
+  const updateRoleMutation = useUpdateMemberRole(projectId)
   const removeMutation = useRemoveMember(projectId)
   const updateMutation = useUpdateProject(projectId)
   const deleteMutation = useDeleteProject()
@@ -223,7 +224,9 @@ export default function ProjectSettingsPage({ params }: ProjectSettingsPageProps
               const profile = member.profiles
               const roleConfig = ROLE_CONFIG[member.role as keyof typeof ROLE_CONFIG]
               const isCurrentUser = member.user_id === user?.id
-              const canRemove = isOwnerOrAdmin && member.role !== MEMBER_ROLE.OWNER && !isCurrentUser
+              const isOwner = member.role === MEMBER_ROLE.OWNER
+              const canChangeRole = isOwnerOrAdmin && !isOwner && !isCurrentUser
+              const canRemove = isOwnerOrAdmin && !isOwner && !isCurrentUser
 
               return (
                 <div key={member.id} className="flex items-center gap-3 py-3">
@@ -242,9 +245,32 @@ export default function ProjectSettingsPage({ params }: ProjectSettingsPageProps
                     </p>
                     <p className="text-muted-foreground text-xs">{profile?.email}</p>
                   </div>
-                  <Badge variant={roleConfig?.variant ?? 'outline'}>
-                    {roleConfig?.label ?? member.role}
-                  </Badge>
+                  {canChangeRole ? (
+                    <Select
+                      value={member.role}
+                      onValueChange={(role) =>
+                        updateRoleMutation.mutate({
+                          memberId: member.id,
+                          role: role as 'admin' | 'member' | 'viewer',
+                        })
+                      }
+                      disabled={updateRoleMutation.isPending}
+                    >
+                      <SelectTrigger className="w-28 h-8 text-xs">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value={MEMBER_ROLE.ADMIN}>관리자</SelectItem>
+                        <SelectItem value={MEMBER_ROLE.MEMBER}>멤버</SelectItem>
+                        <SelectItem value={MEMBER_ROLE.VIEWER}>뷰어</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  ) : (
+                    <Badge variant={roleConfig?.variant ?? 'outline'}>
+                      {roleConfig?.icon && <roleConfig.icon className="mr-1 h-3 w-3" />}
+                      {roleConfig?.label ?? member.role}
+                    </Badge>
+                  )}
                   {canRemove && (
                     <Button
                       variant="ghost"

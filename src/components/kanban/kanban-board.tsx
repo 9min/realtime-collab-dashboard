@@ -140,6 +140,7 @@ export function KanbanBoard({ projectId }: KanbanBoardProps) {
         onOpenChange={(open) => {
           if (!open) setSelectedTask(null)
         }}
+        canEdit={canEdit}
       />
     </>
   )
