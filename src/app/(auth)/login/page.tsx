@@ -14,6 +14,7 @@ const ERROR_MESSAGES: Record<string, string> = {
 export default function LoginPage() {
   const searchParams = useSearchParams()
   const errorCode = searchParams.get('error')
+  const errorDetail = searchParams.get('detail')
   const [isLoading, setIsLoading] = useState<'github' | 'google' | null>(null)
 
   const handleOAuthLogin = async (provider: 'github' | 'google') => {
@@ -40,9 +41,12 @@ export default function LoginPage() {
       </CardHeader>
       <CardContent className="flex flex-col gap-3">
         {errorCode && (
-          <p className="bg-destructive/10 text-destructive rounded-md p-3 text-center text-sm">
-            {ERROR_MESSAGES[errorCode] ?? '알 수 없는 에러가 발생했습니다.'}
-          </p>
+          <div className="bg-destructive/10 text-destructive rounded-md p-3 text-center text-sm">
+            <p>{ERROR_MESSAGES[errorCode] ?? '알 수 없는 에러가 발생했습니다.'}</p>
+            {errorDetail && (
+              <p className="mt-1 text-xs opacity-75">{errorDetail}</p>
+            )}
+          </div>
         )}
 
         <Button
