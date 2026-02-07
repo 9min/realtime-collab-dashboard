@@ -46,3 +46,12 @@ next-env.d.ts
 
 # supabase
 supabase/.temp/
+
+# claude code
+.claude/
+
+# pdca snapshots
+docs/.pdca-snapshots/
+
+# windows null device artifact
+nul
