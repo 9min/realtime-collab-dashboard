@@ -22,6 +22,7 @@ interface KanbanColumnProps {
   onAddTask: (columnId: string) => void
   onTaskClick: (task: Tables<'tasks'>) => void
   onDeleteColumn: (columnId: string) => void
+  canEdit: boolean
 }
 
 export function KanbanColumn({
@@ -30,6 +31,7 @@ export function KanbanColumn({
   onAddTask,
   onTaskClick,
   onDeleteColumn,
+  canEdit,
 }: KanbanColumnProps) {
   return (
     <div className="bg-muted/50 flex h-full w-72 shrink-0 flex-col rounded-lg border">
@@ -41,27 +43,29 @@ export function KanbanColumn({
             {tasks.length}
           </span>
         </div>
-        <div className="flex items-center gap-1">
-          <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => onAddTask(column.id)}>
-            <Plus className="h-4 w-4" />
-          </Button>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="h-7 w-7">
-                <MoreHorizontal className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem
-                className="text-destructive"
-                onClick={() => onDeleteColumn(column.id)}
-              >
-                <Trash2 className="mr-2 h-4 w-4" />
-                컬럼 삭제
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
+        {canEdit && (
+          <div className="flex items-center gap-1">
+            <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => onAddTask(column.id)}>
+              <Plus className="h-4 w-4" />
+            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon" className="h-7 w-7">
+                  <MoreHorizontal className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem
+                  className="text-destructive"
+                  onClick={() => onDeleteColumn(column.id)}
+                >
+                  <Trash2 className="mr-2 h-4 w-4" />
+                  컬럼 삭제
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+        )}
       </div>
 
       {/* 태스크 목록 (드롭 영역) */}

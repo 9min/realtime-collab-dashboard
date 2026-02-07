@@ -4,7 +4,10 @@ import { usePathname, useRouter } from 'next/navigation'
 import { FolderKanban, LayoutDashboard, Settings, PanelLeftClose, PanelLeft } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
+import { useAuth } from '@/hooks/use-auth'
+import { MEMBER_ROLE } from '@/lib/constants'
 import { cn } from '@/lib/utils'
+import { useProjectMembers } from '@/queries/use-projects'
 import { useUiStore } from '@/stores/ui-store'
 
 const NAV_ITEMS = [
@@ -17,18 +20,26 @@ interface SidebarProps {
 }
 
 export function Sidebar({ projectId }: SidebarProps) {
+  const { user } = useAuth()
   const router = useRouter()
   const pathname = usePathname()
   const { isSidebarOpen, toggleSidebar } = useUiStore()
+  const { data: members } = useProjectMembers(projectId ?? '')
+
+  // 뷰어는 설정 메뉴 숨김
+  const currentRole = members?.find((m) => m.user_id === user?.id)?.role
+  const isViewer = currentRole === MEMBER_ROLE.VIEWER
 
   // 프로젝트 컨텍스트가 있으면 프로젝트 내부 네비게이션 표시
-  const projectNavItems = projectId
+  const baseProjectNav = projectId
     ? [
         { label: '대시보드', href: `/projects/${projectId}`, icon: LayoutDashboard },
         { label: '칸반 보드', href: `/projects/${projectId}/board`, icon: FolderKanban },
-        { label: '설정', href: `/projects/${projectId}/settings`, icon: Settings },
       ]
     : []
+  const projectNavItems = projectId && !isViewer
+    ? [...baseProjectNav, { label: '설정', href: `/projects/${projectId}/settings`, icon: Settings }]
+    : baseProjectNav
 
   const allItems = [...NAV_ITEMS, ...projectNavItems]
 

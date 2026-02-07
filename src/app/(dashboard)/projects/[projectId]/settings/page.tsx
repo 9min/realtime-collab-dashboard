@@ -40,8 +40,8 @@ interface ProjectSettingsPageProps {
 export default function ProjectSettingsPage({ params }: ProjectSettingsPageProps) {
   const { projectId } = use(params)
   const { user } = useAuth()
-  const { data: project } = useProject(projectId)
-  const { data: members, isLoading: membersLoading } = useProjectMembers(projectId)
+  const { data: project, isLoading: projectLoading, isError: projectError } = useProject(projectId)
+  const { data: members, isLoading: membersLoading, isError: membersError } = useProjectMembers(projectId)
   const inviteMutation = useInviteMember(projectId)
   const removeMutation = useRemoveMember(projectId)
   const updateMutation = useUpdateProject(projectId)
@@ -85,6 +85,43 @@ export default function ProjectSettingsPage({ params }: ProjectSettingsPageProps
     updateMutation.mutate(
       { name: projectName, description: projectDescription || null },
       { onSuccess: () => setIsEditing(false) },
+    )
+  }
+
+  // 로딩 중
+  if (projectLoading || membersLoading) {
+    return (
+      <div className="space-y-8 max-w-2xl">
+        <div>
+          <h2 className="text-2xl font-bold">프로젝트 설정</h2>
+          <p className="text-muted-foreground mt-1">프로젝트 정보 수정 및 멤버 관리</p>
+        </div>
+        <div className="rounded-xl border p-6 space-y-3">
+          <div className="bg-muted h-6 w-32 animate-pulse rounded" />
+          <div className="bg-muted h-10 w-full animate-pulse rounded" />
+        </div>
+        <div className="rounded-xl border p-6 space-y-3">
+          <div className="bg-muted h-6 w-24 animate-pulse rounded" />
+          {Array.from({ length: 3 }).map((_, i) => (
+            <div key={i} className="bg-muted h-14 animate-pulse rounded" />
+          ))}
+        </div>
+      </div>
+    )
+  }
+
+  // 에러
+  if (projectError || membersError) {
+    return (
+      <div className="space-y-8 max-w-2xl">
+        <div>
+          <h2 className="text-2xl font-bold">프로젝트 설정</h2>
+          <p className="text-muted-foreground mt-1">프로젝트 정보 수정 및 멤버 관리</p>
+        </div>
+        <div className="rounded-xl border bg-destructive/10 p-6">
+          <p className="text-destructive">프로젝트 설정을 불러오는데 실패했습니다. 페이지를 새로고침해주세요.</p>
+        </div>
+      </div>
     )
   }
 

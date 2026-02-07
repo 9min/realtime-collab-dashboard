@@ -6,27 +6,36 @@ import { ArrowLeft, LayoutDashboard, Columns3, Settings } from 'lucide-react'
 
 import { OnlineUsers } from '@/components/presence/online-users'
 import { Button } from '@/components/ui/button'
-import { usePresence } from '@/hooks/use-presence'
-import { useProject } from '@/queries/use-projects'
+import { useAuth } from '@/hooks/use-auth'
+import { MEMBER_ROLE } from '@/lib/constants'
 import { cn } from '@/lib/utils'
+import { usePresence } from '@/hooks/use-presence'
+import { useProject, useProjectMembers } from '@/queries/use-projects'
 
 interface ProjectLayoutProps {
   children: ReactNode
   params: Promise<{ projectId: string }>
 }
 
-const NAV_ITEMS = [
+const ALL_NAV_ITEMS = [
   { label: '대시보드', href: '', icon: LayoutDashboard },
   { label: '칸반 보드', href: '/board', icon: Columns3 },
-  { label: '설정', href: '/settings', icon: Settings },
+  { label: '설정', href: '/settings', icon: Settings, adminOnly: true },
 ] as const
 
 export default function ProjectLayout({ children, params }: ProjectLayoutProps) {
   const { projectId } = use(params)
+  const { user } = useAuth()
   const router = useRouter()
   const pathname = usePathname()
   const { data: project, isLoading } = useProject(projectId)
+  const { data: members } = useProjectMembers(projectId)
   const { onlineUsers } = usePresence(projectId)
+
+  // 뷰어는 설정 탭 숨김
+  const currentRole = members?.find((m) => m.user_id === user?.id)?.role
+  const isViewer = currentRole === MEMBER_ROLE.VIEWER
+  const navItems = ALL_NAV_ITEMS.filter((item) => !('adminOnly' in item && item.adminOnly && isViewer))
 
   const basePath = `/projects/${projectId}`
 
@@ -60,7 +69,7 @@ export default function ProjectLayout({ children, params }: ProjectLayoutProps) 
 
       {/* 서브 네비게이션 */}
       <nav className="border-border flex gap-1 border-b">
-        {NAV_ITEMS.map(({ label, href, icon: Icon }) => {
+        {navItems.map(({ label, href, icon: Icon }) => {
           const fullPath = `${basePath}${href}`
           const isActive = pathname === fullPath
 

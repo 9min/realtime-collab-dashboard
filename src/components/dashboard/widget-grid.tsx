@@ -5,8 +5,10 @@ import { DragDropContext, Droppable, Draggable, type DropResult } from '@hello-p
 import { Plus, Pencil, Check } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
-import { DEFAULT_DASHBOARD_LAYOUT } from '@/lib/constants'
+import { useAuth } from '@/hooks/use-auth'
+import { DEFAULT_DASHBOARD_LAYOUT, MEMBER_ROLE } from '@/lib/constants'
 import { useDashboardLayout, useSaveDashboardLayout } from '@/queries/use-dashboard-layout'
+import { useProjectMembers } from '@/queries/use-projects'
 import { useDashboardStore } from '@/stores/dashboard-store'
 import type { WidgetType } from '@/types/common'
 import type { WidgetLayoutItem } from '@/types/dashboard'
@@ -20,10 +22,16 @@ interface WidgetGridProps {
 }
 
 export function WidgetGrid({ projectId }: WidgetGridProps) {
+  const { user } = useAuth()
   const { data: savedLayout, isLoading } = useDashboardLayout(projectId)
+  const { data: members } = useProjectMembers(projectId)
   const saveMutation = useSaveDashboardLayout(projectId)
 
   const { isEditMode, toggleEditMode, isAddWidgetOpen, setAddWidgetOpen } = useDashboardStore()
+
+  // 뷰어는 편집 불가
+  const currentRole = members?.find((m) => m.user_id === user?.id)?.role
+  const canEdit = currentRole !== MEMBER_ROLE.VIEWER
 
   // 현재 레이아웃: 저장된 값 또는 기본값
   const layout = useMemo<WidgetLayoutItem[]>(
@@ -112,32 +120,34 @@ export function WidgetGrid({ projectId }: WidgetGridProps) {
 
   return (
     <div className="flex flex-col gap-4">
-      {/* 툴바 */}
-      <div className="flex items-center justify-end gap-2">
-        {isEditMode && (
-          <Button variant="outline" size="sm" onClick={() => setAddWidgetOpen(true)}>
-            <Plus className="mr-1 h-4 w-4" />
-            위젯 추가
-          </Button>
-        )}
-        <Button
-          variant={isEditMode ? 'default' : 'outline'}
-          size="sm"
-          onClick={toggleEditMode}
-        >
-          {isEditMode ? (
-            <>
-              <Check className="mr-1 h-4 w-4" />
-              완료
-            </>
-          ) : (
-            <>
-              <Pencil className="mr-1 h-4 w-4" />
-              편집
-            </>
+      {/* 툴바 — 뷰어에게 숨김 */}
+      {canEdit && (
+        <div className="flex items-center justify-end gap-2">
+          {isEditMode && (
+            <Button variant="outline" size="sm" onClick={() => setAddWidgetOpen(true)}>
+              <Plus className="mr-1 h-4 w-4" />
+              위젯 추가
+            </Button>
           )}
-        </Button>
-      </div>
+          <Button
+            variant={isEditMode ? 'default' : 'outline'}
+            size="sm"
+            onClick={toggleEditMode}
+          >
+            {isEditMode ? (
+              <>
+                <Check className="mr-1 h-4 w-4" />
+                완료
+              </>
+            ) : (
+              <>
+                <Pencil className="mr-1 h-4 w-4" />
+                편집
+              </>
+            )}
+          </Button>
+        </div>
+      )}
 
       {/* 위젯 그리드 */}
       {layout.length === 0 ? (
