@@ -61,7 +61,7 @@ export function NotificationBell() {
           )}
         </Button>
       </PopoverTrigger>
-      <PopoverContent align="end" className="p-0">
+      <PopoverContent align="end" sideOffset={8} className="w-auto overflow-hidden p-0">
         <NotificationList
           notifications={notifications ?? []}
           isLoading={isLoading}
