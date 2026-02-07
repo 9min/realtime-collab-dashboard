@@ -63,14 +63,12 @@ export function EditProjectDialog({ project, open, onOpenChange }: EditProjectDi
   const onSubmit = async (data: EditProjectForm) => {
     if (!project) return
 
-    const result = await updateProject.mutateAsync({
+    await updateProject.mutateAsync({
       name: data.name,
       description: data.description ?? null,
     })
 
-    if (result.data) {
-      onOpenChange(false)
-    }
+    onOpenChange(false)
   }
 
   return (

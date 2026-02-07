@@ -4,6 +4,7 @@ import { Geist, Geist_Mono } from 'next/font/google'
 import { QueryProvider } from '@/components/providers/query-provider'
 import { SupabaseProvider } from '@/components/providers/supabase-provider'
 import { ThemeProvider } from '@/components/providers/theme-provider'
+import { Toaster } from '@/components/ui/sonner'
 
 import './globals.css'
 
@@ -35,6 +36,7 @@ export default function RootLayout({
           <QueryProvider>
             <SupabaseProvider>{children}</SupabaseProvider>
           </QueryProvider>
+          <Toaster />
         </ThemeProvider>
       </body>
     </html>

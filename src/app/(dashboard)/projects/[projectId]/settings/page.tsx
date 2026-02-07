@@ -1,9 +1,251 @@
-// TODO: F2 Project Management 구현 시 프로젝트 설정 UI 추가
-export default function ProjectSettingsPage() {
+'use client'
+
+import { use, useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { z } from 'zod'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { Trash2, UserPlus, Shield, Crown } from 'lucide-react'
+
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Card } from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { useAuth } from '@/hooks/use-auth'
+import { useProject, useProjectMembers, useInviteMember, useRemoveMember, useUpdateProject, useDeleteProject } from '@/queries/use-projects'
+import { MEMBER_ROLE } from '@/lib/constants'
+import type { MemberRole } from '@/types/common'
+
+// 초대 폼 스키마
+const inviteSchema = z.object({
+  email: z.string().email('유효한 이메일을 입력해주세요'),
+  role: z.string(),
+})
+
+type InviteFormData = z.infer<typeof inviteSchema>
+
+// 역할별 아이콘/라벨
+const ROLE_CONFIG = {
+  [MEMBER_ROLE.OWNER]: { label: '소유자', icon: Crown, variant: 'default' as const },
+  [MEMBER_ROLE.ADMIN]: { label: '관리자', icon: Shield, variant: 'secondary' as const },
+  [MEMBER_ROLE.MEMBER]: { label: '멤버', icon: null, variant: 'outline' as const },
+  [MEMBER_ROLE.VIEWER]: { label: '뷰어', icon: null, variant: 'outline' as const },
+} as const
+
+interface ProjectSettingsPageProps {
+  params: Promise<{ projectId: string }>
+}
+
+export default function ProjectSettingsPage({ params }: ProjectSettingsPageProps) {
+  const { projectId } = use(params)
+  const { user } = useAuth()
+  const { data: project } = useProject(projectId)
+  const { data: members, isLoading: membersLoading } = useProjectMembers(projectId)
+  const inviteMutation = useInviteMember(projectId)
+  const removeMutation = useRemoveMember(projectId)
+  const updateMutation = useUpdateProject(projectId)
+  const deleteMutation = useDeleteProject()
+
+  const [isEditing, setIsEditing] = useState(false)
+  const [projectName, setProjectName] = useState('')
+  const [projectDescription, setProjectDescription] = useState('')
+
+  const {
+    register,
+    handleSubmit,
+    reset,
+    setValue,
+    formState: { errors },
+  } = useForm<InviteFormData>({
+    resolver: zodResolver(inviteSchema),
+    defaultValues: { email: '', role: MEMBER_ROLE.MEMBER },
+  })
+
+  // 현재 유저의 역할 확인
+  const currentMember = members?.find((m) => m.user_id === user?.id)
+  const isOwnerOrAdmin =
+    currentMember?.role === MEMBER_ROLE.OWNER || currentMember?.role === MEMBER_ROLE.ADMIN
+
+  const handleInvite = handleSubmit((data) => {
+    inviteMutation.mutate(
+      { email: data.email, role: data.role as MemberRole },
+      { onSuccess: () => reset() },
+    )
+  })
+
+  const handleEditProject = () => {
+    if (!project) return
+    setProjectName(project.name)
+    setProjectDescription(project.description ?? '')
+    setIsEditing(true)
+  }
+
+  const handleSaveProject = () => {
+    updateMutation.mutate(
+      { name: projectName, description: projectDescription || null },
+      { onSuccess: () => setIsEditing(false) },
+    )
+  }
+
   return (
-    <div>
-      <h1 className="text-2xl font-bold">프로젝트 설정</h1>
-      <p className="text-muted-foreground mt-2">멤버 관리, 프로젝트 정보 수정</p>
+    <div className="space-y-8 max-w-2xl">
+      <div>
+        <h2 className="text-2xl font-bold">프로젝트 설정</h2>
+        <p className="text-muted-foreground mt-1">프로젝트 정보 수정 및 멤버 관리</p>
+      </div>
+
+      {/* 프로젝트 정보 */}
+      <Card className="p-6 space-y-4">
+        <h3 className="text-lg font-semibold">프로젝트 정보</h3>
+        {isEditing ? (
+          <div className="space-y-3">
+            <Input
+              value={projectName}
+              onChange={(e) => setProjectName(e.target.value)}
+              placeholder="프로젝트 이름"
+            />
+            <Input
+              value={projectDescription}
+              onChange={(e) => setProjectDescription(e.target.value)}
+              placeholder="프로젝트 설명 (선택)"
+            />
+            <div className="flex gap-2">
+              <Button onClick={handleSaveProject} disabled={updateMutation.isPending}>
+                저장
+              </Button>
+              <Button variant="outline" onClick={() => setIsEditing(false)}>
+                취소
+              </Button>
+            </div>
+          </div>
+        ) : (
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="font-medium">{project?.name}</p>
+              <p className="text-muted-foreground text-sm">{project?.description || '설명 없음'}</p>
+            </div>
+            {isOwnerOrAdmin && (
+              <Button variant="outline" size="sm" onClick={handleEditProject}>
+                수정
+              </Button>
+            )}
+          </div>
+        )}
+      </Card>
+
+      {/* 멤버 관리 */}
+      <Card className="p-6 space-y-4">
+        <h3 className="text-lg font-semibold">
+          멤버 ({members?.length ?? 0})
+        </h3>
+
+        {/* 멤버 초대 폼 */}
+        {isOwnerOrAdmin && (
+          <form onSubmit={handleInvite} className="flex gap-2">
+            <div className="flex-1">
+              <Input
+                {...register('email')}
+                type="email"
+                placeholder="이메일로 초대"
+              />
+              {errors.email && (
+                <p className="text-destructive mt-1 text-xs">{errors.email.message}</p>
+              )}
+            </div>
+            <Select
+              defaultValue={MEMBER_ROLE.MEMBER}
+              onValueChange={(v) => setValue('role', v)}
+            >
+              <SelectTrigger className="w-28">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value={MEMBER_ROLE.ADMIN}>관리자</SelectItem>
+                <SelectItem value={MEMBER_ROLE.MEMBER}>멤버</SelectItem>
+                <SelectItem value={MEMBER_ROLE.VIEWER}>뷰어</SelectItem>
+              </SelectContent>
+            </Select>
+            <Button type="submit" disabled={inviteMutation.isPending}>
+              <UserPlus className="mr-2 h-4 w-4" />
+              초대
+            </Button>
+          </form>
+        )}
+
+        {/* 멤버 목록 */}
+        {membersLoading ? (
+          <div className="space-y-3">
+            {Array.from({ length: 3 }).map((_, i) => (
+              <div key={i} className="bg-muted h-14 animate-pulse rounded" />
+            ))}
+          </div>
+        ) : (
+          <div className="divide-y">
+            {members?.map((member) => {
+              const profile = member.profiles
+              const roleConfig = ROLE_CONFIG[member.role as keyof typeof ROLE_CONFIG]
+              const isCurrentUser = member.user_id === user?.id
+              const canRemove = isOwnerOrAdmin && member.role !== MEMBER_ROLE.OWNER && !isCurrentUser
+
+              return (
+                <div key={member.id} className="flex items-center gap-3 py-3">
+                  <Avatar>
+                    <AvatarImage src={profile?.avatar_url ?? undefined} />
+                    <AvatarFallback>
+                      {profile?.full_name?.slice(0, 2).toUpperCase() ?? '??'}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-sm font-medium">
+                      {profile?.full_name ?? '사용자'}
+                      {isCurrentUser && (
+                        <span className="text-muted-foreground ml-1">(나)</span>
+                      )}
+                    </p>
+                    <p className="text-muted-foreground text-xs">{profile?.email}</p>
+                  </div>
+                  <Badge variant={roleConfig?.variant ?? 'outline'}>
+                    {roleConfig?.label ?? member.role}
+                  </Badge>
+                  {canRemove && (
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="text-destructive h-8 w-8"
+                      onClick={() => removeMutation.mutate(member.id)}
+                      disabled={removeMutation.isPending}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  )}
+                </div>
+              )
+            })}
+          </div>
+        )}
+      </Card>
+
+      {/* 위험 영역 */}
+      {currentMember?.role === MEMBER_ROLE.OWNER && (
+        <Card className="border-destructive/50 p-6 space-y-4">
+          <h3 className="text-destructive text-lg font-semibold">위험 영역</h3>
+          <p className="text-muted-foreground text-sm">
+            프로젝트를 삭제하면 모든 데이터(태스크, 컬럼, 멤버)가 영구 삭제됩니다.
+          </p>
+          <Button
+            variant="destructive"
+            onClick={() => {
+              if (window.confirm('정말 이 프로젝트를 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.')) {
+                deleteMutation.mutate(projectId)
+              }
+            }}
+            disabled={deleteMutation.isPending}
+          >
+            프로젝트 삭제
+          </Button>
+        </Card>
+      )}
     </div>
   )
 }

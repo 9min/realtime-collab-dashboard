@@ -48,15 +48,13 @@ export function CreateProjectDialog() {
   })
 
   const onSubmit = async (data: CreateProjectForm) => {
-    const result = await createProject.mutateAsync({
+    await createProject.mutateAsync({
       name: data.name,
       description: data.description ?? null,
     })
 
-    if (result.data) {
-      reset()
-      setOpen(false)
-    }
+    reset()
+    setOpen(false)
   }
 
   return (

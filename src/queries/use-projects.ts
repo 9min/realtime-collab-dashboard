@@ -1,6 +1,7 @@
 'use client'
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { toast } from 'sonner'
 
 import { useSupabase } from '@/components/providers/supabase-provider'
 import {
@@ -10,8 +11,11 @@ import {
   updateProject,
   deleteProject,
   getProjectMembers,
+  inviteMember,
+  removeMember,
 } from '@/services/project-service'
 import type { InsertTables } from '@/types/database'
+import type { MemberRole } from '@/types/common'
 
 // Query Key 팩토리
 export const projectKeys = {
@@ -21,7 +25,6 @@ export const projectKeys = {
 }
 
 // 내 프로젝트 목록
-// supabase 클라이언트는 싱글톤이므로 queryKey에 포함하지 않음
 export function useProjects() {
   const supabase = useSupabase()
 
@@ -58,11 +61,17 @@ export function useCreateProject() {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: (input: Pick<InsertTables<'projects'>, 'name' | 'description'>) =>
-      createProject(supabase, input),
-    onSuccess: (result) => {
+    mutationFn: async (input: Pick<InsertTables<'projects'>, 'name' | 'description'>) => {
+      const result = await createProject(supabase, input)
       if (result.error) throw new Error(result.error.message)
+      return result.data
+    },
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: projectKeys.all })
+      toast.success('프로젝트가 생성되었습니다')
+    },
+    onError: () => {
+      toast.error('프로젝트 생성에 실패했습니다')
     },
   })
 }
@@ -73,12 +82,18 @@ export function useUpdateProject(projectId: string) {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: (input: Pick<InsertTables<'projects'>, 'name' | 'description'>) =>
-      updateProject(supabase, projectId, input),
-    onSuccess: (result) => {
+    mutationFn: async (input: Pick<InsertTables<'projects'>, 'name' | 'description'>) => {
+      const result = await updateProject(supabase, projectId, input)
       if (result.error) throw new Error(result.error.message)
+      return result.data
+    },
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: projectKeys.all })
       queryClient.invalidateQueries({ queryKey: projectKeys.detail(projectId) })
+      toast.success('프로젝트가 수정되었습니다')
+    },
+    onError: () => {
+      toast.error('프로젝트 수정에 실패했습니다')
     },
   })
 }
@@ -89,9 +104,17 @@ export function useDeleteProject() {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: (projectId: string) => deleteProject(supabase, projectId),
+    mutationFn: async (projectId: string) => {
+      const result = await deleteProject(supabase, projectId)
+      if (result.error) throw new Error(result.error.message)
+      return result.data
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: projectKeys.all })
+      toast.success('프로젝트가 삭제되었습니다')
+    },
+    onError: () => {
+      toast.error('프로젝트 삭제에 실패했습니다')
     },
   })
 }
@@ -109,5 +132,47 @@ export function useProjectMembers(projectId: string) {
       return result.data
     },
     enabled: !!projectId,
+  })
+}
+
+// 멤버 초대
+export function useInviteMember(projectId: string) {
+  const supabase = useSupabase()
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: async ({ email, role }: { email: string; role: MemberRole }) => {
+      const result = await inviteMember(supabase, projectId, email, role)
+      if (result.error) throw new Error(result.error.message)
+      return result.data
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: projectKeys.members(projectId) })
+      toast.success('멤버가 초대되었습니다')
+    },
+    onError: (error) => {
+      toast.error(error.message || '멤버 초대에 실패했습니다')
+    },
+  })
+}
+
+// 멤버 제거
+export function useRemoveMember(projectId: string) {
+  const supabase = useSupabase()
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: async (memberId: string) => {
+      const result = await removeMember(supabase, memberId)
+      if (result.error) throw new Error(result.error.message)
+      return result.data
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: projectKeys.members(projectId) })
+      toast.success('멤버가 제거되었습니다')
+    },
+    onError: () => {
+      toast.error('멤버 제거에 실패했습니다')
+    },
   })
 }

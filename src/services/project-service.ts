@@ -170,3 +170,76 @@ export async function getProjectMembers(
 
   return { data, error: null }
 }
+
+// 멤버 초대 (이메일 기반)
+export async function inviteMember(
+  supabase: Client,
+  projectId: string,
+  email: string,
+  role: 'owner' | 'admin' | 'member' | 'viewer',
+): Promise<ServiceResult<ProjectMember>> {
+  // 1. 이메일로 유저 조회
+  const { data: profile, error: profileError } = await supabase
+    .from('profiles')
+    .select('id')
+    .eq('email', email)
+    .returns<Pick<Profile, 'id'>[]>()
+    .single()
+
+  if (profileError || !profile) {
+    return {
+      data: null,
+      error: { code: 'USER_NOT_FOUND', message: '해당 이메일의 사용자를 찾을 수 없습니다' },
+    }
+  }
+
+  // 2. 이미 멤버인지 확인
+  const { data: existing } = await supabase
+    .from('project_members')
+    .select('id')
+    .eq('project_id', projectId)
+    .eq('user_id', profile.id)
+    .returns<Pick<ProjectMember, 'id'>[]>()
+    .maybeSingle()
+
+  if (existing) {
+    return {
+      data: null,
+      error: { code: 'ALREADY_MEMBER', message: '이미 프로젝트 멤버입니다' },
+    }
+  }
+
+  // 3. 멤버 추가
+  const { data, error } = await supabase
+    .from('project_members')
+    .insert({ project_id: projectId, user_id: profile.id, role })
+    .select('*')
+    .returns<ProjectMember[]>()
+    .single()
+
+  if (error || !data) {
+    return {
+      data: null,
+      error: { code: error?.code ?? 'UNKNOWN', message: error?.message ?? '멤버 초대 실패' },
+    }
+  }
+
+  return { data, error: null }
+}
+
+// 멤버 제거
+export async function removeMember(
+  supabase: Client,
+  memberId: string,
+): Promise<ServiceResult<null>> {
+  const { error } = await supabase
+    .from('project_members')
+    .delete()
+    .eq('id', memberId)
+
+  if (error) {
+    return { data: null, error: { code: error.code, message: error.message } }
+  }
+
+  return { data: null, error: null }
+}
