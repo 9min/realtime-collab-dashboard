@@ -7,15 +7,18 @@ import { Plus } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useAuth } from '@/hooks/use-auth'
 import { MEMBER_ROLE } from '@/lib/constants'
+import { filterTasks } from '@/lib/task-filter'
 import { useColumns, useCreateColumn, useDeleteColumn } from '@/queries/use-columns'
 import { useProjectMembers } from '@/queries/use-projects'
 import { useTasks, useMoveTask } from '@/queries/use-tasks'
+import { useKanbanFilterStore } from '@/stores/kanban-filter-store'
 import type { Tables } from '@/types/database'
 import type { KanbanColumnWithTasks } from '@/types/kanban'
 
-import { KanbanColumn } from './kanban-column'
 import { CreateTaskForm } from './create-task-form'
+import { KanbanColumn } from './kanban-column'
 import { TaskDetailDialog } from './task-detail-dialog'
+import { TaskFilterBar } from './task-filter-bar'
 
 interface KanbanBoardProps {
   projectId: string
@@ -33,22 +36,27 @@ export function KanbanBoard({ projectId }: KanbanBoardProps) {
   // 현재 유저 역할 확인 — 뷰어는 수정 불가
   const currentRole = members?.find((m) => m.user_id === user?.id)?.role
   const canEdit = currentRole !== MEMBER_ROLE.VIEWER
+  const canDeleteAll = currentRole === MEMBER_ROLE.OWNER || currentRole === MEMBER_ROLE.ADMIN
+
+  // 필터 상태
+  const { searchText, priorities, assigneeIds, dueDateRange } = useKanbanFilterStore()
 
   // 태스크 생성 다이얼로그 상태
   const [createTaskColumnId, setCreateTaskColumnId] = useState<string | null>(null)
   // 태스크 상세 다이얼로그 상태
   const [selectedTask, setSelectedTask] = useState<Tables<'tasks'> | null>(null)
 
-  // 컬럼별 태스크 그룹핑
+  // 컬럼별 태스크 그룹핑 + 필터 적용
   const columnsWithTasks: KanbanColumnWithTasks[] = useMemo(() => {
     if (!columns || !tasks) return []
+    const filtered = filterTasks(tasks, { searchText, priorities, assigneeIds, dueDateRange })
     return columns.map((column) => ({
       ...column,
-      tasks: tasks
+      tasks: filtered
         .filter((t) => t.column_id === column.id)
         .sort((a, b) => a.position - b.position),
     }))
-  }, [columns, tasks])
+  }, [columns, tasks, searchText, priorities, assigneeIds, dueDateRange])
 
   // DnD 완료 핸들러 — 뷰어는 무시
   const handleDragEnd = useCallback(
@@ -94,6 +102,9 @@ export function KanbanBoard({ projectId }: KanbanBoardProps) {
 
   return (
     <>
+      {/* 필터 바 */}
+      <TaskFilterBar members={members ?? []} />
+
       <DragDropContext onDragEnd={handleDragEnd}>
         <div className="flex gap-4 overflow-x-auto pb-4">
           {columnsWithTasks.map((column) => (
@@ -105,6 +116,7 @@ export function KanbanBoard({ projectId }: KanbanBoardProps) {
               onTaskClick={setSelectedTask}
               onDeleteColumn={handleDeleteColumn}
               canEdit={canEdit}
+              members={members}
             />
           ))}
 
@@ -141,6 +153,7 @@ export function KanbanBoard({ projectId }: KanbanBoardProps) {
           if (!open) setSelectedTask(null)
         }}
         canEdit={canEdit}
+        canDeleteAll={canDeleteAll}
       />
     </>
   )

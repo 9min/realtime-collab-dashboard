@@ -23,6 +23,7 @@ interface KanbanColumnProps {
   onTaskClick: (task: Tables<'tasks'>) => void
   onDeleteColumn: (columnId: string) => void
   canEdit: boolean
+  members?: (Tables<'project_members'> & { profiles: Tables<'profiles'> })[]
 }
 
 export function KanbanColumn({
@@ -32,6 +33,7 @@ export function KanbanColumn({
   onTaskClick,
   onDeleteColumn,
   canEdit,
+  members,
 }: KanbanColumnProps) {
   return (
     <div className="bg-muted/50 flex h-full w-72 shrink-0 flex-col rounded-lg border">
@@ -81,7 +83,7 @@ export function KanbanColumn({
               )}
             >
               {tasks.map((task, index) => (
-                <TaskCard key={task.id} task={task} index={index} onClick={onTaskClick} />
+                <TaskCard key={task.id} task={task} index={index} onClick={onTaskClick} members={members} />
               ))}
               {provided.placeholder}
             </div>

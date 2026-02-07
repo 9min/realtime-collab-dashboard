@@ -13,6 +13,47 @@ export type Json =
 export interface Database {
   public: {
     Tables: {
+      activity_logs: {
+        Row: {
+          id: string
+          project_id: string
+          user_id: string
+          action_type: string
+          entity_type: string
+          entity_id: string
+          metadata: Json
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          project_id: string
+          user_id: string
+          action_type: string
+          entity_type: string
+          entity_id: string
+          metadata?: Json
+          created_at?: string
+        }
+        Update: {
+          metadata?: Json
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'activity_logs_project_id_fkey'
+            columns: ['project_id']
+            isOneToOne: false
+            referencedRelation: 'projects'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'activity_logs_user_id_fkey'
+            columns: ['user_id']
+            isOneToOne: false
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          },
+        ]
+      }
       profiles: {
         Row: {
           id: string
@@ -202,6 +243,53 @@ export interface Database {
           {
             foreignKeyName: 'tasks_created_by_fkey'
             columns: ['created_by']
+            isOneToOne: false
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          },
+        ]
+      }
+      task_comments: {
+        Row: {
+          id: string
+          task_id: string
+          project_id: string
+          user_id: string
+          content: string
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          task_id: string
+          project_id: string
+          user_id: string
+          content: string
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          content?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'task_comments_task_id_fkey'
+            columns: ['task_id']
+            isOneToOne: false
+            referencedRelation: 'tasks'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'task_comments_project_id_fkey'
+            columns: ['project_id']
+            isOneToOne: false
+            referencedRelation: 'projects'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'task_comments_user_id_fkey'
+            columns: ['user_id']
             isOneToOne: false
             referencedRelation: 'profiles'
             referencedColumns: ['id']

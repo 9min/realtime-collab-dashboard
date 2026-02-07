@@ -16,13 +16,17 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { useAuth } from '@/hooks/use-auth'
+import { useProjectMembers } from '@/queries/use-projects'
 import { useCreateTask, useTasks } from '@/queries/use-tasks'
 
 // 폼 스키마
+const UNASSIGNED_VALUE = '__none__'
+
 const createTaskSchema = z.object({
   title: z.string().min(1, '제목을 입력해주세요').max(100, '제목은 100자 이내'),
   description: z.string().max(500, '설명은 500자 이내').optional(),
   priority: z.enum(['low', 'medium', 'high', 'urgent']),
+  assignee_id: z.string().optional(),
   due_date: z.string().optional(),
 })
 
@@ -39,6 +43,7 @@ export function CreateTaskForm({ projectId, columnId, open, onOpenChange }: Crea
   const { user } = useAuth()
   const createTaskMutation = useCreateTask(projectId)
   const { data: tasks } = useTasks(projectId)
+  const { data: members } = useProjectMembers(projectId)
 
   const {
     register,
@@ -52,6 +57,7 @@ export function CreateTaskForm({ projectId, columnId, open, onOpenChange }: Crea
       title: '',
       description: '',
       priority: 'medium',
+      assignee_id: '',
       due_date: '',
     },
   })
@@ -70,6 +76,7 @@ export function CreateTaskForm({ projectId, columnId, open, onOpenChange }: Crea
         title: data.title,
         description: data.description || undefined,
         priority: data.priority,
+        assignee_id: data.assignee_id || undefined,
         position: nextPosition,
         due_date: data.due_date || undefined,
         created_by: user.id,
@@ -120,6 +127,30 @@ export function CreateTaskForm({ projectId, columnId, open, onOpenChange }: Crea
                   <SelectItem value="medium">보통</SelectItem>
                   <SelectItem value="high">높음</SelectItem>
                   <SelectItem value="urgent">긴급</SelectItem>
+                </SelectContent>
+              </Select>
+            )}
+          />
+
+          {/* 담당자 */}
+          <Controller
+            control={control}
+            name="assignee_id"
+            render={({ field }) => (
+              <Select
+                value={field.value || UNASSIGNED_VALUE}
+                onValueChange={(v) => field.onChange(v === UNASSIGNED_VALUE ? '' : v)}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="담당자 (선택)" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value={UNASSIGNED_VALUE}>미배정</SelectItem>
+                  {members?.map((m) => (
+                    <SelectItem key={m.user_id} value={m.user_id}>
+                      {m.profiles.full_name ?? m.profiles.email}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             )}

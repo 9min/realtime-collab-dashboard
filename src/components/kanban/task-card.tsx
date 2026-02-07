@@ -3,8 +3,10 @@
 import { Draggable } from '@hello-pangea/dnd'
 import { Calendar, GripVertical } from 'lucide-react'
 
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import { cn } from '@/lib/utils'
 import type { Tables } from '@/types/database'
 
@@ -22,13 +24,23 @@ const PRIORITY_LABELS = {
   urgent: '긴급',
 } as const
 
+interface MemberProfile {
+  user_id: string
+  profiles: Tables<'profiles'>
+}
+
 interface TaskCardProps {
   task: Tables<'tasks'>
   index: number
   onClick: (task: Tables<'tasks'>) => void
+  members?: MemberProfile[]
 }
 
-export function TaskCard({ task, index, onClick }: TaskCardProps) {
+export function TaskCard({ task, index, onClick, members }: TaskCardProps) {
+  const assignee = task.assignee_id
+    ? members?.find((m) => m.user_id === task.assignee_id)?.profiles
+    : null
+
   return (
     <Draggable draggableId={task.id} index={index}>
       {(provided, snapshot) => (
@@ -62,6 +74,23 @@ export function TaskCard({ task, index, onClick }: TaskCardProps) {
                     day: 'numeric',
                   })}
                 </span>
+              )}
+              {assignee && (
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Avatar className="ml-auto h-6 w-6">
+                        <AvatarImage src={assignee.avatar_url ?? undefined} />
+                        <AvatarFallback className="text-[10px]">
+                          {(assignee.full_name ?? assignee.email).charAt(0).toUpperCase()}
+                        </AvatarFallback>
+                      </Avatar>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>{assignee.full_name ?? assignee.email}</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
               )}
             </CardContent>
           </Card>

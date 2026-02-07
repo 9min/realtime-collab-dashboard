@@ -6,8 +6,10 @@ import { toast } from 'sonner'
 
 import { useSupabase } from '@/components/providers/supabase-provider'
 import { CHANNEL_PREFIX } from '@/lib/constants'
+import { activityKeys } from '@/queries/use-activity-logs'
 import { chartKeys } from '@/queries/use-chart-data'
 import { columnKeys } from '@/queries/use-columns'
+import { commentKeys } from '@/queries/use-comments'
 import { taskKeys } from '@/queries/use-tasks'
 import { useAuth } from '@/hooks/use-auth'
 
@@ -55,6 +57,7 @@ export function useRealtimeSubscription(projectId: string) {
             queryClient.invalidateQueries({ queryKey: chartKeys.taskStatus(projectId) })
             queryClient.invalidateQueries({ queryKey: chartKeys.weeklyProgress(projectId) })
             queryClient.invalidateQueries({ queryKey: chartKeys.burndown(projectId) })
+            queryClient.invalidateQueries({ queryKey: activityKeys.list(projectId) })
 
             // 다른 사용자의 변경인 경우 Toast 알림
             const record = payload.new as Record<string, unknown> | undefined
@@ -77,6 +80,7 @@ export function useRealtimeSubscription(projectId: string) {
           },
           () => {
             queryClient.invalidateQueries({ queryKey: columnKeys.list(projectId) })
+            queryClient.invalidateQueries({ queryKey: activityKeys.list(projectId) })
           },
         )
         // project_members 변경 감지
@@ -90,6 +94,38 @@ export function useRealtimeSubscription(projectId: string) {
           },
           () => {
             queryClient.invalidateQueries({ queryKey: ['projects', projectId, 'members'] })
+            queryClient.invalidateQueries({ queryKey: activityKeys.list(projectId) })
+          },
+        )
+        // activity_logs 변경 감지
+        .on(
+          'postgres_changes',
+          {
+            event: 'INSERT',
+            schema: 'public',
+            table: 'activity_logs',
+            filter: `project_id=eq.${projectId}`,
+          },
+          () => {
+            queryClient.invalidateQueries({ queryKey: activityKeys.list(projectId) })
+          },
+        )
+        // task_comments 변경 감지
+        .on(
+          'postgres_changes',
+          {
+            event: '*',
+            schema: 'public',
+            table: 'task_comments',
+            filter: `project_id=eq.${projectId}`,
+          },
+          (payload) => {
+            // 변경된 댓글의 task_id에 해당하는 캐시를 무효화
+            const record = (payload.new ?? payload.old) as Record<string, unknown> | undefined
+            if (record && typeof record['task_id'] === 'string') {
+              queryClient.invalidateQueries({ queryKey: commentKeys.list(record['task_id'] as string) })
+            }
+            queryClient.invalidateQueries({ queryKey: activityKeys.list(projectId) })
           },
         )
         .subscribe()

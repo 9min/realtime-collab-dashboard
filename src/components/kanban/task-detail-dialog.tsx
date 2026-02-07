@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Calendar, Trash2 } from 'lucide-react'
+import { Calendar, Trash2, User } from 'lucide-react'
 
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -16,9 +16,14 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Separator } from '@/components/ui/separator'
+import { useProjectMembers } from '@/queries/use-projects'
 import { useUpdateTask, useDeleteTask } from '@/queries/use-tasks'
 import { cn } from '@/lib/utils'
 import type { Tables } from '@/types/database'
+
+const UNASSIGNED_VALUE = '__none__'
+
+import { CommentSection } from './comment-section'
 
 const PRIORITY_STYLES = {
   low: 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300',
@@ -40,25 +45,33 @@ interface TaskDetailDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
   canEdit?: boolean
+  canDeleteAll?: boolean
 }
 
-export function TaskDetailDialog({ projectId, task, open, onOpenChange, canEdit = true }: TaskDetailDialogProps) {
+export function TaskDetailDialog({ projectId, task, open, onOpenChange, canEdit = true, canDeleteAll = false }: TaskDetailDialogProps) {
   const updateTaskMutation = useUpdateTask(projectId)
   const deleteTaskMutation = useDeleteTask(projectId)
+  const { data: members } = useProjectMembers(projectId)
 
   // 편집 모드 상태
   const [isEditing, setIsEditing] = useState(false)
   const [editTitle, setEditTitle] = useState('')
   const [editDescription, setEditDescription] = useState('')
   const [editPriority, setEditPriority] = useState<Tables<'tasks'>['priority']>('medium')
+  const [editAssigneeId, setEditAssigneeId] = useState('')
   const [editDueDate, setEditDueDate] = useState('')
 
   if (!task) return null
+
+  const assigneeProfile = task.assignee_id
+    ? members?.find((m) => m.user_id === task.assignee_id)?.profiles
+    : null
 
   const startEdit = () => {
     setEditTitle(task.title)
     setEditDescription(task.description ?? '')
     setEditPriority(task.priority)
+    setEditAssigneeId(task.assignee_id ?? '')
     setEditDueDate(task.due_date ?? '')
     setIsEditing(true)
   }
@@ -71,6 +84,7 @@ export function TaskDetailDialog({ projectId, task, open, onOpenChange, canEdit 
           title: editTitle,
           description: editDescription || undefined,
           priority: editPriority,
+          assignee_id: editAssigneeId || null,
           due_date: editDueDate || undefined,
         },
       },
@@ -91,7 +105,7 @@ export function TaskDetailDialog({ projectId, task, open, onOpenChange, canEdit 
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-lg">
+      <DialogContent className="sm:max-w-xl">
         <DialogHeader>
           <DialogTitle className="pr-8">
             {isEditing ? (
@@ -127,6 +141,36 @@ export function TaskDetailDialog({ projectId, task, open, onOpenChange, canEdit 
               <Badge variant="secondary" className={cn('text-xs', PRIORITY_STYLES[task.priority])}>
                 {PRIORITY_LABELS[task.priority]}
               </Badge>
+            )}
+          </div>
+
+          {/* 담당자 */}
+          <div className="flex items-center gap-2">
+            <span className="text-muted-foreground w-16 text-sm">담당자</span>
+            {isEditing ? (
+              <Select
+                value={editAssigneeId || UNASSIGNED_VALUE}
+                onValueChange={(v) => setEditAssigneeId(v === UNASSIGNED_VALUE ? '' : v)}
+              >
+                <SelectTrigger className="w-40">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value={UNASSIGNED_VALUE}>미배정</SelectItem>
+                  {members?.map((m) => (
+                    <SelectItem key={m.user_id} value={m.user_id}>
+                      {m.profiles.full_name ?? m.profiles.email}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            ) : assigneeProfile ? (
+              <span className="flex items-center gap-1 text-sm">
+                <User className="h-4 w-4" />
+                {assigneeProfile.full_name ?? assigneeProfile.email}
+              </span>
+            ) : (
+              <span className="text-muted-foreground text-sm">미배정</span>
             )}
           </div>
 
@@ -168,6 +212,16 @@ export function TaskDetailDialog({ projectId, task, open, onOpenChange, canEdit 
               </p>
             )}
           </div>
+
+          <Separator />
+
+          {/* 댓글 섹션 */}
+          <CommentSection
+            taskId={task.id}
+            projectId={projectId}
+            canComment={canEdit}
+            canDeleteAll={canDeleteAll}
+          />
 
           <Separator />
 
