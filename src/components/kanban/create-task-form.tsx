@@ -25,7 +25,7 @@ const UNASSIGNED_VALUE = '__none__'
 
 const createTaskSchema = z.object({
   title: z.string().min(1, '제목을 입력해주세요').max(100, '제목은 100자 이내'),
-  description: z.string().max(500, '설명은 500자 이내').optional(),
+  description: z.string().max(2000, '설명은 2000자 이내').optional(),
   priority: z.enum(['low', 'medium', 'high', 'urgent']),
   assignee_id: z.string().optional(),
   due_date: z.string().optional(),
