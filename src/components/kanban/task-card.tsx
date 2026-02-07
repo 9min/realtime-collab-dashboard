@@ -1,7 +1,7 @@
 'use client'
 
 import { Draggable } from '@hello-pangea/dnd'
-import { Calendar, GripVertical } from 'lucide-react'
+import { Calendar } from 'lucide-react'
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
@@ -47,22 +47,20 @@ export function TaskCard({ task, index, onClick, members }: TaskCardProps) {
         <div
           ref={provided.innerRef}
           {...provided.draggableProps}
+          {...provided.dragHandleProps}
           className="mb-2"
         >
           <Card
             className={cn(
-              'cursor-pointer transition-shadow hover:shadow-md',
+              'cursor-grab transition-shadow hover:shadow-md active:cursor-grabbing',
               snapshot.isDragging && 'shadow-lg ring-2 ring-primary/20',
             )}
             onClick={() => onClick(task)}
           >
-            <CardHeader className="flex flex-row items-start gap-2 p-3 pb-1">
-              <div {...provided.dragHandleProps} className="mt-0.5 cursor-grab active:cursor-grabbing">
-                <GripVertical className="text-muted-foreground h-4 w-4" />
-              </div>
-              <span className="flex-1 text-sm font-medium leading-snug">{task.title}</span>
+            <CardHeader className="p-3 pb-1">
+              <span className="text-sm font-medium leading-snug">{task.title}</span>
             </CardHeader>
-            <CardContent className="flex items-center gap-2 px-3 pb-3 pt-1 pl-9">
+            <CardContent className="flex items-center gap-2 px-3 pb-3 pt-1">
               <Badge variant="secondary" className={cn('text-xs', PRIORITY_STYLES[task.priority])}>
                 {PRIORITY_LABELS[task.priority]}
               </Badge>
