@@ -29,20 +29,26 @@ interface CreateCommentInput {
   projectId: string
   userId: string
   content: string
+  mentions?: string[]
 }
 
 export async function createComment(
   supabase: Client,
   input: CreateCommentInput,
 ): Promise<ServiceResult<TaskCommentWithUser>> {
+  const insertData: Record<string, unknown> = {
+    task_id: input.taskId,
+    project_id: input.projectId,
+    user_id: input.userId,
+    content: input.content,
+  }
+  if (input.mentions && input.mentions.length > 0) {
+    insertData.mentions = input.mentions
+  }
+
   const { data, error } = await supabase
     .from('task_comments')
-    .insert({
-      task_id: input.taskId,
-      project_id: input.projectId,
-      user_id: input.userId,
-      content: input.content,
-    })
+    .insert(insertData as Database['public']['Tables']['task_comments']['Insert'])
     .select('*, profiles(*)')
     .returns<TaskCommentWithUser[]>()
     .single()

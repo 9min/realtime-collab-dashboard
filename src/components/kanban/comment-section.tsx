@@ -6,6 +6,7 @@ import { MessageSquare } from 'lucide-react'
 import { Separator } from '@/components/ui/separator'
 import { useAuth } from '@/hooks/use-auth'
 import { useComments, useCreateComment, useUpdateComment, useDeleteComment } from '@/queries/use-comments'
+import { useProjectMembers } from '@/queries/use-projects'
 
 import { CommentForm } from './comment-form'
 import { CommentItem } from './comment-item'
@@ -20,14 +21,17 @@ interface CommentSectionProps {
 export function CommentSection({ taskId, projectId, canComment, canDeleteAll }: CommentSectionProps) {
   const { user } = useAuth()
   const { data: comments, isLoading } = useComments(taskId)
+  const { data: members } = useProjectMembers(projectId)
   const createMutation = useCreateComment(taskId)
   const updateMutation = useUpdateComment(taskId)
   const deleteMutation = useDeleteComment(taskId, projectId)
 
+  const memberList = members ?? []
+
   const handleCreate = useCallback(
-    (content: string) => {
+    (content: string, mentions: string[]) => {
       if (!user) return
-      createMutation.mutate({ projectId, userId: user.id, content })
+      createMutation.mutate({ projectId, userId: user.id, content, mentions })
     },
     [user, projectId, createMutation],
   )
@@ -67,6 +71,7 @@ export function CommentSection({ taskId, projectId, canComment, canDeleteAll }: 
                 canDelete={canDeleteAll || comment.user_id === user?.id}
                 onUpdate={handleUpdate}
                 onDelete={handleDelete}
+                members={memberList}
               />
               <Separator />
             </div>
@@ -78,7 +83,7 @@ export function CommentSection({ taskId, projectId, canComment, canDeleteAll }: 
 
       {canComment && (
         <div className="mt-3">
-          <CommentForm onSubmit={handleCreate} isPending={createMutation.isPending} />
+          <CommentForm onSubmit={handleCreate} isPending={createMutation.isPending} members={memberList} />
         </div>
       )}
     </div>

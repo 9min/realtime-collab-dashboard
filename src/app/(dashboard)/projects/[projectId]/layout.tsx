@@ -2,7 +2,7 @@
 
 import { use, type ReactNode } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
-import { ArrowLeft, LayoutDashboard, Columns3, Activity, Settings } from 'lucide-react'
+import { ArrowLeft, LayoutDashboard, Columns3, Activity, GanttChart, Settings } from 'lucide-react'
 
 import { OnlineUsers } from '@/components/presence/online-users'
 import { Button } from '@/components/ui/button'
@@ -20,6 +20,7 @@ interface ProjectLayoutProps {
 const ALL_NAV_ITEMS = [
   { label: '대시보드', href: '', icon: LayoutDashboard },
   { label: '칸반 보드', href: '/board', icon: Columns3 },
+  { label: '간트 차트', href: '/gantt', icon: GanttChart },
   { label: '활동 로그', href: '/activity', icon: Activity },
   { label: '설정', href: '/settings', icon: Settings, adminOnly: true },
 ] as const

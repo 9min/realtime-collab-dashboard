@@ -14,6 +14,7 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { useAuth } from '@/hooks/use-auth'
 
+import { NotificationBell } from '../notification/notification-bell'
 import { ThemeToggle } from './theme-toggle'
 
 export function Header() {
@@ -34,6 +35,7 @@ export function Header() {
       <h2 className="text-lg font-semibold">Realtime Collab Dashboard</h2>
       <div className="flex items-center gap-2">
         <ThemeToggle />
+        <NotificationBell />
 
         {isAuthenticated && user && (
           <DropdownMenu>

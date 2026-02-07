@@ -4,16 +4,24 @@ import { useState } from 'react'
 import { Send } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
-import { Textarea } from '@/components/ui/textarea'
+import type { Tables } from '@/types/database'
+
+import { MentionAutocomplete } from './mention-autocomplete'
 
 const MAX_COMMENT_LENGTH = 2000
 
-interface CommentFormProps {
-  onSubmit: (content: string) => void
-  isPending?: boolean
+interface MemberInfo {
+  user_id: string
+  profiles: Tables<'profiles'>
 }
 
-export function CommentForm({ onSubmit, isPending = false }: CommentFormProps) {
+interface CommentFormProps {
+  onSubmit: (content: string, mentions: string[]) => void
+  isPending?: boolean
+  members?: MemberInfo[]
+}
+
+export function CommentForm({ onSubmit, isPending = false, members = [] }: CommentFormProps) {
   const [content, setContent] = useState('')
 
   const trimmed = content.trim()
@@ -21,7 +29,15 @@ export function CommentForm({ onSubmit, isPending = false }: CommentFormProps) {
 
   const handleSubmit = () => {
     if (!canSubmit) return
-    onSubmit(trimmed)
+    // @멘션 파싱
+    const mentionedIds: string[] = []
+    for (const member of members) {
+      const name = member.profiles.full_name ?? member.profiles.email
+      if (trimmed.includes(`@${name}`)) {
+        mentionedIds.push(member.user_id)
+      }
+    }
+    onSubmit(trimmed, mentionedIds)
     setContent('')
   }
 
@@ -34,14 +50,14 @@ export function CommentForm({ onSubmit, isPending = false }: CommentFormProps) {
 
   return (
     <div className="flex gap-2">
-      <Textarea
+      <MentionAutocomplete
         value={content}
-        onChange={(e) => setContent(e.target.value)}
+        onChange={setContent}
         onKeyDown={handleKeyDown}
-        placeholder="댓글을 입력하세요... (Ctrl+Enter로 전송)"
-        rows={2}
-        className="min-h-[60px] resize-none text-sm"
+        members={members}
+        placeholder="댓글을 입력하세요... (@로 멘션, Ctrl+Enter로 전송)"
         maxLength={MAX_COMMENT_LENGTH}
+        rows={2}
       />
       <Button
         size="icon"

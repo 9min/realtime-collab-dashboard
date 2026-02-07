@@ -256,6 +256,7 @@ export interface Database {
           project_id: string
           user_id: string
           content: string
+          mentions: string[] | null
           created_at: string
           updated_at: string
         }
@@ -265,11 +266,13 @@ export interface Database {
           project_id: string
           user_id: string
           content: string
+          mentions?: string[] | null
           created_at?: string
           updated_at?: string
         }
         Update: {
           content?: string
+          mentions?: string[] | null
           updated_at?: string
         }
         Relationships: [
@@ -289,6 +292,110 @@ export interface Database {
           },
           {
             foreignKeyName: 'task_comments_user_id_fkey'
+            columns: ['user_id']
+            isOneToOne: false
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          },
+        ]
+      }
+      notifications: {
+        Row: {
+          id: string
+          project_id: string
+          user_id: string
+          actor_id: string | null
+          type: string
+          title: string
+          message: string
+          entity_type: string | null
+          entity_id: string | null
+          is_read: boolean
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          project_id: string
+          user_id: string
+          actor_id?: string | null
+          type: string
+          title: string
+          message: string
+          entity_type?: string | null
+          entity_id?: string | null
+          is_read?: boolean
+          created_at?: string
+        }
+        Update: {
+          is_read?: boolean
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'notifications_project_id_fkey'
+            columns: ['project_id']
+            isOneToOne: false
+            referencedRelation: 'projects'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'notifications_user_id_fkey'
+            columns: ['user_id']
+            isOneToOne: false
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'notifications_actor_id_fkey'
+            columns: ['actor_id']
+            isOneToOne: false
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          },
+        ]
+      }
+      task_attachments: {
+        Row: {
+          id: string
+          task_id: string
+          project_id: string
+          user_id: string
+          file_name: string
+          file_path: string
+          file_size: number
+          content_type: string
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          task_id: string
+          project_id: string
+          user_id: string
+          file_name: string
+          file_path: string
+          file_size: number
+          content_type: string
+          created_at?: string
+        }
+        Update: {
+          file_name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'task_attachments_task_id_fkey'
+            columns: ['task_id']
+            isOneToOne: false
+            referencedRelation: 'tasks'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'task_attachments_project_id_fkey'
+            columns: ['project_id']
+            isOneToOne: false
+            referencedRelation: 'projects'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'task_attachments_user_id_fkey'
             columns: ['user_id']
             isOneToOne: false
             referencedRelation: 'profiles'

@@ -10,6 +10,7 @@ import { activityKeys } from '@/queries/use-activity-logs'
 import { chartKeys } from '@/queries/use-chart-data'
 import { columnKeys } from '@/queries/use-columns'
 import { commentKeys } from '@/queries/use-comments'
+import { notificationKeys } from '@/queries/use-notifications'
 import { taskKeys } from '@/queries/use-tasks'
 import { useAuth } from '@/hooks/use-auth'
 
@@ -126,6 +127,39 @@ export function useRealtimeSubscription(projectId: string) {
               queryClient.invalidateQueries({ queryKey: commentKeys.list(record['task_id'] as string) })
             }
             queryClient.invalidateQueries({ queryKey: activityKeys.list(projectId) })
+          },
+        )
+        // notifications 변경 감지 (본인 알림)
+        .on(
+          'postgres_changes',
+          {
+            event: 'INSERT',
+            schema: 'public',
+            table: 'notifications',
+            filter: `user_id=eq.${user?.id}`,
+          },
+          () => {
+            if (user?.id) {
+              queryClient.invalidateQueries({ queryKey: notificationKeys.list(user.id) })
+              queryClient.invalidateQueries({ queryKey: notificationKeys.unreadCount(user.id) })
+              toast.info('새 알림이 도착했습니다', { duration: 3000 })
+            }
+          },
+        )
+        // task_attachments 변경 감지
+        .on(
+          'postgres_changes',
+          {
+            event: '*',
+            schema: 'public',
+            table: 'task_attachments',
+            filter: `project_id=eq.${projectId}`,
+          },
+          (payload) => {
+            const record = (payload.new ?? payload.old) as Record<string, unknown> | undefined
+            if (record && typeof record['task_id'] === 'string') {
+              queryClient.invalidateQueries({ queryKey: ['attachments', record['task_id'] as string] })
+            }
           },
         )
         .subscribe()

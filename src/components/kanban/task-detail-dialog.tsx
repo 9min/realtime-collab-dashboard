@@ -7,7 +7,8 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
-import { Textarea } from '@/components/ui/textarea'
+import { MarkdownEditor } from '@/components/ui/markdown-editor'
+import { MarkdownRenderer } from '@/components/ui/markdown-renderer'
 import {
   Select,
   SelectContent,
@@ -23,6 +24,7 @@ import type { Tables } from '@/types/database'
 
 const UNASSIGNED_VALUE = '__none__'
 
+import { AttachmentSection } from './attachment-section'
 import { CommentSection } from './comment-section'
 
 const PRIORITY_STYLES = {
@@ -200,18 +202,28 @@ export function TaskDetailDialog({ projectId, task, open, onOpenChange, canEdit 
           <div>
             <span className="text-muted-foreground mb-1 block text-sm">설명</span>
             {isEditing ? (
-              <Textarea
+              <MarkdownEditor
                 value={editDescription}
-                onChange={(e) => setEditDescription(e.target.value)}
+                onChange={setEditDescription}
+                placeholder="설명을 입력하세요 (Markdown 지원)"
                 rows={4}
-                placeholder="설명을 입력하세요"
               />
+            ) : task.description ? (
+              <MarkdownRenderer content={task.description} className="text-sm" />
             ) : (
-              <p className="whitespace-pre-wrap text-sm">
-                {task.description || '설명이 없습니다'}
-              </p>
+              <p className="text-muted-foreground text-sm">설명이 없습니다</p>
             )}
           </div>
+
+          <Separator />
+
+          {/* 첨부파일 섹션 */}
+          <AttachmentSection
+            taskId={task.id}
+            projectId={projectId}
+            canUpload={canEdit}
+            canDeleteAll={canDeleteAll}
+          />
 
           <Separator />
 

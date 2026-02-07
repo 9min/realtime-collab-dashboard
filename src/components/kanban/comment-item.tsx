@@ -12,7 +12,14 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { Textarea } from '@/components/ui/textarea'
+import { parseMentionSegments } from '@/lib/mention-utils'
 import type { TaskCommentWithUser } from '@/types/comment'
+import type { Tables } from '@/types/database'
+
+interface MemberInfo {
+  user_id: string
+  profiles: Tables<'profiles'>
+}
 
 interface CommentItemProps {
   comment: TaskCommentWithUser
@@ -20,6 +27,7 @@ interface CommentItemProps {
   canDelete: boolean
   onUpdate: (commentId: string, content: string) => void
   onDelete: (commentId: string) => void
+  members?: MemberInfo[]
 }
 
 function getRelativeTime(dateString: string): string {
@@ -38,7 +46,7 @@ function getRelativeTime(dateString: string): string {
   return new Date(dateString).toLocaleDateString('ko-KR')
 }
 
-export function CommentItem({ comment, currentUserId, canDelete, onUpdate, onDelete }: CommentItemProps) {
+export function CommentItem({ comment, currentUserId, canDelete, onUpdate, onDelete, members = [] }: CommentItemProps) {
   const [isEditing, setIsEditing] = useState(false)
   const [editContent, setEditContent] = useState('')
 
@@ -145,7 +153,19 @@ export function CommentItem({ comment, currentUserId, canDelete, onUpdate, onDel
             </div>
           </div>
         ) : (
-          <p className="mt-0.5 whitespace-pre-wrap text-sm">{comment.content}</p>
+          <p className="mt-0.5 whitespace-pre-wrap text-sm">
+            {members.length > 0
+              ? parseMentionSegments(comment.content, members).map((segment, i) =>
+                  segment.type === 'mention' ? (
+                    <span key={i} className="rounded bg-blue-100 px-0.5 font-medium text-blue-700 dark:bg-blue-900/50 dark:text-blue-300">
+                      {segment.content}
+                    </span>
+                  ) : (
+                    <span key={i}>{segment.content}</span>
+                  ),
+                )
+              : comment.content}
+          </p>
         )}
       </div>
     </div>
