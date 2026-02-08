@@ -15,9 +15,9 @@ export default function LoginPage() {
   const searchParams = useSearchParams()
   const errorCode = searchParams.get('error')
   const errorDetail = searchParams.get('detail')
-  const [isLoading, setIsLoading] = useState<'github' | 'google' | null>(null)
+  const [isLoading, setIsLoading] = useState<'github' | 'google' | 'kakao' | null>(null)
 
-  const handleOAuthLogin = async (provider: 'github' | 'google') => {
+  const handleOAuthLogin = async (provider: 'github' | 'google' | 'kakao') => {
     setIsLoading(provider)
     const supabase = createBrowserClient()
 
@@ -80,6 +80,22 @@ export default function LoginPage() {
             </>
           )}
         </Button>
+
+        <Button
+          variant="outline"
+          className="w-full bg-[#FEE500] text-[#191919] hover:bg-[#FEE500]/90 hover:text-[#191919]"
+          onClick={() => handleOAuthLogin('kakao')}
+          disabled={isLoading !== null}
+        >
+          {isLoading === 'kakao' ? (
+            '리다이렉트 중...'
+          ) : (
+            <>
+              <KakaoIcon className="mr-2 h-5 w-5" />
+              Kakao로 로그인
+            </>
+          )}
+        </Button>
       </CardContent>
     </Card>
   )
@@ -114,6 +130,15 @@ function GoogleIcon({ className }: { className?: string }) {
         d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
         fill="#EA4335"
       />
+    </svg>
+  )
+}
+
+// Kakao 아이콘 (인라인 SVG - 말풍선 로고)
+function KakaoIcon({ className }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="currentColor">
+      <path d="M12 3C6.477 3 2 6.463 2 10.691c0 2.72 1.8 5.108 4.516 6.467-.158.573-.57 2.073-.652 2.393-.102.395.145.39.305.284.125-.083 1.994-1.355 2.803-1.905.657.096 1.334.147 2.028.147 5.523 0 10-3.463 10-7.386C22 6.463 17.523 3 12 3z" />
     </svg>
   )
 }

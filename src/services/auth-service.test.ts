@@ -45,6 +45,18 @@ describe('auth-service', () => {
       expect(result.data?.url).toBe(authUrl)
     })
 
+    it('Kakao OAuth URL을 반환한다', async () => {
+      const authUrl = 'https://supabase.auth/kakao'
+      const client = createMockSupabaseClient({}) as Client
+      ;(client as unknown as { auth: { signInWithOAuth: ReturnType<typeof vi.fn> } }).auth.signInWithOAuth =
+        vi.fn().mockResolvedValue({ data: { url: authUrl }, error: null })
+
+      const result = await signInWithOAuth(client, 'kakao', 'http://localhost:3000/callback')
+
+      expect(result.error).toBeNull()
+      expect(result.data?.url).toBe(authUrl)
+    })
+
     it('에러 시 AUTH_ERROR를 반환한다', async () => {
       const client = createMockSupabaseClient({}) as Client
       ;(client as unknown as { auth: { signInWithOAuth: ReturnType<typeof vi.fn> } }).auth.signInWithOAuth =

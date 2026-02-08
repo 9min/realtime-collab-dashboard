@@ -7,10 +7,10 @@ import type { Database, Tables } from '@/types/database'
 type Client = SupabaseClient<Database>
 type Profile = Tables<'profiles'>
 
-// OAuth 로그인 (GitHub / Google)
+// OAuth 로그인 (GitHub / Google / Kakao)
 export async function signInWithOAuth(
   supabase: Client,
-  provider: 'github' | 'google',
+  provider: 'github' | 'google' | 'kakao',
   redirectTo: string,
 ): Promise<ServiceResult<{ url: string }>> {
   const { data, error } = await supabase.auth.signInWithOAuth({
