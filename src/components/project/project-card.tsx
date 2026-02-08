@@ -49,7 +49,7 @@ export function ProjectCard({ project, onEdit, onDelete }: ProjectCardProps) {
 
   return (
     <Card
-      className="hover:border-primary/50 group cursor-pointer transition-colors"
+      className="hover:border-primary/50 group cursor-pointer border-l-4 border-l-blue-500 transition-all hover:shadow-md dark:border-l-blue-400"
       onClick={handleClick}
     >
       <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-2">

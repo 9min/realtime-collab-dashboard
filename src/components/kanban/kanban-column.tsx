@@ -81,9 +81,9 @@ export function KanbanColumn({
   }
 
   return (
-    <div className="bg-muted/50 flex h-full w-72 shrink-0 flex-col rounded-lg border">
+    <div className="bg-card flex h-full w-72 shrink-0 flex-col overflow-hidden rounded-lg border shadow-sm">
       {/* 컬럼 헤더 */}
-      <div className="flex items-center justify-between px-3 py-2">
+      <div className="flex items-center justify-between border-b bg-gradient-to-r from-blue-50 to-indigo-50 px-3 py-2 dark:from-blue-950/30 dark:to-indigo-950/30">
         <div className="flex min-w-0 items-center gap-2">
           {isEditing ? (
             <Input
@@ -98,7 +98,7 @@ export function KanbanColumn({
           ) : (
             <>
               <h3 className="truncate text-sm font-semibold">{column.title}</h3>
-              <span className="bg-muted text-muted-foreground shrink-0 rounded-full px-2 py-0.5 text-xs font-medium">
+              <span className="shrink-0 rounded-full bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-700 dark:bg-blue-900/50 dark:text-blue-300">
                 {tasks.length}
               </span>
             </>

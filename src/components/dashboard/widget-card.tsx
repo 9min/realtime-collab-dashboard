@@ -5,6 +5,7 @@ import { X, GripVertical } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { cn } from '@/lib/utils'
 import { WIDGET_TYPE } from '@/lib/constants'
 import type { WidgetType } from '@/types/common'
 import { WIDGET_REGISTRY } from '@/types/dashboard'
@@ -13,6 +14,13 @@ import { TaskStatusChart } from '../charts/task-status-chart'
 import { WeeklyProgressChart } from '../charts/weekly-progress-chart'
 import { BurndownChart } from '../charts/burndown-chart'
 import { MemberListWidget } from './member-list-widget'
+
+const WIDGET_ACCENT: Record<string, string> = {
+  [WIDGET_TYPE.TASK_STATUS]: 'border-t-blue-500',
+  [WIDGET_TYPE.WEEKLY_PROGRESS]: 'border-t-emerald-500',
+  [WIDGET_TYPE.BURNDOWN]: 'border-t-orange-500',
+  [WIDGET_TYPE.MEMBER_LIST]: 'border-t-violet-500',
+}
 
 interface WidgetCardProps {
   widgetId: string
@@ -35,7 +43,7 @@ export function WidgetCard({
   const title = config?.title ?? '위젯'
 
   return (
-    <Card className="flex h-full flex-col">
+    <Card className={cn('flex h-full flex-col border-t-2 shadow-sm', WIDGET_ACCENT[type])}>
       <CardHeader className="flex flex-row items-center gap-2 space-y-0 pb-2">
         {isEditMode && (
           <div {...dragHandleProps} className="cursor-grab active:cursor-grabbing">

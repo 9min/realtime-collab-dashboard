@@ -7,7 +7,6 @@ import {
   YAxis,
   CartesianGrid,
   Tooltip,
-  Legend,
   ResponsiveContainer,
 } from 'recharts'
 
@@ -15,6 +14,29 @@ import { useWeeklyProgressChart } from '@/queries/use-chart-data'
 
 interface WeeklyProgressChartProps {
   projectId: string
+}
+
+function CustomTooltip({ active, payload, label }: { active?: boolean; payload?: Array<{ value: number; dataKey: string }>; label?: string }) {
+  if (!active || !payload?.length) return null
+  return (
+    <div className="bg-popover text-popover-foreground rounded-lg border px-3 py-2.5 shadow-lg">
+      <p className="text-sm font-medium">{label}</p>
+      <div className="mt-1.5 space-y-1">
+        {payload.map((entry) => (
+          <div key={entry.dataKey} className="flex items-center gap-2">
+            <span
+              className="inline-block h-2.5 w-2.5 rounded-sm"
+              style={{ backgroundColor: entry.dataKey === 'created' ? '#6366f1' : '#10b981' }}
+            />
+            <span className="text-muted-foreground text-xs">
+              {entry.dataKey === 'created' ? '생성' : '완료'}
+            </span>
+            <span className="text-xs font-medium">{entry.value}개</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
 }
 
 export function WeeklyProgressChart({ projectId }: WeeklyProgressChartProps) {
@@ -29,32 +51,53 @@ export function WeeklyProgressChart({ projectId }: WeeklyProgressChartProps) {
   }
 
   return (
-    <ResponsiveContainer width="100%" height="100%">
-      <BarChart data={data} margin={{ top: 5, right: 20, left: 0, bottom: 5 }}>
-        <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-        <XAxis
-          dataKey="date"
-          fontSize={12}
-          tick={{ fill: 'hsl(var(--muted-foreground))' }}
-        />
-        <YAxis
-          fontSize={12}
-          allowDecimals={false}
-          tick={{ fill: 'hsl(var(--muted-foreground))' }}
-        />
-        <Tooltip
-          contentStyle={{
-            backgroundColor: 'hsl(var(--popover))',
-            border: '1px solid hsl(var(--border))',
-            borderRadius: '8px',
-            color: 'hsl(var(--popover-foreground))',
-          }}
-        />
-        <Legend />
-        <Bar dataKey="created" name="생성" fill="#3b82f6" radius={[4, 4, 0, 0]} />
-        <Bar dataKey="completed" name="완료" fill="#10b981" radius={[4, 4, 0, 0]} />
-      </BarChart>
-    </ResponsiveContainer>
+    <div className="flex h-full flex-col">
+      <div className="flex-1">
+        <ResponsiveContainer width="100%" height="100%">
+          <BarChart data={data} margin={{ top: 8, right: 12, left: -12, bottom: 0 }} barGap={2} barCategoryGap="25%">
+            <defs>
+              <linearGradient id="createdGradient" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="#818cf8" stopOpacity={1} />
+                <stop offset="100%" stopColor="#6366f1" stopOpacity={0.8} />
+              </linearGradient>
+              <linearGradient id="completedGradient" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="#34d399" stopOpacity={1} />
+                <stop offset="100%" stopColor="#10b981" stopOpacity={0.8} />
+              </linearGradient>
+            </defs>
+            <CartesianGrid vertical={false} strokeDasharray="3 3" stroke="hsl(var(--border))" strokeOpacity={0.5} />
+            <XAxis
+              dataKey="date"
+              fontSize={11}
+              tickLine={false}
+              axisLine={false}
+              tick={{ fill: 'hsl(var(--muted-foreground))' }}
+            />
+            <YAxis
+              fontSize={11}
+              allowDecimals={false}
+              tickLine={false}
+              axisLine={false}
+              tick={{ fill: 'hsl(var(--muted-foreground))' }}
+            />
+            <Tooltip content={<CustomTooltip />} cursor={{ fill: 'hsl(var(--muted))', opacity: 0.4 }} />
+            <Bar dataKey="created" name="생성" fill="url(#createdGradient)" radius={[4, 4, 0, 0]} maxBarSize={32} />
+            <Bar dataKey="completed" name="완료" fill="url(#completedGradient)" radius={[4, 4, 0, 0]} maxBarSize={32} />
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
+      {/* 커스텀 범례 */}
+      <div className="flex items-center justify-center gap-5 pt-1">
+        <div className="flex items-center gap-1.5">
+          <span className="inline-block h-2.5 w-2.5 rounded-sm bg-indigo-400" />
+          <span className="text-muted-foreground text-xs">생성</span>
+        </div>
+        <div className="flex items-center gap-1.5">
+          <span className="inline-block h-2.5 w-2.5 rounded-sm bg-emerald-400" />
+          <span className="text-muted-foreground text-xs">완료</span>
+        </div>
+      </div>
+    </div>
   )
 }
 

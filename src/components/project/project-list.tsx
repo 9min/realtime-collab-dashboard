@@ -47,7 +47,7 @@ export function ProjectList() {
         <div>
           <h1 className="text-2xl font-bold">프로젝트</h1>
           <p className="text-muted-foreground mt-1 text-sm">
-            참여 중인 프로젝트 {projects?.length ?? 0}개
+            참여 중인 프로젝트 <span className="font-semibold text-blue-600 dark:text-blue-400">{projects?.length ?? 0}</span>개
           </p>
         </div>
         <CreateProjectDialog />

@@ -70,7 +70,7 @@ export default function ProjectLayout({ children, params }: ProjectLayoutProps) 
       </div>
 
       {/* 서브 네비게이션 */}
-      <nav className="border-border flex gap-1 border-b">
+      <nav className="bg-card flex gap-1 rounded-lg border p-1 shadow-sm">
         {navItems.map(({ label, href, icon: Icon }) => {
           const fullPath = `${basePath}${href}`
           const isActive = pathname === fullPath
@@ -80,8 +80,8 @@ export default function ProjectLayout({ children, params }: ProjectLayoutProps) 
               key={href}
               onClick={() => router.push(fullPath)}
               className={cn(
-                'text-muted-foreground hover:text-foreground flex items-center gap-2 border-b-2 border-transparent px-4 py-2 text-sm font-medium transition-colors',
-                isActive && 'text-foreground border-primary',
+                'text-muted-foreground hover:text-foreground flex cursor-pointer items-center gap-2 rounded-md px-4 py-2 text-sm font-medium transition-all',
+                isActive && 'bg-primary text-primary-foreground shadow-sm',
               )}
             >
               <Icon className="h-4 w-4" />

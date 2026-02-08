@@ -34,14 +34,14 @@ export function Header() {
     user?.user_metadata?.full_name?.[0] ?? user?.email?.[0]?.toUpperCase() ?? '?'
 
   return (
-    <header className="border-border bg-background/95 supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50 flex h-14 items-center justify-between border-b px-6 backdrop-blur">
+    <header className="sticky top-0 z-50 flex h-14 items-center justify-between bg-gradient-to-r from-slate-900 to-blue-900 px-6 shadow-md dark:from-slate-950 dark:to-blue-950">
       <button
         onClick={() => router.push('/projects')}
-        className="text-lg font-semibold transition-opacity hover:opacity-70"
+        className="cursor-pointer text-lg font-semibold text-white transition-opacity hover:opacity-80"
       >
         Realtime Collab Dashboard
       </button>
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2 text-white">
         <ThemeToggle />
         <NotificationBell />
 
@@ -49,7 +49,7 @@ export function Header() {
           <>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="relative h-9 w-9 rounded-full">
+                <Button variant="ghost" className="relative h-9 w-9 rounded-full hover:bg-white/10">
                   <Avatar className="h-9 w-9">
                     <AvatarImage
                       src={user.user_metadata?.avatar_url}

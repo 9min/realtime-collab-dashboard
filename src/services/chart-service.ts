@@ -9,7 +9,7 @@ type Task = Tables<'tasks'>
 type Column = Tables<'kanban_columns'>
 
 // 컬럼별 태스크 수 (파이 차트)
-const COLUMN_COLORS = ['#3b82f6', '#f59e0b', '#10b981', '#ef4444', '#8b5cf6', '#ec4899']
+const COLUMN_COLORS = ['#6366f1', '#f59e0b', '#10b981', '#f97316', '#8b5cf6', '#ec4899', '#06b6d4', '#84cc16']
 
 export async function getTaskStatusData(
   supabase: Client,

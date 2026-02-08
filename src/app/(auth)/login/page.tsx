@@ -34,9 +34,9 @@ export default function LoginPage() {
   }
 
   return (
-    <Card className="w-full">
+    <Card className="w-full shadow-xl">
       <CardHeader className="text-center">
-        <CardTitle className="text-2xl">Realtime Collab Dashboard</CardTitle>
+        <CardTitle className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-2xl text-transparent dark:from-blue-400 dark:to-indigo-400">Realtime Collab Dashboard</CardTitle>
         <CardDescription>소규모 팀을 위한 실시간 협업 대시보드</CardDescription>
       </CardHeader>
       <CardContent className="flex flex-col gap-3">
