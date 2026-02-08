@@ -39,6 +39,8 @@ interface KanbanColumnProps {
   onDeleteColumn: (columnId: string) => void
   canEdit: boolean
   canDeleteColumn: boolean
+  canMoveAll: boolean
+  currentUserId?: string
   members?: (Tables<'project_members'> & { profiles: Tables<'profiles'> })[]
 }
 
@@ -51,6 +53,8 @@ export function KanbanColumn({
   onDeleteColumn,
   canEdit,
   canDeleteColumn,
+  canMoveAll,
+  currentUserId,
   members,
 }: KanbanColumnProps) {
   const [isEditing, setIsEditing] = useState(false)
@@ -171,7 +175,14 @@ export function KanbanColumn({
               )}
             >
               {tasks.map((task, index) => (
-                <TaskCard key={task.id} task={task} index={index} onClick={onTaskClick} members={members} />
+                <TaskCard
+                  key={task.id}
+                  task={task}
+                  index={index}
+                  onClick={onTaskClick}
+                  members={members}
+                  isDragDisabled={!canMoveAll && task.assignee_id !== null && task.assignee_id !== currentUserId}
+                />
               ))}
               {provided.placeholder}
             </div>

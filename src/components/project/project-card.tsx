@@ -25,7 +25,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { useAuth } from '@/hooks/use-auth'
+import { MEMBER_ROLE } from '@/lib/constants'
 import type { ProjectWithMemberCount } from '@/services/project-service'
 
 interface ProjectCardProps {
@@ -36,9 +36,10 @@ interface ProjectCardProps {
 
 export function ProjectCard({ project, onEdit, onDelete }: ProjectCardProps) {
   const router = useRouter()
-  const { user } = useAuth()
   const [isDeleting, setIsDeleting] = useState(false)
-  const isOwner = user?.id === project.owner_id
+  const role = project.current_user_role
+  const isOwnerOrAdmin = role === MEMBER_ROLE.OWNER || role === MEMBER_ROLE.ADMIN
+  const isOwner = role === MEMBER_ROLE.OWNER
 
   const handleClick = () => {
     router.push(`/projects/${project.id}`)
@@ -67,7 +68,7 @@ export function ProjectCard({ project, onEdit, onDelete }: ProjectCardProps) {
         <CardTitle className="line-clamp-1 text-base font-semibold">
           {project.name}
         </CardTitle>
-        {isOwner && (
+        {isOwnerOrAdmin && (
           <AlertDialog>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -85,17 +86,21 @@ export function ProjectCard({ project, onEdit, onDelete }: ProjectCardProps) {
                   <Pencil className="mr-2 h-4 w-4" />
                   수정
                 </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <AlertDialogTrigger asChild>
-                  <DropdownMenuItem
-                    disabled={isDeleting}
-                    className="text-destructive focus:text-destructive"
-                    onSelect={(e) => e.preventDefault()}
-                  >
-                    <Trash2 className="mr-2 h-4 w-4" />
-                    삭제
-                  </DropdownMenuItem>
-                </AlertDialogTrigger>
+                {isOwner && (
+                  <>
+                    <DropdownMenuSeparator />
+                    <AlertDialogTrigger asChild>
+                      <DropdownMenuItem
+                        disabled={isDeleting}
+                        className="text-destructive focus:text-destructive"
+                        onSelect={(e) => e.preventDefault()}
+                      >
+                        <Trash2 className="mr-2 h-4 w-4" />
+                        삭제
+                      </DropdownMenuItem>
+                    </AlertDialogTrigger>
+                  </>
+                )}
               </DropdownMenuContent>
             </DropdownMenu>
             <AlertDialogContent onClick={(e) => e.stopPropagation()}>
@@ -133,9 +138,9 @@ export function ProjectCard({ project, onEdit, onDelete }: ProjectCardProps) {
           <Calendar className="h-3.5 w-3.5" />
           <span>{formattedDate}</span>
         </div>
-        {isOwner && (
+        {isOwnerOrAdmin && (
           <Badge variant="secondary" className="ml-auto text-xs">
-            소유자
+            {isOwner ? '소유자' : '관리자'}
           </Badge>
         )}
       </CardFooter>

@@ -1,6 +1,6 @@
 import type { SupabaseClient } from '@supabase/supabase-js'
 
-import type { ServiceResult } from '@/types/common'
+import type { MemberRole, ServiceResult } from '@/types/common'
 import type { Database, Tables, InsertTables } from '@/types/database'
 
 type Client = SupabaseClient<Database>
@@ -8,9 +8,10 @@ type Project = Tables<'projects'>
 type ProjectMember = Tables<'project_members'>
 type Profile = Tables<'profiles'>
 
-// 프로젝트 + 멤버 수 조인 타입
+// 프로젝트 + 멤버 수 + 현재 유저 역할
 export interface ProjectWithMemberCount extends Project {
   member_count: number
+  current_user_role: MemberRole | null
 }
 
 // 내가 참여 중인 프로젝트 목록 조회
@@ -28,27 +29,34 @@ export async function getMyProjects(
     return { data: null, error: { code: projectsError.code, message: projectsError.message } }
   }
 
-  // 각 프로젝트의 멤버 수 조회
+  // 각 프로젝트의 멤버 수 + 현재 유저 역할 조회
   const projectIds = projects.map((p) => p.id)
   if (projectIds.length === 0) {
     return { data: [], error: null }
   }
 
-  const { data: memberCounts } = await supabase
-    .from('project_members')
-    .select('project_id')
-    .in('project_id', projectIds)
-    .returns<Pick<ProjectMember, 'project_id'>[]>()
+  const { data: { user } } = await supabase.auth.getUser()
 
-  // 프로젝트별 멤버 수 집계
+  const { data: memberData } = await supabase
+    .from('project_members')
+    .select('project_id, user_id, role')
+    .in('project_id', projectIds)
+    .returns<Pick<ProjectMember, 'project_id' | 'user_id' | 'role'>[]>()
+
+  // 프로젝트별 멤버 수 집계 + 현재 유저 역할 매핑
   const countMap = new Map<string, number>()
-  memberCounts?.forEach((m) => {
+  const roleMap = new Map<string, MemberRole>()
+  memberData?.forEach((m) => {
     countMap.set(m.project_id, (countMap.get(m.project_id) ?? 0) + 1)
+    if (m.user_id === user?.id) {
+      roleMap.set(m.project_id, m.role as MemberRole)
+    }
   })
 
   const result: ProjectWithMemberCount[] = projects.map((p) => ({
     ...p,
     member_count: countMap.get(p.id) ?? 0,
+    current_user_role: roleMap.get(p.id) ?? null,
   }))
 
   return { data: result, error: null }

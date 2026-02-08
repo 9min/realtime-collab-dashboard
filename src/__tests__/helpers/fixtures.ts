@@ -19,6 +19,7 @@ export const mockProfile: Tables<'profiles'> = {
   email: 'test@example.com',
   full_name: 'Test User',
   avatar_url: null,
+  is_admin: false,
   created_at: '2026-01-01T00:00:00Z',
   updated_at: '2026-01-01T00:00:00Z',
 }
@@ -28,6 +29,7 @@ export const mockProfile2: Tables<'profiles'> = {
   email: 'other@example.com',
   full_name: 'Other User',
   avatar_url: null,
+  is_admin: false,
   created_at: '2026-01-01T00:00:00Z',
   updated_at: '2026-01-01T00:00:00Z',
 }

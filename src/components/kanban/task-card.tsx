@@ -34,15 +34,16 @@ interface TaskCardProps {
   index: number
   onClick: (task: Tables<'tasks'>) => void
   members?: MemberProfile[]
+  isDragDisabled?: boolean
 }
 
-export function TaskCard({ task, index, onClick, members }: TaskCardProps) {
+export function TaskCard({ task, index, onClick, members, isDragDisabled = false }: TaskCardProps) {
   const assignee = task.assignee_id
     ? members?.find((m) => m.user_id === task.assignee_id)?.profiles
     : null
 
   return (
-    <Draggable draggableId={task.id} index={index}>
+    <Draggable draggableId={task.id} index={index} isDragDisabled={isDragDisabled}>
       {(provided, snapshot) => (
         <div
           ref={provided.innerRef}
@@ -52,7 +53,8 @@ export function TaskCard({ task, index, onClick, members }: TaskCardProps) {
         >
           <Card
             className={cn(
-              'cursor-grab transition-shadow hover:shadow-md active:cursor-grabbing',
+              'transition-shadow hover:shadow-md',
+              isDragDisabled ? 'cursor-default' : 'cursor-grab active:cursor-grabbing',
               snapshot.isDragging && 'shadow-lg ring-2 ring-primary/20',
             )}
             onClick={() => onClick(task)}

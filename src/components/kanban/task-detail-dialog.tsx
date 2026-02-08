@@ -28,6 +28,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Separator } from '@/components/ui/separator'
+import { useAuth } from '@/hooks/use-auth'
 import { useProjectMembers } from '@/queries/use-projects'
 import { useUpdateTask, useDeleteTask } from '@/queries/use-tasks'
 import { cn } from '@/lib/utils'
@@ -62,9 +63,13 @@ interface TaskDetailDialogProps {
 }
 
 export function TaskDetailDialog({ projectId, task, open, onOpenChange, canEdit = true, canDeleteAll = false }: TaskDetailDialogProps) {
+  const { user } = useAuth()
   const updateTaskMutation = useUpdateTask(projectId)
   const deleteTaskMutation = useDeleteTask(projectId)
   const { data: members } = useProjectMembers(projectId)
+
+  // 담당자 기반 권한: 담당자 없으면 모든 멤버 가능, 있으면 owner/admin/담당자만
+  const canInteract = canDeleteAll || (canEdit && (task?.assignee_id === null || task?.assignee_id === user?.id))
 
   // 편집 모드 상태
   const [isEditing, setIsEditing] = useState(false)
@@ -259,8 +264,8 @@ export function TaskDetailDialog({ projectId, task, open, onOpenChange, canEdit 
             </span>
           </div>
 
-          {/* 액션 버튼 — 뷰어에게 숨김 */}
-          {canEdit && (
+          {/* 액션 버튼 — 권한 있는 유저에게만 노출 */}
+          {canInteract && (
             <div className="flex justify-between">
               <AlertDialog>
                 <AlertDialogTrigger asChild>

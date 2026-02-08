@@ -63,7 +63,7 @@ export function KanbanBoard({ projectId }: KanbanBoardProps) {
     }))
   }, [columns, tasks, searchText, priorities, assigneeIds, dueDateRange])
 
-  // DnD 완료 핸들러 — 뷰어는 무시
+  // DnD 완료 핸들러 — 뷰어는 무시, 일반 멤버는 본인 태스크만
   const handleDragEnd = useCallback(
     (result: DropResult) => {
       if (!canEdit) return
@@ -72,6 +72,12 @@ export function KanbanBoard({ projectId }: KanbanBoardProps) {
       // 같은 위치에 드롭하면 무시
       if (source.droppableId === destination.droppableId && source.index === destination.index) return
 
+      // 일반 멤버: 담당자 없는 태스크 또는 본인 담당 태스크만 이동 가능
+      if (!canDeleteAll && tasks) {
+        const draggedTask = tasks.find((t) => t.id === draggableId)
+        if (draggedTask && draggedTask.assignee_id !== null && draggedTask.assignee_id !== user?.id) return
+      }
+
       moveTaskMutation.mutate({
         taskId: draggableId,
         sourceColumnId: source.droppableId,
@@ -79,7 +85,7 @@ export function KanbanBoard({ projectId }: KanbanBoardProps) {
         newPosition: destination.index,
       })
     },
-    [canEdit, moveTaskMutation],
+    [canEdit, canDeleteAll, tasks, user?.id, moveTaskMutation],
   )
 
   // 컬럼 추가
@@ -131,6 +137,8 @@ export function KanbanBoard({ projectId }: KanbanBoardProps) {
               onDeleteColumn={handleDeleteColumn}
               canEdit={canEdit}
               canDeleteColumn={canDeleteAll}
+              canMoveAll={canDeleteAll}
+              currentUserId={user?.id}
               members={members}
             />
           ))}

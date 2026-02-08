@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { LogOut, UserCog } from 'lucide-react'
+import { LogOut, ShieldCheck, UserCog } from 'lucide-react'
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
@@ -14,6 +14,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { useAuth } from '@/hooks/use-auth'
+import { useMyProfile } from '@/queries/use-admin'
 
 import { ProfileEditDialog } from '../profile/profile-edit-dialog'
 import { NotificationBell } from '../notification/notification-bell'
@@ -21,6 +22,7 @@ import { ThemeToggle } from './theme-toggle'
 
 export function Header() {
   const { user, isAuthenticated, signOut } = useAuth()
+  const { data: myProfile } = useMyProfile()
   const router = useRouter()
   const [profileOpen, setProfileOpen] = useState(false)
 
@@ -69,6 +71,12 @@ export function Header() {
                   <UserCog className="mr-2 h-4 w-4" />
                   프로필 설정
                 </DropdownMenuItem>
+                {myProfile?.is_admin && (
+                  <DropdownMenuItem onClick={() => router.push('/admin')}>
+                    <ShieldCheck className="mr-2 h-4 w-4" />
+                    사용자 관리
+                  </DropdownMenuItem>
+                )}
                 <DropdownMenuItem onClick={handleSignOut}>
                   <LogOut className="mr-2 h-4 w-4" />
                   로그아웃

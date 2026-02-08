@@ -4,6 +4,7 @@ import type { SupabaseClient } from '@supabase/supabase-js'
 import type { Database } from '@/types/database'
 import { createMockSupabaseClient } from '@/__tests__/helpers/mock-supabase'
 import {
+  MOCK_USER_ID,
   MOCK_PROJECT_ID,
   MOCK_USER_ID_2,
   MOCK_MEMBER_ID,
@@ -28,13 +29,20 @@ type Client = SupabaseClient<Database>
 describe('project-service', () => {
   // ── getMyProjects ──
   describe('getMyProjects', () => {
-    it('프로젝트 목록 + 멤버 수를 반환한다', async () => {
+    it('프로젝트 목록 + 멤버 수 + 현재 유저 역할을 반환한다', async () => {
       const client = createMockSupabaseClient({
+        authUser: { id: MOCK_USER_ID, email: 'test@example.com' },
         fromResponses: [
           // projects 조회
           { data: [mockProject], error: null },
-          // member counts 조회
-          { data: [{ project_id: MOCK_PROJECT_ID }, { project_id: MOCK_PROJECT_ID }], error: null },
+          // member data 조회 (project_id, user_id, role)
+          {
+            data: [
+              { project_id: MOCK_PROJECT_ID, user_id: MOCK_USER_ID, role: 'owner' },
+              { project_id: MOCK_PROJECT_ID, user_id: MOCK_USER_ID_2, role: 'member' },
+            ],
+            error: null,
+          },
         ],
       }) as Client
 
@@ -43,6 +51,7 @@ describe('project-service', () => {
       expect(result.error).toBeNull()
       expect(result.data).toHaveLength(1)
       expect(result.data?.[0].member_count).toBe(2)
+      expect(result.data?.[0].current_user_role).toBe('owner')
     })
 
     it('프로젝트가 없으면 빈 배열을 반환한다', async () => {

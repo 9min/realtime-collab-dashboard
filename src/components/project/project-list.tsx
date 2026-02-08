@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { FolderOpen, Loader2 } from 'lucide-react'
 
+import { useMyProfile } from '@/queries/use-admin'
 import { useProjects, useDeleteProject } from '@/queries/use-projects'
 import type { ProjectWithMemberCount } from '@/services/project-service'
 
@@ -12,8 +13,10 @@ import { ProjectCard } from './project-card'
 
 export function ProjectList() {
   const { data: projects, isLoading, error } = useProjects()
+  const { data: myProfile } = useMyProfile()
   const deleteProject = useDeleteProject()
   const [editTarget, setEditTarget] = useState<ProjectWithMemberCount | null>(null)
+  const isAdmin = myProfile?.is_admin ?? false
 
   const handleEdit = (project: ProjectWithMemberCount) => {
     setEditTarget(project)
@@ -50,7 +53,7 @@ export function ProjectList() {
             참여 중인 프로젝트 <span className="font-semibold text-blue-600 dark:text-blue-400">{projects?.length ?? 0}</span>개
           </p>
         </div>
-        <CreateProjectDialog />
+        {isAdmin && <CreateProjectDialog />}
       </div>
 
       {/* 프로젝트 그리드 */}
@@ -72,10 +75,12 @@ export function ProjectList() {
           <div className="text-center">
             <p className="font-medium">아직 프로젝트가 없습니다</p>
             <p className="text-muted-foreground mt-1 text-sm">
-              새 프로젝트를 만들어 팀과 협업을 시작하세요
+              {isAdmin
+                ? '새 프로젝트를 만들어 팀과 협업을 시작하세요'
+                : '관리자에게 프로젝트 생성을 요청하세요'}
             </p>
           </div>
-          <CreateProjectDialog />
+          {isAdmin && <CreateProjectDialog />}
         </div>
       )}
 

@@ -60,6 +60,7 @@ export interface Database {
           email: string
           full_name: string | null
           avatar_url: string | null
+          is_admin: boolean
           created_at: string
           updated_at: string
         }
@@ -68,6 +69,7 @@ export interface Database {
           email: string
           full_name?: string | null
           avatar_url?: string | null
+          is_admin?: boolean
           created_at?: string
           updated_at?: string
         }
@@ -76,6 +78,7 @@ export interface Database {
           email?: string
           full_name?: string | null
           avatar_url?: string | null
+          is_admin?: boolean
           updated_at?: string
         }
         Relationships: []
@@ -452,9 +455,17 @@ export interface Database {
         Args: { p_project_id: string; p_roles: Database['public']['Enums']['member_role'][] }
         Returns: boolean
       }
+      is_admin: {
+        Args: Record<string, never>
+        Returns: boolean
+      }
       is_project_member: {
         Args: { p_project_id: string }
         Returns: boolean
+      }
+      set_admin_status: {
+        Args: { p_user_id: string; p_is_admin: boolean }
+        Returns: undefined
       }
     }
     Enums: {

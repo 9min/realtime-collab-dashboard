@@ -50,7 +50,7 @@ import {
   projectKeys,
 } from './use-projects'
 
-const mockProjectWithCount: ProjectWithMemberCount = { ...mockProject, member_count: 2 }
+const mockProjectWithCount: ProjectWithMemberCount = { ...mockProject, member_count: 2, current_user_role: 'owner' }
 
 describe('use-projects', () => {
   let queryClient: QueryClient

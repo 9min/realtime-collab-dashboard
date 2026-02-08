@@ -9,6 +9,7 @@ const makeProfile = (overrides: Partial<Tables<'profiles'>> = {}): Tables<'profi
   email: 'alice@test.com',
   full_name: 'Alice Kim',
   avatar_url: null,
+  is_admin: false,
   created_at: '2026-01-01T00:00:00Z',
   updated_at: '2026-01-01T00:00:00Z',
   ...overrides,
