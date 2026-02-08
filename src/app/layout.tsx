@@ -19,7 +19,7 @@ const geistMono = Geist_Mono({
 })
 
 export const metadata: Metadata = {
-  title: 'Realtime Collab Dashboard',
+  title: '실시간 협업보드',
   description: '소규모 팀을 위한 실시간 협업 대시보드',
 }
 

@@ -39,7 +39,7 @@ export function Header() {
         onClick={() => router.push('/projects')}
         className="cursor-pointer text-lg font-semibold text-white transition-opacity hover:opacity-80"
       >
-        Realtime Collab Dashboard
+        실시간 협업보드
       </button>
       <div className="flex items-center gap-2 text-white">
         <ThemeToggle />
