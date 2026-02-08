@@ -39,9 +39,15 @@ export async function getTaskStatusData(
   const columns = columnsResult.data ?? []
   const tasks = tasksResult.data ?? []
 
+  // O(tasks) 1회 순회로 column_id별 카운트 집계
+  const countByColumn = new Map<string, number>()
+  for (const task of tasks) {
+    countByColumn.set(task.column_id, (countByColumn.get(task.column_id) ?? 0) + 1)
+  }
+
   const data: TaskStatusData[] = columns.map((col, i) => ({
     name: col.title,
-    value: tasks.filter((t) => t.column_id === col.id).length,
+    value: countByColumn.get(col.id) ?? 0,
     color: COLUMN_COLORS[i % COLUMN_COLORS.length],
   }))
 
@@ -84,26 +90,30 @@ export async function getWeeklyProgressData(
   const dateFormatter = new Intl.DateTimeFormat('ko-KR', { month: 'short', day: 'numeric' })
   const data: WeeklyProgressData[] = []
 
+  // 타임스탬프 사전 계산 — 루프 내 Date 객체 생성 최소화
+  const taskTimestamps = (tasks ?? []).map((t) => ({
+    createdAt: new Date(t.created_at).getTime(),
+    updatedAt: new Date(t.updated_at).getTime(),
+    columnId: t.column_id,
+  }))
+
   for (let i = 0; i < DAYS_RANGE; i++) {
     const date = new Date(startDate)
     date.setDate(date.getDate() + i)
-    const dayStart = new Date(date)
-    dayStart.setHours(0, 0, 0, 0)
-    const dayEnd = new Date(date)
-    dayEnd.setHours(23, 59, 59, 999)
+    const dayStartTs = new Date(date).setHours(0, 0, 0, 0)
+    const dayEndTs = new Date(date).setHours(23, 59, 59, 999)
 
-    const created = (tasks ?? []).filter((t) => {
-      const createdAt = new Date(t.created_at)
-      return createdAt >= dayStart && createdAt <= dayEnd
-    }).length
+    let created = 0
+    let completed = 0
 
-    // Done 컬럼에 있고 해당 날짜에 업데이트된 태스크 = 완료
-    const completed = doneColumnId
-      ? (tasks ?? []).filter((t) => {
-          const updatedAt = new Date(t.updated_at)
-          return t.column_id === doneColumnId && updatedAt >= dayStart && updatedAt <= dayEnd
-        }).length
-      : 0
+    for (const t of taskTimestamps) {
+      if (t.createdAt >= dayStartTs && t.createdAt <= dayEndTs) {
+        created++
+      }
+      if (doneColumnId && t.columnId === doneColumnId && t.updatedAt >= dayStartTs && t.updatedAt <= dayEndTs) {
+        completed++
+      }
+    }
 
     data.push({
       date: dateFormatter.format(date),
@@ -153,19 +163,25 @@ export async function getBurndownData(
   const dateFormatter = new Intl.DateTimeFormat('ko-KR', { month: 'short', day: 'numeric' })
   const data: BurndownData[] = []
 
+  // 타임스탬프 사전 계산 — 루프 내 Date 객체 생성 최소화
+  const doneTaskTimestamps = doneColumnId
+    ? (tasks ?? [])
+        .filter((t) => t.column_id === doneColumnId)
+        .map((t) => new Date(t.updated_at).getTime())
+    : []
+
   for (let i = 0; i < DAYS_RANGE; i++) {
     const date = new Date(startDate)
     date.setDate(date.getDate() + i)
-    const dayEnd = new Date(date)
-    dayEnd.setHours(23, 59, 59, 999)
+    const dayEndTs = new Date(date).setHours(23, 59, 59, 999)
 
-    // 해당 날짜까지 완료된 태스크 수
-    const completedByDate = doneColumnId
-      ? (tasks ?? []).filter((t) => {
-          const updatedAt = new Date(t.updated_at)
-          return t.column_id === doneColumnId && updatedAt <= dayEnd
-        }).length
-      : 0
+    // 해당 날짜까지 완료된 태스크 수 — 숫자 비교
+    let completedByDate = 0
+    for (const ts of doneTaskTimestamps) {
+      if (ts <= dayEndTs) {
+        completedByDate++
+      }
+    }
 
     const remaining = totalTasks - completedByDate
     // 이상적 번다운: 선형 감소

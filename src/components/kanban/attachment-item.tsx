@@ -28,7 +28,6 @@ export function AttachmentItem({ attachment, publicUrl, canDelete, onDelete }: A
             width={48}
             height={48}
             className="h-12 w-12 rounded object-cover"
-            unoptimized
           />
         </a>
       ) : (

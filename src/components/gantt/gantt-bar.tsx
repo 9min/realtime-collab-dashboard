@@ -1,5 +1,7 @@
 'use client'
 
+import { memo } from 'react'
+
 import { cn } from '@/lib/utils'
 import type { TaskBarPosition } from '@/lib/gantt-utils'
 
@@ -18,7 +20,7 @@ interface GanttBarProps {
   onClick: () => void
 }
 
-export function GanttBar({ title, priority, assigneeName, position, onClick }: GanttBarProps) {
+export const GanttBar = memo(function GanttBar({ title, priority, assigneeName, position, onClick }: GanttBarProps) {
   return (
     <div
       className="absolute top-1 bottom-1 cursor-pointer"
@@ -39,4 +41,4 @@ export function GanttBar({ title, priority, assigneeName, position, onClick }: G
       </button>
     </div>
   )
-}
+})

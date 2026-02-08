@@ -1,6 +1,7 @@
 'use client'
 
 import { useCallback, useMemo, useState } from 'react'
+import dynamic from 'next/dynamic'
 import { DragDropContext, type DropResult } from '@hello-pangea/dnd'
 import { Plus } from 'lucide-react'
 
@@ -17,8 +18,11 @@ import type { KanbanColumnWithTasks } from '@/types/kanban'
 
 import { CreateTaskForm } from './create-task-form'
 import { KanbanColumn } from './kanban-column'
-import { TaskDetailDialog } from './task-detail-dialog'
 import { TaskFilterBar } from './task-filter-bar'
+
+const TaskDetailDialog = dynamic(
+  () => import('./task-detail-dialog').then((mod) => ({ default: mod.TaskDetailDialog })),
+)
 
 interface KanbanBoardProps {
   projectId: string

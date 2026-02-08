@@ -1,5 +1,6 @@
 'use client'
 
+import { memo } from 'react'
 import { Bell, MessageSquare, AtSign, Clock } from 'lucide-react'
 
 import { cn } from '@/lib/utils'
@@ -46,7 +47,7 @@ const ICON_CONFIG = {
   },
 } as const
 
-export function NotificationItem({ notification, onClick }: NotificationItemProps) {
+export const NotificationItem = memo(function NotificationItem({ notification, onClick }: NotificationItemProps) {
   const config = ICON_CONFIG[notification.type as keyof typeof ICON_CONFIG] ?? {
     icon: Bell,
     className: 'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400',
@@ -81,4 +82,4 @@ export function NotificationItem({ notification, onClick }: NotificationItemProp
       )}
     </button>
   )
-}
+})

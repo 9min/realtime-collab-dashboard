@@ -1,5 +1,6 @@
 'use client'
 
+import dynamic from 'next/dynamic'
 import type { DraggableProvidedDragHandleProps } from '@hello-pangea/dnd'
 import { X, GripVertical } from 'lucide-react'
 
@@ -10,10 +11,25 @@ import { WIDGET_TYPE } from '@/lib/constants'
 import type { WidgetType } from '@/types/common'
 import { WIDGET_REGISTRY } from '@/types/dashboard'
 
-import { TaskStatusChart } from '../charts/task-status-chart'
-import { WeeklyProgressChart } from '../charts/weekly-progress-chart'
-import { BurndownChart } from '../charts/burndown-chart'
-import { MemberListWidget } from './member-list-widget'
+const TaskStatusChart = dynamic(
+  () => import('../charts/task-status-chart').then((mod) => ({ default: mod.TaskStatusChart })),
+  { loading: () => <WidgetSkeleton /> },
+)
+
+const WeeklyProgressChart = dynamic(
+  () => import('../charts/weekly-progress-chart').then((mod) => ({ default: mod.WeeklyProgressChart })),
+  { loading: () => <WidgetSkeleton /> },
+)
+
+const BurndownChart = dynamic(
+  () => import('../charts/burndown-chart').then((mod) => ({ default: mod.BurndownChart })),
+  { loading: () => <WidgetSkeleton /> },
+)
+
+const MemberListWidget = dynamic(
+  () => import('./member-list-widget').then((mod) => ({ default: mod.MemberListWidget })),
+  { loading: () => <WidgetSkeleton /> },
+)
 
 const WIDGET_ACCENT: Record<string, string> = {
   [WIDGET_TYPE.TASK_STATUS]: 'border-t-blue-500',
@@ -87,4 +103,12 @@ function WidgetContent({ type, projectId }: { type: WidgetType; projectId: strin
         </div>
       )
   }
+}
+
+function WidgetSkeleton() {
+  return (
+    <div className="flex h-full min-h-[200px] items-center justify-center">
+      <div className="bg-muted h-6 w-6 animate-pulse rounded-full" />
+    </div>
+  )
 }

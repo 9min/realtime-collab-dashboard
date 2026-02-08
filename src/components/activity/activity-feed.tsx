@@ -1,7 +1,8 @@
 'use client'
 
-import { ScrollArea } from '@/components/ui/scroll-area'
-import { Separator } from '@/components/ui/separator'
+import { useRef } from 'react'
+import { useVirtualizer } from '@tanstack/react-virtual'
+
 import { useActivityLogs } from '@/queries/use-activity-logs'
 
 import { ActivityItem } from './activity-item'
@@ -12,6 +13,14 @@ interface ActivityFeedProps {
 
 export function ActivityFeed({ projectId }: ActivityFeedProps) {
   const { data: activities, isLoading, error } = useActivityLogs(projectId)
+  const parentRef = useRef<HTMLDivElement>(null)
+
+  const virtualizer = useVirtualizer({
+    count: activities?.length ?? 0,
+    getScrollElement: () => parentRef.current,
+    estimateSize: () => 64,
+    overscan: 5,
+  })
 
   if (isLoading) {
     return (
@@ -38,15 +47,26 @@ export function ActivityFeed({ projectId }: ActivityFeedProps) {
   }
 
   return (
-    <ScrollArea className="h-[600px]">
-      <div className="divide-y">
-        {activities.map((activity, index) => (
-          <div key={activity.id}>
-            <ActivityItem activity={activity} />
-            {index < activities.length - 1 && <Separator />}
+    <div ref={parentRef} className="h-[600px] overflow-y-auto">
+      <div
+        className="relative w-full"
+        style={{ height: `${virtualizer.getTotalSize()}px` }}
+      >
+        {virtualizer.getVirtualItems().map((virtualItem) => (
+          <div
+            key={virtualItem.key}
+            ref={virtualizer.measureElement}
+            data-index={virtualItem.index}
+            className="absolute left-0 top-0 w-full"
+            style={{ transform: `translateY(${virtualItem.start}px)` }}
+          >
+            <ActivityItem activity={activities[virtualItem.index]} />
+            {virtualItem.index < activities.length - 1 && (
+              <div className="bg-border h-px" />
+            )}
           </div>
         ))}
       </div>
-    </ScrollArea>
+    </div>
   )
 }

@@ -1,11 +1,15 @@
 'use client'
 
 import { useMemo, useState } from 'react'
+import dynamic from 'next/dynamic'
 import { CalendarRange } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'
-import { TaskDetailDialog } from '@/components/kanban/task-detail-dialog'
+
+const TaskDetailDialog = dynamic(
+  () => import('@/components/kanban/task-detail-dialog').then((mod) => ({ default: mod.TaskDetailDialog })),
+)
 import { useAuth } from '@/hooks/use-auth'
 import {
   startOfWeek,

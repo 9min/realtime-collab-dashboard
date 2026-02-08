@@ -1,5 +1,7 @@
 'use client'
 
+import { memo } from 'react'
+
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { ACTIVITY_ACTION, ACTIVITY_ENTITY } from '@/types/activity'
 import type { ActivityLogWithUser } from '@/types/activity'
@@ -90,7 +92,7 @@ function getInitials(name: string | null, email: string): string {
   return email.charAt(0).toUpperCase()
 }
 
-export function ActivityItem({ activity }: ActivityItemProps) {
+export const ActivityItem = memo(function ActivityItem({ activity }: ActivityItemProps) {
   const profile = activity.profiles
   const message = formatMessage(activity)
   const time = getRelativeTime(activity.created_at)
@@ -109,4 +111,4 @@ export function ActivityItem({ activity }: ActivityItemProps) {
       </div>
     </div>
   )
-}
+})

@@ -1,9 +1,10 @@
 'use client'
 
+import { useRef } from 'react'
+import { useVirtualizer } from '@tanstack/react-virtual'
 import { CheckCheck } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
-import { ScrollArea } from '@/components/ui/scroll-area'
 import type { NotificationWithActor } from '@/types/notification'
 
 import { NotificationItem } from './notification-item'
@@ -23,6 +24,15 @@ export function NotificationList({
   onMarkAllRead,
   hasUnread,
 }: NotificationListProps) {
+  const parentRef = useRef<HTMLDivElement>(null)
+
+  const virtualizer = useVirtualizer({
+    count: notifications.length,
+    getScrollElement: () => parentRef.current,
+    estimateSize: () => 72,
+    overscan: 5,
+  })
+
   return (
     <div className="w-[420px]">
       <div className="flex items-center justify-between border-b px-4 py-3">
@@ -39,23 +49,36 @@ export function NotificationList({
           </Button>
         )}
       </div>
-      <ScrollArea className="max-h-[400px]">
-        {isLoading ? (
-          <p className="text-muted-foreground py-8 text-center text-sm">로딩 중...</p>
-        ) : notifications.length === 0 ? (
-          <p className="text-muted-foreground py-8 text-center text-sm">알림이 없습니다</p>
-        ) : (
-          <div className="divide-y">
-            {notifications.map((notification) => (
-              <NotificationItem
-                key={notification.id}
-                notification={notification}
-                onClick={onItemClick}
-              />
+      {isLoading ? (
+        <p className="text-muted-foreground py-8 text-center text-sm">로딩 중...</p>
+      ) : notifications.length === 0 ? (
+        <p className="text-muted-foreground py-8 text-center text-sm">알림이 없습니다</p>
+      ) : (
+        <div ref={parentRef} className="max-h-[400px] overflow-y-auto">
+          <div
+            className="relative w-full"
+            style={{ height: `${virtualizer.getTotalSize()}px` }}
+          >
+            {virtualizer.getVirtualItems().map((virtualItem) => (
+              <div
+                key={virtualItem.key}
+                ref={virtualizer.measureElement}
+                data-index={virtualItem.index}
+                className="absolute left-0 top-0 w-full"
+                style={{ transform: `translateY(${virtualItem.start}px)` }}
+              >
+                <NotificationItem
+                  notification={notifications[virtualItem.index]}
+                  onClick={onItemClick}
+                />
+                {virtualItem.index < notifications.length - 1 && (
+                  <div className="bg-border h-px" />
+                )}
+              </div>
             ))}
           </div>
-        )}
-      </ScrollArea>
+        </div>
+      )}
     </div>
   )
 }
