@@ -107,7 +107,7 @@ export function TaskDetailDialog({ projectId, task, open, onOpenChange, canEdit 
 
   return (
     <Dialog open={open} onOpenChange={(v) => { if (!v) setIsEditing(false); onOpenChange(v) }}>
-      <DialogContent className="sm:max-w-xl">
+      <DialogContent className="flex max-h-[85vh] flex-col sm:max-w-xl">
         <DialogHeader>
           <DialogTitle className="pr-8">
             {isEditing ? (
@@ -123,7 +123,7 @@ export function TaskDetailDialog({ projectId, task, open, onOpenChange, canEdit 
           </DialogTitle>
         </DialogHeader>
 
-        <div className="flex flex-col gap-4">
+        <div className="flex min-h-0 flex-col gap-4 overflow-y-auto pr-2">
           {/* 우선순위 */}
           <div className="flex items-center gap-2">
             <span className="text-muted-foreground w-16 text-sm">우선순위</span>
