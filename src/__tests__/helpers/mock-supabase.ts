@@ -10,7 +10,7 @@ function createQueryBuilder(response: { data: unknown; error: unknown }) {
 
   const chainMethods = [
     'select', 'insert', 'update', 'delete', 'upsert',
-    'eq', 'neq', 'in', 'order', 'limit', 'returns',
+    'eq', 'neq', 'in', 'order', 'limit', 'range', 'returns',
     'single', 'maybeSingle',
   ]
 

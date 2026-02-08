@@ -134,6 +134,70 @@ export const mockMemberWithProfile = {
   profiles: mockProfile,
 }
 
+// ── Activity Logs ──
+export const MOCK_ACTIVITY_LOG_ID = 'activity-aaa-111'
+
+export const mockActivityLog = {
+  id: MOCK_ACTIVITY_LOG_ID,
+  project_id: MOCK_PROJECT_ID,
+  user_id: MOCK_USER_ID,
+  action_type: 'created',
+  entity_type: 'task',
+  entity_id: MOCK_TASK_ID_1,
+  metadata: { title: 'Task 1' },
+  created_at: '2026-01-15T10:00:00Z',
+  profiles: mockProfile,
+}
+
+// ── Comments ──
+export const MOCK_COMMENT_ID = 'comment-aaa-111'
+
+export const mockComment = {
+  id: MOCK_COMMENT_ID,
+  task_id: MOCK_TASK_ID_1,
+  project_id: MOCK_PROJECT_ID,
+  user_id: MOCK_USER_ID,
+  content: 'Test comment',
+  mentions: null,
+  created_at: '2026-01-15T10:00:00Z',
+  updated_at: '2026-01-15T10:00:00Z',
+  profiles: mockProfile,
+}
+
+// ── Notifications ──
+export const MOCK_NOTIFICATION_ID = 'notif-aaa-111'
+
+export const mockNotification = {
+  id: MOCK_NOTIFICATION_ID,
+  project_id: MOCK_PROJECT_ID,
+  user_id: MOCK_USER_ID,
+  actor_id: MOCK_USER_ID_2,
+  type: 'commented',
+  title: 'New comment',
+  message: 'Other User commented on Task 1',
+  entity_type: 'task',
+  entity_id: MOCK_TASK_ID_1,
+  is_read: false,
+  created_at: '2026-01-15T10:00:00Z',
+  actor: mockProfile2,
+}
+
+// ── Attachments ──
+export const MOCK_ATTACHMENT_ID = 'attach-aaa-111'
+
+export const mockAttachment = {
+  id: MOCK_ATTACHMENT_ID,
+  task_id: MOCK_TASK_ID_1,
+  project_id: MOCK_PROJECT_ID,
+  user_id: MOCK_USER_ID,
+  file_name: 'test-file.pdf',
+  file_path: `${MOCK_PROJECT_ID}/${MOCK_TASK_ID_1}/abc-123.pdf`,
+  file_size: 1024,
+  content_type: 'application/pdf',
+  created_at: '2026-01-15T10:00:00Z',
+  profiles: mockProfile,
+}
+
 // ── Dashboard Layouts ──
 export const mockLayoutItems = [
   { widget_id: 'w1', type: 'task-status' as const, x: 0, y: 0, w: 4, h: 3 },
