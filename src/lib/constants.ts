@@ -37,6 +37,19 @@ export const PAGINATION = {
   MAX_PAGE_SIZE: 100,
 } as const
 
+// 아바타 업로드 설정
+export const AVATAR = {
+  BUCKET_NAME: 'avatars',
+  MAX_FILE_SIZE: 2 * 1024 * 1024, // 2MB
+  ALLOWED_TYPES: ['image/jpeg', 'image/png', 'image/gif', 'image/webp'],
+} as const
+
+// 프로필 설정
+export const PROFILE = {
+  NAME_MIN_LENGTH: 1,
+  NAME_MAX_LENGTH: 30,
+} as const
+
 // 위젯 타입
 export const WIDGET_TYPE = {
   TASK_STATUS: 'task-status',

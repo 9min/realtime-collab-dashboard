@@ -27,6 +27,12 @@ function createQueryBuilder(response: { data: unknown; error: unknown }) {
   return builder
 }
 
+interface MockStorageOptions {
+  uploadResponse?: { data: unknown; error: unknown }
+  removeResponse?: { data: unknown; error: unknown }
+  publicUrl?: string
+}
+
 interface MockClientOptions {
   /** from() 호출 순서대로 반환할 응답 배열 */
   fromResponses?: Array<{ data: unknown; error: unknown }>
@@ -34,6 +40,10 @@ interface MockClientOptions {
   rpcResponse?: { data: unknown; error: unknown }
   /** auth.getUser() 응답 유저 (null이면 미인증) */
   authUser?: { id: string; email?: string } | null
+  /** auth.updateUser() 응답 */
+  updateUserResponse?: { data: unknown; error: unknown }
+  /** storage mock 설정 */
+  storage?: MockStorageOptions
 }
 
 /**
@@ -41,7 +51,7 @@ interface MockClientOptions {
  * DI 패턴으로 서비스에 주입하여 사용.
  */
 export function createMockSupabaseClient(options: MockClientOptions = {}) {
-  const { fromResponses = [], rpcResponse, authUser } = options
+  const { fromResponses = [], rpcResponse, authUser, updateUserResponse, storage: storageOptions } = options
 
   let fromCallIndex = 0
   const builders: ReturnType<typeof createQueryBuilder>[] = []
@@ -64,12 +74,33 @@ export function createMockSupabaseClient(options: MockClientOptions = {}) {
     signInWithOAuth: vi.fn().mockResolvedValue({ data: { url: '' }, error: null }),
     signOut: vi.fn().mockResolvedValue({ error: null }),
     exchangeCodeForSession: vi.fn().mockResolvedValue({ error: null }),
+    updateUser: vi.fn().mockResolvedValue(
+      updateUserResponse ?? { data: { user: authUser }, error: null },
+    ),
+  }
+
+  const storageBucket = {
+    upload: vi.fn().mockResolvedValue(
+      storageOptions?.uploadResponse ?? { data: { path: 'test/avatar.png' }, error: null },
+    ),
+    remove: vi.fn().mockResolvedValue(
+      storageOptions?.removeResponse ?? { data: null, error: null },
+    ),
+    getPublicUrl: vi.fn().mockReturnValue({
+      data: { publicUrl: storageOptions?.publicUrl ?? 'https://example.com/storage/v1/object/public/avatars/test/avatar.png' },
+    }),
+  }
+
+  const storage = {
+    from: vi.fn().mockReturnValue(storageBucket),
+    _bucket: storageBucket,
   }
 
   return {
     from,
     rpc,
     auth,
+    storage,
     /** 내부 테스트용: from() 호출마다 생성된 query builder 목록 */
     _builders: builders,
   } as unknown

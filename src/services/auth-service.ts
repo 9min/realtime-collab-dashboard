@@ -1,5 +1,6 @@
 import type { SupabaseClient } from '@supabase/supabase-js'
 
+import { AVATAR } from '@/lib/constants'
 import type { ServiceResult } from '@/types/common'
 import type { Database, Tables } from '@/types/database'
 
@@ -93,4 +94,72 @@ export async function updateProfile(
   }
 
   return { data, error: null }
+}
+
+// 아바타 업로드
+export async function uploadAvatar(
+  supabase: Client,
+  userId: string,
+  file: File,
+): Promise<ServiceResult<string>> {
+  const ext = file.name.split('.').pop() ?? 'png'
+  const filePath = `${userId}/${Date.now()}.${ext}`
+
+  const { error: uploadError } = await supabase.storage
+    .from(AVATAR.BUCKET_NAME)
+    .upload(filePath, file, { upsert: true })
+
+  if (uploadError) {
+    return { data: null, error: { code: 'UPLOAD_ERROR', message: uploadError.message } }
+  }
+
+  const { data: urlData } = supabase.storage
+    .from(AVATAR.BUCKET_NAME)
+    .getPublicUrl(filePath)
+
+  return { data: urlData.publicUrl, error: null }
+}
+
+// 아바타 삭제
+export async function deleteAvatar(
+  supabase: Client,
+  avatarUrl: string,
+): Promise<ServiceResult<null>> {
+  const bucketPrefix = `/storage/v1/object/public/${AVATAR.BUCKET_NAME}/`
+  const idx = avatarUrl.indexOf(bucketPrefix)
+  if (idx === -1) {
+    return { data: null, error: { code: 'INVALID_URL', message: '올바르지 않은 아바타 URL입니다' } }
+  }
+  const filePath = avatarUrl.slice(idx + bucketPrefix.length)
+
+  const { error } = await supabase.storage
+    .from(AVATAR.BUCKET_NAME)
+    .remove([filePath])
+
+  if (error) {
+    return { data: null, error: { code: 'DELETE_ERROR', message: error.message } }
+  }
+
+  return { data: null, error: null }
+}
+
+// 프로필 + auth.user_metadata 동시 수정
+export async function updateProfileWithAuth(
+  supabase: Client,
+  userId: string,
+  input: Pick<Profile, 'full_name' | 'avatar_url'>,
+): Promise<ServiceResult<Profile>> {
+  const profileResult = await updateProfile(supabase, userId, input)
+  if (profileResult.error) return profileResult
+
+  // auth.users의 user_metadata도 업데이트 (헤더 즉시 반영용)
+  const { error: authError } = await supabase.auth.updateUser({
+    data: { full_name: input.full_name, avatar_url: input.avatar_url },
+  })
+
+  if (authError) {
+    return { data: null, error: { code: 'AUTH_UPDATE_ERROR', message: authError.message } }
+  }
+
+  return profileResult
 }

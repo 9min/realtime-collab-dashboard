@@ -11,6 +11,9 @@ import {
   signOut,
   getProfile,
   updateProfile,
+  uploadAvatar,
+  deleteAvatar,
+  updateProfileWithAuth,
 } from './auth-service'
 
 type Client = SupabaseClient<Database>
@@ -163,6 +166,123 @@ describe('auth-service', () => {
 
       expect(result.data).toBeNull()
       expect(result.error).not.toBeNull()
+    })
+  })
+
+  // ── uploadAvatar ──
+  describe('uploadAvatar', () => {
+    it('파일을 업로드하고 public URL을 반환한다', async () => {
+      const publicUrl = 'https://example.com/storage/v1/object/public/avatars/user-aaa-111/123.png'
+      const client = createMockSupabaseClient({
+        storage: { publicUrl },
+      }) as Client
+      const file = new File(['data'], 'photo.png', { type: 'image/png' })
+
+      const result = await uploadAvatar(client, MOCK_USER_ID, file)
+
+      expect(result.error).toBeNull()
+      expect(result.data).toBe(publicUrl)
+    })
+
+    it('업로드 에러 시 UPLOAD_ERROR를 반환한다', async () => {
+      const client = createMockSupabaseClient({
+        storage: { uploadResponse: { data: null, error: { message: 'Storage full' } } },
+      }) as Client
+      const file = new File(['data'], 'photo.png', { type: 'image/png' })
+
+      const result = await uploadAvatar(client, MOCK_USER_ID, file)
+
+      expect(result.data).toBeNull()
+      expect(result.error?.code).toBe('UPLOAD_ERROR')
+    })
+  })
+
+  // ── deleteAvatar ──
+  describe('deleteAvatar', () => {
+    it('올바른 URL에서 파일을 삭제한다', async () => {
+      const client = createMockSupabaseClient({}) as Client
+      const url = 'https://example.com/storage/v1/object/public/avatars/user-aaa-111/123.png'
+
+      const result = await deleteAvatar(client, url)
+
+      expect(result.error).toBeNull()
+    })
+
+    it('잘못된 URL이면 INVALID_URL 에러를 반환한다', async () => {
+      const client = createMockSupabaseClient({}) as Client
+
+      const result = await deleteAvatar(client, 'https://example.com/wrong-url')
+
+      expect(result.data).toBeNull()
+      expect(result.error?.code).toBe('INVALID_URL')
+    })
+
+    it('storage 삭제 에러 시 DELETE_ERROR를 반환한다', async () => {
+      const client = createMockSupabaseClient({
+        storage: { removeResponse: { data: null, error: { message: 'Not found' } } },
+      }) as Client
+      const url = 'https://example.com/storage/v1/object/public/avatars/user-aaa-111/123.png'
+
+      const result = await deleteAvatar(client, url)
+
+      expect(result.data).toBeNull()
+      expect(result.error?.code).toBe('DELETE_ERROR')
+    })
+  })
+
+  // ── updateProfileWithAuth ──
+  describe('updateProfileWithAuth', () => {
+    it('profiles 테이블과 auth.user_metadata를 동시에 업데이트한다', async () => {
+      const updated = { ...mockProfile, full_name: 'New Name' }
+      const client = createMockSupabaseClient({
+        fromResponses: [{ data: updated, error: null }],
+      }) as Client
+
+      const result = await updateProfileWithAuth(client, MOCK_USER_ID, {
+        full_name: 'New Name',
+        avatar_url: null,
+      })
+
+      expect(result.error).toBeNull()
+      expect(result.data?.full_name).toBe('New Name')
+      expect(
+        (client as unknown as { auth: { updateUser: ReturnType<typeof vi.fn> } }).auth.updateUser,
+      ).toHaveBeenCalledWith({
+        data: { full_name: 'New Name', avatar_url: null },
+      })
+    })
+
+    it('profiles 업데이트 실패 시 auth.updateUser를 호출하지 않는다', async () => {
+      const client = createMockSupabaseClient({
+        fromResponses: [{ data: null, error: { code: 'PGRST204', message: 'Not found' } }],
+      }) as Client
+
+      const result = await updateProfileWithAuth(client, 'nonexistent', {
+        full_name: 'X',
+        avatar_url: null,
+      })
+
+      expect(result.data).toBeNull()
+      expect(result.error).not.toBeNull()
+      expect(
+        (client as unknown as { auth: { updateUser: ReturnType<typeof vi.fn> } }).auth.updateUser,
+      ).not.toHaveBeenCalled()
+    })
+
+    it('auth.updateUser 실패 시 AUTH_UPDATE_ERROR를 반환한다', async () => {
+      const updated = { ...mockProfile, full_name: 'New Name' }
+      const client = createMockSupabaseClient({
+        fromResponses: [{ data: updated, error: null }],
+        updateUserResponse: { data: null, error: { message: 'Auth error' } },
+      }) as Client
+
+      const result = await updateProfileWithAuth(client, MOCK_USER_ID, {
+        full_name: 'New Name',
+        avatar_url: null,
+      })
+
+      expect(result.data).toBeNull()
+      expect(result.error?.code).toBe('AUTH_UPDATE_ERROR')
     })
   })
 })
