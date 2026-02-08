@@ -138,7 +138,7 @@ export function KanbanColumn({
                   <AlertDialogHeader>
                     <AlertDialogTitle>컬럼을 삭제하시겠습니까?</AlertDialogTitle>
                     <AlertDialogDescription>
-                      &quot;{column.title}&quot; 컬럼과 포함된 태스크 {tasks.length}개가 모두 삭제됩니다.
+                      &quot;{column.title}&quot; 컬럼과 포함된 태스크 {tasks.length}개가 모두 삭제됩니다.<br />
                       이 작업은 되돌릴 수 없습니다.
                     </AlertDialogDescription>
                   </AlertDialogHeader>

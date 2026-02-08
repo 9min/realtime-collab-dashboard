@@ -6,6 +6,17 @@ import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Trash2, UserPlus, Shield, Crown } from 'lucide-react'
 
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -296,17 +307,31 @@ export default function ProjectSettingsPage({ params }: ProjectSettingsPageProps
           <p className="text-muted-foreground text-sm">
             프로젝트를 삭제하면 모든 데이터(태스크, 컬럼, 멤버)가 영구 삭제됩니다.
           </p>
-          <Button
-            variant="destructive"
-            onClick={() => {
-              if (window.confirm('정말 이 프로젝트를 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.')) {
-                deleteMutation.mutate(projectId)
-              }
-            }}
-            disabled={deleteMutation.isPending}
-          >
-            프로젝트 삭제
-          </Button>
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button variant="destructive" disabled={deleteMutation.isPending}>
+                프로젝트 삭제
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>프로젝트를 삭제하시겠습니까?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  &quot;{project?.name}&quot; 프로젝트와 모든 데이터(태스크, 컬럼, 멤버)가 영구 삭제됩니다.
+                  <br />이 작업은 되돌릴 수 없습니다.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>취소</AlertDialogCancel>
+                <AlertDialogAction
+                  className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                  onClick={() => deleteMutation.mutate(projectId)}
+                >
+                  삭제
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </Card>
       )}
     </div>

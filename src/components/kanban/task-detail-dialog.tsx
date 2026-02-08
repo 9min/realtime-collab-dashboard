@@ -3,6 +3,17 @@
 import { useState } from 'react'
 import { Calendar, Trash2, User } from 'lucide-react'
 
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
@@ -251,10 +262,31 @@ export function TaskDetailDialog({ projectId, task, open, onOpenChange, canEdit 
           {/* 액션 버튼 — 뷰어에게 숨김 */}
           {canEdit && (
             <div className="flex justify-between">
-              <Button variant="destructive" size="sm" onClick={handleDelete}>
-                <Trash2 className="mr-1 h-4 w-4" />
-                삭제
-              </Button>
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button variant="destructive" size="sm">
+                    <Trash2 className="mr-1 h-4 w-4" />
+                    삭제
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>태스크를 삭제하시겠습니까?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      &quot;{task.title}&quot; 태스크가 삭제됩니다.<br />이 작업은 되돌릴 수 없습니다.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>취소</AlertDialogCancel>
+                    <AlertDialogAction
+                      className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                      onClick={handleDelete}
+                    >
+                      삭제
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
               <div className="flex gap-2">
                 {isEditing ? (
                   <>
