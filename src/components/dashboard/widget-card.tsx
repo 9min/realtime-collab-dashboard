@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { cn } from '@/lib/utils'
 import { WIDGET_TYPE } from '@/lib/constants'
+import { useProjectMembers } from '@/queries/use-projects'
 import type { WidgetType } from '@/types/common'
 import { WIDGET_REGISTRY } from '@/types/dashboard'
 
@@ -63,7 +64,9 @@ export function WidgetCard({
             <GripVertical className="text-muted-foreground h-4 w-4" />
           </div>
         )}
-        <CardTitle className="flex-1 text-sm font-medium">{title}</CardTitle>
+        <CardTitle className="flex-1 text-sm font-medium">
+          <WidgetTitleText type={type} title={title} projectId={projectId} />
+        </CardTitle>
         {isEditMode && (
           <Button
             variant="ghost"
@@ -75,7 +78,7 @@ export function WidgetCard({
           </Button>
         )}
       </CardHeader>
-      <CardContent className="flex-1 p-4 pt-0">
+      <CardContent className="min-h-0 flex-1 overflow-hidden p-4 pt-0">
         <WidgetContent type={type} projectId={projectId} />
       </CardContent>
     </Card>
@@ -100,6 +103,26 @@ function WidgetContent({ type, projectId }: { type: WidgetType; projectId: strin
         </div>
       )
   }
+}
+
+function WidgetTitleText({ type, title, projectId }: { type: WidgetType; title: string; projectId: string }) {
+  if (type === WIDGET_TYPE.MEMBER_LIST) {
+    return <MemberCountTitle title={title} projectId={projectId} />
+  }
+  return <>{title}</>
+}
+
+function MemberCountTitle({ title, projectId }: { title: string; projectId: string }) {
+  const { data: members } = useProjectMembers(projectId)
+  const count = members?.length ?? 0
+  return (
+    <>
+      {title}
+      {count > 0 && (
+        <span className="text-muted-foreground ml-1 font-normal">({count})</span>
+      )}
+    </>
+  )
 }
 
 function WidgetSkeleton() {
