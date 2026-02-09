@@ -60,8 +60,8 @@ export function ActivityFilterBar({ members }: ActivityFilterBarProps) {
         : `${userIds.length}명 선택`
 
   return (
-    <div className="flex flex-wrap items-center gap-3 pb-4">
-      {/* 검색 Input */}
+    <div className="bg-muted/30 flex flex-wrap items-center gap-3 rounded-lg border p-3">
+      {/* Search Input */}
       <div className="relative w-56">
         <Search className="text-muted-foreground absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2" />
         <Input
@@ -72,10 +72,10 @@ export function ActivityFilterBar({ members }: ActivityFilterBarProps) {
         />
       </div>
 
-      {/* 액션 유형 */}
+      {/* Action Type */}
       <Popover>
         <PopoverTrigger asChild>
-          <Button variant="outline" size="sm" className="h-9 gap-1.5 text-sm font-normal">
+          <Button variant="outline" size="sm" className="h-9 cursor-pointer gap-1.5 text-sm font-normal">
             <span className="text-muted-foreground">액션:</span>
             <span>{actionLabel}</span>
             <ChevronDown className="text-muted-foreground h-3.5 w-3.5" />
@@ -90,7 +90,7 @@ export function ActivityFilterBar({ members }: ActivityFilterBarProps) {
                 key={action}
                 onClick={() => toggleActionType(action)}
                 className={cn(
-                  'flex w-full items-center gap-2 rounded-sm px-2 py-1.5 text-sm transition-colors',
+                  'flex w-full cursor-pointer items-center gap-2 rounded-sm px-2 py-1.5 text-sm transition-colors',
                   'hover:bg-accent hover:text-accent-foreground',
                   isActive && 'bg-accent/50',
                 )}
@@ -111,10 +111,10 @@ export function ActivityFilterBar({ members }: ActivityFilterBarProps) {
         </PopoverContent>
       </Popover>
 
-      {/* 대상 유형 */}
+      {/* Entity Type */}
       <Popover>
         <PopoverTrigger asChild>
-          <Button variant="outline" size="sm" className="h-9 gap-1.5 text-sm font-normal">
+          <Button variant="outline" size="sm" className="h-9 cursor-pointer gap-1.5 text-sm font-normal">
             <span className="text-muted-foreground">대상:</span>
             <span>{entityLabel}</span>
             <ChevronDown className="text-muted-foreground h-3.5 w-3.5" />
@@ -130,7 +130,7 @@ export function ActivityFilterBar({ members }: ActivityFilterBarProps) {
                 key={entity}
                 onClick={() => toggleEntityType(entity)}
                 className={cn(
-                  'flex w-full items-center gap-2 rounded-sm px-2 py-1.5 text-sm transition-colors',
+                  'flex w-full cursor-pointer items-center gap-2 rounded-sm px-2 py-1.5 text-sm transition-colors',
                   'hover:bg-accent hover:text-accent-foreground',
                   isActive && 'bg-accent/50',
                 )}
@@ -151,11 +151,11 @@ export function ActivityFilterBar({ members }: ActivityFilterBarProps) {
         </PopoverContent>
       </Popover>
 
-      {/* 사용자 */}
+      {/* User */}
       {memberOptions.length > 0 && (
         <Popover>
           <PopoverTrigger asChild>
-            <Button variant="outline" size="sm" className="h-9 gap-1.5 text-sm font-normal">
+            <Button variant="outline" size="sm" className="h-9 cursor-pointer gap-1.5 text-sm font-normal">
               <span className="text-muted-foreground">사용자:</span>
               <span>{userLabel}</span>
               <ChevronDown className="text-muted-foreground h-3.5 w-3.5" />
@@ -169,7 +169,7 @@ export function ActivityFilterBar({ members }: ActivityFilterBarProps) {
                   key={option.id}
                   onClick={() => toggleUserId(option.id)}
                   className={cn(
-                    'flex w-full items-center gap-2 rounded-sm px-2 py-1.5 text-sm transition-colors',
+                    'flex w-full cursor-pointer items-center gap-2 rounded-sm px-2 py-1.5 text-sm transition-colors',
                     'hover:bg-accent hover:text-accent-foreground',
                     isActive && 'bg-accent/50',
                   )}
@@ -190,9 +190,9 @@ export function ActivityFilterBar({ members }: ActivityFilterBarProps) {
         </Popover>
       )}
 
-      {/* 필터 초기화 */}
+      {/* Reset Filters */}
       {hasActiveFilters() && (
-        <Button variant="ghost" size="sm" onClick={resetFilters} className="h-8 gap-1 text-xs">
+        <Button variant="ghost" size="sm" onClick={resetFilters} className="h-8 cursor-pointer gap-1 text-xs">
           <X className="h-3 w-3" />
           초기화
         </Button>

@@ -89,8 +89,8 @@ export const ActivityItem = memo(function ActivityItem({ activity }: ActivityIte
   const entityLabel = entityConfig?.label ?? activity.entity_type
 
   return (
-    <div className="hover:bg-accent/50 flex gap-3 rounded-lg px-3 py-3 transition-colors">
-      {/* 액션 아이콘 */}
+    <div className="hover:bg-muted/50 flex gap-3 rounded-lg px-3 py-3 transition-colors">
+      {/* Action icon with colored bg */}
       <div
         className={cn(
           'flex h-8 w-8 shrink-0 items-center justify-center rounded-full',
@@ -102,23 +102,23 @@ export const ActivityItem = memo(function ActivityItem({ activity }: ActivityIte
         )}
       </div>
 
-      {/* 중앙 콘텐츠 */}
+      {/* Content */}
       <div className="min-w-0 flex-1">
         <p className="text-sm leading-relaxed">{message}</p>
-        <div className="mt-1 flex flex-wrap items-center gap-1.5">
-          <Badge variant="secondary" className="text-[10px] px-1.5 py-0">
+        <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
+          <Badge variant="secondary" className="gap-1 px-1.5 py-0 text-[10px]">
             {actionLabel}
           </Badge>
-          <Badge variant="outline" className="text-[10px] px-1.5 py-0">
+          <Badge variant="outline" className="gap-1 px-1.5 py-0 text-[10px]">
             {entityLabel}
           </Badge>
-          <span className="text-muted-foreground text-xs">{time}</span>
+          <span className="text-muted-foreground ml-auto text-xs">{time}</span>
         </div>
       </div>
 
-      {/* 유저 아바타 */}
-      <Avatar className="h-6 w-6 shrink-0">
-        <AvatarImage src={profile.avatar_url || undefined} />
+      {/* User avatar */}
+      <Avatar className="h-7 w-7 shrink-0 ring-2 ring-transparent">
+        <AvatarImage src={profile.avatar_url || undefined} alt={profile.full_name ?? ''} />
         <AvatarFallback className="text-[10px]">
           {getInitials(profile.full_name, profile.email)}
         </AvatarFallback>
