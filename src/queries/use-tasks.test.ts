@@ -12,6 +12,7 @@ vi.mock('@/services/task-service', () => ({
   createTask: vi.fn(),
   updateTask: vi.fn(),
   deleteTask: vi.fn(),
+  deleteTasksBefore: vi.fn(),
   moveTask: vi.fn(),
 }))
 
@@ -20,9 +21,9 @@ vi.mock('sonner', () => ({
 }))
 
 import { toast } from 'sonner'
-import { getTasksByProject, createTask, updateTask, deleteTask, moveTask } from '@/services/task-service'
+import { getTasksByProject, createTask, updateTask, deleteTask, deleteTasksBefore, moveTask } from '@/services/task-service'
 import { mockTasks } from '@/__tests__/helpers/fixtures'
-import { useTasks, useCreateTask, useUpdateTask, useDeleteTask, useMoveTask, taskKeys } from './use-tasks'
+import { useTasks, useCreateTask, useUpdateTask, useDeleteTask, useBulkDeleteTasks, useMoveTask, taskKeys } from './use-tasks'
 
 describe('use-tasks', () => {
   let queryClient: QueryClient
@@ -189,6 +190,45 @@ describe('use-tasks', () => {
       })
 
       expect(toast.success).toHaveBeenCalledWith('태스크가 삭제되었습니다')
+    })
+  })
+
+  // ── useBulkDeleteTasks ──
+  describe('useBulkDeleteTasks', () => {
+    it('성공 시 캐시 무효화 + success toast', async () => {
+      vi.mocked(deleteTasksBefore).mockResolvedValue({
+        data: { deletedCount: 3 },
+        error: null,
+      })
+      const invalidateSpy = vi.spyOn(queryClient, 'invalidateQueries')
+
+      const { result } = renderHook(() => useBulkDeleteTasks('p1'), { wrapper })
+
+      await act(async () => {
+        await result.current.mutateAsync('2026-01-01T00:00:00Z')
+      })
+
+      expect(toast.success).toHaveBeenCalledWith('3개의 태스크가 삭제되었습니다')
+      expect(invalidateSpy).toHaveBeenCalled()
+    })
+
+    it('실패 시 error toast', async () => {
+      vi.mocked(deleteTasksBefore).mockResolvedValue({
+        data: null,
+        error: { code: 'ERR', message: 'fail' },
+      })
+
+      const { result } = renderHook(() => useBulkDeleteTasks('p1'), { wrapper })
+
+      await act(async () => {
+        try {
+          await result.current.mutateAsync('2026-01-01T00:00:00Z')
+        } catch {
+          // expected
+        }
+      })
+
+      expect(toast.error).toHaveBeenCalledWith('태스크 일괄 삭제에 실패했습니다')
     })
   })
 

@@ -4,7 +4,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 
 import { useSupabase } from '@/components/providers/supabase-provider'
-import { getTasksByProject, createTask, updateTask, deleteTask, moveTask } from '@/services/task-service'
+import { getTasksByProject, createTask, updateTask, deleteTask, deleteTasksBefore, moveTask } from '@/services/task-service'
 import { chartKeys } from '@/queries/use-chart-data'
 import { QUERY_CONFIG } from '@/lib/constants'
 import type { InsertTables, UpdateTables } from '@/types/database'
@@ -121,6 +121,27 @@ export function useDeleteTask(projectId: string) {
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: taskKeys.list(projectId) })
       queryClient.invalidateQueries({ queryKey: chartKeys.taskStatus(projectId) })
+    },
+  })
+}
+
+export function useBulkDeleteTasks(projectId: string) {
+  const supabase = useSupabase()
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: async (beforeDate: string) => {
+      const result = await deleteTasksBefore(supabase, projectId, beforeDate)
+      if (result.error) throw new Error(result.error.message)
+      return result.data
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: taskKeys.list(projectId) })
+      queryClient.invalidateQueries({ queryKey: chartKeys.taskStatus(projectId) })
+      toast.success(`${data.deletedCount}개의 태스크가 삭제되었습니다`)
+    },
+    onError: () => {
+      toast.error('태스크 일괄 삭제에 실패했습니다')
     },
   })
 }

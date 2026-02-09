@@ -16,6 +16,7 @@ import { useKanbanFilterStore } from '@/stores/kanban-filter-store'
 import type { Tables } from '@/types/database'
 import type { KanbanColumnWithTasks } from '@/types/kanban'
 
+import { BulkDeleteDialog } from './bulk-delete-dialog'
 import { CreateTaskForm } from './create-task-form'
 import { KanbanColumn } from './kanban-column'
 import { TaskFilterBar } from './task-filter-bar'
@@ -121,8 +122,17 @@ export function KanbanBoard({ projectId }: KanbanBoardProps) {
 
   return (
     <>
-      {/* 필터 바 */}
-      <TaskFilterBar members={members ?? []} />
+      {/* 필터 바 + 일괄 삭제 */}
+      <div className="flex flex-wrap items-start gap-3">
+        <div className="flex-1">
+          <TaskFilterBar members={members ?? []} />
+        </div>
+        {canDeleteAll && (
+          <div className="pb-4">
+            <BulkDeleteDialog projectId={projectId} tasks={tasks ?? []} />
+          </div>
+        )}
+      </div>
 
       <DragDropContext onDragEnd={handleDragEnd}>
         <div className="flex gap-4 overflow-x-auto pb-4">

@@ -3,7 +3,7 @@ import { describe, it, expect } from 'vitest'
 import type { TaskPriority } from '@/types/common'
 import type { Task } from '@/types/kanban'
 
-import { filterTasks, UNASSIGNED_ID } from './task-filter'
+import { filterTasks, getTasksCreatedBefore, UNASSIGNED_ID } from './task-filter'
 
 const baseCriteria = {
   searchText: '',
@@ -111,6 +111,30 @@ describe('task-filter', () => {
       })
       expect(result).toHaveLength(1)
       expect(result[0].id).toBe('t2')
+    })
+  })
+
+  describe('getTasksCreatedBefore', () => {
+    const tasksWithDates: Task[] = [
+      { ...tasks[0], id: 'old-1', created_at: '2025-12-01T00:00:00Z' },
+      { ...tasks[1], id: 'old-2', created_at: '2025-12-15T00:00:00Z' },
+      { ...tasks[2], id: 'new-1', created_at: '2026-02-01T00:00:00Z' },
+    ]
+
+    it('기준 날짜 이전 태스크만 반환한다', () => {
+      const result = getTasksCreatedBefore(tasksWithDates, '2026-01-01T00:00:00Z')
+      expect(result).toHaveLength(2)
+      expect(result.map((t) => t.id)).toEqual(['old-1', 'old-2'])
+    })
+
+    it('대상 없으면 빈 배열을 반환한다', () => {
+      const result = getTasksCreatedBefore(tasksWithDates, '2025-01-01T00:00:00Z')
+      expect(result).toHaveLength(0)
+    })
+
+    it('모두 대상이면 전체를 반환한다', () => {
+      const result = getTasksCreatedBefore(tasksWithDates, '2027-01-01T00:00:00Z')
+      expect(result).toHaveLength(3)
     })
   })
 })

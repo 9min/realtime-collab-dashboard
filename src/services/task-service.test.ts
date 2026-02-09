@@ -18,6 +18,7 @@ import {
   createTask,
   updateTask,
   deleteTask,
+  deleteTasksBefore,
   moveTask,
 } from './task-service'
 
@@ -153,6 +154,42 @@ describe('task-service', () => {
       const result = await deleteTask(client, 'nonexistent')
 
       expect(result.error).toEqual({ code: 'PGRST204', message: 'Not found' })
+    })
+  })
+
+  // ── deleteTasksBefore ──
+  describe('deleteTasksBefore', () => {
+    it('기준 날짜 이전 태스크를 삭제하고 deletedCount를 반환한다', async () => {
+      const client = createMockSupabaseClient({
+        fromResponses: [{ data: [{ id: MOCK_TASK_ID_1 }, { id: MOCK_TASK_ID_2 }], error: null }],
+      }) as Client
+
+      const result = await deleteTasksBefore(client, MOCK_PROJECT_ID, '2026-01-01T00:00:00Z')
+
+      expect(result.error).toBeNull()
+      expect(result.data).toEqual({ deletedCount: 2 })
+    })
+
+    it('에러 시 error를 반환한다', async () => {
+      const client = createMockSupabaseClient({
+        fromResponses: [{ data: null, error: { code: 'PGRST204', message: 'Delete failed' } }],
+      }) as Client
+
+      const result = await deleteTasksBefore(client, MOCK_PROJECT_ID, '2026-01-01T00:00:00Z')
+
+      expect(result.data).toBeNull()
+      expect(result.error).toEqual({ code: 'PGRST204', message: 'Delete failed' })
+    })
+
+    it('대상 없으면 deletedCount 0을 반환한다', async () => {
+      const client = createMockSupabaseClient({
+        fromResponses: [{ data: [], error: null }],
+      }) as Client
+
+      const result = await deleteTasksBefore(client, MOCK_PROJECT_ID, '2025-01-01T00:00:00Z')
+
+      expect(result.error).toBeNull()
+      expect(result.data).toEqual({ deletedCount: 0 })
     })
   })
 

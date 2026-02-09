@@ -50,4 +50,8 @@ export function filterTasks(tasks: Task[], criteria: FilterCriteria): Task[] {
   })
 }
 
+export function getTasksCreatedBefore(tasks: Task[], beforeDate: string): Task[] {
+  return tasks.filter((task) => task.created_at < beforeDate)
+}
+
 export { UNASSIGNED_ID }

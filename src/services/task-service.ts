@@ -89,6 +89,26 @@ export async function deleteTask(
   return { data: null, error: null }
 }
 
+// 기준 날짜 이전에 생성된 태스크 일괄 삭제
+export async function deleteTasksBefore(
+  supabase: Client,
+  projectId: string,
+  beforeDate: string,
+): Promise<ServiceResult<{ deletedCount: number }>> {
+  const { data, error } = await supabase
+    .from('tasks')
+    .delete()
+    .eq('project_id', projectId)
+    .lt('created_at', beforeDate)
+    .select('id')
+
+  if (error) {
+    return { data: null, error: { code: error.code, message: error.message } }
+  }
+
+  return { data: { deletedCount: data?.length ?? 0 }, error: null }
+}
+
 // 태스크 이동 (DnD): 컬럼 변경 + 위치 재정렬
 export async function moveTask(
   supabase: Client,
