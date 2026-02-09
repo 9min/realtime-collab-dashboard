@@ -9,6 +9,9 @@ import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import { cn } from '@/lib/utils'
 import type { Tables } from '@/types/database'
+import type { Label } from '@/types/label'
+
+import { LabelBadge } from './label-badge'
 
 const PRIORITY_STYLES = {
   low: 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300',
@@ -35,9 +38,10 @@ interface TaskCardProps {
   onClick: (task: Tables<'tasks'>) => void
   members?: MemberProfile[]
   isDragDisabled?: boolean
+  taskLabels?: Label[]
 }
 
-export function TaskCard({ task, index, onClick, members, isDragDisabled = false }: TaskCardProps) {
+export function TaskCard({ task, index, onClick, members, isDragDisabled = false, taskLabels }: TaskCardProps) {
   const assignee = task.assignee_id
     ? members?.find((m) => m.user_id === task.assignee_id)?.profiles
     : null
@@ -60,6 +64,13 @@ export function TaskCard({ task, index, onClick, members, isDragDisabled = false
             onClick={() => onClick(task)}
           >
             <CardHeader className="p-3 pb-1">
+              {taskLabels && taskLabels.length > 0 && (
+                <div className="mb-1 flex flex-wrap gap-1">
+                  {taskLabels.map((l) => (
+                    <LabelBadge key={l.id} label={l} size="sm" />
+                  ))}
+                </div>
+              )}
               <span className="text-sm font-medium leading-snug">{task.title}</span>
             </CardHeader>
             <CardContent className="flex items-center gap-2 px-3 pb-3 pt-1">

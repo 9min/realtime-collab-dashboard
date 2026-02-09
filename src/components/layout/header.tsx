@@ -15,14 +15,18 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { useAuth } from '@/hooks/use-auth'
 import { useMyProfile } from '@/queries/use-admin'
+import { useProfile } from '@/queries/use-profile'
 
 import { ProfileEditDialog } from '../profile/profile-edit-dialog'
 import { NotificationBell } from '../notification/notification-bell'
+import { SearchCommand } from '../search/search-command'
+import { SearchTrigger } from '../search/search-trigger'
 import { ThemeToggle } from './theme-toggle'
 
 export function Header() {
   const { user, isAuthenticated, signOut } = useAuth()
   const { data: myProfile } = useMyProfile()
+  const { data: profile } = useProfile()
   const router = useRouter()
   const [profileOpen, setProfileOpen] = useState(false)
 
@@ -31,9 +35,11 @@ export function Header() {
     router.push('/login')
   }
 
-  // 아바타 폴백: 이름 첫 글자 또는 이메일 첫 글자
+  // 아바타: profiles 테이블 데이터만 사용 (OAuth 프로필 사진 자동 노출 방지)
+  const avatarUrl = profile?.avatar_url ?? null
+  const displayName = profile?.full_name ?? user?.user_metadata?.full_name ?? '사용자'
   const fallbackInitial =
-    user?.user_metadata?.full_name?.[0] ?? user?.email?.[0]?.toUpperCase() ?? '?'
+    profile?.full_name?.[0] ?? user?.email?.[0]?.toUpperCase() ?? '?'
 
   return (
     <header className="sticky top-0 z-50 flex h-14 items-center justify-between bg-gradient-to-r from-slate-900 to-blue-900 px-6 shadow-md dark:from-slate-950 dark:to-blue-950">
@@ -44,8 +50,10 @@ export function Header() {
         실시간 협업 일정관리
       </button>
       <div className="flex items-center gap-2 text-white">
+        <SearchTrigger />
         <ThemeToggle />
         <NotificationBell />
+        <SearchCommand />
 
         {isAuthenticated && user && (
           <>
@@ -54,8 +62,8 @@ export function Header() {
                 <Button variant="ghost" className="relative h-9 w-9 rounded-full hover:bg-white/10">
                   <Avatar className="h-9 w-9">
                     <AvatarImage
-                      src={user.user_metadata?.avatar_url}
-                      alt={user.user_metadata?.full_name ?? ''}
+                      src={avatarUrl ?? undefined}
+                      alt={displayName}
                     />
                     <AvatarFallback>{fallbackInitial}</AvatarFallback>
                   </Avatar>
@@ -63,7 +71,7 @@ export function Header() {
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-48">
                 <div className="px-2 py-1.5">
-                  <p className="text-sm font-medium">{user.user_metadata?.full_name ?? '사용자'}</p>
+                  <p className="text-sm font-medium">{displayName}</p>
                   <p className="text-muted-foreground text-xs">{user.email}</p>
                 </div>
                 <DropdownMenuSeparator />

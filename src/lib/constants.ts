@@ -50,6 +50,20 @@ export const PROFILE = {
   NAME_MAX_LENGTH: 30,
 } as const
 
+// 라벨 색상 팔레트
+export const LABEL_COLORS = [
+  { name: '빨강', value: '#EF4444' },
+  { name: '주황', value: '#F97316' },
+  { name: '노랑', value: '#EAB308' },
+  { name: '초록', value: '#22C55E' },
+  { name: '하늘', value: '#06B6D4' },
+  { name: '파랑', value: '#3B82F6' },
+  { name: '보라', value: '#8B5CF6' },
+  { name: '분홍', value: '#EC4899' },
+  { name: '회색', value: '#6B7280' },
+  { name: '갈색', value: '#92400E' },
+] as const
+
 // 위젯 타입
 export const WIDGET_TYPE = {
   TASK_STATUS: 'task-status',

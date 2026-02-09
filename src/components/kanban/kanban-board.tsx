@@ -2,6 +2,7 @@
 
 import { useCallback, useMemo, useState } from 'react'
 import dynamic from 'next/dynamic'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { DragDropContext, type DropResult } from '@hello-pangea/dnd'
 import { Plus } from 'lucide-react'
 
@@ -10,6 +11,7 @@ import { useAuth } from '@/hooks/use-auth'
 import { MEMBER_ROLE } from '@/lib/constants'
 import { filterTasks } from '@/lib/task-filter'
 import { useColumns, useCreateColumn, useUpdateColumn, useDeleteColumn } from '@/queries/use-columns'
+import { useLabels, useTaskLabels } from '@/queries/use-labels'
 import { useProjectMembers } from '@/queries/use-projects'
 import { useTasks, useMoveTask } from '@/queries/use-tasks'
 import { useKanbanFilterStore } from '@/stores/kanban-filter-store'
@@ -18,6 +20,7 @@ import type { KanbanColumnWithTasks } from '@/types/kanban'
 
 import { BulkDeleteDialog } from './bulk-delete-dialog'
 import { CreateTaskForm } from './create-task-form'
+import { ExportButton } from './export-button'
 import { KanbanColumn } from './kanban-column'
 import { TaskFilterBar } from './task-filter-bar'
 
@@ -30,6 +33,8 @@ interface KanbanBoardProps {
 }
 
 export function KanbanBoard({ projectId }: KanbanBoardProps) {
+  const router = useRouter()
+  const searchParams = useSearchParams()
   const { user } = useAuth()
   const { data: columns, isLoading: columnsLoading } = useColumns(projectId)
   const { data: tasks, isLoading: tasksLoading } = useTasks(projectId)
@@ -44,25 +49,54 @@ export function KanbanBoard({ projectId }: KanbanBoardProps) {
   const canEdit = currentRole !== MEMBER_ROLE.VIEWER
   const canDeleteAll = currentRole === MEMBER_ROLE.OWNER || currentRole === MEMBER_ROLE.ADMIN
 
+  // 라벨 데이터
+  const { data: labels } = useLabels(projectId)
+  const { data: taskLabelsData } = useTaskLabels(projectId)
+
   // 필터 상태
-  const { searchText, priorities, assigneeIds, dueDateRange } = useKanbanFilterStore()
+  const { searchText, priorities, assigneeIds, dueDateRange, labelIds } = useKanbanFilterStore()
 
   // 태스크 생성 다이얼로그 상태
   const [createTaskColumnId, setCreateTaskColumnId] = useState<string | null>(null)
-  // 태스크 상세 다이얼로그 상태
+  // 태스크 상세 다이얼로그 상태 (수동 클릭)
   const [selectedTask, setSelectedTask] = useState<Tables<'tasks'> | null>(null)
+
+  // URL 쿼리 파라미터로 태스크 자동 선택 (검색 결과 클릭 시)
+  const taskIdParam = searchParams.get('taskId')
+  const taskFromUrl = useMemo(() => {
+    if (!taskIdParam || !tasks) return null
+    return tasks.find((t) => t.id === taskIdParam) ?? null
+  }, [taskIdParam, tasks])
+
+  // 다이얼로그에 표시할 태스크: URL 파라미터 우선
+  const displayedTask = taskFromUrl ?? selectedTask
+
+  // task→labelIds 맵 생성
+  const taskLabelMap = useMemo(() => {
+    const map = new Map<string, string[]>()
+    if (!taskLabelsData) return map
+    for (const tl of taskLabelsData) {
+      const existing = map.get(tl.task_id)
+      if (existing) {
+        existing.push(tl.label_id)
+      } else {
+        map.set(tl.task_id, [tl.label_id])
+      }
+    }
+    return map
+  }, [taskLabelsData])
 
   // 컬럼별 태스크 그룹핑 + 필터 적용
   const columnsWithTasks: KanbanColumnWithTasks[] = useMemo(() => {
     if (!columns || !tasks) return []
-    const filtered = filterTasks(tasks, { searchText, priorities, assigneeIds, dueDateRange })
+    const filtered = filterTasks(tasks, { searchText, priorities, assigneeIds, dueDateRange, labelIds, taskLabelMap })
     return columns.map((column) => ({
       ...column,
       tasks: filtered
         .filter((t) => t.column_id === column.id)
         .sort((a, b) => a.position - b.position),
     }))
-  }, [columns, tasks, searchText, priorities, assigneeIds, dueDateRange])
+  }, [columns, tasks, searchText, priorities, assigneeIds, dueDateRange, labelIds, taskLabelMap])
 
   // DnD 완료 핸들러 — 뷰어는 무시, 일반 멤버는 본인 태스크만
   const handleDragEnd = useCallback(
@@ -125,13 +159,14 @@ export function KanbanBoard({ projectId }: KanbanBoardProps) {
       {/* 필터 바 + 일괄 삭제 */}
       <div className="flex flex-wrap items-start gap-3">
         <div className="flex-1">
-          <TaskFilterBar members={members ?? []} />
+          <TaskFilterBar members={members ?? []} labels={labels ?? []} />
         </div>
-        {canDeleteAll && (
-          <div className="pb-4">
+        <div className="flex gap-2 pb-4">
+          <ExportButton projectId={projectId} />
+          {canDeleteAll && (
             <BulkDeleteDialog projectId={projectId} tasks={tasks ?? []} />
-          </div>
-        )}
+          )}
+        </div>
       </div>
 
       <DragDropContext onDragEnd={handleDragEnd}>
@@ -150,6 +185,8 @@ export function KanbanBoard({ projectId }: KanbanBoardProps) {
               canMoveAll={canDeleteAll}
               currentUserId={user?.id}
               members={members}
+              labels={labels}
+              taskLabelMap={taskLabelMap}
             />
           ))}
 
@@ -180,13 +217,20 @@ export function KanbanBoard({ projectId }: KanbanBoardProps) {
       {/* 태스크 상세 다이얼로그 */}
       <TaskDetailDialog
         projectId={projectId}
-        task={selectedTask}
-        open={selectedTask !== null}
+        task={displayedTask}
+        open={displayedTask !== null}
         onOpenChange={(open) => {
-          if (!open) setSelectedTask(null)
+          if (!open) {
+            setSelectedTask(null)
+            if (taskIdParam) {
+              router.replace(`/projects/${projectId}/board`, { scroll: false })
+            }
+          }
         }}
         canEdit={canEdit}
         canDeleteAll={canDeleteAll}
+        labels={labels}
+        taskLabelIds={displayedTask ? taskLabelMap.get(displayedTask.id) : undefined}
       />
     </>
   )

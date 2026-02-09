@@ -12,6 +12,8 @@ import { chartKeys } from '@/queries/use-chart-data'
 import { columnKeys } from '@/queries/use-columns'
 import { commentKeys } from '@/queries/use-comments'
 import { notificationKeys } from '@/queries/use-notifications'
+import { labelKeys } from '@/queries/use-labels'
+import { subtaskKeys } from '@/queries/use-subtasks'
 import { taskKeys } from '@/queries/use-tasks'
 import { useAuth } from '@/hooks/use-auth'
 
@@ -130,6 +132,48 @@ export function useRealtimeSubscription(projectId: string) {
             filter: `project_id=eq.${projectId}`,
           },
           () => {
+            queryClient.invalidateQueries({ queryKey: activityKeys.list(projectId) })
+          },
+        )
+        // labels 변경 감지
+        .on(
+          'postgres_changes',
+          {
+            event: '*',
+            schema: 'public',
+            table: 'labels',
+            filter: `project_id=eq.${projectId}`,
+          },
+          () => {
+            queryClient.invalidateQueries({ queryKey: labelKeys.list(projectId) })
+          },
+        )
+        // task_labels 변경 감지
+        .on(
+          'postgres_changes',
+          {
+            event: '*',
+            schema: 'public',
+            table: 'task_labels',
+          },
+          () => {
+            queryClient.invalidateQueries({ queryKey: labelKeys.taskLabels(projectId) })
+          },
+        )
+        // subtasks 변경 감지
+        .on(
+          'postgres_changes',
+          {
+            event: '*',
+            schema: 'public',
+            table: 'subtasks',
+            filter: `project_id=eq.${projectId}`,
+          },
+          (payload) => {
+            const record = (payload.new ?? payload.old) as Record<string, unknown> | undefined
+            if (record && typeof record['task_id'] === 'string') {
+              queryClient.invalidateQueries({ queryKey: subtaskKeys.list(record['task_id'] as string) })
+            }
             queryClient.invalidateQueries({ queryKey: activityKeys.list(projectId) })
           },
         )

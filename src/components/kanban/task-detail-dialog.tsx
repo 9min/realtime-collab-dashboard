@@ -38,6 +38,9 @@ const UNASSIGNED_VALUE = '__none__'
 
 import { AttachmentSection } from './attachment-section'
 import { CommentSection } from './comment-section'
+import { LabelBadge } from './label-badge'
+import { LabelPicker } from './label-picker'
+import { SubtaskSection } from './subtask-section'
 
 const PRIORITY_STYLES = {
   low: 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300',
@@ -60,9 +63,11 @@ interface TaskDetailDialogProps {
   onOpenChange: (open: boolean) => void
   canEdit?: boolean
   canDeleteAll?: boolean
+  labels?: Tables<'labels'>[]
+  taskLabelIds?: string[]
 }
 
-export function TaskDetailDialog({ projectId, task, open, onOpenChange, canEdit = true, canDeleteAll = false }: TaskDetailDialogProps) {
+export function TaskDetailDialog({ projectId, task, open, onOpenChange, canEdit = true, canDeleteAll = false, labels, taskLabelIds }: TaskDetailDialogProps) {
   const { user } = useAuth()
   const updateTaskMutation = useUpdateTask(projectId)
   const deleteTaskMutation = useDeleteTask(projectId)
@@ -212,6 +217,28 @@ export function TaskDetailDialog({ projectId, task, open, onOpenChange, canEdit 
             )}
           </div>
 
+          {/* 라벨 */}
+          {labels && labels.length > 0 && (
+            <div className="flex items-center gap-2">
+              <span className="text-muted-foreground w-16 text-sm">라벨</span>
+              <div className="flex flex-wrap items-center gap-1">
+                {taskLabelIds && taskLabelIds.length > 0 ? (
+                  labels
+                    .filter((l) => taskLabelIds.includes(l.id))
+                    .map((l) => <LabelBadge key={l.id} label={l} />)
+                ) : (
+                  <span className="text-muted-foreground text-sm">없음</span>
+                )}
+                <LabelPicker
+                  projectId={projectId}
+                  taskId={task.id}
+                  assignedLabelIds={taskLabelIds ?? []}
+                  canEdit={canInteract}
+                />
+              </div>
+            </div>
+          )}
+
           <Separator />
 
           {/* 설명 */}
@@ -231,6 +258,15 @@ export function TaskDetailDialog({ projectId, task, open, onOpenChange, canEdit 
               <p className="text-muted-foreground text-sm">설명이 없습니다</p>
             )}
           </div>
+
+          <Separator />
+
+          {/* 서브태스크 섹션 */}
+          <SubtaskSection
+            taskId={task.id}
+            projectId={projectId}
+            canEdit={canInteract}
+          />
 
           <Separator />
 

@@ -33,9 +33,10 @@ interface MemberOption {
 
 interface TaskFilterBarProps {
   members: (Tables<'project_members'> & { profiles: Tables<'profiles'> })[]
+  labels?: Tables<'labels'>[]
 }
 
-export function TaskFilterBar({ members }: TaskFilterBarProps) {
+export function TaskFilterBar({ members, labels }: TaskFilterBarProps) {
   const {
     searchText,
     setSearchText,
@@ -46,6 +47,8 @@ export function TaskFilterBar({ members }: TaskFilterBarProps) {
     dueDateRange,
     setDueDateFrom,
     setDueDateTo,
+    labelIds,
+    toggleLabelId,
     resetFilters,
     hasActiveFilters,
   } = useKanbanFilterStore()
@@ -161,6 +164,55 @@ export function TaskFilterBar({ members }: TaskFilterBarProps) {
           })}
         </PopoverContent>
       </Popover>
+
+      {/* 라벨 필터 */}
+      {labels && labels.length > 0 && (
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button variant="outline" size="sm" className="h-9 gap-1.5 text-sm font-normal">
+              <span className="text-muted-foreground">라벨:</span>
+              <span>
+                {labelIds.length === 0
+                  ? '전체'
+                  : labelIds.length === 1
+                    ? (labels.find((l) => l.id === labelIds[0])?.name ?? '1개')
+                    : `${labelIds.length}개 선택`}
+              </span>
+              <ChevronDown className="text-muted-foreground h-3.5 w-3.5" />
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent align="start" className="w-48 p-1">
+            {labels.map((label) => {
+              const isActive = labelIds.includes(label.id)
+              return (
+                <button
+                  key={label.id}
+                  onClick={() => toggleLabelId(label.id)}
+                  className={cn(
+                    'flex w-full items-center gap-2 rounded-sm px-2 py-1.5 text-sm transition-colors',
+                    'hover:bg-accent hover:text-accent-foreground',
+                    isActive && 'bg-accent/50',
+                  )}
+                >
+                  <div
+                    className={cn(
+                      'flex h-4 w-4 shrink-0 items-center justify-center rounded-sm border',
+                      isActive ? 'border-primary bg-primary text-primary-foreground' : 'border-muted-foreground/30',
+                    )}
+                  >
+                    {isActive && <Check className="h-3 w-3" />}
+                  </div>
+                  <span
+                    className="h-2 w-2 shrink-0 rounded-full"
+                    style={{ backgroundColor: label.color }}
+                  />
+                  {label.name}
+                </button>
+              )
+            })}
+          </PopoverContent>
+        </Popover>
+      )}
 
       {/* 마감일 범위 */}
       <div className="flex items-center gap-1.5">

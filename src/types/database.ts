@@ -406,6 +406,115 @@ export interface Database {
           },
         ]
       }
+      labels: {
+        Row: {
+          id: string
+          project_id: string
+          name: string
+          color: string
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          project_id: string
+          name: string
+          color: string
+          created_at?: string
+        }
+        Update: {
+          name?: string
+          color?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'labels_project_id_fkey'
+            columns: ['project_id']
+            isOneToOne: false
+            referencedRelation: 'projects'
+            referencedColumns: ['id']
+          },
+        ]
+      }
+      task_labels: {
+        Row: {
+          task_id: string
+          label_id: string
+        }
+        Insert: {
+          task_id: string
+          label_id: string
+        }
+        Update: Record<string, never>
+        Relationships: [
+          {
+            foreignKeyName: 'task_labels_task_id_fkey'
+            columns: ['task_id']
+            isOneToOne: false
+            referencedRelation: 'tasks'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'task_labels_label_id_fkey'
+            columns: ['label_id']
+            isOneToOne: false
+            referencedRelation: 'labels'
+            referencedColumns: ['id']
+          },
+        ]
+      }
+      subtasks: {
+        Row: {
+          id: string
+          task_id: string
+          project_id: string
+          title: string
+          completed: boolean
+          position: number
+          created_by: string
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          task_id: string
+          project_id: string
+          title: string
+          completed?: boolean
+          position: number
+          created_by: string
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          title?: string
+          completed?: boolean
+          position?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'subtasks_task_id_fkey'
+            columns: ['task_id']
+            isOneToOne: false
+            referencedRelation: 'tasks'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'subtasks_project_id_fkey'
+            columns: ['project_id']
+            isOneToOne: false
+            referencedRelation: 'projects'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'subtasks_created_by_fkey'
+            columns: ['created_by']
+            isOneToOne: false
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          },
+        ]
+      }
       dashboard_layouts: {
         Row: {
           id: string

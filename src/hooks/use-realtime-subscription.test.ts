@@ -79,12 +79,12 @@ describe('useRealtimeSubscription', () => {
     })
   })
 
-  it('8개 테이블을 감시한다 (tasks, columns, members, activity, comments, notifications, attachments)', async () => {
+  it('10개 테이블을 감시한다 (tasks, columns, members, activity, comments, notifications, attachments, labels, task_labels, subtasks)', async () => {
     renderHook(() => useRealtimeSubscription('project-1'), { wrapper })
 
     await waitFor(() => {
-      // on()이 7번 호출됨 (tasks, kanban_columns, project_members, activity_logs, task_comments, notifications, task_attachments)
-      expect(mockChannel.on).toHaveBeenCalledTimes(7)
+      // on()이 10번 호출됨 (tasks, kanban_columns, project_members, labels, task_labels, subtasks, activity_logs, task_comments, notifications, task_attachments)
+      expect(mockChannel.on).toHaveBeenCalledTimes(10)
     })
   })
 

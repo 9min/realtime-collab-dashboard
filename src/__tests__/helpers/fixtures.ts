@@ -136,6 +136,61 @@ export const mockMemberWithProfile = {
   profiles: mockProfile,
 }
 
+// ── Labels ──
+export const MOCK_LABEL_ID_1 = 'label-aaa-111'
+export const MOCK_LABEL_ID_2 = 'label-bbb-222'
+
+export const mockLabels: Tables<'labels'>[] = [
+  {
+    id: MOCK_LABEL_ID_1,
+    project_id: MOCK_PROJECT_ID,
+    name: 'Bug',
+    color: '#EF4444',
+    created_at: '2026-01-15T10:00:00Z',
+  },
+  {
+    id: MOCK_LABEL_ID_2,
+    project_id: MOCK_PROJECT_ID,
+    name: 'Feature',
+    color: '#3B82F6',
+    created_at: '2026-01-15T10:00:00Z',
+  },
+]
+
+export const mockTaskLabels: Tables<'task_labels'>[] = [
+  { task_id: MOCK_TASK_ID_1, label_id: MOCK_LABEL_ID_1 },
+  { task_id: MOCK_TASK_ID_2, label_id: MOCK_LABEL_ID_2 },
+]
+
+// ── Subtasks ──
+export const MOCK_SUBTASK_ID_1 = 'subtask-aaa-111'
+export const MOCK_SUBTASK_ID_2 = 'subtask-bbb-222'
+
+export const mockSubtasks: Tables<'subtasks'>[] = [
+  {
+    id: MOCK_SUBTASK_ID_1,
+    task_id: MOCK_TASK_ID_1,
+    project_id: MOCK_PROJECT_ID,
+    title: 'Write unit tests',
+    completed: false,
+    position: 0,
+    created_by: MOCK_USER_ID,
+    created_at: '2026-01-15T10:00:00Z',
+    updated_at: '2026-01-15T10:00:00Z',
+  },
+  {
+    id: MOCK_SUBTASK_ID_2,
+    task_id: MOCK_TASK_ID_1,
+    project_id: MOCK_PROJECT_ID,
+    title: 'Update documentation',
+    completed: true,
+    position: 1,
+    created_by: MOCK_USER_ID,
+    created_at: '2026-01-15T11:00:00Z',
+    updated_at: '2026-01-15T12:00:00Z',
+  },
+]
+
 // ── Activity Logs ──
 export const MOCK_ACTIVITY_LOG_ID = 'activity-aaa-111'
 

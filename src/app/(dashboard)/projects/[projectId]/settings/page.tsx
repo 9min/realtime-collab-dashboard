@@ -25,6 +25,7 @@ import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { useAuth } from '@/hooks/use-auth'
 import { useProject, useProjectMembers, useInviteMember, useUpdateMemberRole, useRemoveMember, useUpdateProject, useDeleteProject } from '@/queries/use-projects'
+import { LabelManager } from '@/components/kanban/label-manager'
 import { MEMBER_ROLE } from '@/lib/constants'
 import type { MemberRole } from '@/types/common'
 
@@ -299,6 +300,17 @@ export default function ProjectSettingsPage({ params }: ProjectSettingsPageProps
           </div>
         )}
       </Card>
+
+      {/* 라벨 관리 — owner/admin만 */}
+      {isOwnerOrAdmin && (
+        <Card className="p-6 space-y-4">
+          <h3 className="text-lg font-semibold">라벨 관리</h3>
+          <p className="text-muted-foreground text-sm">
+            프로젝트에서 사용할 라벨을 관리합니다. 라벨은 태스크에 할당하여 분류할 수 있습니다.
+          </p>
+          <LabelManager projectId={projectId} />
+        </Card>
+      )}
 
       {/* 위험 영역 */}
       {currentMember?.role === MEMBER_ROLE.OWNER && (

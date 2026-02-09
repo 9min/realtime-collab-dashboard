@@ -11,6 +11,7 @@ function createQueryBuilder(response: { data: unknown; error: unknown }) {
   const chainMethods = [
     'select', 'insert', 'update', 'delete', 'upsert',
     'eq', 'neq', 'in', 'lt', 'lte', 'gt', 'gte',
+    'or', 'ilike', 'like',
     'order', 'limit', 'range', 'returns',
     'single', 'maybeSingle',
   ]

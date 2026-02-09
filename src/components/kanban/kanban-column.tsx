@@ -27,6 +27,7 @@ import { Input } from '@/components/ui/input'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { cn } from '@/lib/utils'
 import type { Tables } from '@/types/database'
+import type { Label } from '@/types/label'
 
 import { TaskCard } from './task-card'
 
@@ -42,6 +43,8 @@ interface KanbanColumnProps {
   canMoveAll: boolean
   currentUserId?: string
   members?: (Tables<'project_members'> & { profiles: Tables<'profiles'> })[]
+  labels?: Label[]
+  taskLabelMap?: Map<string, string[]>
 }
 
 export function KanbanColumn({
@@ -56,6 +59,8 @@ export function KanbanColumn({
   canMoveAll,
   currentUserId,
   members,
+  labels,
+  taskLabelMap,
 }: KanbanColumnProps) {
   const [isEditing, setIsEditing] = useState(false)
   const [editTitle, setEditTitle] = useState(column.title)
@@ -174,16 +179,23 @@ export function KanbanColumn({
                 snapshot.isDraggingOver && 'bg-primary/5',
               )}
             >
-              {tasks.map((task, index) => (
-                <TaskCard
-                  key={task.id}
-                  task={task}
-                  index={index}
-                  onClick={onTaskClick}
-                  members={members}
-                  isDragDisabled={!canMoveAll && task.assignee_id !== null && task.assignee_id !== currentUserId}
-                />
-              ))}
+              {tasks.map((task, index) => {
+                const taskLabelIds = taskLabelMap?.get(task.id)
+                const taskLabelsForCard = taskLabelIds && labels
+                  ? labels.filter((l) => taskLabelIds.includes(l.id))
+                  : undefined
+                return (
+                  <TaskCard
+                    key={task.id}
+                    task={task}
+                    index={index}
+                    onClick={onTaskClick}
+                    members={members}
+                    isDragDisabled={!canMoveAll && task.assignee_id !== null && task.assignee_id !== currentUserId}
+                    taskLabels={taskLabelsForCard}
+                  />
+                )
+              })}
               {provided.placeholder}
             </div>
           </ScrollArea>

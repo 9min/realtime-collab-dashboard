@@ -22,6 +22,9 @@ interface KanbanFilterState {
   setDueDateFrom: (date: string | null) => void
   setDueDateTo: (date: string | null) => void
 
+  labelIds: string[]
+  toggleLabelId: (id: string) => void
+
   resetFilters: () => void
   hasActiveFilters: () => boolean
 }
@@ -31,6 +34,7 @@ const INITIAL_STATE = {
   priorities: [] as TaskPriority[],
   assigneeIds: [] as string[],
   dueDateRange: { from: null, to: null } as DateRange,
+  labelIds: [] as string[],
 }
 
 export const useKanbanFilterStore = create<KanbanFilterState>((set, get) => ({
@@ -60,6 +64,13 @@ export const useKanbanFilterStore = create<KanbanFilterState>((set, get) => ({
   setDueDateTo: (date) =>
     set((state) => ({ dueDateRange: { ...state.dueDateRange, to: date } })),
 
+  toggleLabelId: (id) =>
+    set((state) => ({
+      labelIds: state.labelIds.includes(id)
+        ? state.labelIds.filter((l) => l !== id)
+        : [...state.labelIds, id],
+    })),
+
   resetFilters: () => set(INITIAL_STATE),
 
   hasActiveFilters: () => {
@@ -69,7 +80,8 @@ export const useKanbanFilterStore = create<KanbanFilterState>((set, get) => ({
       state.priorities.length > 0 ||
       state.assigneeIds.length > 0 ||
       state.dueDateRange.from !== null ||
-      state.dueDateRange.to !== null
+      state.dueDateRange.to !== null ||
+      state.labelIds.length > 0
     )
   },
 }))
