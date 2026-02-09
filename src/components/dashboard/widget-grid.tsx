@@ -11,11 +11,13 @@ import {
 import { Plus, Pencil, Check } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
+import { EmptyState } from '@/components/ui/empty-state'
 import { useAuth } from '@/hooks/use-auth'
 import { DEFAULT_DASHBOARD_LAYOUT, GRID_ROW_HEIGHT, MEMBER_ROLE } from '@/lib/constants'
 import { useDashboardLayout, useSaveDashboardLayout } from '@/queries/use-dashboard-layout'
 import { useProjectMembers } from '@/queries/use-projects'
 import { useDashboardStore } from '@/stores/dashboard-store'
+import { LayoutDashboard } from 'lucide-react'
 import type { WidgetType } from '@/types/common'
 import type { WidgetLayoutItem } from '@/types/dashboard'
 import { WIDGET_REGISTRY } from '@/types/dashboard'
@@ -217,14 +219,11 @@ export function WidgetGrid({ projectId }: WidgetGridProps) {
 
 function EmptyDashboard({ onAddWidget }: { onAddWidget: () => void }) {
   return (
-    <div className="flex min-h-64 flex-col items-center justify-center gap-4 rounded-lg border border-dashed p-8">
-      <p className="text-muted-foreground text-sm">
-        대시보드가 비어있습니다. 위젯을 추가해보세요.
-      </p>
-      <Button variant="outline" onClick={onAddWidget}>
-        <Plus className="mr-1 h-4 w-4" />
-        위젯 추가
-      </Button>
-    </div>
+    <EmptyState
+      icon={LayoutDashboard}
+      title="대시보드가 비어있습니다"
+      description="위젯을 추가하여 프로젝트 현황을 한눈에 확인하세요"
+      action={{ label: '위젯 추가', onClick: onAddWidget }}
+    />
   )
 }

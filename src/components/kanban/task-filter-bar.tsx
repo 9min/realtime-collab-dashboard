@@ -78,9 +78,9 @@ export function TaskFilterBar({ members, labels }: TaskFilterBarProps) {
         : `${assigneeIds.length}명 선택`
 
   return (
-    <div className="flex flex-wrap items-center gap-3 pb-4">
+    <div className="flex flex-wrap items-center gap-2 pb-4 sm:gap-3">
       {/* 검색 Input */}
-      <div className="relative w-56">
+      <div className="relative w-full sm:w-56">
         <Search className="text-muted-foreground absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2" />
         <Input
           placeholder="태스크 검색..."
@@ -105,6 +105,8 @@ export function TaskFilterBar({ members, labels }: TaskFilterBarProps) {
             return (
               <button
                 key={priority}
+                role="checkbox"
+                aria-checked={isActive}
                 onClick={() => togglePriority(priority)}
                 className={cn(
                   'flex w-full items-center gap-2 rounded-sm px-2 py-1.5 text-sm transition-colors',
@@ -113,6 +115,7 @@ export function TaskFilterBar({ members, labels }: TaskFilterBarProps) {
                 )}
               >
                 <div
+                  aria-hidden="true"
                   className={cn(
                     'flex h-4 w-4 shrink-0 items-center justify-center rounded-sm border',
                     isActive ? 'border-primary bg-primary text-primary-foreground' : 'border-muted-foreground/30',
@@ -143,6 +146,8 @@ export function TaskFilterBar({ members, labels }: TaskFilterBarProps) {
             return (
               <button
                 key={option.id}
+                role="checkbox"
+                aria-checked={isActive}
                 onClick={() => toggleAssigneeId(option.id)}
                 className={cn(
                   'flex w-full items-center gap-2 rounded-sm px-2 py-1.5 text-sm transition-colors',
@@ -151,6 +156,7 @@ export function TaskFilterBar({ members, labels }: TaskFilterBarProps) {
                 )}
               >
                 <div
+                  aria-hidden="true"
                   className={cn(
                     'flex h-4 w-4 shrink-0 items-center justify-center rounded-sm border',
                     isActive ? 'border-primary bg-primary text-primary-foreground' : 'border-muted-foreground/30',
@@ -187,6 +193,8 @@ export function TaskFilterBar({ members, labels }: TaskFilterBarProps) {
               return (
                 <button
                   key={label.id}
+                  role="checkbox"
+                  aria-checked={isActive}
                   onClick={() => toggleLabelId(label.id)}
                   className={cn(
                     'flex w-full items-center gap-2 rounded-sm px-2 py-1.5 text-sm transition-colors',
@@ -195,6 +203,7 @@ export function TaskFilterBar({ members, labels }: TaskFilterBarProps) {
                   )}
                 >
                   <div
+                    aria-hidden="true"
                     className={cn(
                       'flex h-4 w-4 shrink-0 items-center justify-center rounded-sm border',
                       isActive ? 'border-primary bg-primary text-primary-foreground' : 'border-muted-foreground/30',
@@ -215,20 +224,22 @@ export function TaskFilterBar({ members, labels }: TaskFilterBarProps) {
       )}
 
       {/* 마감일 범위 */}
-      <div className="flex items-center gap-1.5">
-        <span className="text-muted-foreground text-xs">마감일:</span>
+      <div className="flex w-full items-center gap-1.5 sm:w-auto">
+        <span className="text-muted-foreground shrink-0 text-xs">마감일:</span>
         <Input
           type="date"
           value={dueDateRange.from ?? ''}
           onChange={(e) => setDueDateFrom(e.target.value || null)}
-          className="h-8 w-36 text-xs"
+          className="h-9 min-w-0 flex-1 text-xs sm:w-36 sm:flex-none"
+          aria-label="마감일 시작"
         />
         <span className="text-muted-foreground text-xs">~</span>
         <Input
           type="date"
           value={dueDateRange.to ?? ''}
           onChange={(e) => setDueDateTo(e.target.value || null)}
-          className="h-8 w-36 text-xs"
+          className="h-9 min-w-0 flex-1 text-xs sm:w-36 sm:flex-none"
+          aria-label="마감일 종료"
         />
       </div>
 

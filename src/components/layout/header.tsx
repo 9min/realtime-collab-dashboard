@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { Keyboard, LogOut, ShieldCheck, UserCog } from 'lucide-react'
 
@@ -31,6 +32,7 @@ export function Header() {
   const { data: myProfile } = useMyProfile()
   const { data: profile } = useProfile()
   const router = useRouter()
+  const toggleShortcutHelp = useShortcutHelpStore((s) => s.toggle)
   const [profileOpen, setProfileOpen] = useState(false)
 
   const handleSignOut = async () => {
@@ -45,21 +47,24 @@ export function Header() {
     profile?.full_name?.[0] ?? user?.email?.[0]?.toUpperCase() ?? '?'
 
   return (
-    <header className="sticky top-0 z-50 flex h-14 items-center justify-between bg-gradient-to-r from-slate-900 to-blue-900 px-6 shadow-md dark:from-slate-950 dark:to-blue-950">
-      <button
-        onClick={() => router.push('/projects')}
-        className="cursor-pointer text-lg font-semibold text-white transition-opacity hover:opacity-80"
-      >
-        실시간 협업 일정관리
-      </button>
-      <div className="flex items-center gap-2 text-white">
+    <header className="sticky top-0 z-50 flex h-14 items-center justify-between bg-primary px-6 shadow-md dark:bg-primary">
+      <nav>
+        <Link
+          href="/projects"
+          className="text-lg font-semibold text-primary-foreground transition-opacity hover:opacity-80"
+        >
+          실시간 협업 일정관리
+        </Link>
+      </nav>
+      <div className="flex items-center gap-2 text-primary-foreground">
         <SearchTrigger />
         <Button
           variant="ghost"
           size="icon"
-          className="h-9 w-9 hover:bg-white/10"
-          onClick={() => useShortcutHelpStore.getState().toggle()}
+          className="h-9 w-9 hover:bg-primary-foreground/10"
+          onClick={toggleShortcutHelp}
           title="키보드 단축키 (Shift+?)"
+          aria-label="키보드 단축키"
         >
           <Keyboard className="h-5 w-5" />
         </Button>
@@ -72,7 +77,7 @@ export function Header() {
           <>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="relative h-9 w-9 rounded-full hover:bg-white/10">
+                <Button variant="ghost" className="relative h-9 w-9 rounded-full hover:bg-primary-foreground/10">
                   <Avatar className="h-9 w-9">
                     <AvatarImage
                       src={avatarUrl ?? undefined}

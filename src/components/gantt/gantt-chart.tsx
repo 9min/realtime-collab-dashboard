@@ -4,13 +4,14 @@ import { useMemo, useState } from 'react'
 import dynamic from 'next/dynamic'
 import { CalendarRange } from 'lucide-react'
 
-import { Button } from '@/components/ui/button'
+import { EmptyState } from '@/components/ui/empty-state'
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'
 
 const TaskDetailDialog = dynamic(
   () => import('@/components/kanban/task-detail-dialog').then((mod) => ({ default: mod.TaskDetailDialog })),
 )
 import { useAuth } from '@/hooks/use-auth'
+import { useMediaQuery } from '@/hooks/use-media-query'
 import {
   startOfWeek,
   getWeekColumns,
@@ -36,7 +37,8 @@ const MONTH_VIEW_MONTHS = 3
 const COL_WIDTH_WEEK = 36
 const COL_WIDTH_MONTH = 50
 const ROW_HEIGHT = 36
-const LABEL_WIDTH = 200
+const LABEL_WIDTH_DESKTOP = 200
+const LABEL_WIDTH_MOBILE = 120
 
 interface GanttChartProps {
   projectId: string
@@ -49,6 +51,8 @@ export function GanttChart({ projectId }: GanttChartProps) {
   const { data: members } = useProjectMembers(projectId)
   const { viewMode, setViewMode } = useGanttStore()
   const [selectedTask, setSelectedTask] = useState<Tables<'tasks'> | null>(null)
+  const isDesktop = useMediaQuery('(min-width: 768px)')
+  const labelWidth = isDesktop ? LABEL_WIDTH_DESKTOP : LABEL_WIDTH_MOBILE
 
   const currentRole = members?.find((m) => m.user_id === user?.id)?.role
   const isViewer = currentRole === MEMBER_ROLE.VIEWER
@@ -108,37 +112,80 @@ export function GanttChart({ projectId }: GanttChartProps) {
   }
 
   if (tasksLoading) {
-    return <div className="text-muted-foreground py-12 text-center">로딩 중...</div>
+    return (
+      <div className="space-y-4">
+        <div className="flex gap-2">
+          <div className="h-8 w-16 animate-pulse rounded bg-muted" />
+          <div className="h-8 w-16 animate-pulse rounded bg-muted" />
+        </div>
+        <div className="overflow-hidden rounded-lg border">
+          <div className="flex">
+            <div className="w-[120px] shrink-0 border-r md:w-[200px]">
+              <div className="h-8 border-b" />
+              {Array.from({ length: 5 }).map((_, i) => (
+                <div key={i} className="flex items-center border-b px-3" style={{ height: ROW_HEIGHT }}>
+                  <div className="h-3 w-full animate-pulse rounded bg-muted" />
+                </div>
+              ))}
+            </div>
+            <div className="flex-1">
+              <div className="h-8 animate-pulse border-b bg-muted/30" />
+              {[45, 60, 35, 55, 40].map((width, i) => (
+                <div key={i} className="flex items-center px-4 border-b" style={{ height: ROW_HEIGHT }}>
+                  <div
+                    className="h-5 animate-pulse rounded-full bg-muted"
+                    style={{ width: `${width}%`, marginLeft: `${i * 8}%` }}
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    )
   }
 
   const allTasks = groupedTasks.flatMap((g) => g.tasks)
   if (allTasks.length === 0) {
     return (
-      <div className="text-muted-foreground flex flex-col items-center gap-2 py-12">
-        <CalendarRange className="h-8 w-8" />
-        <p className="text-sm">표시할 태스크가 없습니다</p>
-      </div>
+      <EmptyState
+        icon={CalendarRange}
+        title="표시할 태스크가 없습니다"
+        description="칸반 보드에서 마감일이 있는 태스크를 추가하면 간트 차트에 표시됩니다"
+      />
     )
   }
 
   return (
     <div className="space-y-4">
       {/* 뷰 모드 전환 */}
-      <div className="flex items-center gap-2">
-        <Button
-          variant={viewMode === 'week' ? 'secondary' : 'ghost'}
-          size="sm"
+      <div role="tablist" aria-label="간트 차트 뷰 모드" className="inline-flex rounded-lg border bg-muted p-0.5">
+        <button
+          role="tab"
+          aria-selected={viewMode === 'week'}
+          className={cn(
+            'rounded-md px-3 py-1.5 text-sm font-medium transition-colors',
+            viewMode === 'week'
+              ? 'bg-background text-foreground shadow-sm'
+              : 'text-muted-foreground hover:text-foreground',
+          )}
           onClick={() => setViewMode('week')}
         >
           주 단위
-        </Button>
-        <Button
-          variant={viewMode === 'month' ? 'secondary' : 'ghost'}
-          size="sm"
+        </button>
+        <button
+          role="tab"
+          aria-selected={viewMode === 'month'}
+          className={cn(
+            'rounded-md px-3 py-1.5 text-sm font-medium transition-colors',
+            viewMode === 'month'
+              ? 'bg-background text-foreground shadow-sm'
+              : 'text-muted-foreground hover:text-foreground',
+          )}
           onClick={() => setViewMode('month')}
         >
           월 단위
-        </Button>
+        </button>
       </div>
 
       {/* 간트 차트 */}
@@ -146,7 +193,7 @@ export function GanttChart({ projectId }: GanttChartProps) {
         <ScrollArea className="w-full">
           <div className="flex">
             {/* 왼쪽: 태스크 레이블 */}
-            <div className="border-border shrink-0 border-r" style={{ width: LABEL_WIDTH }}>
+            <div className="border-border shrink-0 border-r" style={{ width: labelWidth }}>
               {/* 헤더 스페이서 */}
               <div className="border-border h-8 border-b" />
               {groupedTasks.map((group) => (

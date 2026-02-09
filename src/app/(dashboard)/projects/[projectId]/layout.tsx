@@ -1,6 +1,6 @@
 'use client'
 
-import { use, useMemo, type ReactNode } from 'react'
+import { use, useCallback, useMemo, type ReactNode } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
 import { ArrowLeft, LayoutDashboard, Columns3, Activity, GanttChart, Calendar, Settings } from 'lucide-react'
 
@@ -60,6 +60,12 @@ export default function ProjectLayout({ children, params }: ProjectLayoutProps) 
   const isViewer = currentRole === MEMBER_ROLE.VIEWER
   const navItems = ALL_NAV_ITEMS.filter((item) => !('adminOnly' in item && item.adminOnly && isViewer))
 
+  const activeTabRef = useCallback((node: HTMLButtonElement | null) => {
+    if (node) {
+      node.scrollIntoView({ block: 'nearest', inline: 'nearest', behavior: 'smooth' })
+    }
+  }, [])
+
   return (
     <div className="space-y-6">
       {/* 프로젝트 헤더 */}
@@ -69,6 +75,7 @@ export default function ProjectLayout({ children, params }: ProjectLayoutProps) 
           size="icon"
           className="h-8 w-8"
           onClick={() => router.push('/projects')}
+          aria-label="프로젝트 목록으로 돌아가기"
         >
           <ArrowLeft className="h-4 w-4" />
         </Button>
@@ -89,7 +96,7 @@ export default function ProjectLayout({ children, params }: ProjectLayoutProps) 
       </div>
 
       {/* 서브 네비게이션 */}
-      <nav className="bg-card flex gap-1 rounded-lg border p-1 shadow-sm">
+      <nav className="bg-card flex gap-1 overflow-x-auto rounded-lg border p-1 shadow-sm scrollbar-none" role="tablist" aria-label="프로젝트 네비게이션">
         {navItems.map(({ label, href, icon: Icon }) => {
           const fullPath = `${basePath}${href}`
           const isActive = pathname === fullPath
@@ -97,14 +104,17 @@ export default function ProjectLayout({ children, params }: ProjectLayoutProps) 
           return (
             <button
               key={href}
+              ref={isActive ? activeTabRef : undefined}
               onClick={() => router.push(fullPath)}
+              role="tab"
+              aria-selected={isActive}
               className={cn(
-                'text-muted-foreground hover:text-foreground flex cursor-pointer items-center gap-2 rounded-md px-4 py-2 text-sm font-medium transition-all',
+                'text-muted-foreground hover:text-foreground flex shrink-0 cursor-pointer items-center gap-2 rounded-md px-4 py-2 text-sm font-medium transition-all',
                 isActive && 'bg-primary text-primary-foreground shadow-sm',
               )}
             >
               <Icon className="h-4 w-4" />
-              {label}
+              <span className="hidden sm:inline">{label}</span>
             </button>
           )
         })}

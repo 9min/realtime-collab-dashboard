@@ -61,7 +61,15 @@ export function TaskCard({ task, index, onClick, members, isDragDisabled = false
               isDragDisabled ? 'cursor-default' : 'cursor-grab active:cursor-grabbing',
               snapshot.isDragging && 'shadow-lg ring-2 ring-primary/20',
             )}
+            role="button"
+            tabIndex={0}
             onClick={() => onClick(task)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault()
+                onClick(task)
+              }
+            }}
           >
             <CardHeader className="p-3 pb-1">
               {taskLabels && taskLabels.length > 0 && (

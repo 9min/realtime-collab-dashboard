@@ -32,10 +32,11 @@ export function NotificationBell() {
       if (!notification.is_read) {
         markAsReadMutation.mutate(notification.id)
       }
+      const boardUrl = `/projects/${notification.project_id}/board`
       if (notification.entity_type === 'task' && notification.entity_id) {
-        router.push(`/projects/${notification.project_id}/board`)
+        router.push(`${boardUrl}?taskId=${notification.entity_id}`)
       } else if (notification.entity_type === 'comment') {
-        router.push(`/projects/${notification.project_id}/board`)
+        router.push(boardUrl)
       }
     },
     [markAsReadMutation, router],
@@ -52,16 +53,21 @@ export function NotificationBell() {
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button variant="ghost" size="icon" className="relative h-9 w-9 hover:bg-white/10">
+        <Button variant="ghost" size="icon" className="relative h-9 w-9 hover:bg-white/10" aria-label={`알림${displayCount > 0 ? ` ${displayCount}개 읽지 않음` : ''}`}>
           <Bell className="h-5 w-5" />
           {displayCount > 0 && (
-            <span className="absolute -top-0.5 -right-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-bold text-white">
+            <span
+              className="absolute -top-0.5 -right-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-bold text-white"
+              role="status"
+              aria-live="polite"
+              aria-atomic="true"
+            >
               {displayCount > 99 ? '99+' : displayCount}
             </span>
           )}
         </Button>
       </PopoverTrigger>
-      <PopoverContent align="end" sideOffset={8} className="w-auto overflow-hidden p-0">
+      <PopoverContent align="end" sideOffset={8} className="w-80 overflow-hidden p-0 sm:w-96">
         <NotificationList
           notifications={notifications ?? []}
           isLoading={isLoading}

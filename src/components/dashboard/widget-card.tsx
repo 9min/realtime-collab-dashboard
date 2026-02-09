@@ -127,8 +127,14 @@ function MemberCountTitle({ title, projectId }: { title: string; projectId: stri
 
 function WidgetSkeleton() {
   return (
-    <div className="flex h-full min-h-[200px] items-center justify-center">
-      <div className="bg-muted h-6 w-6 animate-pulse rounded-full" />
+    <div className="flex h-full min-h-[200px] flex-col gap-3 p-4">
+      <div className="flex items-end gap-2">
+        <div className="h-20 flex-1 animate-pulse rounded bg-muted" />
+        <div className="h-14 flex-1 animate-pulse rounded bg-muted" />
+        <div className="h-24 flex-1 animate-pulse rounded bg-muted" />
+        <div className="h-16 flex-1 animate-pulse rounded bg-muted" />
+      </div>
+      <div className="h-3 w-2/3 animate-pulse rounded bg-muted" />
     </div>
   )
 }

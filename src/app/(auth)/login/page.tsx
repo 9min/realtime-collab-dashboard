@@ -3,6 +3,8 @@
 import { useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 
+import { Loader2 } from 'lucide-react'
+
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { createBrowserClient } from '@/lib/supabase/client'
@@ -56,7 +58,10 @@ export default function LoginPage() {
           disabled={isLoading !== null}
         >
           {isLoading === 'github' ? (
-            '리다이렉트 중...'
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              리다이렉트 중...
+            </>
           ) : (
             <>
               <GitHubIcon className="mr-2 h-5 w-5" />
@@ -72,7 +77,10 @@ export default function LoginPage() {
           disabled={isLoading !== null}
         >
           {isLoading === 'google' ? (
-            '리다이렉트 중...'
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              리다이렉트 중...
+            </>
           ) : (
             <>
               <GoogleIcon className="mr-2 h-5 w-5" />
@@ -83,12 +91,15 @@ export default function LoginPage() {
 
         <Button
           variant="outline"
-          className="w-full bg-[#FEE500] text-[#191919] hover:bg-[#FEE500]/90 hover:text-[#191919]"
+          className="w-full bg-[#FEE500] text-[#191919] hover:bg-[#FEE500]/90 hover:text-[#191919] dark:bg-[#FEE500]/90 dark:hover:bg-[#FEE500]/80"
           onClick={() => handleOAuthLogin('kakao')}
           disabled={isLoading !== null}
         >
           {isLoading === 'kakao' ? (
-            '리다이렉트 중...'
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              리다이렉트 중...
+            </>
           ) : (
             <>
               <KakaoIcon className="mr-2 h-5 w-5" />

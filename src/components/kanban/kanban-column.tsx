@@ -90,7 +90,7 @@ export function KanbanColumn({
   }
 
   return (
-    <div className="bg-card flex h-full w-72 shrink-0 flex-col overflow-hidden rounded-lg border shadow-sm">
+    <div className="bg-card flex w-72 shrink-0 flex-col overflow-hidden rounded-lg border shadow-sm" style={{ height: 'calc(100vh - 220px)', minHeight: 300 }}>
       {/* 컬럼 헤더 */}
       <div className="flex items-center justify-between border-b bg-gradient-to-r from-blue-50 to-indigo-50 px-3 py-2 dark:from-blue-950/30 dark:to-indigo-950/30">
         <div className="flex min-w-0 items-center gap-2">
@@ -115,14 +115,14 @@ export function KanbanColumn({
         </div>
         {canEdit && !isEditing && (
           <div className="flex shrink-0 items-center gap-1">
-            <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => onAddTask(column.id)}>
+            <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => onAddTask(column.id)} aria-label="태스크 추가">
               <Plus className="h-4 w-4" />
             </Button>
             {canDeleteColumn && (
               <AlertDialog>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="icon" className="h-7 w-7">
+                    <Button variant="ghost" size="icon" className="h-7 w-7" aria-label="컬럼 메뉴">
                       <MoreHorizontal className="h-4 w-4" />
                     </Button>
                   </DropdownMenuTrigger>
@@ -179,6 +179,11 @@ export function KanbanColumn({
                 snapshot.isDraggingOver && 'bg-primary/5',
               )}
             >
+              {tasks.length === 0 && !snapshot.isDraggingOver && (
+                <p className="text-muted-foreground py-6 text-center text-xs">
+                  {canEdit ? '태스크를 추가하거나 여기로 드래그하세요' : '태스크가 없습니다'}
+                </p>
+              )}
               {tasks.map((task, index) => {
                 const taskLabelIds = taskLabelMap?.get(task.id)
                 const taskLabelsForCard = taskLabelIds && labels

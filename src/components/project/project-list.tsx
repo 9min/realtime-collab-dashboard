@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { FolderOpen, Loader2 } from 'lucide-react'
 
+import { EmptyState } from '@/components/ui/empty-state'
 import { useMyProfile } from '@/queries/use-admin'
 import { useProjects, useDeleteProject } from '@/queries/use-projects'
 import type { ProjectWithMemberCount } from '@/services/project-service'
@@ -69,19 +70,16 @@ export function ProjectList() {
           ))}
         </div>
       ) : (
-        // 빈 상태
-        <div className="flex min-h-[400px] flex-col items-center justify-center gap-4 rounded-lg border border-dashed p-8">
-          <FolderOpen className="text-muted-foreground h-12 w-12" />
-          <div className="text-center">
-            <p className="font-medium">아직 프로젝트가 없습니다</p>
-            <p className="text-muted-foreground mt-1 text-sm">
-              {isAdmin
-                ? '새 프로젝트를 만들어 팀과 협업을 시작하세요'
-                : '관리자에게 프로젝트 생성을 요청하세요'}
-            </p>
-          </div>
-          {isAdmin && <CreateProjectDialog />}
-        </div>
+        <EmptyState
+          icon={FolderOpen}
+          title="아직 프로젝트가 없습니다"
+          description={
+            isAdmin
+              ? '새 프로젝트를 만들어 팀과 협업을 시작하세요'
+              : '관리자에게 프로젝트 생성을 요청하세요'
+          }
+          className="min-h-[400px]"
+        />
       )}
 
       {/* 수정 다이얼로그 */}

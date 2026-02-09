@@ -148,8 +148,26 @@ export function KanbanBoard({ projectId }: KanbanBoardProps) {
 
   if (columnsLoading || tasksLoading) {
     return (
-      <div className="flex h-64 items-center justify-center">
-        <p className="text-muted-foreground">로딩 중...</p>
+      <div className="flex gap-4 overflow-hidden">
+        {Array.from({ length: 3 }).map((_, colIdx) => (
+          <div key={colIdx} className="w-72 shrink-0 rounded-lg border">
+            <div className="border-b px-3 py-2">
+              <div className="h-5 w-24 animate-pulse rounded bg-muted" />
+            </div>
+            <div className="space-y-2 p-2">
+              {Array.from({ length: 3 }).map((_, cardIdx) => (
+                <div key={cardIdx} className="space-y-2 rounded-lg border p-3">
+                  <div className="h-4 w-full animate-pulse rounded bg-muted" />
+                  <div className="h-4 w-2/3 animate-pulse rounded bg-muted" />
+                  <div className="flex items-center gap-2">
+                    <div className="h-5 w-12 animate-pulse rounded-full bg-muted" />
+                    <div className="ml-auto h-6 w-6 animate-pulse rounded-full bg-muted" />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
       </div>
     )
   }

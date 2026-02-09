@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Calendar, Users, MoreHorizontal, Pencil, Trash2 } from 'lucide-react'
+import { Calendar, Users, MoreHorizontal, Pencil, Trash2, Loader2 } from 'lucide-react'
 
 import {
   AlertDialog,
@@ -26,7 +26,25 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { MEMBER_ROLE } from '@/lib/constants'
+import { cn } from '@/lib/utils'
 import type { ProjectWithMemberCount } from '@/services/project-service'
+
+const PROJECT_BORDER_COLORS = [
+  'border-l-blue-500 dark:border-l-blue-400',
+  'border-l-emerald-500 dark:border-l-emerald-400',
+  'border-l-violet-500 dark:border-l-violet-400',
+  'border-l-orange-500 dark:border-l-orange-400',
+  'border-l-rose-500 dark:border-l-rose-400',
+  'border-l-cyan-500 dark:border-l-cyan-400',
+]
+
+function hashString(str: string): number {
+  let hash = 0
+  for (let i = 0; i < str.length; i++) {
+    hash = ((hash << 5) - hash + str.charCodeAt(i)) | 0
+  }
+  return Math.abs(hash)
+}
 
 interface ProjectCardProps {
   project: ProjectWithMemberCount
@@ -37,11 +55,13 @@ interface ProjectCardProps {
 export function ProjectCard({ project, onEdit, onDelete }: ProjectCardProps) {
   const router = useRouter()
   const [isDeleting, setIsDeleting] = useState(false)
+  const nameHash = useMemo(() => hashString(project.id), [project.id])
   const role = project.current_user_role
   const isOwnerOrAdmin = role === MEMBER_ROLE.OWNER || role === MEMBER_ROLE.ADMIN
   const isOwner = role === MEMBER_ROLE.OWNER
 
   const handleClick = () => {
+    if (isDeleting) return
     router.push(`/projects/${project.id}`)
   }
 
@@ -61,7 +81,13 @@ export function ProjectCard({ project, onEdit, onDelete }: ProjectCardProps) {
 
   return (
     <Card
-      className="hover:border-primary/50 group cursor-pointer border-l-4 border-l-blue-500 transition-all hover:shadow-md dark:border-l-blue-400"
+      className={cn(
+        'group cursor-pointer border-l-4 transition-all',
+        PROJECT_BORDER_COLORS[nameHash % PROJECT_BORDER_COLORS.length],
+        isDeleting
+          ? 'pointer-events-none opacity-50'
+          : 'hover:border-primary/50 hover:shadow-md',
+      )}
       onClick={handleClick}
     >
       <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-2">
@@ -75,8 +101,9 @@ export function ProjectCard({ project, onEdit, onDelete }: ProjectCardProps) {
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="h-8 w-8 opacity-0 group-hover:opacity-100"
+                  className="h-8 w-8 md:opacity-0 md:group-hover:opacity-100 md:group-focus-within:opacity-100"
                   onClick={(e) => e.stopPropagation()}
+                  aria-label="프로젝트 메뉴"
                 >
                   <MoreHorizontal className="h-4 w-4" />
                 </Button>
@@ -116,8 +143,16 @@ export function ProjectCard({ project, onEdit, onDelete }: ProjectCardProps) {
                 <AlertDialogAction
                   className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                   onClick={handleDelete}
+                  disabled={isDeleting}
                 >
-                  삭제
+                  {isDeleting ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      삭제 중...
+                    </>
+                  ) : (
+                    '삭제'
+                  )}
                 </AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>
