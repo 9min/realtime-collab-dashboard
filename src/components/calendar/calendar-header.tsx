@@ -1,0 +1,55 @@
+'use client'
+
+import { ChevronLeft, ChevronRight } from 'lucide-react'
+
+import { Button } from '@/components/ui/button'
+import { useCalendarStore } from '@/stores/calendar-store'
+
+export function CalendarHeader() {
+  const { currentDate, viewMode, setViewMode, goToToday, goToPrev, goToNext } = useCalendarStore()
+
+  const title = currentDate.toLocaleDateString('ko-KR', {
+    year: 'numeric',
+    month: 'long',
+  })
+
+  return (
+    <div className="flex items-center justify-between">
+      <div className="flex items-center gap-2">
+        <Button variant="outline" size="icon" className="h-8 w-8" onClick={goToPrev}>
+          <ChevronLeft className="h-4 w-4" />
+        </Button>
+        <h2 className="min-w-[140px] text-center text-lg font-semibold">{title}</h2>
+        <Button variant="outline" size="icon" className="h-8 w-8" onClick={goToNext}>
+          <ChevronRight className="h-4 w-4" />
+        </Button>
+        <Button variant="outline" size="sm" onClick={goToToday}>
+          오늘
+        </Button>
+      </div>
+
+      <div className="bg-muted flex rounded-lg p-0.5">
+        <button
+          onClick={() => setViewMode('week')}
+          className={`rounded-md px-3 py-1 text-sm font-medium transition-colors ${
+            viewMode === 'week'
+              ? 'bg-background shadow-sm'
+              : 'text-muted-foreground hover:text-foreground'
+          }`}
+        >
+          주
+        </button>
+        <button
+          onClick={() => setViewMode('month')}
+          className={`rounded-md px-3 py-1 text-sm font-medium transition-colors ${
+            viewMode === 'month'
+              ? 'bg-background shadow-sm'
+              : 'text-muted-foreground hover:text-foreground'
+          }`}
+        >
+          월
+        </button>
+      </div>
+    </div>
+  )
+}

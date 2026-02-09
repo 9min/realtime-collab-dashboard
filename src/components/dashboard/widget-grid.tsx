@@ -1,12 +1,18 @@
 'use client'
 
 import { useCallback, useMemo, useRef } from 'react'
-import { DragDropContext, Droppable, Draggable, type DropResult } from '@hello-pangea/dnd'
+import {
+  ResponsiveGridLayout,
+  useContainerWidth,
+  type Layout,
+  type LayoutItem,
+  type ResponsiveLayouts,
+} from 'react-grid-layout'
 import { Plus, Pencil, Check } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
 import { useAuth } from '@/hooks/use-auth'
-import { DEFAULT_DASHBOARD_LAYOUT, MEMBER_ROLE } from '@/lib/constants'
+import { DEFAULT_DASHBOARD_LAYOUT, GRID_ROW_HEIGHT, MEMBER_ROLE } from '@/lib/constants'
 import { useDashboardLayout, useSaveDashboardLayout } from '@/queries/use-dashboard-layout'
 import { useProjectMembers } from '@/queries/use-projects'
 import { useDashboardStore } from '@/stores/dashboard-store'
@@ -17,6 +23,41 @@ import { WIDGET_REGISTRY } from '@/types/dashboard'
 import { AddWidgetDialog } from './add-widget-dialog'
 import { WidgetCard } from './widget-card'
 
+const BREAKPOINTS = { lg: 1200, md: 768, sm: 0 }
+const COLS = { lg: 12, md: 8, sm: 1 }
+
+function widgetLayoutToRGL(widgets: WidgetLayoutItem[]): LayoutItem[] {
+  return widgets.map((w) => {
+    const config = WIDGET_REGISTRY.find((r) => r.type === w.type)
+    return {
+      i: w.widget_id,
+      x: w.x,
+      y: w.y,
+      w: w.w,
+      h: w.h,
+      minW: config?.minSize.w ?? 2,
+      minH: config?.minSize.h ?? 2,
+    }
+  })
+}
+
+function rglToWidgetLayout(
+  rglLayout: Layout,
+  widgets: WidgetLayoutItem[],
+): WidgetLayoutItem[] {
+  return rglLayout.map((item) => {
+    const original = widgets.find((w) => w.widget_id === item.i)
+    return {
+      widget_id: item.i,
+      type: original?.type ?? ('task-status' as WidgetType),
+      x: item.x,
+      y: item.y,
+      w: item.w,
+      h: item.h,
+    }
+  })
+}
+
 interface WidgetGridProps {
   projectId: string
 }
@@ -26,29 +67,27 @@ export function WidgetGrid({ projectId }: WidgetGridProps) {
   const { data: savedLayout, isLoading } = useDashboardLayout(projectId)
   const { data: members } = useProjectMembers(projectId)
   const saveMutation = useSaveDashboardLayout(projectId)
+  const { width, containerRef, mounted } = useContainerWidth()
 
   const { isEditMode, toggleEditMode, isAddWidgetOpen, setAddWidgetOpen } = useDashboardStore()
 
-  // 뷰어는 편집 불가
   const currentRole = members?.find((m) => m.user_id === user?.id)?.role
   const canEdit = currentRole !== MEMBER_ROLE.VIEWER
 
-  // 현재 레이아웃: 저장된 값 또는 기본값
   const layout = useMemo<WidgetLayoutItem[]>(
     () => savedLayout ?? [...DEFAULT_DASHBOARD_LAYOUT],
     [savedLayout],
   )
 
-  // 저장 debounce를 위한 타이머 ref
+  const rglLayout = useMemo(() => widgetLayoutToRGL(layout), [layout])
+
   const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
-  // 레이아웃 변경 + 자동 저장
   const persistLayout = useCallback(
     (newLayout: WidgetLayoutItem[]) => {
       if (saveTimerRef.current) {
         clearTimeout(saveTimerRef.current)
       }
-      // 500ms debounce로 저장
       const DEBOUNCE_MS = 500
       saveTimerRef.current = setTimeout(() => {
         saveMutation.mutate(newLayout)
@@ -57,24 +96,15 @@ export function WidgetGrid({ projectId }: WidgetGridProps) {
     [saveMutation],
   )
 
-  // 위젯 리오더링
-  const handleDragEnd = useCallback(
-    (result: DropResult) => {
-      if (!result.destination) return
-      const sourceIdx = result.source.index
-      const destIdx = result.destination.index
-      if (sourceIdx === destIdx) return
-
-      const reordered = [...layout]
-      const [removed] = reordered.splice(sourceIdx, 1)
-      reordered.splice(destIdx, 0, removed)
-
-      persistLayout(reordered)
+  const handleLayoutChange = useCallback(
+    (currentLayout: Layout, _allLayouts: ResponsiveLayouts) => {
+      if (!isEditMode) return
+      const updated = rglToWidgetLayout(currentLayout, layout)
+      persistLayout(updated)
     },
-    [layout, persistLayout],
+    [isEditMode, layout, persistLayout],
   )
 
-  // 위젯 추가
   const handleAddWidget = useCallback(
     (type: WidgetType) => {
       const config = WIDGET_REGISTRY.find((w) => w.type === type)
@@ -84,7 +114,7 @@ export function WidgetGrid({ projectId }: WidgetGridProps) {
         widget_id: `${type}-${Date.now()}`,
         type,
         x: 0,
-        y: 0,
+        y: Infinity,
         w: config.defaultSize.w,
         h: config.defaultSize.h,
       }
@@ -94,7 +124,6 @@ export function WidgetGrid({ projectId }: WidgetGridProps) {
     [layout, persistLayout],
   )
 
-  // 위젯 제거
   const handleRemoveWidget = useCallback(
     (widgetId: string) => {
       persistLayout(layout.filter((w) => w.widget_id !== widgetId))
@@ -102,7 +131,6 @@ export function WidgetGrid({ projectId }: WidgetGridProps) {
     [layout, persistLayout],
   )
 
-  // 현재 레이아웃에 있는 위젯 타입 목록
   const existingTypes = useMemo<WidgetType[]>(
     () => layout.map((w) => w.type),
     [layout],
@@ -119,8 +147,7 @@ export function WidgetGrid({ projectId }: WidgetGridProps) {
   }
 
   return (
-    <div className="flex flex-col gap-4">
-      {/* 툴바 — 뷰어에게 숨김 */}
+    <div ref={containerRef} className="flex flex-col gap-4">
       {canEdit && (
         <div className="flex items-center justify-end gap-2">
           {isEditMode && (
@@ -149,60 +176,35 @@ export function WidgetGrid({ projectId }: WidgetGridProps) {
         </div>
       )}
 
-      {/* 위젯 그리드 */}
       {layout.length === 0 ? (
         <EmptyDashboard onAddWidget={() => setAddWidgetOpen(true)} />
-      ) : isEditMode ? (
-        <DragDropContext onDragEnd={handleDragEnd}>
-          <Droppable droppableId="widget-grid" direction="horizontal">
-            {(provided) => (
-              <div
-                ref={provided.innerRef}
-                {...provided.droppableProps}
-                className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3"
-              >
-                {layout.map((widget, index) => (
-                  <Draggable key={widget.widget_id} draggableId={widget.widget_id} index={index}>
-                    {(dragProvided) => (
-                      <div
-                        ref={dragProvided.innerRef}
-                        {...dragProvided.draggableProps}
-                        className="min-h-64"
-                      >
-                        <WidgetCard
-                          widgetId={widget.widget_id}
-                          type={widget.type}
-                          projectId={projectId}
-                          isEditMode={isEditMode}
-                          onRemove={handleRemoveWidget}
-                          dragHandleProps={dragProvided.dragHandleProps}
-                        />
-                      </div>
-                    )}
-                  </Draggable>
-                ))}
-                {provided.placeholder}
-              </div>
-            )}
-          </Droppable>
-        </DragDropContext>
-      ) : (
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+      ) : mounted ? (
+        <ResponsiveGridLayout
+          width={width}
+          layouts={{ lg: rglLayout }}
+          breakpoints={BREAKPOINTS}
+          cols={COLS}
+          rowHeight={GRID_ROW_HEIGHT}
+          dragConfig={{ enabled: isEditMode, handle: '.drag-handle' }}
+          resizeConfig={{ enabled: isEditMode, handles: ['se'] }}
+          onLayoutChange={handleLayoutChange}
+          containerPadding={[0, 0]}
+          margin={[16, 16]}
+        >
           {layout.map((widget) => (
-            <div key={widget.widget_id} className="min-h-64">
+            <div key={widget.widget_id}>
               <WidgetCard
                 widgetId={widget.widget_id}
                 type={widget.type}
                 projectId={projectId}
-                isEditMode={false}
+                isEditMode={isEditMode}
                 onRemove={handleRemoveWidget}
               />
             </div>
           ))}
-        </div>
-      )}
+        </ResponsiveGridLayout>
+      ) : null}
 
-      {/* 위젯 추가 다이얼로그 */}
       <AddWidgetDialog
         open={isAddWidgetOpen}
         onOpenChange={setAddWidgetOpen}

@@ -11,6 +11,10 @@ import {
   getWeekColumns,
   getMonthColumns,
   taskToBarPosition,
+  isSameDay,
+  isSameMonth,
+  getCalendarGrid,
+  getWeekGrid,
 } from './gantt-utils'
 
 describe('gantt-utils', () => {
@@ -184,6 +188,69 @@ describe('gantt-utils', () => {
       const result = taskToBarPosition(taskStart, taskEnd, timelineStart, 1000)
 
       expect(result.width).toBeGreaterThanOrEqual(0.5)
+    })
+  })
+
+  // ── isSameDay ──
+  describe('isSameDay', () => {
+    it('같은 날이면 true를 반환한다', () => {
+      const a = new Date(2026, 1, 15, 10, 30)
+      const b = new Date(2026, 1, 15, 23, 59)
+      expect(isSameDay(a, b)).toBe(true)
+    })
+
+    it('다른 날이면 false를 반환한다', () => {
+      const a = new Date(2026, 1, 15)
+      const b = new Date(2026, 1, 16)
+      expect(isSameDay(a, b)).toBe(false)
+    })
+  })
+
+  // ── isSameMonth ──
+  describe('isSameMonth', () => {
+    it('같은 월이면 true를 반환한다', () => {
+      expect(isSameMonth(new Date(2026, 1, 1), new Date(2026, 1, 28))).toBe(true)
+    })
+
+    it('다른 월이면 false를 반환한다', () => {
+      expect(isSameMonth(new Date(2026, 0, 31), new Date(2026, 1, 1))).toBe(false)
+    })
+  })
+
+  // ── getCalendarGrid ──
+  describe('getCalendarGrid', () => {
+    it('42개의 날짜 셀을 반환한다 (6주)', () => {
+      const grid = getCalendarGrid(2026, 1) // 2026년 2월
+      expect(grid).toHaveLength(42)
+    })
+
+    it('해당 월의 날짜는 isCurrentMonth가 true이다', () => {
+      const grid = getCalendarGrid(2026, 1)
+      const currentMonthDays = grid.filter((d) => d.isCurrentMonth)
+      expect(currentMonthDays.length).toBe(28) // 2026년 2월은 28일
+    })
+
+    it('첫 번째 셀은 일요일이다', () => {
+      const grid = getCalendarGrid(2026, 1)
+      expect(grid[0].date.getDay()).toBe(0)
+    })
+  })
+
+  // ── getWeekGrid ──
+  describe('getWeekGrid', () => {
+    it('7개의 날짜 셀을 반환한다', () => {
+      const grid = getWeekGrid(new Date(2026, 1, 10))
+      expect(grid).toHaveLength(7)
+    })
+
+    it('일요일부터 시작한다', () => {
+      const grid = getWeekGrid(new Date(2026, 1, 10))
+      expect(grid[0].date.getDay()).toBe(0)
+    })
+
+    it('토요일로 끝난다', () => {
+      const grid = getWeekGrid(new Date(2026, 1, 10))
+      expect(grid[6].date.getDay()).toBe(6)
     })
   })
 })

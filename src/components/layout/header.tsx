@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { LogOut, ShieldCheck, UserCog } from 'lucide-react'
+import { Keyboard, LogOut, ShieldCheck, UserCog } from 'lucide-react'
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
@@ -17,10 +17,13 @@ import { useAuth } from '@/hooks/use-auth'
 import { useMyProfile } from '@/queries/use-admin'
 import { useProfile } from '@/queries/use-profile'
 
+import { useShortcutHelpStore } from '@/stores/shortcut-help-store'
+
 import { ProfileEditDialog } from '../profile/profile-edit-dialog'
 import { NotificationBell } from '../notification/notification-bell'
 import { SearchCommand } from '../search/search-command'
 import { SearchTrigger } from '../search/search-trigger'
+import { ShortcutHelpDialog } from './shortcut-help-dialog'
 import { ThemeToggle } from './theme-toggle'
 
 export function Header() {
@@ -51,9 +54,19 @@ export function Header() {
       </button>
       <div className="flex items-center gap-2 text-white">
         <SearchTrigger />
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-9 w-9 hover:bg-white/10"
+          onClick={() => useShortcutHelpStore.getState().toggle()}
+          title="키보드 단축키 (Shift+?)"
+        >
+          <Keyboard className="h-5 w-5" />
+        </Button>
         <ThemeToggle />
         <NotificationBell />
         <SearchCommand />
+        <ShortcutHelpDialog />
 
         {isAuthenticated && user && (
           <>

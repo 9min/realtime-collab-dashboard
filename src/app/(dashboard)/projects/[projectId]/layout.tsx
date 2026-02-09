@@ -1,16 +1,19 @@
 'use client'
 
-import { use, type ReactNode } from 'react'
+import { use, useMemo, type ReactNode } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
-import { ArrowLeft, LayoutDashboard, Columns3, Activity, GanttChart, Settings } from 'lucide-react'
+import { ArrowLeft, LayoutDashboard, Columns3, Activity, GanttChart, Calendar, Settings } from 'lucide-react'
 
 import { OnlineUsers } from '@/components/presence/online-users'
 import { Button } from '@/components/ui/button'
 import { useAuth } from '@/hooks/use-auth'
+import { useKeyboardShortcuts } from '@/hooks/use-keyboard-shortcuts'
 import { MEMBER_ROLE } from '@/lib/constants'
+import { SHORTCUT_KEYS } from '@/lib/keyboard-shortcuts'
 import { cn } from '@/lib/utils'
 import { usePresence } from '@/hooks/use-presence'
 import { useProject, useProjectMembers } from '@/queries/use-projects'
+import { useShortcutHelpStore } from '@/stores/shortcut-help-store'
 
 interface ProjectLayoutProps {
   children: ReactNode
@@ -21,6 +24,7 @@ const ALL_NAV_ITEMS = [
   { label: '대시보드', href: '', icon: LayoutDashboard },
   { label: '칸반 보드', href: '/board', icon: Columns3 },
   { label: '간트 차트', href: '/gantt', icon: GanttChart },
+  { label: '캘린더', href: '/calendar', icon: Calendar },
   { label: '활동 로그', href: '/activity', icon: Activity },
   { label: '설정', href: '/settings', icon: Settings, adminOnly: true },
 ] as const
@@ -34,12 +38,27 @@ export default function ProjectLayout({ children, params }: ProjectLayoutProps) 
   const { data: members } = useProjectMembers(projectId)
   const { onlineUsers } = usePresence(projectId)
 
+  const basePath = `/projects/${projectId}`
+
+  // 키보드 단축키
+  const toggleHelp = useShortcutHelpStore((s) => s.toggle)
+  const shortcuts = useMemo(
+    () => [
+      { key: SHORTCUT_KEYS.HELP, shiftKey: true, action: toggleHelp },
+      { key: SHORTCUT_KEYS.DASHBOARD, action: () => router.push(basePath) },
+      { key: SHORTCUT_KEYS.KANBAN, action: () => router.push(`${basePath}/board`) },
+      { key: SHORTCUT_KEYS.GANTT, action: () => router.push(`${basePath}/gantt`) },
+      { key: SHORTCUT_KEYS.CALENDAR, action: () => router.push(`${basePath}/calendar`) },
+      { key: SHORTCUT_KEYS.ACTIVITY, action: () => router.push(`${basePath}/activity`) },
+    ],
+    [toggleHelp, router, basePath],
+  )
+  useKeyboardShortcuts(shortcuts)
+
   // 뷰어는 설정 탭 숨김
   const currentRole = members?.find((m) => m.user_id === user?.id)?.role
   const isViewer = currentRole === MEMBER_ROLE.VIEWER
   const navItems = ALL_NAV_ITEMS.filter((item) => !('adminOnly' in item && item.adminOnly && isViewer))
-
-  const basePath = `/projects/${projectId}`
 
   return (
     <div className="space-y-6">

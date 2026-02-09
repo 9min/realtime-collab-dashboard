@@ -1,7 +1,6 @@
 'use client'
 
 import dynamic from 'next/dynamic'
-import type { DraggableProvidedDragHandleProps } from '@hello-pangea/dnd'
 import { X, GripVertical } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
@@ -44,7 +43,6 @@ interface WidgetCardProps {
   projectId: string
   isEditMode: boolean
   onRemove: (widgetId: string) => void
-  dragHandleProps?: DraggableProvidedDragHandleProps | null
 }
 
 export function WidgetCard({
@@ -53,7 +51,6 @@ export function WidgetCard({
   projectId,
   isEditMode,
   onRemove,
-  dragHandleProps,
 }: WidgetCardProps) {
   const config = WIDGET_REGISTRY.find((w) => w.type === type)
   const title = config?.title ?? '위젯'
@@ -62,7 +59,7 @@ export function WidgetCard({
     <Card className={cn('flex h-full flex-col border-t-2 shadow-sm', WIDGET_ACCENT[type])}>
       <CardHeader className="flex flex-row items-center gap-2 space-y-0 pb-2">
         {isEditMode && (
-          <div {...dragHandleProps} className="cursor-grab active:cursor-grabbing">
+          <div className="drag-handle cursor-grab active:cursor-grabbing">
             <GripVertical className="text-muted-foreground h-4 w-4" />
           </div>
         )}

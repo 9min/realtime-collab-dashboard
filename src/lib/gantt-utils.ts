@@ -108,3 +108,73 @@ export function taskToBarPosition(
 
   return { left: Math.max(0, left), width: Math.max(0.5, width) }
 }
+
+// ── 캘린더 유틸 ──
+
+export interface CalendarDay {
+  date: Date
+  isCurrentMonth: boolean
+  isToday: boolean
+}
+
+export function isSameDay(a: Date, b: Date): boolean {
+  return (
+    a.getFullYear() === b.getFullYear() &&
+    a.getMonth() === b.getMonth() &&
+    a.getDate() === b.getDate()
+  )
+}
+
+export function isSameMonth(a: Date, b: Date): boolean {
+  return (
+    a.getFullYear() === b.getFullYear() &&
+    a.getMonth() === b.getMonth()
+  )
+}
+
+export function getCalendarGrid(year: number, month: number): CalendarDay[] {
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+
+  const firstDay = new Date(year, month, 1)
+  const startOffset = firstDay.getDay() // 0=Sun
+
+  const start = new Date(year, month, 1 - startOffset)
+
+  const TOTAL_CELLS = 42 // 6 weeks
+  const days: CalendarDay[] = []
+
+  for (let i = 0; i < TOTAL_CELLS; i++) {
+    const date = new Date(start)
+    date.setDate(start.getDate() + i)
+    days.push({
+      date,
+      isCurrentMonth: date.getMonth() === month,
+      isToday: isSameDay(date, today),
+    })
+  }
+
+  return days
+}
+
+export function getWeekGrid(baseDate: Date): CalendarDay[] {
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+
+  const day = baseDate.getDay() // 0=Sun
+  const start = new Date(baseDate)
+  start.setDate(start.getDate() - day)
+
+  const days: CalendarDay[] = []
+  for (let i = 0; i < 7; i++) {
+    const date = new Date(start)
+    date.setDate(start.getDate() + i)
+    days.push({
+      date,
+      isCurrentMonth: date.getMonth() === baseDate.getMonth(),
+      isToday: isSameDay(date, today),
+    })
+  }
+
+  return days
+}
