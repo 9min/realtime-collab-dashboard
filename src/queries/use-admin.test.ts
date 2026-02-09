@@ -11,6 +11,7 @@ vi.mock('@/services/admin-service', () => ({
   getAllUsers: vi.fn(),
   setAdminStatus: vi.fn(),
   getMyProfile: vi.fn(),
+  getAllProjectMemberships: vi.fn(),
 }))
 
 vi.mock('sonner', () => ({
@@ -18,10 +19,10 @@ vi.mock('sonner', () => ({
 }))
 
 import { toast } from 'sonner'
-import { getAllUsers, setAdminStatus, getMyProfile } from '@/services/admin-service'
-import { mockProfile, mockProfile2, MOCK_USER_ID_2 } from '@/__tests__/helpers/fixtures'
+import { getAllUsers, setAdminStatus, getMyProfile, getAllProjectMemberships } from '@/services/admin-service'
+import { mockProfile, mockProfile2, mockProjectMemberships, MOCK_USER_ID_2 } from '@/__tests__/helpers/fixtures'
 
-import { useMyProfile, useAllUsers, useSetAdminStatus, adminKeys } from './use-admin'
+import { useMyProfile, useAllUsers, useAllProjectMemberships, useSetAdminStatus, adminKeys } from './use-admin'
 
 describe('use-admin', () => {
   let queryClient: QueryClient
@@ -45,6 +46,7 @@ describe('use-admin', () => {
     it('올바른 쿼리 키를 생성한다', () => {
       expect(adminKeys.myProfile).toEqual(['admin', 'my-profile'])
       expect(adminKeys.allUsers).toEqual(['admin', 'users'])
+      expect(adminKeys.allMemberships).toEqual(['admin', 'memberships'])
     })
   })
 
@@ -96,6 +98,31 @@ describe('use-admin', () => {
       const { result } = renderHook(() => useAllUsers(), { wrapper })
 
       await waitFor(() => expect(result.current.isError).toBe(true))
+    })
+  })
+
+  // ── useAllProjectMemberships ──
+  describe('useAllProjectMemberships', () => {
+    it('전체 프로젝트 멤버십을 조회한다', async () => {
+      vi.mocked(getAllProjectMemberships).mockResolvedValue({ data: mockProjectMemberships, error: null })
+
+      const { result } = renderHook(() => useAllProjectMemberships(), { wrapper })
+
+      await waitFor(() => expect(result.current.isSuccess).toBe(true))
+      expect(result.current.data).toEqual(mockProjectMemberships)
+      expect(result.current.data).toHaveLength(3)
+    })
+
+    it('에러 시 isError가 true이다', async () => {
+      vi.mocked(getAllProjectMemberships).mockResolvedValue({
+        data: null,
+        error: { code: 'P0001', message: 'Admin permission required' },
+      })
+
+      const { result } = renderHook(() => useAllProjectMemberships(), { wrapper })
+
+      await waitFor(() => expect(result.current.isError).toBe(true))
+      expect(result.current.error?.message).toBe('Admin permission required')
     })
   })
 

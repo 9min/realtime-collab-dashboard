@@ -1,4 +1,5 @@
 import type { Tables } from '@/types/database'
+import type { ProjectMembership } from '@/services/admin-service'
 
 // ── ID 상수 ──
 export const MOCK_USER_ID = 'user-aaa-111'
@@ -135,6 +136,33 @@ export const mockMemberWithProfile = {
   ...mockMember,
   profiles: mockProfile,
 }
+
+// ── Project Memberships (admin RPC response) ──
+export const MOCK_PROJECT_ID_2 = 'project-bbb-222'
+
+export const mockProjectMemberships: ProjectMembership[] = [
+  {
+    user_id: MOCK_USER_ID,
+    project_id: MOCK_PROJECT_ID,
+    project_name: 'Project Alpha',
+    role: 'owner',
+    joined_at: '2026-01-01T00:00:00Z',
+  },
+  {
+    user_id: MOCK_USER_ID,
+    project_id: MOCK_PROJECT_ID_2,
+    project_name: 'Project Beta',
+    role: 'member',
+    joined_at: '2026-01-15T00:00:00Z',
+  },
+  {
+    user_id: MOCK_USER_ID_2,
+    project_id: MOCK_PROJECT_ID,
+    project_name: 'Project Alpha',
+    role: 'member',
+    joined_at: '2026-01-10T00:00:00Z',
+  },
+]
 
 // ── Labels ──
 export const MOCK_LABEL_ID_1 = 'label-aaa-111'

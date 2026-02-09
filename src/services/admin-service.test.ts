@@ -3,9 +3,9 @@ import type { SupabaseClient } from '@supabase/supabase-js'
 
 import type { Database } from '@/types/database'
 import { createMockSupabaseClient } from '@/__tests__/helpers/mock-supabase'
-import { mockProfile, mockProfile2, MOCK_USER_ID, MOCK_USER_ID_2 } from '@/__tests__/helpers/fixtures'
+import { mockProfile, mockProfile2, mockProjectMemberships, MOCK_USER_ID, MOCK_USER_ID_2 } from '@/__tests__/helpers/fixtures'
 
-import { getAllUsers, setAdminStatus, getMyProfile } from './admin-service'
+import { getAllUsers, setAdminStatus, getMyProfile, getAllProjectMemberships } from './admin-service'
 
 type Client = SupabaseClient<Database>
 
@@ -110,6 +110,31 @@ describe('admin-service', () => {
 
       expect(result.data).toBeNull()
       expect(result.error).toEqual({ code: 'PGRST116', message: 'not found' })
+    })
+  })
+
+  describe('getAllProjectMemberships', () => {
+    it('전체 프로젝트 멤버십을 반환한다', async () => {
+      const client = createMockSupabaseClient({
+        rpcResponse: { data: mockProjectMemberships, error: null },
+      }) as Client
+
+      const result = await getAllProjectMemberships(client)
+
+      expect(result.error).toBeNull()
+      expect(result.data).toEqual(mockProjectMemberships)
+      expect(client.rpc).toHaveBeenCalledWith('get_all_project_memberships')
+    })
+
+    it('admin이 아닌 유저가 호출하면 에러를 반환한다', async () => {
+      const client = createMockSupabaseClient({
+        rpcResponse: { data: null, error: { code: 'P0001', message: 'Admin permission required' } },
+      }) as Client
+
+      const result = await getAllProjectMemberships(client)
+
+      expect(result.data).toBeNull()
+      expect(result.error).toEqual({ code: 'P0001', message: 'Admin permission required' })
     })
   })
 })

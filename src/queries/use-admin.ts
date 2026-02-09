@@ -4,11 +4,12 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 
 import { useSupabase } from '@/components/providers/supabase-provider'
-import { getAllUsers, setAdminStatus, getMyProfile } from '@/services/admin-service'
+import { getAllUsers, setAdminStatus, getMyProfile, getAllProjectMemberships } from '@/services/admin-service'
 
 export const adminKeys = {
   myProfile: ['admin', 'my-profile'] as const,
   allUsers: ['admin', 'users'] as const,
+  allMemberships: ['admin', 'memberships'] as const,
 }
 
 export function useMyProfile() {
@@ -33,6 +34,20 @@ export function useAllUsers() {
     queryKey: adminKeys.allUsers,
     queryFn: async () => {
       const result = await getAllUsers(supabase)
+      if (result.error) throw new Error(result.error.message)
+      return result.data
+    },
+  })
+}
+
+export function useAllProjectMemberships() {
+  const supabase = useSupabase()
+
+  return useQuery({
+    // eslint-disable-next-line @tanstack/query/exhaustive-deps
+    queryKey: adminKeys.allMemberships,
+    queryFn: async () => {
+      const result = await getAllProjectMemberships(supabase)
       if (result.error) throw new Error(result.error.message)
       return result.data
     },

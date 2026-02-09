@@ -6,6 +6,14 @@ import type { Database, Tables } from '@/types/database'
 type Client = SupabaseClient<Database>
 type Profile = Tables<'profiles'>
 
+export interface ProjectMembership {
+  user_id: string
+  project_id: string
+  project_name: string
+  role: 'owner' | 'admin' | 'member' | 'viewer'
+  joined_at: string
+}
+
 export async function getAllUsers(
   supabase: Client,
 ): Promise<ServiceResult<Profile[]>> {
@@ -60,4 +68,16 @@ export async function getMyProfile(
   }
 
   return { data, error: null }
+}
+
+export async function getAllProjectMemberships(
+  supabase: Client,
+): Promise<ServiceResult<ProjectMembership[]>> {
+  const { data, error } = await supabase.rpc('get_all_project_memberships')
+
+  if (error) {
+    return { data: null, error: { code: error.code, message: error.message } }
+  }
+
+  return { data: data as ProjectMembership[], error: null }
 }

@@ -572,6 +572,16 @@ export interface Database {
         Args: { p_project_id: string }
         Returns: boolean
       }
+      get_all_project_memberships: {
+        Args: Record<string, never>
+        Returns: {
+          user_id: string
+          project_id: string
+          project_name: string
+          role: Database['public']['Enums']['member_role']
+          joined_at: string
+        }[]
+      }
       set_admin_status: {
         Args: { p_user_id: string; p_is_admin: boolean }
         Returns: undefined
