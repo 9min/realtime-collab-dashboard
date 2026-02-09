@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import type { RealtimeChannel } from '@supabase/supabase-js'
 
 import { useSupabase } from '@/components/providers/supabase-provider'
@@ -32,17 +32,25 @@ export function usePresence(projectId: string) {
   const { data: profile } = useProfile()
   const [onlineUsers, setOnlineUsers] = useState<PresenceUser[]>([])
 
+  // profile을 ref로 관리하여 채널 재생성 방지
+  const profileRef = useRef(profile)
   useEffect(() => {
-    if (!projectId || !user) return
+    profileRef.current = profile
+  }, [profile])
+
+  // 채널 참조를 별도 effect에서 접근하기 위한 ref
+  const channelRef = useRef<RealtimeChannel | null>(null)
+
+  // 메인 effect: 채널 생성/구독 (profile 의존성 제거)
+  useEffect(() => {
+    if (!projectId || !user?.id) return
 
     const channelName = `${CHANNEL_PREFIX}-presence:${projectId}`
-    let channel: RealtimeChannel | null = null
-
-    channel = supabase.channel(channelName)
+    const channel = supabase.channel(channelName)
+    channelRef.current = channel
 
     // presence sync 이벤트: 전체 상태가 동기화될 때
     channel.on('presence', { event: 'sync' }, () => {
-      if (!channel) return
       const state = channel.presenceState<PresenceUser>()
       const users: PresenceUser[] = []
       const seen = new Set<string>()
@@ -62,23 +70,34 @@ export function usePresence(projectId: string) {
 
     // 구독 후 자신의 presence 등록
     channel.subscribe(async (status) => {
-      if (status === 'SUBSCRIBED' && channel) {
+      if (status === 'SUBSCRIBED') {
         await channel.track({
           user_id: user.id,
-          full_name: profile?.full_name ?? user.user_metadata?.full_name ?? null,
-          avatar_url: profile?.avatar_url ?? null,
+          full_name: profileRef.current?.full_name ?? user.user_metadata?.full_name ?? null,
+          avatar_url: profileRef.current?.avatar_url ?? null,
           online_at: new Date().toISOString(),
         })
       }
     })
 
     return () => {
-      if (channel) {
-        channel.untrack()
-        supabase.removeChannel(channel)
-      }
+      channelRef.current = null
+      channel.untrack()
+      supabase.removeChannel(channel)
     }
-  }, [supabase, projectId, user, profile])
+  }, [supabase, projectId, user?.id])
+
+  // 프로필 변경 시 채널 재생성 없이 presence 정보만 업데이트
+  useEffect(() => {
+    if (!profile || !user?.id || !channelRef.current) return
+
+    channelRef.current.track({
+      user_id: user.id,
+      full_name: profile.full_name ?? user.user_metadata?.full_name ?? null,
+      avatar_url: profile.avatar_url ?? null,
+      online_at: new Date().toISOString(),
+    })
+  }, [profile, user?.id])
 
   return { onlineUsers }
 }
