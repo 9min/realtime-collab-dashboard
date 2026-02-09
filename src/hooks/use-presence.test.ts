@@ -44,6 +44,16 @@ vi.mock('@/hooks/use-auth', () => ({
   }),
 }))
 
+vi.mock('@/queries/use-profile', () => ({
+  useProfile: () => ({
+    data: { full_name: 'Test User', avatar_url: null },
+  }),
+  profileKeys: {
+    all: ['profile'],
+    detail: (userId: string) => ['profile', userId],
+  },
+}))
+
 import { usePresence } from './use-presence'
 
 describe('usePresence', () => {

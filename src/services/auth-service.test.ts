@@ -14,6 +14,7 @@ import {
   uploadAvatar,
   deleteAvatar,
   updateProfileWithAuth,
+  deleteAccount,
 } from './auth-service'
 
 type Client = SupabaseClient<Database>
@@ -239,6 +240,38 @@ describe('auth-service', () => {
 
       expect(result.data).toBeNull()
       expect(result.error?.code).toBe('DELETE_ERROR')
+    })
+  })
+
+  // ── deleteAccount ──
+  describe('deleteAccount', () => {
+    it('성공 시 data: null, error: null을 반환한다', async () => {
+      vi.stubGlobal('fetch', vi.fn().mockResolvedValue({
+        ok: true,
+        json: () => Promise.resolve({ success: true }),
+      }))
+
+      const result = await deleteAccount()
+
+      expect(result.data).toBeNull()
+      expect(result.error).toBeNull()
+
+      vi.unstubAllGlobals()
+    })
+
+    it('실패 시 DELETE_ACCOUNT_ERROR를 반환한다', async () => {
+      vi.stubGlobal('fetch', vi.fn().mockResolvedValue({
+        ok: false,
+        json: () => Promise.resolve({ error: '서버 오류' }),
+      }))
+
+      const result = await deleteAccount()
+
+      expect(result.data).toBeNull()
+      expect(result.error?.code).toBe('DELETE_ACCOUNT_ERROR')
+      expect(result.error?.message).toBe('서버 오류')
+
+      vi.unstubAllGlobals()
     })
   })
 

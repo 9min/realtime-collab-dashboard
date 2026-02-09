@@ -2,38 +2,23 @@
 
 import { memo } from 'react'
 
+import { Badge } from '@/components/ui/badge'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { ACTION_CONFIG, ENTITY_CONFIG } from '@/lib/activity-constants'
+import { cn } from '@/lib/utils'
 import { ACTIVITY_ACTION, ACTIVITY_ENTITY } from '@/types/activity'
-import type { ActivityLogWithUser } from '@/types/activity'
+import type { ActivityAction, ActivityEntity, ActivityLogWithUser } from '@/types/activity'
 
 interface ActivityItemProps {
   activity: ActivityLogWithUser
 }
 
-function getActionLabel(actionType: string): string {
-  switch (actionType) {
-    case ACTIVITY_ACTION.CREATED: return '생성'
-    case ACTIVITY_ACTION.UPDATED: return '수정'
-    case ACTIVITY_ACTION.DELETED: return '삭제'
-    case ACTIVITY_ACTION.MOVED: return '이동'
-    default: return actionType
-  }
-}
-
-function getEntityLabel(entityType: string): string {
-  switch (entityType) {
-    case ACTIVITY_ENTITY.TASK: return '태스크'
-    case ACTIVITY_ENTITY.COLUMN: return '컬럼'
-    case ACTIVITY_ENTITY.MEMBER: return '멤버'
-    case ACTIVITY_ENTITY.COMMENT: return '댓글'
-    default: return entityType
-  }
-}
-
 function formatMessage(activity: ActivityLogWithUser): string {
   const userName = activity.profiles.full_name ?? activity.profiles.email
-  const action = getActionLabel(activity.action_type)
-  const entity = getEntityLabel(activity.entity_type)
+  const actionConfig = ACTION_CONFIG[activity.action_type as ActivityAction]
+  const entityConfig = ENTITY_CONFIG[activity.entity_type as ActivityEntity]
+  const action = actionConfig?.label ?? activity.action_type
+  const entity = entityConfig?.label ?? activity.entity_type
   const meta = activity.metadata as Record<string, unknown>
   const title = typeof meta.title === 'string' ? meta.title : ''
 
@@ -96,19 +81,48 @@ export const ActivityItem = memo(function ActivityItem({ activity }: ActivityIte
   const profile = activity.profiles
   const message = formatMessage(activity)
   const time = getRelativeTime(activity.created_at)
+  const actionConfig = ACTION_CONFIG[activity.action_type as ActivityAction]
+  const entityConfig = ENTITY_CONFIG[activity.entity_type as ActivityEntity]
+
+  const ActionIcon = actionConfig?.icon
+  const actionLabel = actionConfig?.label ?? activity.action_type
+  const entityLabel = entityConfig?.label ?? activity.entity_type
 
   return (
-    <div className="flex gap-3 py-3">
-      <Avatar className="h-8 w-8 shrink-0">
-        <AvatarImage src={profile.avatar_url ?? undefined} />
-        <AvatarFallback className="text-xs">
+    <div className="hover:bg-accent/50 flex gap-3 rounded-lg px-3 py-3 transition-colors">
+      {/* 액션 아이콘 */}
+      <div
+        className={cn(
+          'flex h-8 w-8 shrink-0 items-center justify-center rounded-full',
+          actionConfig?.bgColor ?? 'bg-muted',
+        )}
+      >
+        {ActionIcon && (
+          <ActionIcon className={cn('h-4 w-4', actionConfig?.textColor ?? 'text-muted-foreground')} />
+        )}
+      </div>
+
+      {/* 중앙 콘텐츠 */}
+      <div className="min-w-0 flex-1">
+        <p className="text-sm leading-relaxed">{message}</p>
+        <div className="mt-1 flex flex-wrap items-center gap-1.5">
+          <Badge variant="secondary" className="text-[10px] px-1.5 py-0">
+            {actionLabel}
+          </Badge>
+          <Badge variant="outline" className="text-[10px] px-1.5 py-0">
+            {entityLabel}
+          </Badge>
+          <span className="text-muted-foreground text-xs">{time}</span>
+        </div>
+      </div>
+
+      {/* 유저 아바타 */}
+      <Avatar className="h-6 w-6 shrink-0">
+        <AvatarImage src={profile.avatar_url || undefined} />
+        <AvatarFallback className="text-[10px]">
           {getInitials(profile.full_name, profile.email)}
         </AvatarFallback>
       </Avatar>
-      <div className="min-w-0 flex-1">
-        <p className="text-sm leading-relaxed">{message}</p>
-        <span className="text-muted-foreground text-xs">{time}</span>
-      </div>
     </div>
   )
 })

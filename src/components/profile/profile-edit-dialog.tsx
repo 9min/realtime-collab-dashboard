@@ -11,6 +11,17 @@ import { AVATAR, PROFILE } from '@/lib/constants'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog'
+import {
   Dialog,
   DialogContent,
   DialogDescription,
@@ -20,7 +31,7 @@ import {
 } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { useProfile, useUpdateProfile, useUploadAvatar, useDeleteAvatar } from '@/queries/use-profile'
+import { useProfile, useUpdateProfile, useUploadAvatar, useDeleteAvatar, useDeleteAccount } from '@/queries/use-profile'
 
 import { useAuth } from '@/hooks/use-auth'
 
@@ -50,6 +61,7 @@ export function ProfileEditDialog({ open, onOpenChange }: ProfileEditDialogProps
   const updateProfile = useUpdateProfile()
   const uploadAvatar = useUploadAvatar()
   const deleteAvatar = useDeleteAvatar()
+  const deleteAccountMutation = useDeleteAccount()
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const {
@@ -63,9 +75,10 @@ export function ProfileEditDialog({ open, onOpenChange }: ProfileEditDialogProps
     },
   })
 
-  const currentAvatarUrl = profile?.avatar_url ?? user?.user_metadata?.avatar_url ?? null
+  // profiles 테이블 데이터만 사용 (OAuth 프로필 사진 자동 노출 방지)
+  const currentAvatarUrl = profile?.avatar_url ?? null
   const fallbackInitial =
-    profile?.full_name?.[0] ?? user?.user_metadata?.full_name?.[0] ?? user?.email?.[0]?.toUpperCase() ?? '?'
+    profile?.full_name?.[0] ?? user?.email?.[0]?.toUpperCase() ?? '?'
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -134,6 +147,10 @@ export function ProfileEditDialog({ open, onOpenChange }: ProfileEditDialogProps
     } catch {
       // mutation의 onError에서 toast 처리됨
     }
+  }
+
+  const handleDeleteAccount = () => {
+    deleteAccountMutation.mutate()
   }
 
   const isAvatarLoading = uploadAvatar.isPending || deleteAvatar.isPending || updateProfile.isPending
@@ -215,6 +232,35 @@ export function ProfileEditDialog({ open, onOpenChange }: ProfileEditDialogProps
               disabled
               className="bg-muted"
             />
+          </div>
+
+          {/* 위험 영역 */}
+          <div className="border-destructive/50 space-y-3 rounded-md border p-4">
+            <p className="text-destructive text-sm font-semibold">위험 영역</p>
+            <p className="text-muted-foreground text-xs">
+              계정을 삭제하면 모든 데이터가 영구 삭제되며 되돌릴 수 없습니다.
+            </p>
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button variant="destructive" size="sm" disabled={deleteAccountMutation.isPending}>
+                  계정 탈퇴
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>정말 탈퇴하시겠습니까?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    계정과 모든 관련 데이터가 영구 삭제됩니다. 이 작업은 되돌릴 수 없습니다.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>취소</AlertDialogCancel>
+                  <AlertDialogAction variant="destructive" onClick={handleDeleteAccount}>
+                    탈퇴
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
           </div>
 
           <DialogFooter>

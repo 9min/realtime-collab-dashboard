@@ -7,8 +7,9 @@ vi.mock('@/components/providers/supabase-provider', () => ({
   useSupabase: () => ({}),
 }))
 
+const mockSignOut = vi.fn()
 vi.mock('@/hooks/use-auth', () => ({
-  useAuth: () => ({ user: { id: 'user-aaa-111', email: 'test@example.com' } }),
+  useAuth: () => ({ user: { id: 'user-aaa-111', email: 'test@example.com' }, signOut: mockSignOut }),
 }))
 
 vi.mock('@/services/auth-service', () => ({
@@ -16,6 +17,7 @@ vi.mock('@/services/auth-service', () => ({
   updateProfileWithAuth: vi.fn(),
   uploadAvatar: vi.fn(),
   deleteAvatar: vi.fn(),
+  deleteAccount: vi.fn(),
 }))
 
 vi.mock('sonner', () => ({
@@ -23,9 +25,9 @@ vi.mock('sonner', () => ({
 }))
 
 import { toast } from 'sonner'
-import { getProfile, updateProfileWithAuth, uploadAvatar, deleteAvatar } from '@/services/auth-service'
+import { getProfile, updateProfileWithAuth, uploadAvatar, deleteAvatar, deleteAccount } from '@/services/auth-service'
 import { mockProfile } from '@/__tests__/helpers/fixtures'
-import { useProfile, useUpdateProfile, useUploadAvatar, useDeleteAvatar, profileKeys } from './use-profile'
+import { useProfile, useUpdateProfile, useUploadAvatar, useDeleteAvatar, useDeleteAccount, profileKeys } from './use-profile'
 
 describe('use-profile', () => {
   let queryClient: QueryClient
@@ -184,6 +186,44 @@ describe('use-profile', () => {
       })
 
       expect(toast.error).toHaveBeenCalledWith('아바타 삭제에 실패했습니다')
+    })
+  })
+
+  // ── useDeleteAccount ──
+  describe('useDeleteAccount', () => {
+    it('성공 시 queryClient.clear + signOut + toast.success', async () => {
+      vi.mocked(deleteAccount).mockResolvedValue({ data: null, error: null })
+      mockSignOut.mockResolvedValue(undefined)
+      const clearSpy = vi.spyOn(queryClient, 'clear')
+
+      const { result } = renderHook(() => useDeleteAccount(), { wrapper })
+
+      await act(async () => {
+        await result.current.mutateAsync()
+      })
+
+      expect(toast.success).toHaveBeenCalledWith('계정이 삭제되었습니다')
+      expect(clearSpy).toHaveBeenCalled()
+      expect(mockSignOut).toHaveBeenCalled()
+    })
+
+    it('실패 시 toast.error', async () => {
+      vi.mocked(deleteAccount).mockResolvedValue({
+        data: null,
+        error: { code: 'DELETE_ACCOUNT_ERROR', message: '계정 삭제 실패' },
+      })
+
+      const { result } = renderHook(() => useDeleteAccount(), { wrapper })
+
+      await act(async () => {
+        try {
+          await result.current.mutateAsync()
+        } catch {
+          // expected
+        }
+      })
+
+      expect(toast.error).toHaveBeenCalledWith('계정 삭제에 실패했습니다')
     })
   })
 })

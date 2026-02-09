@@ -6,6 +6,7 @@ import type { RealtimeChannel } from '@supabase/supabase-js'
 import { useSupabase } from '@/components/providers/supabase-provider'
 import { CHANNEL_PREFIX } from '@/lib/constants'
 import { useAuth } from '@/hooks/use-auth'
+import { useProfile } from '@/queries/use-profile'
 
 // Presence로 공유할 유저 정보
 export interface PresenceUser {
@@ -28,6 +29,7 @@ export interface PresenceUser {
 export function usePresence(projectId: string) {
   const supabase = useSupabase()
   const { user } = useAuth()
+  const { data: profile } = useProfile()
   const [onlineUsers, setOnlineUsers] = useState<PresenceUser[]>([])
 
   useEffect(() => {
@@ -63,8 +65,8 @@ export function usePresence(projectId: string) {
       if (status === 'SUBSCRIBED' && channel) {
         await channel.track({
           user_id: user.id,
-          full_name: user.user_metadata?.full_name ?? null,
-          avatar_url: user.user_metadata?.avatar_url ?? null,
+          full_name: profile?.full_name ?? user.user_metadata?.full_name ?? null,
+          avatar_url: profile?.avatar_url ?? null,
           online_at: new Date().toISOString(),
         })
       }
@@ -76,7 +78,7 @@ export function usePresence(projectId: string) {
         supabase.removeChannel(channel)
       }
     }
-  }, [supabase, projectId, user])
+  }, [supabase, projectId, user, profile])
 
   return { onlineUsers }
 }

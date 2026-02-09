@@ -16,7 +16,7 @@ export function useActivityLogs(projectId: string) {
     // eslint-disable-next-line @tanstack/query/exhaustive-deps
     queryKey: activityKeys.list(projectId),
     queryFn: async () => {
-      const result = await getActivityLogs(supabase, projectId)
+      const result = await getActivityLogs(supabase, projectId, { limit: 100 })
       if (result.error) throw new Error(result.error.message)
       return result.data
     },

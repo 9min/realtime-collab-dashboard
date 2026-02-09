@@ -9,6 +9,7 @@ import {
   updateProfileWithAuth,
   uploadAvatar,
   deleteAvatar,
+  deleteAccount,
 } from '@/services/auth-service'
 
 import { useAuth } from '@/hooks/use-auth'
@@ -92,6 +93,28 @@ export function useDeleteAvatar() {
     },
     onError: () => {
       toast.error('아바타 삭제에 실패했습니다')
+    },
+  })
+}
+
+// 계정 탈퇴
+export function useDeleteAccount() {
+  const { signOut } = useAuth()
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: async () => {
+      const result = await deleteAccount()
+      if (result.error) throw new Error(result.error.message)
+      return result.data
+    },
+    onSuccess: async () => {
+      toast.success('계정이 삭제되었습니다')
+      queryClient.clear()
+      await signOut()
+    },
+    onError: () => {
+      toast.error('계정 삭제에 실패했습니다')
     },
   })
 }

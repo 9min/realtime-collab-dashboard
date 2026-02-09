@@ -143,6 +143,21 @@ export async function deleteAvatar(
   return { data: null, error: null }
 }
 
+// 계정 삭제 (서버 API 호출)
+export async function deleteAccount(): Promise<ServiceResult<null>> {
+  const res = await fetch('/api/auth/delete-account', { method: 'POST' })
+
+  if (!res.ok) {
+    const body = await res.json()
+    return {
+      data: null,
+      error: { code: 'DELETE_ACCOUNT_ERROR', message: body.error ?? '계정 삭제 실패' },
+    }
+  }
+
+  return { data: null, error: null }
+}
+
 // 프로필 + auth.user_metadata 동시 수정
 export async function updateProfileWithAuth(
   supabase: Client,
