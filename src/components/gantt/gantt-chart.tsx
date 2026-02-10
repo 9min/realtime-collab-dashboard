@@ -2,10 +2,12 @@
 
 import { useMemo, useState } from 'react'
 import dynamic from 'next/dynamic'
-import { CalendarRange } from 'lucide-react'
+import { CalendarDays, CalendarRange } from 'lucide-react'
 
+import { Badge } from '@/components/ui/badge'
 import { EmptyState } from '@/components/ui/empty-state'
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'
+import { TooltipProvider } from '@/components/ui/tooltip'
 
 const TaskDetailDialog = dynamic(
   () => import('@/components/kanban/task-detail-dialog').then((mod) => ({ default: mod.TaskDetailDialog })),
@@ -21,16 +23,19 @@ import {
   addDays,
   startOfMonth,
 } from '@/lib/gantt-utils'
-import { MEMBER_ROLE } from '@/lib/constants'
+import { MEMBER_ROLE, PRIORITY_LABELS, PRIORITY_DOT_COLORS } from '@/lib/constants'
 import { cn } from '@/lib/utils'
 import { useProjectMembers } from '@/queries/use-projects'
 import { useTasks } from '@/queries/use-tasks'
 import { useColumns } from '@/queries/use-columns'
+import { useDependencies } from '@/queries/use-dependencies'
 import { useGanttStore } from '@/stores/gantt-store'
+import type { TaskPriority } from '@/types/common'
 import type { Tables } from '@/types/database'
 
 import { GanttBar } from './gantt-bar'
-import { GanttHeader } from './gantt-header'
+import { GanttDependencyArrows } from './gantt-dependency-arrows'
+import { GanttHeader, HEADER_HEIGHT } from './gantt-header'
 
 const WEEK_VIEW_WEEKS = 6
 const MONTH_VIEW_MONTHS = 3
@@ -39,6 +44,9 @@ const COL_WIDTH_MONTH = 50
 const ROW_HEIGHT = 36
 const LABEL_WIDTH_DESKTOP = 200
 const LABEL_WIDTH_MOBILE = 120
+const COLUMN_HEADER_ROW_HEIGHT = 24
+
+const PRIORITY_ORDER: TaskPriority[] = ['urgent', 'high', 'medium', 'low']
 
 interface GanttChartProps {
   projectId: string
@@ -50,6 +58,7 @@ export function GanttChart({ projectId }: GanttChartProps) {
   const { data: columns } = useColumns(projectId)
   const { data: members } = useProjectMembers(projectId)
   const { viewMode, setViewMode } = useGanttStore()
+  const { data: dependencies } = useDependencies(projectId)
   const [selectedTask, setSelectedTask] = useState<Tables<'tasks'> | null>(null)
   const isDesktop = useMediaQuery('(min-width: 768px)')
   const labelWidth = isDesktop ? LABEL_WIDTH_DESKTOP : LABEL_WIDTH_MOBILE
@@ -105,35 +114,75 @@ export function GanttChart({ projectId }: GanttChartProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [timelineStart, totalDays])
 
+  // 주말 컬럼 인덱스 (주 단위 뷰에서만)
+  const weekendColumns = useMemo(() => {
+    if (viewMode !== 'week') return []
+    return timelineColumns
+      .map((col, idx) => (col.isWeekend ? idx : -1))
+      .filter((idx) => idx >= 0)
+  }, [timelineColumns, viewMode])
+
   const getMemberName = (assigneeId: string | null) => {
     if (!assigneeId || !members) return null
     const member = members.find((m) => m.user_id === assigneeId)
     return member?.profiles.full_name ?? member?.profiles.email ?? null
   }
 
+  const getMemberInitials = (assigneeId: string | null) => {
+    if (!assigneeId || !members) return null
+    const member = members.find((m) => m.user_id === assigneeId)
+    const name = member?.profiles.full_name ?? member?.profiles.email
+    if (!name) return null
+    return name.slice(0, 2).toUpperCase()
+  }
+
   if (tasksLoading) {
     return (
       <div className="space-y-4">
-        <div className="flex gap-2">
-          <div className="h-8 w-16 animate-pulse rounded bg-muted" />
-          <div className="h-8 w-16 animate-pulse rounded bg-muted" />
+        {/* 스켈레톤: 뷰 토글 + 레전드 */}
+        <div className="flex items-center gap-3">
+          <div className="flex gap-0.5 rounded-lg border bg-muted p-0.5">
+            <div className="h-8 w-16 animate-pulse rounded-md bg-muted-foreground/10" />
+            <div className="h-8 w-16 animate-pulse rounded-md bg-muted-foreground/10" />
+          </div>
+          <div className="hidden md:flex items-center gap-3">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <div key={i} className="flex items-center gap-1.5">
+                <div className="h-2.5 w-2.5 animate-pulse rounded-full bg-muted" />
+                <div className="h-3 w-8 animate-pulse rounded bg-muted" />
+              </div>
+            ))}
+          </div>
         </div>
+        {/* 스켈레톤: 차트 */}
         <div className="overflow-hidden rounded-lg border">
           <div className="flex">
-            <div className="w-[120px] shrink-0 border-r md:w-[200px]">
-              <div className="h-8 border-b" />
+            <div className="shrink-0 border-r" style={{ width: isDesktop ? LABEL_WIDTH_DESKTOP : LABEL_WIDTH_MOBILE }}>
+              {/* 헤더 스페이서 (2행) */}
+              <div style={{ height: HEADER_HEIGHT }} className="border-b" />
+              {/* 컬럼 헤더 스켈레톤 */}
+              <div className="bg-slate-100/80 dark:bg-slate-800/50 border-b px-3 py-1" style={{ height: COLUMN_HEADER_ROW_HEIGHT }}>
+                <div className="h-3 w-16 animate-pulse rounded bg-muted" />
+              </div>
               {Array.from({ length: 5 }).map((_, i) => (
-                <div key={i} className="flex items-center border-b px-3" style={{ height: ROW_HEIGHT }}>
-                  <div className="h-3 w-full animate-pulse rounded bg-muted" />
+                <div key={i} className="flex items-center border-b px-3 gap-2" style={{ height: ROW_HEIGHT }}>
+                  <div className="h-2.5 w-2.5 shrink-0 animate-pulse rounded-full bg-muted" />
+                  <div className="h-3 flex-1 animate-pulse rounded bg-muted" />
                 </div>
               ))}
             </div>
             <div className="flex-1">
-              <div className="h-8 animate-pulse border-b bg-muted/30" />
+              {/* 2행 헤더 스켈레톤 */}
+              <div style={{ height: HEADER_HEIGHT }} className="animate-pulse border-b bg-muted/20" />
+              <div style={{ height: COLUMN_HEADER_ROW_HEIGHT }} className="border-b" />
               {[45, 60, 35, 55, 40].map((width, i) => (
-                <div key={i} className="flex items-center px-4 border-b" style={{ height: ROW_HEIGHT }}>
+                <div
+                  key={i}
+                  className={cn('flex items-center px-4 border-b', i % 2 === 1 && 'bg-blue-50/40 dark:bg-blue-950/15')}
+                  style={{ height: ROW_HEIGHT }}
+                >
                   <div
-                    className="h-5 animate-pulse rounded-full bg-muted"
+                    className="h-5 animate-pulse rounded-md bg-muted"
                     style={{ width: `${width}%`, marginLeft: `${i * 8}%` }}
                   />
                 </div>
@@ -156,112 +205,210 @@ export function GanttChart({ projectId }: GanttChartProps) {
     )
   }
 
+  // 전체 행 인덱스 (제브라 스트라이핑용)
+  let globalRowIndex = 0
+
   return (
     <div className="space-y-4">
-      {/* 뷰 모드 전환 */}
-      <div role="tablist" aria-label="간트 차트 뷰 모드" className="inline-flex rounded-lg border bg-muted p-0.5">
-        <button
-          role="tab"
-          aria-selected={viewMode === 'week'}
-          className={cn(
-            'rounded-md px-3 py-1.5 text-sm font-medium transition-colors',
-            viewMode === 'week'
-              ? 'bg-background text-foreground shadow-sm'
-              : 'text-muted-foreground hover:text-foreground',
-          )}
-          onClick={() => setViewMode('week')}
-        >
-          주 단위
-        </button>
-        <button
-          role="tab"
-          aria-selected={viewMode === 'month'}
-          className={cn(
-            'rounded-md px-3 py-1.5 text-sm font-medium transition-colors',
-            viewMode === 'month'
-              ? 'bg-background text-foreground shadow-sm'
-              : 'text-muted-foreground hover:text-foreground',
-          )}
-          onClick={() => setViewMode('month')}
-        >
-          월 단위
-        </button>
+      {/* 뷰 모드 전환 + 우선순위 레전드 */}
+      <div className="flex items-center gap-4">
+        <div role="tablist" aria-label="간트 차트 뷰 모드" className="inline-flex rounded-lg border bg-muted p-0.5">
+          <button
+            role="tab"
+            aria-selected={viewMode === 'week'}
+            className={cn(
+              'inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium transition-colors',
+              viewMode === 'week'
+                ? 'bg-background text-foreground shadow-sm'
+                : 'text-muted-foreground hover:text-foreground',
+            )}
+            onClick={() => setViewMode('week')}
+          >
+            <CalendarDays className="h-3.5 w-3.5" />
+            주 단위
+          </button>
+          <button
+            role="tab"
+            aria-selected={viewMode === 'month'}
+            className={cn(
+              'inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium transition-colors',
+              viewMode === 'month'
+                ? 'bg-background text-foreground shadow-sm'
+                : 'text-muted-foreground hover:text-foreground',
+            )}
+            onClick={() => setViewMode('month')}
+          >
+            <CalendarRange className="h-3.5 w-3.5" />
+            월 단위
+          </button>
+        </div>
+
+        {/* 우선순위 레전드 */}
+        <div className="hidden md:flex items-center gap-3 text-xs text-muted-foreground">
+          {PRIORITY_ORDER.map((p) => (
+            <div key={p} className="flex items-center gap-1.5">
+              <span className={cn('inline-block h-2.5 w-2.5 rounded-full', PRIORITY_DOT_COLORS[p])} />
+              <span>{PRIORITY_LABELS[p]}</span>
+            </div>
+          ))}
+        </div>
       </div>
 
       {/* 간트 차트 */}
       <div className="border-border overflow-hidden rounded-lg border">
-        <ScrollArea className="w-full">
-          <div className="flex">
-            {/* 왼쪽: 태스크 레이블 */}
-            <div className="border-border shrink-0 border-r" style={{ width: labelWidth }}>
-              {/* 헤더 스페이서 */}
-              <div className="border-border h-8 border-b" />
-              {groupedTasks.map((group) => (
-                <div key={group.column.id}>
-                  {/* 컬럼 헤더 */}
-                  <div className="bg-muted/50 border-border border-b px-3 py-1 text-xs font-semibold">
-                    {group.column.title}
-                  </div>
-                  {group.tasks.map((task) => (
-                    <div
-                      key={task.id}
-                      className="border-border flex items-center border-b px-3 text-xs"
-                      style={{ height: ROW_HEIGHT }}
-                    >
-                      <span className="truncate">{task.title}</span>
-                    </div>
-                  ))}
-                </div>
-              ))}
-            </div>
-
-            {/* 오른쪽: 타임라인 */}
-            <div className="min-w-0 flex-1">
-              <GanttHeader columns={timelineColumns} columnWidth={columnWidth} />
-              <div
-                className="relative"
-                style={{ minWidth: timelineColumns.length * columnWidth }}
-              >
-                {/* 오늘 표시선 */}
-                {todayOffset >= 0 && todayOffset <= 100 && (
-                  <div
-                    className="absolute top-0 bottom-0 z-10 w-0.5 bg-red-500"
-                    style={{ left: `${todayOffset}%` }}
-                  />
-                )}
-
-                {/* 태스크 바 */}
-                {groupedTasks.map((group) => (
-                  <div key={group.column.id}>
-                    {/* 컬럼 헤더 스페이서 */}
-                    <div className="border-border border-b" style={{ height: 24 }} />
-                    {group.tasks.map((task) => (
-                      <div
-                        key={task.id}
-                        className={cn('border-border relative border-b')}
-                        style={{ height: ROW_HEIGHT }}
-                      >
-                        <GanttBar
-                          title={task.title}
-                          priority={task.priority}
-                          assigneeName={getMemberName(task.assignee_id)}
-                          position={taskToBarPosition(
-                            new Date(task.created_at),
-                            task.due_date ? new Date(task.due_date) : null,
-                            timelineStart,
-                            totalDays,
-                          )}
-                          onClick={() => setSelectedTask(task)}
-                        />
+        <TooltipProvider delayDuration={300}>
+          <ScrollArea className="w-full">
+            <div className="flex">
+              {/* 왼쪽: 태스크 레이블 */}
+              <div className="border-border shrink-0 border-r bg-background" style={{ width: labelWidth }}>
+                {/* 헤더 스페이서 (2행 헤더 높이 매칭) */}
+                <div className="border-border border-b bg-blue-50/50 dark:bg-blue-950/20" style={{ height: HEADER_HEIGHT }} />
+                {groupedTasks.map((group) => {
+                  const columnRowIdx = globalRowIndex
+                  return (
+                    <div key={group.column.id}>
+                      {/* 컬럼 헤더 */}
+                      <div className="bg-slate-100/80 border-border flex items-center gap-2 border-b px-3 py-1 text-xs font-semibold dark:bg-slate-800/50">
+                        <span>{group.column.title}</span>
+                        <Badge variant="secondary" className="text-[10px] px-1.5 py-0 h-4">
+                          {group.tasks.length}
+                        </Badge>
                       </div>
-                    ))}
-                  </div>
-                ))}
+                      {group.tasks.map((task, taskIdx) => {
+                        const rowIdx = columnRowIdx + 1 + taskIdx
+                        return (
+                          <div
+                            key={task.id}
+                            className={cn(
+                              'border-border flex items-center gap-2 border-b px-3 text-xs',
+                              rowIdx % 2 === 1 && 'bg-blue-50/40 dark:bg-blue-950/15',
+                            )}
+                            style={{ height: ROW_HEIGHT }}
+                          >
+                            <span className={cn('inline-block h-2 w-2 shrink-0 rounded-full', PRIORITY_DOT_COLORS[task.priority as TaskPriority])} />
+                            <span className="truncate flex-1">{task.title}</span>
+                            {isDesktop && getMemberInitials(task.assignee_id) && (
+                              <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-blue-100 text-[9px] font-medium text-blue-700 dark:bg-blue-900/50 dark:text-blue-300">
+                                {getMemberInitials(task.assignee_id)}
+                              </span>
+                            )}
+                          </div>
+                        )
+                      })}
+                      {/* globalRowIndex를 다음 그룹으로 진행시키기 위해 부수효과 없이 숨김 처리 */}
+                      <span className="hidden">{(globalRowIndex += 1 + group.tasks.length) && ''}</span>
+                    </div>
+                  )
+                })}
+              </div>
+
+              {/* 오른쪽: 타임라인 */}
+              <div className="min-w-0 flex-1">
+                <GanttHeader columns={timelineColumns} columnWidth={columnWidth} />
+                <div
+                  className="relative"
+                  style={{ minWidth: timelineColumns.length * columnWidth }}
+                >
+                  {/* 주말 음영 */}
+                  {weekendColumns.map((colIdx) => (
+                    <div
+                      key={`weekend-${colIdx}`}
+                      className="pointer-events-none absolute top-0 bottom-0 bg-slate-200/30 dark:bg-slate-700/20"
+                      style={{
+                        left: colIdx * columnWidth,
+                        width: columnWidth,
+                      }}
+                    />
+                  ))}
+
+                  {/* 수직 그리드 라인 */}
+                  <div
+                    className="pointer-events-none absolute inset-0"
+                    style={{
+                      backgroundImage: `repeating-linear-gradient(to right, transparent, transparent ${columnWidth - 1}px, var(--border) ${columnWidth - 1}px, var(--border) ${columnWidth}px)`,
+                      backgroundSize: `${columnWidth}px 100%`,
+                    }}
+                  />
+
+                  {/* 오늘 표시선 + 라벨 */}
+                  {todayOffset >= 0 && todayOffset <= 100 && (
+                    <>
+                      {/* 글로우 배경 */}
+                      <div
+                        className="pointer-events-none absolute top-0 bottom-0 z-[5] w-5 bg-blue-500/10 blur-sm dark:bg-blue-400/10"
+                        style={{ left: `calc(${todayOffset}% - 10px)` }}
+                      />
+                      {/* 선 */}
+                      <div
+                        className="absolute top-0 bottom-0 z-10 w-0.5 bg-blue-600 dark:bg-blue-400"
+                        style={{ left: `${todayOffset}%` }}
+                      />
+                      {/* 라벨 */}
+                      <div
+                        className="absolute z-10 -translate-x-1/2 rounded-b bg-blue-600 px-1.5 py-0.5 text-[9px] font-bold text-white shadow-sm dark:bg-blue-500"
+                        style={{ left: `${todayOffset}%`, top: 0 }}
+                      >
+                        오늘
+                      </div>
+                    </>
+                  )}
+
+                  {/* 태스크 바 */}
+                  {(() => {
+                    let rowIdx = 0
+                    return groupedTasks.map((group) => (
+                      <div key={group.column.id}>
+                        {/* 컬럼 헤더 스페이서 */}
+                        <div className="border-border border-b" style={{ height: COLUMN_HEADER_ROW_HEIGHT }} />
+                        {group.tasks.map((task) => {
+                          const currentRowIdx = ++rowIdx
+                          return (
+                            <div
+                              key={task.id}
+                              className={cn(
+                                'border-border relative border-b',
+                                currentRowIdx % 2 === 1 && 'bg-blue-50/40 dark:bg-blue-950/15',
+                              )}
+                              style={{ height: ROW_HEIGHT }}
+                            >
+                              <GanttBar
+                                title={task.title}
+                                priority={task.priority as 'low' | 'medium' | 'high' | 'urgent'}
+                                assigneeName={getMemberName(task.assignee_id)}
+                                dueDate={task.due_date}
+                                position={taskToBarPosition(
+                                  new Date(task.created_at),
+                                  task.due_date ? new Date(task.due_date) : null,
+                                  timelineStart,
+                                  totalDays,
+                                )}
+                                onClick={() => setSelectedTask(task)}
+                              />
+                            </div>
+                          )
+                        })}
+                        {(() => { rowIdx++; return null })()}
+                      </div>
+                    ))
+                  })()}
+
+                  {/* 의존성 화살표 SVG 오버레이 */}
+                  {dependencies && dependencies.length > 0 && (
+                    <GanttDependencyArrows
+                      dependencies={dependencies}
+                      groupedTasks={groupedTasks}
+                      timelineStart={timelineStart}
+                      totalDays={totalDays}
+                      rowHeight={ROW_HEIGHT}
+                      columnHeaderHeight={COLUMN_HEADER_ROW_HEIGHT}
+                    />
+                  )}
+                </div>
               </div>
             </div>
-          </div>
-          <ScrollBar orientation="horizontal" />
-        </ScrollArea>
+            <ScrollBar orientation="horizontal" />
+          </ScrollArea>
+        </TooltipProvider>
       </div>
 
       {/* 태스크 상세 다이얼로그 */}

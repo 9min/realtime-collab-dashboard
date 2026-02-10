@@ -6,6 +6,22 @@ export const TASK_PRIORITY = {
   URGENT: 'urgent',
 } as const
 
+// 우선순위 라벨 (한국어)
+export const PRIORITY_LABELS = {
+  low: '낮음',
+  medium: '보통',
+  high: '높음',
+  urgent: '긴급',
+} as const
+
+// 우선순위 도트 색상 (Tailwind class)
+export const PRIORITY_DOT_COLORS = {
+  low: 'bg-emerald-500',
+  medium: 'bg-blue-500',
+  high: 'bg-amber-500',
+  urgent: 'bg-rose-500',
+} as const
+
 // 멤버 역할
 export const MEMBER_ROLE = {
   OWNER: 'owner',
@@ -63,6 +79,19 @@ export const LABEL_COLORS = [
   { name: '회색', value: '#6B7280' },
   { name: '갈색', value: '#92400E' },
 ] as const
+
+// 의존성 방향
+export const DEPENDENCY_DIRECTION = {
+  BLOCKS: 'blocks',
+  BLOCKED_BY: 'blocked_by',
+} as const
+
+// 스윔레인 모드
+export const SWIMLANE_MODE = {
+  NONE: 'none',
+  ASSIGNEE: 'assignee',
+  PRIORITY: 'priority',
+} as const
 
 // 위젯 타입
 export const WIDGET_TYPE = {

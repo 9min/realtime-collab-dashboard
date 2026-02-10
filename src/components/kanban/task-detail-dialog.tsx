@@ -38,6 +38,7 @@ const UNASSIGNED_VALUE = '__none__'
 
 import { AttachmentSection } from './attachment-section'
 import { CommentSection } from './comment-section'
+import { DependencySection } from './dependency-section'
 import { LabelBadge } from './label-badge'
 import { LabelPicker } from './label-picker'
 import { SubtaskSection } from './subtask-section'
@@ -263,6 +264,15 @@ export function TaskDetailDialog({ projectId, task, open, onOpenChange, canEdit 
 
           {/* 서브태스크 섹션 */}
           <SubtaskSection
+            taskId={task.id}
+            projectId={projectId}
+            canEdit={canInteract}
+          />
+
+          <Separator />
+
+          {/* 의존성 섹션 */}
+          <DependencySection
             taskId={task.id}
             projectId={projectId}
             canEdit={canInteract}

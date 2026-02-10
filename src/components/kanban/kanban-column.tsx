@@ -2,7 +2,7 @@
 
 import { useRef, useState } from 'react'
 import { Droppable } from '@hello-pangea/dnd'
-import { MoreHorizontal, Pencil, Plus, Trash2 } from 'lucide-react'
+import { Gauge, MoreHorizontal, Pencil, Plus, Trash2 } from 'lucide-react'
 
 import {
   AlertDialog,
@@ -38,6 +38,7 @@ interface KanbanColumnProps {
   onTaskClick: (task: Tables<'tasks'>) => void
   onRenameColumn: (columnId: string, title: string) => void
   onDeleteColumn: (columnId: string) => void
+  onSetWipLimit?: (columnId: string) => void
   canEdit: boolean
   canDeleteColumn: boolean
   canMoveAll: boolean
@@ -45,6 +46,7 @@ interface KanbanColumnProps {
   members?: (Tables<'project_members'> & { profiles: Tables<'profiles'> })[]
   labels?: Label[]
   taskLabelMap?: Map<string, string[]>
+  blockedTaskIds?: Set<string>
 }
 
 export function KanbanColumn({
@@ -54,6 +56,7 @@ export function KanbanColumn({
   onTaskClick,
   onRenameColumn,
   onDeleteColumn,
+  onSetWipLimit,
   canEdit,
   canDeleteColumn,
   canMoveAll,
@@ -61,10 +64,14 @@ export function KanbanColumn({
   members,
   labels,
   taskLabelMap,
+  blockedTaskIds,
 }: KanbanColumnProps) {
   const [isEditing, setIsEditing] = useState(false)
   const [editTitle, setEditTitle] = useState(column.title)
   const inputRef = useRef<HTMLInputElement>(null)
+
+  const wipLimit = column.wip_limit ?? null
+  const isOverWipLimit = wipLimit !== null && tasks.length > wipLimit
 
   const handleStartEditing = () => {
     setEditTitle(column.title)
@@ -90,7 +97,10 @@ export function KanbanColumn({
   }
 
   return (
-    <div className="bg-card flex w-72 shrink-0 flex-col overflow-hidden rounded-lg border shadow-sm" style={{ height: 'calc(100vh - 220px)', minHeight: 300 }}>
+    <div className={cn(
+      'bg-card flex w-72 shrink-0 flex-col overflow-hidden rounded-lg border shadow-sm',
+      isOverWipLimit && 'border-red-400 dark:border-red-600',
+    )} style={{ height: 'calc(100vh - 220px)', minHeight: 300 }}>
       {/* 컬럼 헤더 */}
       <div className="flex items-center justify-between border-b bg-gradient-to-r from-blue-50 to-indigo-50 px-3 py-2 dark:from-blue-950/30 dark:to-indigo-950/30">
         <div className="flex min-w-0 items-center gap-2">
@@ -107,8 +117,13 @@ export function KanbanColumn({
           ) : (
             <>
               <h3 className="truncate text-sm font-semibold">{column.title}</h3>
-              <span className="shrink-0 rounded-full bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-700 dark:bg-blue-900/50 dark:text-blue-300">
-                {tasks.length}
+              <span className={cn(
+                'shrink-0 rounded-full px-2 py-0.5 text-xs font-medium',
+                isOverWipLimit
+                  ? 'bg-red-100 text-red-700 dark:bg-red-900/50 dark:text-red-300'
+                  : 'bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300',
+              )}>
+                {wipLimit !== null ? `${tasks.length}/${wipLimit}` : tasks.length}
               </span>
             </>
           )}
@@ -131,6 +146,12 @@ export function KanbanColumn({
                       <Pencil className="mr-2 h-4 w-4" />
                       이름 변경
                     </DropdownMenuItem>
+                    {onSetWipLimit && (
+                      <DropdownMenuItem onClick={() => onSetWipLimit(column.id)}>
+                        <Gauge className="mr-2 h-4 w-4" />
+                        WIP 제한 설정
+                      </DropdownMenuItem>
+                    )}
                     <DropdownMenuSeparator />
                     <AlertDialogTrigger asChild>
                       <DropdownMenuItem
@@ -198,6 +219,7 @@ export function KanbanColumn({
                     members={members}
                     isDragDisabled={!canMoveAll && task.assignee_id !== null && task.assignee_id !== currentUserId}
                     taskLabels={taskLabelsForCard}
+                    isBlocked={blockedTaskIds?.has(task.id)}
                   />
                 )
               })}

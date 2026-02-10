@@ -156,6 +156,7 @@ export interface Database {
           project_id: string
           title: string
           position: number
+          wip_limit: number | null
           created_at: string
           updated_at: string
         }
@@ -164,12 +165,14 @@ export interface Database {
           project_id: string
           title: string
           position: number
+          wip_limit?: number | null
           created_at?: string
           updated_at?: string
         }
         Update: {
           title?: string
           position?: number
+          wip_limit?: number | null
           updated_at?: string
         }
         Relationships: [
@@ -508,6 +511,60 @@ export interface Database {
           },
           {
             foreignKeyName: 'subtasks_created_by_fkey'
+            columns: ['created_by']
+            isOneToOne: false
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          },
+        ]
+      }
+      task_dependencies: {
+        Row: {
+          id: string
+          project_id: string
+          blocking_task_id: string
+          blocked_task_id: string
+          created_by: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          project_id: string
+          blocking_task_id: string
+          blocked_task_id: string
+          created_by?: string | null
+          created_at?: string
+        }
+        Update: {
+          project_id?: string
+          blocking_task_id?: string
+          blocked_task_id?: string
+          created_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'task_dependencies_project_id_fkey'
+            columns: ['project_id']
+            isOneToOne: false
+            referencedRelation: 'projects'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'task_dependencies_blocking_task_id_fkey'
+            columns: ['blocking_task_id']
+            isOneToOne: false
+            referencedRelation: 'tasks'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'task_dependencies_blocked_task_id_fkey'
+            columns: ['blocked_task_id']
+            isOneToOne: false
+            referencedRelation: 'tasks'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'task_dependencies_created_by_fkey'
             columns: ['created_by']
             isOneToOne: false
             referencedRelation: 'profiles'

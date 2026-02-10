@@ -6,23 +6,29 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { DragDropContext, type DropResult } from '@hello-pangea/dnd'
 import { Plus } from 'lucide-react'
 
+import { toast } from 'sonner'
+
 import { Button } from '@/components/ui/button'
 import { useAuth } from '@/hooks/use-auth'
-import { MEMBER_ROLE } from '@/lib/constants'
+import { MEMBER_ROLE, SWIMLANE_MODE, TASK_PRIORITY } from '@/lib/constants'
 import { filterTasks } from '@/lib/task-filter'
 import { useColumns, useCreateColumn, useUpdateColumn, useDeleteColumn } from '@/queries/use-columns'
+import { useDependencies } from '@/queries/use-dependencies'
 import { useLabels, useTaskLabels } from '@/queries/use-labels'
 import { useProjectMembers } from '@/queries/use-projects'
 import { useTasks, useMoveTask } from '@/queries/use-tasks'
 import { useKanbanFilterStore } from '@/stores/kanban-filter-store'
 import type { Tables } from '@/types/database'
+import type { TaskPriority } from '@/types/common'
 import type { KanbanColumnWithTasks } from '@/types/kanban'
 
 import { BulkDeleteDialog } from './bulk-delete-dialog'
 import { CreateTaskForm } from './create-task-form'
 import { ExportButton } from './export-button'
 import { KanbanColumn } from './kanban-column'
+import { SwimlaneBoard } from './swimlane-board'
 import { TaskFilterBar } from './task-filter-bar'
+import { WipLimitDialog } from './wip-limit-dialog'
 
 const TaskDetailDialog = dynamic(
   () => import('./task-detail-dialog').then((mod) => ({ default: mod.TaskDetailDialog })),
@@ -53,13 +59,28 @@ export function KanbanBoard({ projectId }: KanbanBoardProps) {
   const { data: labels } = useLabels(projectId)
   const { data: taskLabelsData } = useTaskLabels(projectId)
 
+  // 의존성 데이터
+  const { data: dependencies } = useDependencies(projectId)
+
+  // blocked 태스크 ID Set (다른 태스크에 의해 차단되는 태스크)
+  const blockedTaskIds = useMemo(() => {
+    const set = new Set<string>()
+    if (!dependencies) return set
+    for (const dep of dependencies) {
+      set.add(dep.blocked_task_id)
+    }
+    return set
+  }, [dependencies])
+
   // 필터 상태
-  const { searchText, priorities, assigneeIds, dueDateRange, labelIds } = useKanbanFilterStore()
+  const { searchText, priorities, assigneeIds, dueDateRange, labelIds, swimlaneMode } = useKanbanFilterStore()
 
   // 태스크 생성 다이얼로그 상태
   const [createTaskColumnId, setCreateTaskColumnId] = useState<string | null>(null)
   // 태스크 상세 다이얼로그 상태 (수동 클릭)
   const [selectedTask, setSelectedTask] = useState<Tables<'tasks'> | null>(null)
+  // WIP 제한 설정 다이얼로그
+  const [wipLimitColumnId, setWipLimitColumnId] = useState<string | null>(null)
 
   // URL 쿼리 파라미터로 태스크 자동 선택 (검색 결과 클릭 시)
   const taskIdParam = searchParams.get('taskId')
@@ -98,6 +119,56 @@ export function KanbanBoard({ projectId }: KanbanBoardProps) {
     }))
   }, [columns, tasks, searchText, priorities, assigneeIds, dueDateRange, labelIds, taskLabelMap])
 
+  // 스윔레인 그룹 계산
+  const swimlaneGroups = useMemo(() => {
+    if (swimlaneMode === SWIMLANE_MODE.NONE || !tasks || !columns) return null
+
+    const filtered = filterTasks(tasks, { searchText, priorities: priorities as TaskPriority[], assigneeIds, dueDateRange, labelIds, taskLabelMap })
+
+    if (swimlaneMode === SWIMLANE_MODE.ASSIGNEE) {
+      const groups = new Map<string, { label: string; tasks: Tables<'tasks'>[] }>()
+      groups.set('__unassigned__', { label: '미배정', tasks: [] })
+
+      for (const member of members ?? []) {
+        groups.set(member.user_id, {
+          label: member.profiles.full_name ?? member.profiles.email,
+          tasks: [],
+        })
+      }
+
+      for (const task of filtered) {
+        const key = task.assignee_id ?? '__unassigned__'
+        const group = groups.get(key)
+        if (group) {
+          group.tasks.push(task)
+        } else {
+          groups.set(key, { label: '기타', tasks: [task] })
+        }
+      }
+
+      return Array.from(groups.entries())
+        .filter(([, g]) => g.tasks.length > 0)
+        .map(([key, g]) => ({ key, label: g.label, tasks: g.tasks }))
+    }
+
+    // priority 모드
+    const priorityOrder = [TASK_PRIORITY.URGENT, TASK_PRIORITY.HIGH, TASK_PRIORITY.MEDIUM, TASK_PRIORITY.LOW] as const
+    const priorityLabels: Record<string, string> = {
+      urgent: '긴급',
+      high: '높음',
+      medium: '보통',
+      low: '낮음',
+    }
+
+    return priorityOrder
+      .map((p) => ({
+        key: p,
+        label: priorityLabels[p] ?? p,
+        tasks: filtered.filter((t) => t.priority === p),
+      }))
+      .filter((g) => g.tasks.length > 0)
+  }, [swimlaneMode, tasks, columns, members, searchText, priorities, assigneeIds, dueDateRange, labelIds, taskLabelMap])
+
   // DnD 완료 핸들러 — 뷰어는 무시, 일반 멤버는 본인 태스크만
   const handleDragEnd = useCallback(
     (result: DropResult) => {
@@ -107,6 +178,31 @@ export function KanbanBoard({ projectId }: KanbanBoardProps) {
       // 같은 위치에 드롭하면 무시
       if (source.droppableId === destination.droppableId && source.index === destination.index) return
 
+      // 스윔레인 모드에서 droppableId에서 실제 columnId 추출
+      const extractColumnId = (droppableId: string) => {
+        if (droppableId.startsWith('swimlane::')) {
+          const parts = droppableId.split('::')
+          return parts[2] // swimlane::groupKey::columnId
+        }
+        return droppableId
+      }
+
+      const sourceColumnId = extractColumnId(source.droppableId)
+      const destColumnId = extractColumnId(destination.droppableId)
+
+      // WIP 제한 체크 (다른 컬럼으로 이동할 때만)
+      if (sourceColumnId !== destColumnId && columns) {
+        const destColumn = columns.find((c) => c.id === destColumnId)
+        const wipLimit = destColumn?.wip_limit ?? null
+        if (wipLimit !== null) {
+          const destTaskCount = tasks?.filter((t) => t.column_id === destColumnId).length ?? 0
+          if (destTaskCount >= wipLimit) {
+            toast.warning(`이 컬럼의 WIP 제한(${wipLimit})에 도달했습니다`)
+            return
+          }
+        }
+      }
+
       // 일반 멤버: 담당자 없는 태스크 또는 본인 담당 태스크만 이동 가능
       if (!canDeleteAll && tasks) {
         const draggedTask = tasks.find((t) => t.id === draggableId)
@@ -115,12 +211,12 @@ export function KanbanBoard({ projectId }: KanbanBoardProps) {
 
       moveTaskMutation.mutate({
         taskId: draggableId,
-        sourceColumnId: source.droppableId,
-        destinationColumnId: destination.droppableId,
+        sourceColumnId: sourceColumnId,
+        destinationColumnId: destColumnId,
         newPosition: destination.index,
       })
     },
-    [canEdit, canDeleteAll, tasks, user?.id, moveTaskMutation],
+    [canEdit, canDeleteAll, tasks, columns, user?.id, moveTaskMutation],
   )
 
   // 컬럼 추가
@@ -188,38 +284,54 @@ export function KanbanBoard({ projectId }: KanbanBoardProps) {
       </div>
 
       <DragDropContext onDragEnd={handleDragEnd}>
-        <div className="flex gap-4 overflow-x-auto pb-4">
-          {columnsWithTasks.map((column) => (
-            <KanbanColumn
-              key={column.id}
-              column={column}
-              tasks={column.tasks}
-              onAddTask={setCreateTaskColumnId}
-              onTaskClick={setSelectedTask}
-              onRenameColumn={handleRenameColumn}
-              onDeleteColumn={handleDeleteColumn}
-              canEdit={canEdit}
-              canDeleteColumn={canDeleteAll}
-              canMoveAll={canDeleteAll}
-              currentUserId={user?.id}
-              members={members}
-              labels={labels}
-              taskLabelMap={taskLabelMap}
-            />
-          ))}
+        {swimlaneGroups ? (
+          <SwimlaneBoard
+            groups={swimlaneGroups}
+            columns={columns ?? []}
+            onTaskClick={setSelectedTask}
+            canMoveAll={canDeleteAll}
+            currentUserId={user?.id}
+            members={members}
+            labels={labels}
+            taskLabelMap={taskLabelMap}
+            blockedTaskIds={blockedTaskIds}
+          />
+        ) : (
+          <div className="flex gap-4 overflow-x-auto pb-4">
+            {columnsWithTasks.map((column) => (
+              <KanbanColumn
+                key={column.id}
+                column={column}
+                tasks={column.tasks}
+                onAddTask={setCreateTaskColumnId}
+                onTaskClick={setSelectedTask}
+                onRenameColumn={handleRenameColumn}
+                onDeleteColumn={handleDeleteColumn}
+                onSetWipLimit={canDeleteAll ? setWipLimitColumnId : undefined}
+                canEdit={canEdit}
+                canDeleteColumn={canDeleteAll}
+                canMoveAll={canDeleteAll}
+                currentUserId={user?.id}
+                members={members}
+                labels={labels}
+                taskLabelMap={taskLabelMap}
+                blockedTaskIds={blockedTaskIds}
+              />
+            ))}
 
-          {/* 컬럼 추가 버튼 — owner/admin만 */}
-          {canDeleteAll && (
-            <Button
-              variant="outline"
-              className="h-12 w-72 shrink-0 border-dashed"
-              onClick={handleAddColumn}
-            >
-              <Plus className="mr-2 h-4 w-4" />
-              컬럼 추가
-            </Button>
-          )}
-        </div>
+            {/* 컬럼 추가 버튼 — owner/admin만 */}
+            {canDeleteAll && (
+              <Button
+                variant="outline"
+                className="h-12 w-72 shrink-0 border-dashed"
+                onClick={handleAddColumn}
+              >
+                <Plus className="mr-2 h-4 w-4" />
+                컬럼 추가
+              </Button>
+            )}
+          </div>
+        )}
       </DragDropContext>
 
       {/* 태스크 생성 다이얼로그 */}
@@ -250,6 +362,28 @@ export function KanbanBoard({ projectId }: KanbanBoardProps) {
         labels={labels}
         taskLabelIds={displayedTask ? taskLabelMap.get(displayedTask.id) : undefined}
       />
+
+      {/* WIP 제한 설정 다이얼로그 */}
+      {wipLimitColumnId && (() => {
+        const col = columns?.find((c) => c.id === wipLimitColumnId)
+        if (!col) return null
+        const currentWipLimit = col.wip_limit ?? null
+        return (
+          <WipLimitDialog
+            open
+            onOpenChange={(open) => { if (!open) setWipLimitColumnId(null) }}
+            columnTitle={col.title}
+            currentLimit={currentWipLimit}
+            onSave={(limit) => {
+              updateColumnMutation.mutate(
+                { columnId: wipLimitColumnId, input: { wip_limit: limit } },
+                { onSuccess: () => setWipLimitColumnId(null) },
+              )
+            }}
+            isPending={updateColumnMutation.isPending}
+          />
+        )
+      })()}
     </>
   )
 }

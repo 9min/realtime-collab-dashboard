@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 
-import type { TaskPriority } from '@/types/common'
+import type { SwimlaneMode, TaskPriority } from '@/types/common'
 
 interface DateRange {
   from: string | null
@@ -25,6 +25,9 @@ interface KanbanFilterState {
   labelIds: string[]
   toggleLabelId: (id: string) => void
 
+  swimlaneMode: SwimlaneMode
+  setSwimlaneMode: (mode: SwimlaneMode) => void
+
   resetFilters: () => void
   hasActiveFilters: () => boolean
 }
@@ -35,6 +38,7 @@ const INITIAL_STATE = {
   assigneeIds: [] as string[],
   dueDateRange: { from: null, to: null } as DateRange,
   labelIds: [] as string[],
+  swimlaneMode: 'none' as SwimlaneMode,
 }
 
 export const useKanbanFilterStore = create<KanbanFilterState>((set, get) => ({
@@ -70,6 +74,8 @@ export const useKanbanFilterStore = create<KanbanFilterState>((set, get) => ({
         ? state.labelIds.filter((l) => l !== id)
         : [...state.labelIds, id],
     })),
+
+  setSwimlaneMode: (mode) => set({ swimlaneMode: mode }),
 
   resetFilters: () => set(INITIAL_STATE),
 

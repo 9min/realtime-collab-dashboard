@@ -1,4 +1,4 @@
-import type { TASK_PRIORITY, MEMBER_ROLE, WIDGET_TYPE } from '@/lib/constants'
+import type { TASK_PRIORITY, MEMBER_ROLE, WIDGET_TYPE, SWIMLANE_MODE } from '@/lib/constants'
 
 // 유틸리티 타입
 export type ValueOf<T> = T[keyof T]
@@ -7,6 +7,7 @@ export type ValueOf<T> = T[keyof T]
 export type TaskPriority = ValueOf<typeof TASK_PRIORITY>
 export type MemberRole = ValueOf<typeof MEMBER_ROLE>
 export type WidgetType = ValueOf<typeof WIDGET_TYPE>
+export type SwimlaneMode = ValueOf<typeof SWIMLANE_MODE>
 
 // 서비스 레이어 결과 타입
 export type ServiceResult<T> =

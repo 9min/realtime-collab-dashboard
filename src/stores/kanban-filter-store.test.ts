@@ -74,6 +74,28 @@ describe('useKanbanFilterStore', () => {
     })
   })
 
+  describe('swimlaneMode', () => {
+    it('초기 값은 none이다', () => {
+      expect(useKanbanFilterStore.getState().swimlaneMode).toBe('none')
+    })
+
+    it('setSwimlaneMode로 모드를 변경한다', () => {
+      useKanbanFilterStore.getState().setSwimlaneMode('assignee')
+      expect(useKanbanFilterStore.getState().swimlaneMode).toBe('assignee')
+    })
+
+    it('setSwimlaneMode로 priority로 변경한다', () => {
+      useKanbanFilterStore.getState().setSwimlaneMode('priority')
+      expect(useKanbanFilterStore.getState().swimlaneMode).toBe('priority')
+    })
+
+    it('resetFilters로 none으로 초기화된다', () => {
+      useKanbanFilterStore.getState().setSwimlaneMode('assignee')
+      useKanbanFilterStore.getState().resetFilters()
+      expect(useKanbanFilterStore.getState().swimlaneMode).toBe('none')
+    })
+  })
+
   describe('hasActiveFilters', () => {
     it('초기 상태에서는 false를 반환한다', () => {
       expect(useKanbanFilterStore.getState().hasActiveFilters()).toBe(false)

@@ -86,6 +86,33 @@ export function getMonthColumns(start: Date, months: number): DateColumn[] {
   return columns
 }
 
+export interface MonthGroup {
+  label: string
+  colSpan: number
+}
+
+export function getMonthGroups(columns: DateColumn[]): MonthGroup[] {
+  if (columns.length === 0) return []
+
+  const groups: MonthGroup[] = []
+  let currentLabel = formatMonthYear(columns[0].date)
+  let currentSpan = 1
+
+  for (let i = 1; i < columns.length; i++) {
+    const label = formatMonthYear(columns[i].date)
+    if (label === currentLabel) {
+      currentSpan++
+    } else {
+      groups.push({ label: currentLabel, colSpan: currentSpan })
+      currentLabel = label
+      currentSpan = 1
+    }
+  }
+  groups.push({ label: currentLabel, colSpan: currentSpan })
+
+  return groups
+}
+
 export interface TaskBarPosition {
   left: number   // % from start
   width: number  // % of total

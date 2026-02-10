@@ -11,6 +11,7 @@ import { activityKeys } from '@/queries/use-activity-logs'
 import { chartKeys } from '@/queries/use-chart-data'
 import { columnKeys } from '@/queries/use-columns'
 import { commentKeys } from '@/queries/use-comments'
+import { dependencyKeys } from '@/queries/use-dependencies'
 import { notificationKeys } from '@/queries/use-notifications'
 import { labelKeys } from '@/queries/use-labels'
 import { subtaskKeys } from '@/queries/use-subtasks'
@@ -226,6 +227,19 @@ export function useRealtimeSubscription(projectId: string) {
             if (record && typeof record['task_id'] === 'string') {
               queryClient.invalidateQueries({ queryKey: ['attachments', record['task_id'] as string] })
             }
+          },
+        )
+        // task_dependencies 변경 감지
+        .on(
+          'postgres_changes',
+          {
+            event: '*',
+            schema: 'public',
+            table: 'task_dependencies',
+            filter: `project_id=eq.${projectId}`,
+          },
+          () => {
+            queryClient.invalidateQueries({ queryKey: dependencyKeys.list(projectId) })
           },
         )
         .subscribe((status, _err) => {

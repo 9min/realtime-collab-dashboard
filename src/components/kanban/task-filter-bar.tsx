@@ -5,12 +5,19 @@ import { Check, ChevronDown, Search, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
-import { TASK_PRIORITY } from '@/lib/constants'
+import { SWIMLANE_MODE, TASK_PRIORITY } from '@/lib/constants'
 import { UNASSIGNED_ID } from '@/lib/task-filter'
 import { cn } from '@/lib/utils'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { useKanbanFilterStore } from '@/stores/kanban-filter-store'
 import type { Tables } from '@/types/database'
-import type { TaskPriority } from '@/types/common'
+import type { SwimlaneMode, TaskPriority } from '@/types/common'
 
 const PRIORITY_LABELS: Record<TaskPriority, string> = {
   low: '낮음',
@@ -49,6 +56,8 @@ export function TaskFilterBar({ members, labels }: TaskFilterBarProps) {
     setDueDateTo,
     labelIds,
     toggleLabelId,
+    swimlaneMode,
+    setSwimlaneMode,
     resetFilters,
     hasActiveFilters,
   } = useKanbanFilterStore()
@@ -222,6 +231,19 @@ export function TaskFilterBar({ members, labels }: TaskFilterBarProps) {
           </PopoverContent>
         </Popover>
       )}
+
+      {/* 스윔레인 뷰 모드 */}
+      <Select value={swimlaneMode} onValueChange={(v) => setSwimlaneMode(v as SwimlaneMode)}>
+        <SelectTrigger className="h-9 w-auto gap-1.5 text-sm font-normal">
+          <span className="text-muted-foreground">뷰:</span>
+          <SelectValue />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value={SWIMLANE_MODE.NONE}>기본</SelectItem>
+          <SelectItem value={SWIMLANE_MODE.ASSIGNEE}>담당자별</SelectItem>
+          <SelectItem value={SWIMLANE_MODE.PRIORITY}>우선순위별</SelectItem>
+        </SelectContent>
+      </Select>
 
       {/* 마감일 범위 */}
       <div className="flex w-full items-center gap-1.5 sm:w-auto">

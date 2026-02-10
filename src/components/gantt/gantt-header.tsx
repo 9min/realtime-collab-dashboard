@@ -1,7 +1,12 @@
 'use client'
 
+import { useMemo } from 'react'
+
 import { cn } from '@/lib/utils'
 import type { DateColumn } from '@/lib/gantt-utils'
+import { getMonthGroups } from '@/lib/gantt-utils'
+
+export const HEADER_HEIGHT = 52
 
 interface GanttHeaderProps {
   columns: DateColumn[]
@@ -9,21 +14,38 @@ interface GanttHeaderProps {
 }
 
 export function GanttHeader({ columns, columnWidth }: GanttHeaderProps) {
+  const monthGroups = useMemo(() => getMonthGroups(columns), [columns])
+
   return (
-    <div className="border-border flex border-b" style={{ minWidth: columns.length * columnWidth }}>
-      {columns.map((col, i) => (
-        <div
-          key={i}
-          className={cn(
-            'border-border shrink-0 border-r px-1 py-1.5 text-center text-[10px]',
-            col.isToday && 'bg-red-50 font-bold text-red-600 dark:bg-red-950/30 dark:text-red-400',
-            col.isWeekend && 'bg-muted/50',
-          )}
-          style={{ width: columnWidth }}
-        >
-          {col.label}
-        </div>
-      ))}
+    <div className="border-border border-b" style={{ minWidth: columns.length * columnWidth }}>
+      {/* 상단: 월 그룹 */}
+      <div className="flex">
+        {monthGroups.map((group, i) => (
+          <div
+            key={i}
+            className="border-border shrink-0 border-r bg-blue-50 px-2 py-1 text-[10px] font-semibold text-blue-700 dark:bg-blue-950/40 dark:text-blue-300"
+            style={{ width: group.colSpan * columnWidth }}
+          >
+            {group.label}
+          </div>
+        ))}
+      </div>
+      {/* 하단: 날짜 컬럼 */}
+      <div className="flex">
+        {columns.map((col, i) => (
+          <div
+            key={i}
+            className={cn(
+              'border-border shrink-0 border-r border-t bg-slate-50/50 px-1 py-1 text-center text-[10px] text-slate-500 dark:bg-slate-900/30 dark:text-slate-400',
+              col.isToday && 'bg-blue-100/80 font-bold text-blue-700 dark:bg-blue-950/50 dark:text-blue-300',
+              col.isWeekend && !col.isToday && 'bg-slate-100/60 text-slate-400 dark:bg-slate-800/40 dark:text-slate-500',
+            )}
+            style={{ width: columnWidth }}
+          >
+            {col.label}
+          </div>
+        ))}
+      </div>
     </div>
   )
 }
