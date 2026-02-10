@@ -258,10 +258,17 @@ export default function AdminPage() {
                   key={profile.id}
                   className={`rounded-lg border transition-colors ${isExpanded ? 'border-primary/30 bg-muted/30' : ''}`}
                 >
-                  <button
-                    type="button"
+                  <div
+                    role="button"
+                    tabIndex={0}
                     className="flex w-full cursor-pointer items-center justify-between p-3 text-left transition-colors hover:bg-muted/50"
                     onClick={() => toggleExpand(profile.id)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault()
+                        toggleExpand(profile.id)
+                      }
+                    }}
                     aria-expanded={isExpanded}
                     aria-label={`${profile.full_name ?? profile.email} 프로젝트 목록 ${isExpanded ? '접기' : '펼치기'}`}
                   >
@@ -312,7 +319,7 @@ export default function AdminPage() {
                         </Button>
                       )}
                     </div>
-                  </button>
+                  </div>
 
                   {isExpanded && (
                     <div className="border-t border-dashed px-4 py-3 pl-12">
