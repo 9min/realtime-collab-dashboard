@@ -104,7 +104,8 @@ export function CommentItem({ comment, currentUserId, canDelete, onUpdate, onDel
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="ml-auto h-6 w-6 opacity-0 group-hover:opacity-100"
+                  className="ml-auto h-7 w-7 opacity-0 group-hover:opacity-100 focus-visible:opacity-100"
+                  aria-label="댓글 메뉴"
                 >
                   <MoreHorizontal className="h-3 w-3" />
                 </Button>
@@ -157,7 +158,7 @@ export function CommentItem({ comment, currentUserId, canDelete, onUpdate, onDel
             {members.length > 0
               ? parseMentionSegments(comment.content, members).map((segment, i) =>
                   segment.type === 'mention' ? (
-                    <span key={i} className="rounded bg-blue-100 px-0.5 font-medium text-blue-700 dark:bg-blue-900/50 dark:text-blue-300">
+                    <span key={i} className="rounded bg-primary/10 px-0.5 font-medium text-primary dark:bg-primary/20 dark:text-primary">
                       {segment.content}
                     </span>
                   ) : (

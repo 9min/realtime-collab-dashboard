@@ -109,7 +109,7 @@ export default function ProjectLayout({ children, params }: ProjectLayoutProps) 
               role="tab"
               aria-selected={isActive}
               className={cn(
-                'text-muted-foreground hover:text-foreground flex shrink-0 cursor-pointer items-center gap-2 rounded-md px-4 py-2 text-sm font-medium transition-all',
+                'text-muted-foreground hover:text-foreground flex shrink-0 cursor-pointer items-center gap-2 rounded-md px-4 py-2 text-sm font-medium outline-none transition-all focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1',
                 isActive && 'bg-primary text-primary-foreground shadow-sm',
               )}
             >

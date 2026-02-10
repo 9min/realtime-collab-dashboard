@@ -127,8 +127,9 @@ export function SubtaskSection({ taskId, projectId, canEdit }: SubtaskSectionPro
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="h-6 w-6 opacity-0 group-hover:opacity-100"
+                  className="h-7 w-7 opacity-0 group-hover:opacity-100 focus-visible:opacity-100"
                   onClick={() => handleDelete(subtask.id)}
+                  aria-label={`${subtask.title} 삭제`}
                 >
                   <Trash2 className="h-3 w-3" />
                 </Button>

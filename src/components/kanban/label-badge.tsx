@@ -18,9 +18,9 @@ export function LabelBadge({ label, size = 'md', className }: LabelBadgeProps) {
         className,
       )}
       style={{
-        backgroundColor: `${label.color}20`,
+        backgroundColor: `${label.color}25`,
         color: label.color,
-        border: `1px solid ${label.color}40`,
+        border: `1px solid ${label.color}50`,
       }}
     >
       {label.name}

@@ -162,16 +162,28 @@ export function SlackIntegrationForm({ projectId, integration, isOwnerOrAdmin }:
       <div className="space-y-2">
         <Label>알림 이벤트</Label>
         <div className="flex flex-wrap gap-2">
-          {Object.entries(INTEGRATION_EVENT).map(([key, value]) => (
-            <Badge
-              key={key}
-              variant={selectedEvents.includes(value) ? 'default' : 'outline'}
-              className="cursor-pointer"
-              onClick={() => toggleEvent(value)}
-            >
-              {EVENT_LABELS[value]}
-            </Badge>
-          ))}
+          {Object.entries(INTEGRATION_EVENT).map(([key, value]) => {
+            const isActive = selectedEvents.includes(value)
+            return (
+              <Badge
+                key={key}
+                role="checkbox"
+                aria-checked={isActive}
+                tabIndex={0}
+                variant={isActive ? 'default' : 'outline'}
+                className="cursor-pointer select-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1"
+                onClick={() => toggleEvent(value)}
+                onKeyDown={(e: React.KeyboardEvent) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault()
+                    toggleEvent(value)
+                  }
+                }}
+              >
+                {EVENT_LABELS[value]}
+              </Badge>
+            )
+          })}
         </div>
       </div>
 

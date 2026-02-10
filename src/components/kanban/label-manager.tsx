@@ -103,15 +103,16 @@ export function LabelManager({ projectId }: LabelManagerProps) {
                     style={{ backgroundColor: label.color }}
                   />
                   <span className="flex-1 text-sm">{label.name}</span>
-                  <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleStartEdit(label)}>
+                  <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => handleStartEdit(label)} aria-label="라벨 편집">
                     <Pencil className="h-3 w-3" />
                   </Button>
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="text-destructive h-7 w-7"
+                    className="text-destructive h-8 w-8"
                     onClick={() => handleDelete(label.id)}
                     disabled={deleteMutation.isPending}
+                    aria-label="라벨 삭제"
                   >
                     <Trash2 className="h-3 w-3" />
                   </Button>
@@ -162,7 +163,7 @@ function ColorSelect({ value, onChange }: { value: string; onChange: (color: str
         <button
           key={c.value}
           className={cn(
-            'h-5 w-5 rounded-full border-2 transition-all',
+            'h-5 w-5 cursor-pointer rounded-full border-2 transition-all focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1',
             value === c.value ? 'border-foreground scale-110' : 'border-transparent',
           )}
           style={{ backgroundColor: c.value }}

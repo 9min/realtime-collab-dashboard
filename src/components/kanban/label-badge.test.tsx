@@ -16,7 +16,7 @@ describe('LabelBadge', () => {
     renderWithProviders(<LabelBadge label={mockLabels[0]} />)
     const badge = screen.getByText('Bug')
     expect(badge).toHaveStyle({ color: '#EF4444' })
-    expect(badge).toHaveStyle({ backgroundColor: '#EF444420' })
+    expect(badge).toHaveStyle({ backgroundColor: '#EF444425' })
   })
 
   it('sm 사이즈일 때 작은 패딩/폰트를 적용한다', () => {

@@ -60,7 +60,7 @@ export function WidgetCard({
     <Card className={cn('flex h-full flex-col border-t-2 shadow-sm', WIDGET_ACCENT[type])}>
       <CardHeader className="flex flex-row items-center gap-2 space-y-0 pb-2">
         {isEditMode && (
-          <div className="drag-handle cursor-grab active:cursor-grabbing">
+          <div className="drag-handle cursor-grab active:cursor-grabbing p-1">
             <GripVertical className="text-muted-foreground h-4 w-4" />
           </div>
         )}
@@ -71,8 +71,9 @@ export function WidgetCard({
           <Button
             variant="ghost"
             size="icon"
-            className="h-6 w-6"
+            className="h-7 w-7"
             onClick={() => onRemove(widgetId)}
+            aria-label="위젯 제거"
           >
             <X className="h-3 w-3" />
           </Button>

@@ -23,7 +23,7 @@ export function GanttHeader({ columns, columnWidth }: GanttHeaderProps) {
         {monthGroups.map((group, i) => (
           <div
             key={i}
-            className="border-border shrink-0 border-r bg-blue-50 px-2 py-1 text-[10px] font-semibold text-blue-700 dark:bg-blue-950/40 dark:text-blue-300"
+            className="border-border shrink-0 border-r bg-blue-50 px-2 py-1 text-[10px] font-semibold text-blue-700 dark:bg-blue-900/50 dark:text-blue-200"
             style={{ width: group.colSpan * columnWidth }}
           >
             {group.label}
@@ -37,8 +37,8 @@ export function GanttHeader({ columns, columnWidth }: GanttHeaderProps) {
             key={i}
             className={cn(
               'border-border shrink-0 border-r border-t bg-slate-50/50 px-1 py-1 text-center text-[10px] text-slate-500 dark:bg-slate-900/30 dark:text-slate-400',
-              col.isToday && 'bg-blue-100/80 font-bold text-blue-700 dark:bg-blue-950/50 dark:text-blue-300',
-              col.isWeekend && !col.isToday && 'bg-slate-100/60 text-slate-400 dark:bg-slate-800/40 dark:text-slate-500',
+              col.isToday && 'bg-blue-100/80 font-bold text-blue-700 dark:bg-blue-900/60 dark:text-blue-200',
+              col.isWeekend && !col.isToday && 'bg-slate-100/60 text-slate-400 dark:bg-slate-800/40 dark:text-slate-400',
             )}
             style={{ width: columnWidth }}
           >

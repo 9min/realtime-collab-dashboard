@@ -45,7 +45,7 @@ export function TaskCard({ task, index, onClick, members, isDragDisabled = false
         >
           <Card
             className={cn(
-              'bg-card shadow-sm transition-shadow hover:shadow-md',
+              'bg-card shadow-sm transition-shadow hover:shadow-md focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 outline-none',
               isDragDisabled ? 'cursor-default' : 'cursor-grab active:cursor-grabbing',
               snapshot.isDragging && 'shadow-lg ring-2 ring-primary/20',
               isBlocked && 'border-amber-400 dark:border-amber-600',

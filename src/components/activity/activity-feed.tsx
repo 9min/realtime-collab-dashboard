@@ -154,7 +154,7 @@ export function ActivityFeed({ projectId }: ActivityFeedProps) {
         </div>
       </CardHeader>
       <CardContent>
-        <div ref={parentRef} className="h-[600px] overflow-y-auto">
+        <div ref={parentRef} className="h-[400px] overflow-y-auto md:h-[600px]">
           <div
             className="relative w-full"
             style={{ height: `${virtualizer.getTotalSize()}px` }}

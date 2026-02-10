@@ -38,7 +38,7 @@ export function AddWidgetDialog({ open, onOpenChange, onAdd, existingTypes }: Ad
             return (
               <Card
                 key={widget.type}
-                className={isAdded ? 'opacity-50' : 'cursor-pointer hover:border-primary'}
+                className={isAdded ? 'cursor-not-allowed opacity-60' : 'cursor-pointer transition-colors hover:border-primary hover:bg-accent/30'}
               >
                 <CardHeader className="flex flex-row items-center gap-3 space-y-0 p-4">
                   <div className="bg-muted flex h-10 w-10 shrink-0 items-center justify-center rounded-lg">

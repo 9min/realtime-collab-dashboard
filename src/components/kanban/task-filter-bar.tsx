@@ -104,8 +104,8 @@ export function TaskFilterBar({ members, labels }: TaskFilterBarProps) {
                 aria-checked={isActive}
                 onClick={() => togglePriority(priority)}
                 className={cn(
-                  'flex w-full items-center gap-2 rounded-sm px-2 py-1.5 text-sm transition-colors',
-                  'hover:bg-accent hover:text-accent-foreground',
+                  'flex w-full cursor-pointer items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-none transition-colors',
+                  'hover:bg-accent hover:text-accent-foreground focus-visible:ring-2 focus-visible:ring-ring',
                   isActive && 'bg-accent/50',
                 )}
               >
@@ -145,8 +145,8 @@ export function TaskFilterBar({ members, labels }: TaskFilterBarProps) {
                 aria-checked={isActive}
                 onClick={() => toggleAssigneeId(option.id)}
                 className={cn(
-                  'flex w-full items-center gap-2 rounded-sm px-2 py-1.5 text-sm transition-colors',
-                  'hover:bg-accent hover:text-accent-foreground',
+                  'flex w-full cursor-pointer items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-none transition-colors',
+                  'hover:bg-accent hover:text-accent-foreground focus-visible:ring-2 focus-visible:ring-ring',
                   isActive && 'bg-accent/50',
                 )}
               >

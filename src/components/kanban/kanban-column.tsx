@@ -102,7 +102,7 @@ export function KanbanColumn({
       isOverWipLimit && 'border-red-400 dark:border-red-600',
     )} style={{ height: 'calc(100vh - 220px)', minHeight: 300 }}>
       {/* 컬럼 헤더 */}
-      <div className="flex items-center justify-between border-b bg-gradient-to-r from-blue-50 to-indigo-50 px-3 py-2 dark:from-blue-950/30 dark:to-indigo-950/30">
+      <div className="flex items-center justify-between border-b bg-gradient-to-r from-blue-50 to-indigo-50 px-3 py-2 dark:from-blue-900/40 dark:to-indigo-900/40">
         <div className="flex min-w-0 items-center gap-2">
           {isEditing ? (
             <Input
@@ -130,14 +130,14 @@ export function KanbanColumn({
         </div>
         {canEdit && !isEditing && (
           <div className="flex shrink-0 items-center gap-1">
-            <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => onAddTask(column.id)} aria-label="태스크 추가">
+            <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => onAddTask(column.id)} aria-label="태스크 추가">
               <Plus className="h-4 w-4" />
             </Button>
             {canDeleteColumn && (
               <AlertDialog>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="icon" className="h-7 w-7" aria-label="컬럼 메뉴">
+                    <Button variant="ghost" size="icon" className="h-8 w-8" aria-label="컬럼 메뉴">
                       <MoreHorizontal className="h-4 w-4" />
                     </Button>
                   </DropdownMenuTrigger>

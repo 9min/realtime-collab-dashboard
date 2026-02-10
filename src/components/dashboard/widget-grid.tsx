@@ -165,7 +165,7 @@ export function WidgetGrid({ projectId }: WidgetGridProps) {
 
   if (isLoading) {
     return (
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+      <div role="status" aria-busy="true" aria-label="대시보드 로딩 중" className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
         {Array.from({ length: 4 }).map((_, i) => (
           <Skeleton key={i} className="h-64 rounded-lg" />
         ))}
@@ -179,7 +179,7 @@ export function WidgetGrid({ projectId }: WidgetGridProps) {
         <div className="flex items-center justify-end gap-2">
           {isEditMode && (
             <Button variant="outline" size="sm" onClick={() => setAddWidgetOpen(true)}>
-              <Plus className="mr-1 h-4 w-4" />
+              <Plus className="h-4 w-4" />
               위젯 추가
             </Button>
           )}
@@ -190,12 +190,12 @@ export function WidgetGrid({ projectId }: WidgetGridProps) {
           >
             {isEditMode ? (
               <>
-                <Check className="mr-1 h-4 w-4" />
+                <Check className="h-4 w-4" />
                 완료
               </>
             ) : (
               <>
-                <Pencil className="mr-1 h-4 w-4" />
+                <Pencil className="h-4 w-4" />
                 편집
               </>
             )}

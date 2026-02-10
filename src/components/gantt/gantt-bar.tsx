@@ -38,8 +38,8 @@ export const GanttBar = memo(function GanttBar({ title, priority, assigneeName, 
           <button
             onClick={onClick}
             className={cn(
-              'relative flex h-full w-full items-center gap-1 overflow-hidden rounded-md px-2 text-xs font-medium text-white shadow-sm',
-              'transition-all hover:shadow-md hover:ring-1 hover:ring-white/30 hover:brightness-110',
+              'relative flex h-full w-full items-center gap-1 overflow-hidden rounded-md px-2 text-xs font-medium text-white shadow-sm outline-none',
+              'transition-all hover:shadow-md hover:ring-1 hover:ring-white/30 hover:brightness-110 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1',
               PRIORITY_BAR_COLORS[priority],
             )}
           >
