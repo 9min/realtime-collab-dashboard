@@ -7,25 +7,12 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
+import { PRIORITY_LABELS, PRIORITY_BADGE_STYLES } from '@/lib/constants'
 import { cn } from '@/lib/utils'
 import type { Tables } from '@/types/database'
 import type { Label } from '@/types/label'
 
 import { LabelBadge } from './label-badge'
-
-const PRIORITY_STYLES = {
-  low: 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300',
-  medium: 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300',
-  high: 'bg-orange-100 text-orange-700 dark:bg-orange-900 dark:text-orange-300',
-  urgent: 'bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300',
-} as const
-
-const PRIORITY_LABELS = {
-  low: '낮음',
-  medium: '보통',
-  high: '높음',
-  urgent: '긴급',
-} as const
 
 interface MemberProfile {
   user_id: string
@@ -87,7 +74,7 @@ export function TaskCard({ task, index, onClick, members, isDragDisabled = false
               </span>
             </CardHeader>
             <CardContent className="flex items-center gap-2 px-3 pb-3 pt-1">
-              <Badge variant="secondary" className={cn('text-xs', PRIORITY_STYLES[task.priority])}>
+              <Badge variant="secondary" className={cn('text-xs', PRIORITY_BADGE_STYLES[task.priority])}>
                 {PRIORITY_LABELS[task.priority]}
               </Badge>
               {task.due_date && (

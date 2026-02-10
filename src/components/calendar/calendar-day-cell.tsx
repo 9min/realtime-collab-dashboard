@@ -2,15 +2,9 @@
 
 import { useRouter, useParams } from 'next/navigation'
 
+import { PRIORITY_DOT_COLORS } from '@/lib/constants'
 import { cn } from '@/lib/utils'
 import type { Task } from '@/types/kanban'
-
-const PRIORITY_COLORS = {
-  urgent: 'bg-red-500',
-  high: 'bg-orange-500',
-  medium: 'bg-blue-500',
-  low: 'bg-slate-400',
-} as const
 
 const MAX_VISIBLE_TASKS = 3
 
@@ -38,7 +32,7 @@ export function CalendarDayCell({ date, isCurrentMonth, isToday, tasks }: Calend
       className={cn(
         'border-border min-h-[100px] border-b border-r p-1.5',
         !isCurrentMonth && 'bg-muted/30',
-        isToday && 'ring-primary ring-1 ring-inset',
+        isToday && 'ring-primary ring-1 ring-inset bg-blue-50/60 dark:bg-blue-950/20',
       )}
     >
       <span
@@ -61,7 +55,7 @@ export function CalendarDayCell({ date, isCurrentMonth, isToday, tasks }: Calend
             <span
               className={cn(
                 'h-1.5 w-1.5 shrink-0 rounded-full',
-                PRIORITY_COLORS[task.priority],
+                PRIORITY_DOT_COLORS[task.priority],
               )}
             />
             <span className="truncate text-[11px] leading-tight">{task.title}</span>

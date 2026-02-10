@@ -44,9 +44,9 @@ export function SwimlaneBoard({
       {groups.map((group) => (
         <div key={group.key} className="rounded-lg border">
           {/* 스윔레인 헤더 */}
-          <div className="flex items-center gap-2 border-b bg-muted/50 px-4 py-2">
+          <div className="flex items-center gap-2 border-b bg-gradient-to-r from-blue-50 to-indigo-50 px-4 py-2 dark:from-blue-950/30 dark:to-indigo-950/30">
             <span className="text-sm font-semibold">{group.label}</span>
-            <Badge variant="secondary" className="text-xs">
+            <Badge variant="secondary" className="bg-blue-100 text-xs text-blue-700 dark:bg-blue-900/50 dark:text-blue-300">
               {group.tasks.length}
             </Badge>
           </div>
@@ -62,7 +62,7 @@ export function SwimlaneBoard({
               return (
                 <div key={column.id} className="w-60 shrink-0 border-r last:border-r-0">
                   {/* 컬럼 서브헤더 */}
-                  <div className="border-b bg-muted/30 px-2 py-1 text-center text-xs font-medium text-muted-foreground">
+                  <div className="border-b bg-slate-50/80 px-2 py-1 text-center text-xs font-medium text-muted-foreground dark:bg-slate-900/40">
                     {column.title}
                   </div>
 

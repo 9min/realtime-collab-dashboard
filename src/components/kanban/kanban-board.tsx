@@ -10,7 +10,7 @@ import { toast } from 'sonner'
 
 import { Button } from '@/components/ui/button'
 import { useAuth } from '@/hooks/use-auth'
-import { MEMBER_ROLE, SWIMLANE_MODE, TASK_PRIORITY } from '@/lib/constants'
+import { MEMBER_ROLE, PRIORITY_LABELS, SWIMLANE_MODE, TASK_PRIORITY } from '@/lib/constants'
 import { filterTasks } from '@/lib/task-filter'
 import { useColumns, useCreateColumn, useUpdateColumn, useDeleteColumn } from '@/queries/use-columns'
 import { useDependencies } from '@/queries/use-dependencies'
@@ -153,17 +153,11 @@ export function KanbanBoard({ projectId }: KanbanBoardProps) {
 
     // priority 모드
     const priorityOrder = [TASK_PRIORITY.URGENT, TASK_PRIORITY.HIGH, TASK_PRIORITY.MEDIUM, TASK_PRIORITY.LOW] as const
-    const priorityLabels: Record<string, string> = {
-      urgent: '긴급',
-      high: '높음',
-      medium: '보통',
-      low: '낮음',
-    }
 
     return priorityOrder
       .map((p) => ({
         key: p,
-        label: priorityLabels[p] ?? p,
+        label: PRIORITY_LABELS[p] ?? p,
         tasks: filtered.filter((t) => t.priority === p),
       }))
       .filter((g) => g.tasks.length > 0)

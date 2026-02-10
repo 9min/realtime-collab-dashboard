@@ -3,6 +3,7 @@
 import { useMemo } from 'react'
 
 import { getCalendarGrid, getWeekGrid, type CalendarDay } from '@/lib/gantt-utils'
+import { cn } from '@/lib/utils'
 import { useCalendarStore } from '@/stores/calendar-store'
 import type { Task } from '@/types/kanban'
 
@@ -31,11 +32,16 @@ export function CalendarGrid({ tasksByDate }: CalendarGridProps) {
   return (
     <div>
       {/* 요일 헤더 */}
-      <div className="grid grid-cols-7">
-        {WEEKDAY_LABELS.map((label) => (
+      <div className="grid grid-cols-7 bg-blue-50/50 dark:bg-blue-950/30">
+        {WEEKDAY_LABELS.map((label, index) => (
           <div
             key={label}
-            className="border-border text-muted-foreground border-b border-r py-2 text-center text-xs font-medium"
+            className={cn(
+              'border-border border-b border-r py-2 text-center text-xs font-medium',
+              index === 0 || index === 6
+                ? 'text-rose-400 dark:text-rose-500'
+                : 'text-muted-foreground',
+            )}
           >
             {label}
           </div>

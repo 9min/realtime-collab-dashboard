@@ -5,7 +5,7 @@ import { Check, ChevronDown, Search, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
-import { SWIMLANE_MODE, TASK_PRIORITY } from '@/lib/constants'
+import { PRIORITY_LABELS, PRIORITY_DOT_COLORS, SWIMLANE_MODE, TASK_PRIORITY } from '@/lib/constants'
 import { UNASSIGNED_ID } from '@/lib/task-filter'
 import { cn } from '@/lib/utils'
 import {
@@ -18,20 +18,6 @@ import {
 import { useKanbanFilterStore } from '@/stores/kanban-filter-store'
 import type { Tables } from '@/types/database'
 import type { SwimlaneMode, TaskPriority } from '@/types/common'
-
-const PRIORITY_LABELS: Record<TaskPriority, string> = {
-  low: '낮음',
-  medium: '보통',
-  high: '높음',
-  urgent: '긴급',
-}
-
-const PRIORITY_DOT_COLORS: Record<TaskPriority, string> = {
-  low: 'bg-slate-400',
-  medium: 'bg-blue-500',
-  high: 'bg-orange-500',
-  urgent: 'bg-red-500',
-}
 
 interface MemberOption {
   id: string

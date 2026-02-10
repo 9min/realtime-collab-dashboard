@@ -22,6 +22,14 @@ export const PRIORITY_DOT_COLORS = {
   urgent: 'bg-rose-500',
 } as const
 
+// 우선순위 배지 스타일 (배경색 + 텍스트 색상)
+export const PRIORITY_BADGE_STYLES = {
+  low: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-300',
+  medium: 'bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300',
+  high: 'bg-amber-100 text-amber-700 dark:bg-amber-900/50 dark:text-amber-300',
+  urgent: 'bg-rose-100 text-rose-700 dark:bg-rose-900/50 dark:text-rose-300',
+} as const
+
 // 멤버 역할
 export const MEMBER_ROLE = {
   OWNER: 'owner',
