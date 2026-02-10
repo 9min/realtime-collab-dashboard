@@ -36,9 +36,9 @@ export function GanttHeader({ columns, columnWidth }: GanttHeaderProps) {
           <div
             key={i}
             className={cn(
-              'border-border shrink-0 border-r border-t bg-slate-50/50 px-1 py-1 text-center text-[10px] text-slate-500 dark:bg-slate-900/30 dark:text-slate-400',
+              'border-border shrink-0 border-r border-t bg-slate-50 px-1 py-1 text-center text-[10px] text-slate-500 dark:bg-slate-900/30 dark:text-slate-400',
               col.isToday && 'bg-blue-100/80 font-bold text-blue-700 dark:bg-blue-900/60 dark:text-blue-200',
-              col.isWeekend && !col.isToday && 'bg-slate-100/60 text-slate-400 dark:bg-slate-800/40 dark:text-slate-400',
+              col.isWeekend && !col.isToday && 'bg-slate-100 text-slate-400 dark:bg-slate-800/40 dark:text-slate-400',
             )}
             style={{ width: columnWidth }}
           >

@@ -157,9 +157,9 @@ export function GanttChart({ projectId }: GanttChartProps) {
           </div>
         </div>
         {/* 스켈레톤: 차트 */}
-        <div className="overflow-hidden rounded-lg border">
+        <div className="overflow-hidden rounded-lg border bg-card">
           <div className="flex">
-            <div className="shrink-0 border-r" style={{ width: isDesktop ? LABEL_WIDTH_DESKTOP : LABEL_WIDTH_MOBILE }}>
+            <div className="shrink-0 border-r bg-card" style={{ width: isDesktop ? LABEL_WIDTH_DESKTOP : LABEL_WIDTH_MOBILE }}>
               {/* 헤더 스페이서 (2행) */}
               <div style={{ height: HEADER_HEIGHT }} className="border-b" />
               {/* 컬럼 헤더 스켈레톤 */}
@@ -180,7 +180,7 @@ export function GanttChart({ projectId }: GanttChartProps) {
               {[45, 60, 35, 55, 40].map((width, i) => (
                 <div
                   key={i}
-                  className={cn('flex items-center px-4 border-b', i % 2 === 1 && 'bg-blue-50/40 dark:bg-blue-950/15')}
+                  className={cn('flex items-center px-4 border-b', i % 2 === 1 && 'bg-blue-50/70 dark:bg-blue-950/20')}
                   style={{ height: ROW_HEIGHT }}
                 >
                   <Skeleton
@@ -239,14 +239,14 @@ export function GanttChart({ projectId }: GanttChartProps) {
       </div>
 
       {/* 간트 차트 */}
-      <div className="border-border overflow-hidden rounded-lg border">
+      <div className="border-border overflow-hidden rounded-lg border bg-card">
         <TooltipProvider delayDuration={300}>
           <ScrollArea className="w-full">
             <div className="flex">
               {/* 왼쪽: 태스크 레이블 */}
-              <div className="border-border shrink-0 border-r bg-background" style={{ width: labelWidth }}>
+              <div className="border-border shrink-0 border-r bg-card" style={{ width: labelWidth }}>
                 {/* 헤더 스페이서 (2행 헤더 높이 매칭) */}
-                <div className="border-border border-b bg-blue-50/50 dark:bg-blue-950/20" style={{ height: HEADER_HEIGHT }} />
+                <div className="border-border border-b bg-blue-50 dark:bg-blue-950/30" style={{ height: HEADER_HEIGHT }} />
                 {groupedTasks.map((group) => {
                   const columnRowIdx = globalRowIndex
                   return (
@@ -265,7 +265,7 @@ export function GanttChart({ projectId }: GanttChartProps) {
                             key={task.id}
                             className={cn(
                               'border-border flex items-center gap-2 border-b px-3 text-xs',
-                              rowIdx % 2 === 1 && 'bg-blue-50/40 dark:bg-blue-950/15',
+                              rowIdx % 2 === 1 && 'bg-blue-50/70 dark:bg-blue-950/20',
                             )}
                             style={{ height: ROW_HEIGHT }}
                           >
@@ -297,7 +297,7 @@ export function GanttChart({ projectId }: GanttChartProps) {
                   {weekendColumns.map((colIdx) => (
                     <div
                       key={`weekend-${colIdx}`}
-                      className="pointer-events-none absolute top-0 bottom-0 bg-slate-200/30 dark:bg-slate-700/20"
+                      className="pointer-events-none absolute top-0 bottom-0 bg-slate-200/50 dark:bg-slate-700/25"
                       style={{
                         left: colIdx * columnWidth,
                         width: columnWidth,
@@ -351,7 +351,7 @@ export function GanttChart({ projectId }: GanttChartProps) {
                               key={task.id}
                               className={cn(
                                 'border-border relative border-b',
-                                currentRowIdx % 2 === 1 && 'bg-blue-50/40 dark:bg-blue-950/15',
+                                currentRowIdx % 2 === 1 && 'bg-blue-50/70 dark:bg-blue-950/20',
                               )}
                               style={{ height: ROW_HEIGHT }}
                             >

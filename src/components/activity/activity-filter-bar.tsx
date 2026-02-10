@@ -60,7 +60,7 @@ export function ActivityFilterBar({ members }: ActivityFilterBarProps) {
         : `${userIds.length}명 선택`
 
   return (
-    <div className="bg-muted/30 flex flex-wrap items-center gap-3 rounded-lg border p-3">
+    <div className="flex flex-wrap items-center gap-3 rounded-lg border bg-card p-3 shadow-sm">
       {/* Search Input */}
       <div className="relative w-56">
         <Search className="text-muted-foreground absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2" />
