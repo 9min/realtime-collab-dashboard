@@ -26,7 +26,10 @@
 | Time to Interactive (TTI) | < 3s | Web Vitals |
 | Realtime Latency | < 500ms | Supabase Realtime 측정 |
 | Test Coverage | 80%+ | Vitest coverage report |
+| Total Tests | 700+ | Vitest (단위 703개) + Playwright (E2E 28개) |
 | Accessibility | WCAG 2.1 AA | axe-core 자동 검사 |
+| API Rate Limit | 60 req/min | Sliding Window 측정 |
+| Cache Hit Rate | 70%+ | Redis hit/miss 카운터 |
 
 ---
 
@@ -143,6 +146,35 @@ Then 마감일 기준으로 태스크가 달력에 배치된다
 Given 사용자가 Cmd+K / Ctrl+K를 누를 때
 When 검색 다이얼로그가 열리면
 Then 프로젝트, 태스크, 댓글을 통합 검색할 수 있다
+```
+
+### US-12: External Integrations
+```
+Given 프로젝트 소유자가 연동 설정 페이지에 있을 때
+When Slack Webhook URL을 설정하면
+Then 태스크 이벤트 발생 시 Slack 채널에 알림이 전송된다
+
+Given 프로젝트 소유자가 GitHub 연동을 설정할 때
+When owner/repo/PAT를 입력하면
+Then 태스크 생성 시 GitHub Issue가 자동으로 생성된다
+```
+
+### US-13: System Monitoring
+```
+Given 관리자가 모니터링 대시보드에 접속할 때
+When 시스템 상태를 확인하면
+Then 캐시 히트율, 에러 트렌드, 활성 사용자 수를 확인할 수 있다
+```
+
+### US-14: Connection Resilience
+```
+Given 사용자가 앱을 사용 중일 때
+When Realtime 연결이 끊어지면
+Then 자동으로 지수 백오프 재연결을 시도하고 상태가 UI에 표시된다
+
+Given 재연결이 최대 횟수를 초과할 때
+When 연결 복구가 불가능하면
+Then 폴링 폴백으로 전환되어 데이터 동기화가 유지된다
 ```
 
 ---
@@ -439,13 +471,162 @@ Then 프로젝트, 태스크, 댓글을 통합 검색할 수 있다
 
 ---
 
+### Phase 7: Stability & Integrations — ✅ 구현 완료
+
+#### F25. API Rate Limiting ✅
+- **알고리즘**: Sliding Window 기반 인메모리 요청 추적
+- **기본 제한**: 60요청/분, 민감 API는 10요청/분
+- **미들웨어**: `withRateLimit(handler, options)` HOF 패턴
+- **클라이언트 IP**: X-Forwarded-For / X-Real-IP 헤더 추출
+- **자동 정리**: 만료 엔트리 5분마다 정리
+- **응답 헤더**: X-RateLimit-Limit, X-RateLimit-Remaining, Retry-After (429)
+- **Acceptance Criteria**:
+  - [x] Sliding Window 레이트 리미터 구현
+  - [x] API 라우트에 미들웨어 적용
+  - [x] 429 응답 + Retry-After 헤더
+  - [x] 민감 API 별도 제한 설정
+
+#### F26. Redis Caching (Upstash) ✅
+- **패턴**: Cache-Aside (캐시 우회 가능)
+- **클라이언트**: Upstash Redis REST API
+- **Graceful Degradation**: Redis 미설정 시 캐시 없이 직접 페칭
+- **TTL**: 키별 개별 설정 (멤버 5분, 통계 10분, 모니터링 1분)
+- **추적**: 캐시 hit/miss 카운터 (Redis 내부 저장)
+- **중앙화**: `cache-keys.ts`에서 캐시 키 관리
+- **Acceptance Criteria**:
+  - [x] Upstash Redis 연동
+  - [x] Cache-Aside 패턴 (`cacheGet(key, fetcher, ttl)`)
+  - [x] Graceful degradation (Redis 없이도 동작)
+  - [x] 캐시 hit/miss 추적
+
+#### F27. Monitoring Dashboard ✅
+- **경로**: `/admin/monitoring` (관리자 전용)
+- **차트 위젯**:
+  - 에러 트렌드 차트 (7일간, Sentry 연동 준비)
+  - 캐시 히트율 차트
+  - 활성 사용자 차트 (30분 윈도우)
+  - 시스템 상태 카드 (Realtime/API/Uptime)
+- **API**: `/api/admin/monitoring` 엔드포인트
+- **서비스**: `monitoring-service.ts`
+- **Acceptance Criteria**:
+  - [x] 관리자 전용 모니터링 페이지
+  - [x] 캐시 메트릭 시각화
+  - [x] 에러 트렌드 차트
+  - [x] 활성 사용자 수 표시
+  - [x] 시스템 상태 표시
+
+#### F28. External Integrations (Slack & GitHub) ✅
+- **Slack 연동**:
+  - Webhook 기반 알림 전송
+  - 이벤트 필터: task_created, task_updated, task_deleted
+  - Block 기반 리치 메시지 포맷
+  - 테스트 엔드포인트로 Webhook 검증
+- **GitHub 연동**:
+  - 태스크 이벤트 시 GitHub Issue 자동 생성
+  - owner/repo/PAT 설정
+  - 자동 라벨링 (`collaboration` 태그)
+- **Webhook Dispatcher**: 중앙 디스패치 (`/api/webhooks/dispatch`)
+  - Secret 인증 또는 사용자 세션 인증
+  - `Promise.allSettled`로 병렬 전송
+- **설정 UI**: 탭 인터페이스 (Slack/GitHub)
+  - CRUD: upsert, delete, enable/disable 토글
+  - Owner/Admin 권한 게이팅
+- **DB**: `project_integrations` 테이블 (마이그레이션 026)
+- **Acceptance Criteria**:
+  - [x] Slack Webhook 알림 전송
+  - [x] GitHub Issue 자동 생성
+  - [x] 이벤트 필터 설정
+  - [x] 연동 활성화/비활성화 토글
+  - [x] 설정 UI (Slack/GitHub 탭)
+
+---
+
+### Phase 8: Resilience & Observability — ✅ 구현 완료
+
+#### F29. Realtime Connection Resilience ✅
+- **연결 상태 모니터링**: Zustand 스토어 (`realtime-store.ts`)
+- **상태**: CONNECTING → CONNECTED → DISCONNECTED → RECONNECTING
+- **지수 백오프 재연결**:
+  - 최대 8회 재시도
+  - 지연: 1s → 2s → 4s → 8s → 16s → 32s → 60s (상한)
+  - ±25% 지터로 Thundering Herd 방지
+  - 최대 재시도 초과 시 폴링 폴백
+- **상태 표시 UI**: Wifi 아이콘 + 색상 indicator + 툴팁
+  - Connected: 녹색 / Connecting: 파란색 / Reconnecting: 노란색 / Disconnected: 빨간색
+  - 접근성: `role="status"`, `aria-label`
+- **Acceptance Criteria**:
+  - [x] 연결 상태 실시간 감지
+  - [x] 지수 백오프 재연결
+  - [x] 지터 적용
+  - [x] 연결 상태 UI 표시
+  - [x] 최대 재시도 초과 시 폴링 폴백
+
+#### F30. Cursor-Based Pagination ✅
+- **대상**: Tasks, Activity Logs
+- **커서**: `created_at` 타임스탬프 기반
+- **TanStack Query**: `useInfiniteQuery` 활용
+- **응답 형식**: `{ data: T[], nextCursor: string | null }`
+- **기본 페이지 크기**: `PAGINATION.DEFAULT_PAGE_SIZE` (20건)
+- **무한 스크롤**: 스크롤 기반 자동 페이지 로드
+- **Acceptance Criteria**:
+  - [x] 커서 기반 페이지네이션 서비스 레이어
+  - [x] `useInfiniteTasks` / `useInfiniteActivityLogs` 훅
+  - [x] 무한 스크롤 UI
+
+#### F31. CI/CD Pipeline ✅
+- **플랫폼**: GitHub Actions
+- **워크플로우** (`.github/workflows/ci.yml`):
+  1. Lint + Type Check
+  2. Unit Tests (커버리지 아티팩트 업로드)
+  3. Build (1, 2 완료 후)
+- **동시성**: 같은 브랜치에서 진행 중인 작업 자동 취소
+- **환경**: Node 20 + pnpm 10, 의존성 캐싱, frozen lockfile
+- **Acceptance Criteria**:
+  - [x] PR/Push 시 자동 실행
+  - [x] Lint + Type Check 통과 검증
+  - [x] 테스트 실행 + 커버리지 리포트
+  - [x] 빌드 성공 검증
+
+#### F32. Sentry Error Tracking ✅
+- **멀티 환경 초기화**: Client / Server / Edge
+- **Client**: 프로덕션 전용, 10% 트레이싱, 세션 리플레이 (1% 일반 / 100% 에러)
+- **Server/Edge**: 5% 트레이싱
+- **에러 바운더리**: `error.tsx` + `global-error.tsx`
+- **Instrumentation**: `src/instrumentation.ts` 서버 초기화
+- **민감 데이터 필터링**: 쿠키 제거
+- **Acceptance Criteria**:
+  - [x] Client/Server/Edge Sentry 초기화
+  - [x] 에러 바운더리 연동
+  - [x] 세션 리플레이 설정
+  - [x] 민감 데이터 필터링
+
+#### F33. UI/UX Accessibility & Consistency ✅
+- **접근성 개선**:
+  - 아이콘 버튼 터치 타겟 확대 (h-7/h-8/h-9)
+  - 클릭 요소 `cursor-pointer` 적용
+  - `focus-visible:ring-2` 키보드 네비게이션
+  - 라벨 뱃지 `role=checkbox`, `aria-checked`, 키보드 핸들러
+  - 아이콘 버튼 `aria-label` 추가
+- **다크 모드 색상 대비 개선**: 간트, 스윔레인, 칸반
+- **Dialog/Card 배경색**: `bg-background` → `bg-card` (대비 향상)
+- **우선순위 색상 중앙화**: 7개 파일 → `src/lib/constants.ts` 통합
+  - `PRIORITY_LABELS`, `PRIORITY_DOT_COLORS`, `PRIORITY_BADGE_STYLES`
+- **반응형 개선**: 활동 로그 통계 카드 그리드, 활동 피드 높이
+- **Acceptance Criteria**:
+  - [x] WCAG 2.1 AA 터치 타겟 준수
+  - [x] 키보드 네비게이션 개선
+  - [x] 다크 모드 색상 대비 개선
+  - [x] 우선순위 색상/디자인 일관성 통일
+
+---
+
 ## Future Features (Next)
 - **템플릿**: 프로젝트 템플릿으로 빠른 프로젝트 생성
 - **반복 태스크**: 주기적 태스크 자동 생성
 - **시간 추적**: 태스크별 소요 시간 기록
 - **워크플로우 자동화**: 상태 변경 시 자동 액션 (예: Done 이동 시 알림)
 - **모바일 앱**: React Native 또는 PWA
-- **외부 연동**: Slack, GitHub Issues, Google Calendar 연동
+- **외부 연동 확장**: Google Calendar 연동
 - **보고서**: 주간/월간 자동 보고서 생성
 
 ---
@@ -459,6 +640,15 @@ Then 프로젝트, 태스크, 댓글을 통합 검색할 수 있다
 - Dynamic Import로 대형 컴포넌트 코드 스플리팅
 - 리스트 가상화로 대량 데이터 최적화
 - 이미지: next/image로 자동 최적화
+- Redis 캐싱 (Upstash): 서버 데이터 캐시로 응답 속도 향상
+- 커서 기반 페이지네이션: 대량 데이터 무한 스크롤 최적화
+
+### Reliability
+- Realtime 연결 지수 백오프 재연결 (최대 8회, 60초 상한)
+- Thundering Herd 방지 지터 (±25%)
+- Redis 미설정 시 Graceful Degradation
+- Sentry 에러 트래킹 (Client/Server/Edge)
+- CI/CD: GitHub Actions 자동 린트/타입체크/테스트/빌드
 
 ### Accessibility
 - WCAG 2.1 AA 준수
@@ -473,6 +663,8 @@ Then 프로젝트, 태스크, 댓글을 통합 검색할 수 있다
 - CSRF: Supabase Auth의 PKCE flow
 - 환경변수: 민감 정보 서버 사이드에서만 접근
 - 삭제 작업 시 AlertDialog 컨펌 필수
+- API Rate Limiting: Sliding Window 기반 요청 제한
+- Sentry: 에러 트래킹 + 민감 데이터 필터링
 
 ### Browser Support
 - Chrome 90+, Firefox 90+, Safari 15+, Edge 90+
@@ -494,6 +686,14 @@ Then 프로젝트, 태스크, 댓글을 통합 검색할 수 있다
 - Serverless Function Execution: 100GB-hours/month
 - Build: 6000 minutes/month
 
+### Upstash Redis (Optional)
+- REST API 기반 Redis 클라이언트
+- 미설정 시 캐시 없이 동작 (Graceful Degradation)
+
+### Sentry
+- Client/Server/Edge 에러 트래킹
+- 프로덕션 환경에서만 활성화
+
 ### 제약에 따른 설계 결정
 - DB 쿼리 최적화: 불필요한 데이터 전송 최소화
 - Realtime 구독: 프로젝트별 단일 채널로 관리 + 폴링 폴백
@@ -506,7 +706,7 @@ Then 프로젝트, 태스크, 댓글을 통합 검색할 수 있다
 
 ## Database Schema
 
-### Tables (14개)
+### Tables (15개)
 | 테이블 | 용도 |
 |--------|------|
 | `profiles` | 사용자 프로필 (extends auth.users) |
@@ -523,14 +723,15 @@ Then 프로젝트, 태스크, 댓글을 통합 검색할 수 있다
 | `notifications` | 알림 |
 | `activity_logs` | 활동 로그 |
 | `dashboard_layouts` | 대시보드 레이아웃 |
+| `project_integrations` | 외부 연동 설정 (Slack, GitHub) |
 
 ### RLS Policies
 - 모든 테이블에 RLS 활성화
 - 프로젝트 스코프 기반 정책
 - 헬퍼 함수: `is_project_member()`, `has_project_role()`, `is_admin()`
 
-### Migrations (25개)
-001~025 순차 마이그레이션으로 스키마 관리
+### Migrations (26개)
+001~026 순차 마이그레이션으로 스키마 관리
 
 ---
 
