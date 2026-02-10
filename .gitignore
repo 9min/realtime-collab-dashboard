@@ -55,3 +55,6 @@ docs/.pdca-snapshots/
 
 # windows null device artifact
 nul
+
+# screenshot image
+image.png
