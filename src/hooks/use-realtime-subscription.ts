@@ -17,6 +17,17 @@ import { labelKeys } from '@/queries/use-labels'
 import { subtaskKeys } from '@/queries/use-subtasks'
 import { taskKeys } from '@/queries/use-tasks'
 import { useAuth } from '@/hooks/use-auth'
+import { CONNECTION_STATUS, useRealtimeStore } from '@/stores/realtime-store'
+
+const MAX_RETRY_COUNT = 8
+const BASE_RETRY_DELAY = 1000 // 1초
+
+function getRetryDelay(retryCount: number): number {
+  // Exponential backoff: 1s, 2s, 4s, 8s, 16s, 32s, 60s, 60s (cap)
+  const delay = Math.min(BASE_RETRY_DELAY * Math.pow(2, retryCount), 60_000)
+  // jitter ±25%
+  return delay * (0.75 + Math.random() * 0.5)
+}
 
 /**
  * 프로젝트별 Realtime 구독 훅
@@ -28,8 +39,11 @@ export function useRealtimeSubscription(projectId: string) {
   const supabase = useSupabase()
   const queryClient = useQueryClient()
   const { user } = useAuth()
+  const { setStatus, setConnected, incrementRetry, resetRetry } = useRealtimeStore()
 
   const userIdRef = useRef(user?.id)
+  const retryCountRef = useRef(0)
+  const retryTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   useEffect(() => {
     userIdRef.current = user?.id
@@ -37,6 +51,8 @@ export function useRealtimeSubscription(projectId: string) {
 
   useEffect(() => {
     if (!projectId || !user?.id) return
+
+    setStatus(CONNECTION_STATUS.CONNECTING)
 
     // 고유 채널 이름 (동일 project의 복수 탭/페이지 충돌 방지)
     const channelName = `${CHANNEL_PREFIX}:${projectId}:${Date.now()}`
@@ -243,8 +259,36 @@ export function useRealtimeSubscription(projectId: string) {
           },
         )
         .subscribe((status, _err) => {
-          if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
-            ch.subscribe()
+          if (cancelled) return
+
+          if (status === 'SUBSCRIBED') {
+            retryCountRef.current = 0
+            resetRetry()
+            setConnected()
+          } else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
+            setStatus(CONNECTION_STATUS.RECONNECTING)
+
+            if (retryCountRef.current < MAX_RETRY_COUNT) {
+              const delay = getRetryDelay(retryCountRef.current)
+              retryCountRef.current += 1
+              incrementRetry()
+
+              retryTimerRef.current = setTimeout(() => {
+                if (!cancelled) {
+                  ch.subscribe()
+                }
+              }, delay)
+            } else {
+              setStatus(CONNECTION_STATUS.DISCONNECTED)
+              toast.error('실시간 연결이 끊어졌습니다. 페이지를 새로고침해주세요.', {
+                duration: 0,
+                id: 'realtime-disconnected',
+              })
+            }
+          } else if (status === 'CLOSED') {
+            if (!cancelled) {
+              setStatus(CONNECTION_STATUS.DISCONNECTED)
+            }
           }
         })
 
@@ -261,9 +305,13 @@ export function useRealtimeSubscription(projectId: string) {
     return () => {
       cancelled = true
       authUnsubscribe?.()
+      if (retryTimerRef.current) {
+        clearTimeout(retryTimerRef.current)
+      }
       if (channel) {
         supabase.removeChannel(channel)
       }
+      setStatus(CONNECTION_STATUS.DISCONNECTED)
     }
-  }, [supabase, projectId, queryClient, user?.id])
+  }, [supabase, projectId, queryClient, user?.id, setStatus, setConnected, incrementRetry, resetRetry])
 }

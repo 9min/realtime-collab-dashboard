@@ -53,6 +53,21 @@ vi.mock('sonner', () => ({
   toast: { info: vi.fn(), error: vi.fn(), success: vi.fn() },
 }))
 
+vi.mock('@/stores/realtime-store', () => ({
+  CONNECTION_STATUS: {
+    CONNECTING: 'connecting',
+    CONNECTED: 'connected',
+    DISCONNECTED: 'disconnected',
+    RECONNECTING: 'reconnecting',
+  },
+  useRealtimeStore: () => ({
+    setStatus: vi.fn(),
+    setConnected: vi.fn(),
+    incrementRetry: vi.fn(),
+    resetRetry: vi.fn(),
+  }),
+}))
+
 // Lazy import after mocks
 import { useRealtimeSubscription } from './use-realtime-subscription'
 
