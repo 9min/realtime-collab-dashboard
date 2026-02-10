@@ -1,9 +1,11 @@
 import { createClient } from '@supabase/supabase-js'
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 
+import { withRateLimit } from '@/lib/api-middleware'
+import { RATE_LIMIT } from '@/lib/constants'
 import { createServerClient } from '@/lib/supabase/server'
 
-export async function POST() {
+async function handler(_req: NextRequest) {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
   const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY
 
@@ -91,3 +93,7 @@ export async function POST() {
     )
   }
 }
+
+export const POST = withRateLimit(handler, {
+  maxRequests: RATE_LIMIT.STRICT_MAX_REQUESTS,
+})

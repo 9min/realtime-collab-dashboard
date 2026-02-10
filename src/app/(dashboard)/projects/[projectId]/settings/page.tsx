@@ -26,6 +26,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useAuth } from '@/hooks/use-auth'
 import { useProject, useProjectMembers, useInviteMember, useUpdateMemberRole, useRemoveMember, useUpdateProject, useDeleteProject } from '@/queries/use-projects'
 import { LabelManager } from '@/components/kanban/label-manager'
+import { IntegrationSettings } from '@/components/project/integration-settings'
 import { MEMBER_ROLE } from '@/lib/constants'
 import type { MemberRole } from '@/types/common'
 
@@ -309,6 +310,17 @@ export default function ProjectSettingsPage({ params }: ProjectSettingsPageProps
             프로젝트에서 사용할 라벨을 관리합니다. 라벨은 태스크에 할당하여 분류할 수 있습니다.
           </p>
           <LabelManager projectId={projectId} />
+        </Card>
+      )}
+
+      {/* 외부 연동 */}
+      {isOwnerOrAdmin && (
+        <Card className="p-6 space-y-4">
+          <h3 className="text-lg font-semibold">외부 연동</h3>
+          <p className="text-muted-foreground text-sm">
+            Slack, GitHub 등 외부 서비스와 연동하여 프로젝트 알림을 받을 수 있습니다.
+          </p>
+          <IntegrationSettings projectId={projectId} isOwnerOrAdmin={isOwnerOrAdmin} />
         </Card>
       )}
 

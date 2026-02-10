@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { Keyboard, LogOut, ShieldCheck, UserCog } from 'lucide-react'
+import { Activity, Keyboard, LogOut, ShieldCheck, UserCog } from 'lucide-react'
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
@@ -98,10 +98,16 @@ export function Header() {
                   프로필 설정
                 </DropdownMenuItem>
                 {myProfile?.is_admin && (
-                  <DropdownMenuItem onClick={() => router.push('/admin')}>
-                    <ShieldCheck className="mr-2 h-4 w-4" />
-                    사용자 관리
-                  </DropdownMenuItem>
+                  <>
+                    <DropdownMenuItem onClick={() => router.push('/admin')}>
+                      <ShieldCheck className="mr-2 h-4 w-4" />
+                      사용자 관리
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => router.push('/admin/monitoring')}>
+                      <Activity className="mr-2 h-4 w-4" />
+                      모니터링
+                    </DropdownMenuItem>
+                  </>
                 )}
                 <DropdownMenuItem onClick={handleSignOut}>
                   <LogOut className="mr-2 h-4 w-4" />

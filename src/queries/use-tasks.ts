@@ -10,6 +10,16 @@ import { QUERY_CONFIG } from '@/lib/constants'
 import type { InsertTables, UpdateTables } from '@/types/database'
 import type { Task, MoveTaskPayload } from '@/types/kanban'
 
+function dispatchWebhook(projectId: string, eventType: string, data: Record<string, unknown>) {
+  fetch('/api/webhooks/dispatch', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ projectId, eventType, data }),
+  }).catch(() => {
+    // Silently ignore webhook dispatch failures
+  })
+}
+
 export const taskKeys = {
   list: (projectId: string) => ['tasks', projectId] as const,
   infinite: (projectId: string) => ['tasks', projectId, 'infinite'] as const,
@@ -59,10 +69,13 @@ export function useCreateTask(projectId: string) {
       if (result.error) throw new Error(result.error.message)
       return result.data
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: taskKeys.list(projectId) })
       queryClient.invalidateQueries({ queryKey: chartKeys.taskStatus(projectId) })
       toast.success('태스크가 생성되었습니다')
+      if (data) {
+        dispatchWebhook(projectId, 'task_created', { taskId: data.id, taskTitle: data.title })
+      }
     },
     onError: () => {
       toast.error('태스크 생성에 실패했습니다')
@@ -100,9 +113,10 @@ export function useUpdateTask(projectId: string) {
       }
       toast.error('태스크 수정에 실패했습니다')
     },
-    onSettled: () => {
+    onSettled: (_data, _error, vars) => {
       queryClient.invalidateQueries({ queryKey: taskKeys.list(projectId) })
       queryClient.invalidateQueries({ queryKey: chartKeys.taskStatus(projectId) })
+      dispatchWebhook(projectId, 'task_updated', { taskId: vars.taskId })
     },
   })
 }
@@ -135,8 +149,9 @@ export function useDeleteTask(projectId: string) {
       }
       toast.error('태스크 삭제에 실패했습니다')
     },
-    onSuccess: () => {
+    onSuccess: (_data, taskId) => {
       toast.success('태스크가 삭제되었습니다')
+      dispatchWebhook(projectId, 'task_deleted', { taskId })
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: taskKeys.list(projectId) })

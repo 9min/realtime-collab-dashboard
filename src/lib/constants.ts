@@ -120,3 +120,11 @@ export const DEFAULT_DASHBOARD_LAYOUT = [
   { widget_id: 'default-burndown', type: WIDGET_TYPE.BURNDOWN, x: 8, y: 0, w: 4, h: 3 },
   { widget_id: 'default-member-list', type: WIDGET_TYPE.MEMBER_LIST, x: 0, y: 3, w: 4, h: 3 },
 ] as const
+
+// API Rate Limiting
+export const RATE_LIMIT = {
+  DEFAULT_INTERVAL: 60 * 1000, // 1분
+  DEFAULT_MAX_REQUESTS: 60, // 분당 60회
+  STRICT_MAX_REQUESTS: 10, // 분당 10회 (민감한 API)
+  CLEANUP_INTERVAL: 5 * 60 * 1000, // 5분마다 만료 엔트리 정리
+} as const
