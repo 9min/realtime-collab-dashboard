@@ -61,8 +61,12 @@ describe('CalendarHeader', () => {
     render(<CalendarHeader />)
 
     const buttons = screen.getAllByRole('button')
-    // 이전, 다음, 오늘, 주, 월 = 최소 5개 버튼
-    expect(buttons.length).toBeGreaterThanOrEqual(5)
+    // 이전, 다음, 오늘 = 최소 3개 버튼
+    expect(buttons.length).toBeGreaterThanOrEqual(3)
+
+    const tabs = screen.getAllByRole('tab')
+    // 주, 월 = 2개 탭
+    expect(tabs).toHaveLength(2)
   })
 
   it('오늘 버튼이 존재한다', () => {
@@ -123,6 +127,7 @@ describe('CalendarHeader', () => {
   })
 
   it('월 버튼 클릭 시 setViewMode("month")가 호출된다', async () => {
+    mockCalendarState.viewMode = 'week'
     const user = userEvent.setup()
 
     render(<CalendarHeader />)
@@ -138,7 +143,7 @@ describe('CalendarHeader', () => {
     render(<CalendarHeader />)
 
     const monthButton = screen.getByText('월')
-    expect(monthButton).toHaveClass('bg-background')
+    expect(monthButton).toHaveAttribute('data-state', 'active')
   })
 
   it('주 뷰모드일 때 주 버튼에 활성 스타일이 적용된다', () => {
@@ -147,16 +152,15 @@ describe('CalendarHeader', () => {
     render(<CalendarHeader />)
 
     const weekButton = screen.getByText('주')
-    expect(weekButton).toHaveClass('bg-background')
+    expect(weekButton).toHaveAttribute('data-state', 'active')
   })
 
-  it('비활성 뷰모드 버튼에는 muted 스타일이 적용된다', () => {
+  it('비활성 뷰모드 버튼에는 inactive 상태가 적용된다', () => {
     mockCalendarState.viewMode = 'month'
 
     render(<CalendarHeader />)
 
     const weekButton = screen.getByText('주')
-    expect(weekButton).toHaveClass('text-muted-foreground')
-    expect(weekButton).not.toHaveClass('bg-background')
+    expect(weekButton).toHaveAttribute('data-state', 'inactive')
   })
 })

@@ -104,7 +104,7 @@ export const ActivityItem = memo(function ActivityItem({ activity }: ActivityIte
 
       {/* Content */}
       <div className="min-w-0 flex-1">
-        <p className="text-sm leading-relaxed">{message}</p>
+        <p className="text-sm leading-relaxed break-words">{message}</p>
         <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
           <Badge variant="secondary" className="gap-1 px-1.5 py-0 text-[10px]">
             {actionLabel}

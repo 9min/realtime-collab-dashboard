@@ -87,11 +87,11 @@ export function CommentItem({ comment, currentUserId, canDelete, onUpdate, onDel
         </AvatarFallback>
       </Avatar>
       <div className="min-w-0 flex-1">
-        <div className="flex items-center gap-2">
-          <span className="text-sm font-medium">
+        <div className="flex items-center gap-2 min-w-0">
+          <span className="text-sm font-medium truncate">
             {profile.full_name ?? profile.email}
           </span>
-          <span className="text-muted-foreground text-xs">
+          <span className="text-muted-foreground text-xs shrink-0">
             {getRelativeTime(comment.created_at)}
           </span>
           {isEdited && (

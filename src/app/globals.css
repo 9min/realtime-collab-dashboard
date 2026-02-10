@@ -50,7 +50,7 @@
 
 :root {
   --radius: 0.5rem;
-  --background: #f0f4f8;
+  --background: #eef1f6;
   --foreground: #1e293b;
   --card: #ffffff;
   --card-foreground: #1e293b;
@@ -58,7 +58,7 @@
   --popover-foreground: #1e293b;
   --primary: #3b82f6;
   --primary-foreground: #ffffff;
-  --secondary: #e2e8f0;
+  --secondary: #e9eef5;
   --secondary-foreground: #475569;
   --muted: #f1f5f9;
   --muted-foreground: #64748b;
@@ -74,7 +74,7 @@
   --chart-3: #8b5cf6;
   --chart-4: #f59e0b;
   --chart-5: #ef4444;
-  --sidebar: #f1f5f9;
+  --sidebar: #eef1f6;
   --sidebar-foreground: #1e293b;
   --sidebar-primary: #3b82f6;
   --sidebar-primary-foreground: #ffffff;

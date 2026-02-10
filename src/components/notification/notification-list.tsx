@@ -34,7 +34,7 @@ export function NotificationList({
   })
 
   return (
-    <div className="w-[420px]">
+    <div className="w-full">
       <div className="flex items-center justify-between border-b px-4 py-3">
         <h3 className="text-sm font-semibold">알림</h3>
         {hasUnread && (

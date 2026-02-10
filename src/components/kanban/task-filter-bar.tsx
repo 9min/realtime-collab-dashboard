@@ -88,10 +88,10 @@ export function TaskFilterBar({ members, labels }: TaskFilterBarProps) {
       {/* 우선순위 셀렉트 */}
       <Popover>
         <PopoverTrigger asChild>
-          <Button variant="outline" size="sm" className="h-9 gap-1.5 text-sm font-normal">
-            <span className="text-muted-foreground">우선순위:</span>
-            <span>{priorityLabel}</span>
-            <ChevronDown className="text-muted-foreground h-3.5 w-3.5" />
+          <Button variant="outline" size="sm" className="h-9 gap-1.5 text-sm font-normal max-w-[200px]">
+            <span className="text-muted-foreground shrink-0">우선순위:</span>
+            <span className="truncate">{priorityLabel}</span>
+            <ChevronDown className="text-muted-foreground h-3.5 w-3.5 shrink-0" />
           </Button>
         </PopoverTrigger>
         <PopoverContent align="start" className="w-44 p-1">
@@ -129,10 +129,10 @@ export function TaskFilterBar({ members, labels }: TaskFilterBarProps) {
       {/* 담당자 셀렉트 */}
       <Popover>
         <PopoverTrigger asChild>
-          <Button variant="outline" size="sm" className="h-9 gap-1.5 text-sm font-normal">
-            <span className="text-muted-foreground">담당자:</span>
-            <span>{assigneeLabel}</span>
-            <ChevronDown className="text-muted-foreground h-3.5 w-3.5" />
+          <Button variant="outline" size="sm" className="h-9 gap-1.5 text-sm font-normal max-w-[200px]">
+            <span className="text-muted-foreground shrink-0">담당자:</span>
+            <span className="truncate">{assigneeLabel}</span>
+            <ChevronDown className="text-muted-foreground h-3.5 w-3.5 shrink-0" />
           </Button>
         </PopoverTrigger>
         <PopoverContent align="start" className="w-48 p-1">

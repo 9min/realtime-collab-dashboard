@@ -98,7 +98,7 @@ export function KanbanColumn({
 
   return (
     <div className={cn(
-      'bg-card flex w-72 shrink-0 flex-col overflow-hidden rounded-lg border shadow-sm',
+      'flex w-72 shrink-0 flex-col overflow-hidden rounded-lg border bg-muted/60 shadow-sm dark:bg-muted/30',
       isOverWipLimit && 'border-red-400 dark:border-red-600',
     )} style={{ height: 'calc(100vh - 220px)', minHeight: 300 }}>
       {/* 컬럼 헤더 */}

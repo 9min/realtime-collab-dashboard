@@ -18,6 +18,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
+import { Skeleton } from '@/components/ui/skeleton'
 import { useMyProfile, useAllUsers, useAllProjectMemberships, useSetAdminStatus } from '@/queries/use-admin'
 import { useAuth } from '@/hooks/use-auth'
 import type { ProjectMembership } from '@/services/admin-service'
@@ -73,10 +74,10 @@ function LoadingSkeleton() {
         {Array.from({ length: 3 }).map((_, i) => (
           <Card key={i} className="gap-0 py-4">
             <CardContent className="flex items-center gap-3">
-              <div className="bg-muted h-10 w-10 animate-pulse rounded-lg" />
+              <Skeleton className="h-10 w-10 rounded-lg" />
               <div className="space-y-2">
-                <div className="bg-muted h-6 w-10 animate-pulse rounded" />
-                <div className="bg-muted h-3 w-16 animate-pulse rounded" />
+                <Skeleton className="h-6 w-10" />
+                <Skeleton className="h-3 w-16" />
               </div>
             </CardContent>
           </Card>
@@ -86,13 +87,13 @@ function LoadingSkeleton() {
         <CardContent className="space-y-3">
           {Array.from({ length: 4 }).map((_, i) => (
             <div key={i} className="flex items-center gap-3 rounded-lg border p-3">
-              <div className="bg-muted h-4 w-4 animate-pulse rounded" />
-              <div className="bg-muted h-9 w-9 animate-pulse rounded-full" />
+              <Skeleton className="h-4 w-4" />
+              <Skeleton className="h-9 w-9 rounded-full" />
               <div className="flex-1 space-y-2">
-                <div className="bg-muted h-4 w-28 animate-pulse rounded" />
-                <div className="bg-muted h-3 w-40 animate-pulse rounded" />
+                <Skeleton className="h-4 w-28" />
+                <Skeleton className="h-3 w-40" />
               </div>
-              <div className="bg-muted h-6 w-16 animate-pulse rounded-full" />
+              <Skeleton className="h-6 w-16 rounded-full" />
             </div>
           ))}
         </CardContent>

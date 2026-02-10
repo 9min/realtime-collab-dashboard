@@ -5,6 +5,7 @@ import { Pencil, Plus, Trash2 } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { Skeleton } from '@/components/ui/skeleton'
 import { LABEL_COLORS } from '@/lib/constants'
 import { cn } from '@/lib/utils'
 import { useLabels, useCreateLabel, useUpdateLabel, useDeleteLabel } from '@/queries/use-labels'
@@ -64,7 +65,7 @@ export function LabelManager({ projectId }: LabelManagerProps) {
   }
 
   if (isLoading) {
-    return <div className="bg-muted h-20 animate-pulse rounded" />
+    return <Skeleton className="h-20" />
   }
 
   return (

@@ -3,6 +3,7 @@
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { useCalendarStore } from '@/stores/calendar-store'
 
 export function CalendarHeader() {
@@ -28,28 +29,12 @@ export function CalendarHeader() {
         </Button>
       </div>
 
-      <div className="bg-muted flex rounded-lg p-0.5">
-        <button
-          onClick={() => setViewMode('week')}
-          className={`rounded-md px-3 py-1 text-sm font-medium transition-colors ${
-            viewMode === 'week'
-              ? 'bg-background shadow-sm'
-              : 'text-muted-foreground hover:text-foreground'
-          }`}
-        >
-          주
-        </button>
-        <button
-          onClick={() => setViewMode('month')}
-          className={`rounded-md px-3 py-1 text-sm font-medium transition-colors ${
-            viewMode === 'month'
-              ? 'bg-background shadow-sm'
-              : 'text-muted-foreground hover:text-foreground'
-          }`}
-        >
-          월
-        </button>
-      </div>
+      <Tabs value={viewMode} onValueChange={(v) => setViewMode(v as 'week' | 'month')}>
+        <TabsList>
+          <TabsTrigger value="week">주</TabsTrigger>
+          <TabsTrigger value="month">월</TabsTrigger>
+        </TabsList>
+      </Tabs>
     </div>
   )
 }

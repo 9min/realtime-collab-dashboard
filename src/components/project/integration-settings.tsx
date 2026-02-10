@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 
+import { Skeleton } from '@/components/ui/skeleton'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { useIntegrations } from '@/queries/use-integrations'
 import type { ProjectIntegration } from '@/types/integration'
@@ -21,8 +22,8 @@ export function IntegrationSettings({ projectId, isOwnerOrAdmin }: IntegrationSe
   if (isLoading) {
     return (
       <div className="space-y-3">
-        <div className="bg-muted h-10 w-48 animate-pulse rounded" />
-        <div className="bg-muted h-40 animate-pulse rounded" />
+        <Skeleton className="h-10 w-48" />
+        <Skeleton className="h-40" />
       </div>
     )
   }

@@ -7,6 +7,8 @@ import { CalendarDays, CalendarRange } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { EmptyState } from '@/components/ui/empty-state'
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'
+import { Skeleton } from '@/components/ui/skeleton'
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { TooltipProvider } from '@/components/ui/tooltip'
 
 const TaskDetailDialog = dynamic(
@@ -142,14 +144,14 @@ export function GanttChart({ projectId }: GanttChartProps) {
         {/* 스켈레톤: 뷰 토글 + 레전드 */}
         <div className="flex items-center gap-3">
           <div className="flex gap-0.5 rounded-lg border bg-muted p-0.5">
-            <div className="h-8 w-16 animate-pulse rounded-md bg-muted-foreground/10" />
-            <div className="h-8 w-16 animate-pulse rounded-md bg-muted-foreground/10" />
+            <Skeleton className="h-8 w-16" />
+            <Skeleton className="h-8 w-16" />
           </div>
           <div className="hidden md:flex items-center gap-3">
             {Array.from({ length: 4 }).map((_, i) => (
               <div key={i} className="flex items-center gap-1.5">
-                <div className="h-2.5 w-2.5 animate-pulse rounded-full bg-muted" />
-                <div className="h-3 w-8 animate-pulse rounded bg-muted" />
+                <Skeleton className="h-2.5 w-2.5 rounded-full" />
+                <Skeleton className="h-3 w-8" />
               </div>
             ))}
           </div>
@@ -162,18 +164,18 @@ export function GanttChart({ projectId }: GanttChartProps) {
               <div style={{ height: HEADER_HEIGHT }} className="border-b" />
               {/* 컬럼 헤더 스켈레톤 */}
               <div className="bg-slate-100/80 dark:bg-slate-800/50 border-b px-3 py-1" style={{ height: COLUMN_HEADER_ROW_HEIGHT }}>
-                <div className="h-3 w-16 animate-pulse rounded bg-muted" />
+                <Skeleton className="h-3 w-16" />
               </div>
               {Array.from({ length: 5 }).map((_, i) => (
                 <div key={i} className="flex items-center border-b px-3 gap-2" style={{ height: ROW_HEIGHT }}>
-                  <div className="h-2.5 w-2.5 shrink-0 animate-pulse rounded-full bg-muted" />
-                  <div className="h-3 flex-1 animate-pulse rounded bg-muted" />
+                  <Skeleton className="h-2.5 w-2.5 shrink-0 rounded-full" />
+                  <Skeleton className="h-3 flex-1" />
                 </div>
               ))}
             </div>
             <div className="flex-1">
               {/* 2행 헤더 스켈레톤 */}
-              <div style={{ height: HEADER_HEIGHT }} className="animate-pulse border-b bg-muted/20" />
+              <Skeleton className="border-b rounded-none" style={{ height: HEADER_HEIGHT }} />
               <div style={{ height: COLUMN_HEADER_ROW_HEIGHT }} className="border-b" />
               {[45, 60, 35, 55, 40].map((width, i) => (
                 <div
@@ -181,8 +183,8 @@ export function GanttChart({ projectId }: GanttChartProps) {
                   className={cn('flex items-center px-4 border-b', i % 2 === 1 && 'bg-blue-50/40 dark:bg-blue-950/15')}
                   style={{ height: ROW_HEIGHT }}
                 >
-                  <div
-                    className="h-5 animate-pulse rounded-md bg-muted"
+                  <Skeleton
+                    className="h-5"
                     style={{ width: `${width}%`, marginLeft: `${i * 8}%` }}
                   />
                 </div>
@@ -212,36 +214,18 @@ export function GanttChart({ projectId }: GanttChartProps) {
     <div className="space-y-4">
       {/* 뷰 모드 전환 + 우선순위 레전드 */}
       <div className="flex items-center gap-4">
-        <div role="tablist" aria-label="간트 차트 뷰 모드" className="inline-flex rounded-lg border bg-muted p-0.5">
-          <button
-            role="tab"
-            aria-selected={viewMode === 'week'}
-            className={cn(
-              'inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium transition-colors',
-              viewMode === 'week'
-                ? 'bg-background text-foreground shadow-sm'
-                : 'text-muted-foreground hover:text-foreground',
-            )}
-            onClick={() => setViewMode('week')}
-          >
-            <CalendarDays className="h-3.5 w-3.5" />
-            주 단위
-          </button>
-          <button
-            role="tab"
-            aria-selected={viewMode === 'month'}
-            className={cn(
-              'inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium transition-colors',
-              viewMode === 'month'
-                ? 'bg-background text-foreground shadow-sm'
-                : 'text-muted-foreground hover:text-foreground',
-            )}
-            onClick={() => setViewMode('month')}
-          >
-            <CalendarRange className="h-3.5 w-3.5" />
-            월 단위
-          </button>
-        </div>
+        <Tabs value={viewMode} onValueChange={(v) => setViewMode(v as 'week' | 'month')}>
+          <TabsList>
+            <TabsTrigger value="week">
+              <CalendarDays className="h-3.5 w-3.5" />
+              주 단위
+            </TabsTrigger>
+            <TabsTrigger value="month">
+              <CalendarRange className="h-3.5 w-3.5" />
+              월 단위
+            </TabsTrigger>
+          </TabsList>
+        </Tabs>
 
         {/* 우선순위 레전드 */}
         <div className="hidden md:flex items-center gap-3 text-xs text-muted-foreground">

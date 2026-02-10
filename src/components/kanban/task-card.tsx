@@ -45,7 +45,7 @@ export function TaskCard({ task, index, onClick, members, isDragDisabled = false
         >
           <Card
             className={cn(
-              'transition-shadow hover:shadow-md',
+              'bg-card shadow-sm transition-shadow hover:shadow-md',
               isDragDisabled ? 'cursor-default' : 'cursor-grab active:cursor-grabbing',
               snapshot.isDragging && 'shadow-lg ring-2 ring-primary/20',
               isBlocked && 'border-amber-400 dark:border-amber-600',
@@ -68,9 +68,9 @@ export function TaskCard({ task, index, onClick, members, isDragDisabled = false
                   ))}
                 </div>
               )}
-              <span className="flex items-center gap-1 text-sm font-medium leading-snug">
+              <span className="flex items-center gap-1 text-sm font-medium leading-snug min-w-0">
                 {isBlocked && <Lock className="h-3 w-3 shrink-0 text-amber-500" />}
-                {task.title}
+                <span className="break-words">{task.title}</span>
               </span>
             </CardHeader>
             <CardContent className="flex items-center gap-2 px-3 pb-3 pt-1">

@@ -12,6 +12,7 @@ import { Plus, Pencil, Check } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
 import { EmptyState } from '@/components/ui/empty-state'
+import { Skeleton } from '@/components/ui/skeleton'
 import { useAuth } from '@/hooks/use-auth'
 import { DEFAULT_DASHBOARD_LAYOUT, GRID_ROW_HEIGHT, MEMBER_ROLE } from '@/lib/constants'
 import { useDashboardLayout, useSaveDashboardLayout } from '@/queries/use-dashboard-layout'
@@ -25,8 +26,31 @@ import { WIDGET_REGISTRY } from '@/types/dashboard'
 import { AddWidgetDialog } from './add-widget-dialog'
 import { WidgetCard } from './widget-card'
 
-const BREAKPOINTS = { lg: 1200, md: 768, sm: 0 }
-const COLS = { lg: 12, md: 8, sm: 1 }
+const BREAKPOINTS = { lg: 996, md: 768, sm: 0 }
+const COLS = { lg: 12, md: 12, sm: 1 }
+
+/**
+ * 위젯 레이아웃을 cols 기준으로 재배치 (빈 공간 없이 좌→우, 위→아래 순서로 팩킹)
+ * DB에 저장된 레이아웃이 다른 breakpoint 기준으로 저장되었을 경우 복구용
+ */
+function reflowLayout(items: WidgetLayoutItem[], cols: number): WidgetLayoutItem[] {
+  const sorted = [...items].sort((a, b) => a.y !== b.y ? a.y - b.y : a.x - b.x)
+  let currentX = 0
+  let currentY = 0
+  let rowMaxH = 0
+
+  return sorted.map((item) => {
+    if (currentX + item.w > cols) {
+      currentX = 0
+      currentY += rowMaxH
+      rowMaxH = 0
+    }
+    const result = { ...item, x: currentX, y: currentY }
+    currentX += item.w
+    rowMaxH = Math.max(rowMaxH, item.h)
+    return result
+  })
+}
 
 function widgetLayoutToRGL(widgets: WidgetLayoutItem[]): LayoutItem[] {
   return widgets.map((w) => {
@@ -77,7 +101,7 @@ export function WidgetGrid({ projectId }: WidgetGridProps) {
   const canEdit = currentRole !== MEMBER_ROLE.VIEWER
 
   const layout = useMemo<WidgetLayoutItem[]>(
-    () => savedLayout ?? [...DEFAULT_DASHBOARD_LAYOUT],
+    () => reflowLayout(savedLayout ?? [...DEFAULT_DASHBOARD_LAYOUT], COLS.lg),
     [savedLayout],
   )
 
@@ -99,9 +123,10 @@ export function WidgetGrid({ projectId }: WidgetGridProps) {
   )
 
   const handleLayoutChange = useCallback(
-    (currentLayout: Layout, _allLayouts: ResponsiveLayouts) => {
+    (_currentLayout: Layout, allLayouts: ResponsiveLayouts) => {
       if (!isEditMode) return
-      const updated = rglToWidgetLayout(currentLayout, layout)
+      const lgLayout = allLayouts.lg ?? _currentLayout
+      const updated = rglToWidgetLayout(lgLayout, layout)
       persistLayout(updated)
     },
     [isEditMode, layout, persistLayout],
@@ -142,7 +167,7 @@ export function WidgetGrid({ projectId }: WidgetGridProps) {
     return (
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
         {Array.from({ length: 4 }).map((_, i) => (
-          <div key={i} className="bg-muted h-64 animate-pulse rounded-lg" />
+          <Skeleton key={i} className="h-64 rounded-lg" />
         ))}
       </div>
     )
@@ -183,7 +208,7 @@ export function WidgetGrid({ projectId }: WidgetGridProps) {
       ) : mounted ? (
         <ResponsiveGridLayout
           width={width}
-          layouts={{ lg: rglLayout }}
+          layouts={{ lg: rglLayout, md: rglLayout }}
           breakpoints={BREAKPOINTS}
           cols={COLS}
           rowHeight={GRID_ROW_HEIGHT}
