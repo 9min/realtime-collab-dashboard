@@ -1,12 +1,13 @@
 'use client'
 
+import * as Sentry from '@sentry/nextjs'
 import { useEffect } from 'react'
 
 import { Button } from '@/components/ui/button'
 
-// Global Error Boundary (Layer 1)
-// 예상치 못한 에러를 최상위에서 캐치하여 흰 화면 방지
-export default function GlobalError({
+// Route Error Boundary (Layer 2)
+// 개별 라우트에서 발생하는 에러를 캐치 — layout은 유지됨
+export default function RouteError({
   error,
   reset,
 }: {
@@ -14,7 +15,7 @@ export default function GlobalError({
   reset: () => void
 }) {
   useEffect(() => {
-    // TODO: 에러 리포팅 서비스 연동 (Sentry 등)
+    Sentry.captureException(error)
   }, [error])
 
   return (
