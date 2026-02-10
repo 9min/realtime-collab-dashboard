@@ -15,6 +15,7 @@ import {
 
 import {
   getTasksByProject,
+  getTasksByProjectPaginated,
   createTask,
   updateTask,
   deleteTask,
@@ -48,6 +49,76 @@ describe('task-service', () => {
 
       expect(result.data).toBeNull()
       expect(result.error).toEqual({ code: 'PGRST116', message: 'DB error' })
+    })
+  })
+
+  // ── getTasksByProjectPaginated ──
+  describe('getTasksByProjectPaginated', () => {
+    it('첫 페이지를 반환하고 hasMore 확인', async () => {
+      // limit+1개를 반환하면 hasMore=true
+      const tasksPage = Array.from({ length: 51 }, (_, i) => ({
+        ...mockTasks[0],
+        id: `task-${i}`,
+        created_at: `2026-01-${String(50 - i).padStart(2, '0')}T00:00:00Z`,
+      }))
+
+      const client = createMockSupabaseClient({
+        fromResponses: [{ data: tasksPage, error: null }],
+      }) as Client
+
+      const result = await getTasksByProjectPaginated(client, MOCK_PROJECT_ID)
+
+      expect(result.error).toBeNull()
+      expect(result.data!.data).toHaveLength(50)
+      expect(result.data!.hasMore).toBe(true)
+      expect(result.data!.nextCursor).toBeDefined()
+    })
+
+    it('마지막 페이지에서 hasMore=false', async () => {
+      const tasksPage = Array.from({ length: 10 }, (_, i) => ({
+        ...mockTasks[0],
+        id: `task-${i}`,
+        created_at: `2026-01-${String(10 - i).padStart(2, '0')}T00:00:00Z`,
+      }))
+
+      const client = createMockSupabaseClient({
+        fromResponses: [{ data: tasksPage, error: null }],
+      }) as Client
+
+      const result = await getTasksByProjectPaginated(client, MOCK_PROJECT_ID)
+
+      expect(result.error).toBeNull()
+      expect(result.data!.data).toHaveLength(10)
+      expect(result.data!.hasMore).toBe(false)
+      expect(result.data!.nextCursor).toBeNull()
+    })
+
+    it('에러 시 error를 반환한다', async () => {
+      const client = createMockSupabaseClient({
+        fromResponses: [{ data: null, error: { code: 'PGRST116', message: 'DB error' } }],
+      }) as Client
+
+      const result = await getTasksByProjectPaginated(client, MOCK_PROJECT_ID)
+
+      expect(result.data).toBeNull()
+      expect(result.error).toEqual({ code: 'PGRST116', message: 'DB error' })
+    })
+
+    it('custom limit을 사용할 수 있다', async () => {
+      const tasksPage = Array.from({ length: 11 }, (_, i) => ({
+        ...mockTasks[0],
+        id: `task-${i}`,
+        created_at: `2026-01-${String(11 - i).padStart(2, '0')}T00:00:00Z`,
+      }))
+
+      const client = createMockSupabaseClient({
+        fromResponses: [{ data: tasksPage, error: null }],
+      }) as Client
+
+      const result = await getTasksByProjectPaginated(client, MOCK_PROJECT_ID, { limit: 10 })
+
+      expect(result.data!.data).toHaveLength(10)
+      expect(result.data!.hasMore).toBe(true)
     })
   })
 

@@ -1,11 +1,13 @@
 import type { SupabaseClient } from '@supabase/supabase-js'
 
-import type { ServiceResult } from '@/types/common'
+import type { ServiceResult, CursorPaginatedResult } from '@/types/common'
 import type { Database, Tables, InsertTables, UpdateTables } from '@/types/database'
 import type { MoveTaskPayload } from '@/types/kanban'
 
 type Client = SupabaseClient<Database>
 type Task = Tables<'tasks'>
+
+const TASKS_PAGE_SIZE = 50
 
 // 프로젝트의 전체 태스크 조회
 export async function getTasksByProject(
@@ -24,6 +26,42 @@ export async function getTasksByProject(
   }
 
   return { data, error: null }
+}
+
+// 커서 기반 페이지네이션 태스크 조회
+export async function getTasksByProjectPaginated(
+  supabase: Client,
+  projectId: string,
+  options: { cursor?: string | null; limit?: number } = {},
+): Promise<ServiceResult<CursorPaginatedResult<Task>>> {
+  const limit = options.limit ?? TASKS_PAGE_SIZE
+
+  let query = supabase
+    .from('tasks')
+    .select('*')
+    .eq('project_id', projectId)
+    .order('created_at', { ascending: false })
+    .order('id', { ascending: false })
+    .limit(limit + 1)
+
+  if (options.cursor) {
+    query = query.lt('created_at', options.cursor)
+  }
+
+  const { data, error } = await query.returns<Task[]>()
+
+  if (error) {
+    return { data: null, error: { code: error.code, message: error.message } }
+  }
+
+  const hasMore = (data?.length ?? 0) > limit
+  const items = hasMore ? data!.slice(0, limit) : (data ?? [])
+  const nextCursor = hasMore ? items[items.length - 1].created_at : null
+
+  return {
+    data: { data: items, nextCursor, hasMore },
+    error: null,
+  }
 }
 
 // 태스크 생성

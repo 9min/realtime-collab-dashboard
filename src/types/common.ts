@@ -14,7 +14,7 @@ export type ServiceResult<T> =
   | { data: T; error: null }
   | { data: null; error: { code: string; message: string } }
 
-// 페이지네이션
+// 오프셋 기반 페이지네이션
 export interface PaginationParams {
   page: number
   pageSize: number
@@ -26,4 +26,16 @@ export interface PaginatedResult<T> {
   page: number
   pageSize: number
   totalPages: number
+}
+
+// 커서 기반 페이지네이션
+export interface CursorPaginationParams {
+  cursor?: string | null
+  limit: number
+}
+
+export interface CursorPaginatedResult<T> {
+  data: T[]
+  nextCursor: string | null
+  hasMore: boolean
 }

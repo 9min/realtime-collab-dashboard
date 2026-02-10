@@ -1,10 +1,10 @@
 'use client'
 
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { useQuery, useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 
 import { useSupabase } from '@/components/providers/supabase-provider'
-import { getTasksByProject, createTask, updateTask, deleteTask, deleteTasksBefore, moveTask } from '@/services/task-service'
+import { getTasksByProject, getTasksByProjectPaginated, createTask, updateTask, deleteTask, deleteTasksBefore, moveTask } from '@/services/task-service'
 import { chartKeys } from '@/queries/use-chart-data'
 import { QUERY_CONFIG } from '@/lib/constants'
 import type { InsertTables, UpdateTables } from '@/types/database'
@@ -12,6 +12,7 @@ import type { Task, MoveTaskPayload } from '@/types/kanban'
 
 export const taskKeys = {
   list: (projectId: string) => ['tasks', projectId] as const,
+  infinite: (projectId: string) => ['tasks', projectId, 'infinite'] as const,
 }
 
 export function useTasks(projectId: string) {
@@ -26,6 +27,25 @@ export function useTasks(projectId: string) {
       return result.data
     },
     refetchInterval: QUERY_CONFIG.REALTIME_POLL_INTERVAL,
+  })
+}
+
+export function useInfiniteTasks(projectId: string, options?: { limit?: number }) {
+  const supabase = useSupabase()
+
+  return useInfiniteQuery({
+    // eslint-disable-next-line @tanstack/query/exhaustive-deps
+    queryKey: taskKeys.infinite(projectId),
+    queryFn: async ({ pageParam }) => {
+      const result = await getTasksByProjectPaginated(supabase, projectId, {
+        cursor: pageParam ?? null,
+        limit: options?.limit,
+      })
+      if (result.error) throw new Error(result.error.message)
+      return result.data
+    },
+    initialPageParam: null as string | null,
+    getNextPageParam: (lastPage) => lastPage.nextCursor,
   })
 }
 
