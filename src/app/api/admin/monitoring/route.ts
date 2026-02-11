@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 
 import { createServerClient } from '@/lib/supabase/server'
-import { getCacheStats, cacheGet } from '@/lib/cache'
+import { cacheGet } from '@/lib/cache'
 import { CACHE_TTL } from '@/lib/cache-keys'
 import { getMonitoringStats } from '@/services/monitoring-service'
 
@@ -25,15 +25,13 @@ export async function GET() {
     return NextResponse.json({ error: '관리자 권한이 필요합니다' }, { status: 403 })
   }
 
-  // Get cache stats directly (not cached themselves)
-  const cacheStats = await getCacheStats()
-
-  // Get monitoring stats (cached for 1 minute)
-  const { data } = await cacheGet(
+  const { data, cacheStatus } = await cacheGet(
     'collab:admin:monitoring',
-    () => getMonitoringStats(supabase, cacheStats),
-    CACHE_TTL.MONITORING,
+    () => getMonitoringStats(supabase),
+    CACHE_TTL.ADMIN_STATS,
   )
 
-  return NextResponse.json(data)
+  return NextResponse.json(data, {
+    headers: { 'X-Cache': cacheStatus },
+  })
 }

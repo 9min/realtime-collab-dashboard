@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { Activity, Keyboard, LogOut, ShieldCheck, UserCog } from 'lucide-react'
+import { BarChart3, Keyboard, LogOut, ShieldCheck, UserCog } from 'lucide-react'
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
@@ -104,8 +104,8 @@ export function Header() {
                       사용자 관리
                     </DropdownMenuItem>
                     <DropdownMenuItem onClick={() => router.push('/admin/monitoring')}>
-                      <Activity className="mr-2 h-4 w-4" />
-                      모니터링
+                      <BarChart3 className="mr-2 h-4 w-4" />
+                      서비스 통계
                     </DropdownMenuItem>
                   </>
                 )}

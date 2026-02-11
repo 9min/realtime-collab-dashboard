@@ -1,34 +1,34 @@
 'use client'
 
-import { AlertTriangle, Database, Users, Wifi } from 'lucide-react'
+import { ClipboardList, FolderKanban, HardDrive, Users } from 'lucide-react'
 
 import { Card, CardContent } from '@/components/ui/card'
-import { ErrorTrendChart } from '@/components/monitoring/error-trend-chart'
-import { CacheStatsChart } from '@/components/monitoring/cache-stats-chart'
-import { ActiveUsersChart } from '@/components/monitoring/active-users-chart'
-import { SystemStatusCard } from '@/components/monitoring/system-status-card'
 import { useMonitoringStats } from '@/queries/use-monitoring'
 import { useMyProfile } from '@/queries/use-admin'
 
-const SKELETON_STAT_COUNT = 4
-const SKELETON_CHART_COUNT = 4
+const BYTES_UNITS = ['B', 'KB', 'MB', 'GB', 'TB'] as const
 
-function StatCard({
-  icon: Icon,
-  label,
-  value,
-  accentClass,
-}: {
-  icon: React.ComponentType<{ className?: string }>
-  label: string
+function formatBytes(bytes: number): string {
+  if (bytes === 0) return '0 B'
+  const k = 1024
+  const i = Math.floor(Math.log(bytes) / Math.log(k))
+  const value = bytes / Math.pow(k, i)
+  return `${value.toFixed(i === 0 ? 0 : 1)} ${BYTES_UNITS[i]}`
+}
+
+interface StatCardProps {
+  icon: React.ReactNode
   value: string | number
-  accentClass: string
-}) {
+  label: string
+  borderColor: string
+}
+
+function StatCard({ icon, value, label, borderColor }: StatCardProps) {
   return (
-    <Card className={`border-t-2 ${accentClass} gap-0 py-4`}>
+    <Card className={`border-t-2 ${borderColor} gap-0 py-4`}>
       <CardContent className="flex items-center gap-3">
         <div className="bg-muted flex h-10 w-10 shrink-0 items-center justify-center rounded-lg">
-          <Icon className="text-muted-foreground h-5 w-5" />
+          {icon}
         </div>
         <div>
           <p className="text-2xl font-bold leading-none">{value}</p>
@@ -39,15 +39,49 @@ function StatCard({
   )
 }
 
+interface StorageCardProps {
+  usedBytes: number
+  limitBytes: number
+}
+
+function StorageCard({ usedBytes, limitBytes }: StorageCardProps) {
+  const percent = limitBytes > 0 ? Math.min((usedBytes / limitBytes) * 100, 100) : 0
+
+  return (
+    <Card className="border-t-2 border-t-rose-500 gap-0 py-4">
+      <CardContent className="flex items-center gap-3">
+        <div className="bg-muted flex h-10 w-10 shrink-0 items-center justify-center rounded-lg">
+          <HardDrive className="h-5 w-5 text-rose-500" />
+        </div>
+        <div className="min-w-0 flex-1">
+          <p className="text-2xl font-bold leading-none">
+            {formatBytes(usedBytes)}
+            <span className="text-muted-foreground ml-1 text-sm font-normal">
+              / {formatBytes(limitBytes)}
+            </span>
+          </p>
+          <div className="bg-muted mt-2 h-1.5 w-full overflow-hidden rounded-full">
+            <div
+              className="bg-rose-500 h-full rounded-full transition-all"
+              style={{ width: `${percent}%` }}
+            />
+          </div>
+          <p className="text-muted-foreground mt-1 text-xs">스토리지 사용량</p>
+        </div>
+      </CardContent>
+    </Card>
+  )
+}
+
 function LoadingSkeleton() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-bold">모니터링</h2>
-        <p className="text-muted-foreground mt-1">시스템 상태 및 성능 모니터링</p>
+        <h2 className="text-2xl font-bold">서비스 통계</h2>
+        <p className="text-muted-foreground mt-1">서비스 현황 요약</p>
       </div>
-      <div className="grid grid-cols-4 gap-4">
-        {Array.from({ length: SKELETON_STAT_COUNT }).map((_, i) => (
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {Array.from({ length: 4 }).map((_, i) => (
           <Card key={i} className="gap-0 py-4">
             <CardContent className="flex items-center gap-3">
               <div className="bg-muted h-10 w-10 animate-pulse rounded-lg" />
@@ -59,22 +93,9 @@ function LoadingSkeleton() {
           </Card>
         ))}
       </div>
-      <div className="grid grid-cols-2 gap-4">
-        {Array.from({ length: SKELETON_CHART_COUNT }).map((_, i) => (
-          <Card key={i}>
-            <CardContent className="h-[300px] animate-pulse" />
-          </Card>
-        ))}
-      </div>
     </div>
   )
 }
-
-const REALTIME_LABELS = {
-  connected: '연결됨',
-  connecting: '연결 중',
-  disconnected: '끊김',
-} as const
 
 export default function MonitoringPage() {
   const { data: myProfile, isLoading: profileLoading } = useMyProfile()
@@ -88,8 +109,8 @@ export default function MonitoringPage() {
     return (
       <div className="space-y-6">
         <div>
-          <h2 className="text-2xl font-bold">모니터링</h2>
-          <p className="text-muted-foreground mt-1">시스템 상태 및 성능 모니터링</p>
+          <h2 className="text-2xl font-bold">서비스 통계</h2>
+          <p className="text-muted-foreground mt-1">서비스 현황 요약</p>
         </div>
         <Card className="border-destructive/50">
           <CardContent>
@@ -102,52 +123,35 @@ export default function MonitoringPage() {
 
   if (!stats) return null
 
-  const realtimeLabel = REALTIME_LABELS[stats.system.realtimeStatus]
-
   return (
     <div className="space-y-6">
-      {/* Header */}
       <div>
-        <h2 className="text-2xl font-bold">모니터링</h2>
-        <p className="text-muted-foreground mt-1">시스템 상태 및 성능 모니터링</p>
+        <h2 className="text-2xl font-bold">서비스 통계</h2>
+        <p className="text-muted-foreground mt-1">서비스 현황 요약</p>
       </div>
 
-      {/* Stat Cards */}
-      <div className="grid grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <StatCard
-          icon={AlertTriangle}
-          label="총 에러 (7일)"
-          value={stats.errors.total}
-          accentClass="border-t-rose-500"
+          icon={<Users className="h-5 w-5 text-blue-500" />}
+          value={stats.totalUsers}
+          label="전체 사용자"
+          borderColor="border-t-blue-500"
         />
         <StatCard
-          icon={Users}
-          label="활성 사용자"
-          value={stats.activeUsers.current}
-          accentClass="border-t-blue-500"
+          icon={<FolderKanban className="h-5 w-5 text-emerald-500" />}
+          value={stats.totalProjects}
+          label="프로젝트"
+          borderColor="border-t-emerald-500"
         />
         <StatCard
-          icon={Database}
-          label="캐시 적중률"
-          value={`${stats.cache.hitRate}%`}
-          accentClass="border-t-emerald-500"
+          icon={<ClipboardList className="h-5 w-5 text-amber-500" />}
+          value={stats.totalTasks}
+          label="태스크"
+          borderColor="border-t-amber-500"
         />
-        <StatCard
-          icon={Wifi}
-          label="Realtime 상태"
-          value={realtimeLabel}
-          accentClass="border-t-violet-500"
-        />
-      </div>
-
-      {/* Charts 2x2 Grid */}
-      <div className="grid grid-cols-2 gap-4">
-        <ErrorTrendChart data={stats.errors.trend} />
-        <CacheStatsChart data={stats.cache} />
-        <ActiveUsersChart current={stats.activeUsers.current} />
-        <SystemStatusCard
-          realtimeStatus={stats.system.realtimeStatus}
-          apiStatus={stats.system.apiStatus}
+        <StorageCard
+          usedBytes={stats.storageUsedBytes}
+          limitBytes={stats.storageLimitBytes}
         />
       </div>
     </div>
