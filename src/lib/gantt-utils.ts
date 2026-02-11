@@ -113,6 +113,55 @@ export function getMonthGroups(columns: DateColumn[]): MonthGroup[] {
   return groups
 }
 
+// ── 월 단위 뷰 (실제 월 기반 컬럼) ──
+
+export interface MonthViewColumn {
+  date: Date
+  label: string
+  days: number
+  isCurrentMonth: boolean
+}
+
+export function getMonthViewColumns(start: Date, months: number): MonthViewColumn[] {
+  const now = new Date()
+  const columns: MonthViewColumn[] = []
+  for (let i = 0; i < months; i++) {
+    const date = new Date(start.getFullYear(), start.getMonth() + i, 1)
+    const daysInMonth = new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate()
+    columns.push({
+      date,
+      label: `${date.getMonth() + 1}월`,
+      days: daysInMonth,
+      isCurrentMonth: date.getFullYear() === now.getFullYear() && date.getMonth() === now.getMonth(),
+    })
+  }
+  return columns
+}
+
+export interface YearGroup {
+  label: string
+  totalDays: number
+}
+
+export function getYearGroups(columns: MonthViewColumn[]): YearGroup[] {
+  if (columns.length === 0) return []
+  const groups: YearGroup[] = []
+  let currentYear = columns[0].date.getFullYear()
+  let totalDays = columns[0].days
+  for (let i = 1; i < columns.length; i++) {
+    const year = columns[i].date.getFullYear()
+    if (year === currentYear) {
+      totalDays += columns[i].days
+    } else {
+      groups.push({ label: `${currentYear}년`, totalDays })
+      currentYear = year
+      totalDays = columns[i].days
+    }
+  }
+  groups.push({ label: `${currentYear}년`, totalDays })
+  return groups
+}
+
 export interface TaskBarPosition {
   left: number   // % from start
   width: number  // % of total

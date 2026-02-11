@@ -19,12 +19,12 @@ import { useMediaQuery } from '@/hooks/use-media-query'
 import {
   startOfWeek,
   getWeekColumns,
-  getMonthColumns,
+  getMonthViewColumns,
   taskToBarPosition,
   daysBetween,
   addDays,
-  startOfMonth,
 } from '@/lib/gantt-utils'
+import type { DateColumn, MonthViewColumn } from '@/lib/gantt-utils'
 import { MEMBER_ROLE, PRIORITY_LABELS, PRIORITY_DOT_COLORS } from '@/lib/constants'
 import { cn } from '@/lib/utils'
 import { useProjectMembers } from '@/queries/use-projects'
@@ -40,9 +40,9 @@ import { GanttDependencyArrows } from './gantt-dependency-arrows'
 import { GanttHeader, HEADER_HEIGHT } from './gantt-header'
 
 const WEEK_VIEW_WEEKS = 6
-const MONTH_VIEW_MONTHS = 3
+const MONTH_VIEW_MONTHS = 6
 const COL_WIDTH_WEEK = 36
-const COL_WIDTH_MONTH = 50
+const DAY_WIDTH_MONTH = 6
 const ROW_HEIGHT = 36
 const LABEL_WIDTH_DESKTOP = 200
 const LABEL_WIDTH_MOBILE = 120
@@ -72,7 +72,7 @@ export function GanttChart({ projectId }: GanttChartProps) {
 
   const now = new Date()
 
-  const { timelineColumns, timelineStart, totalDays, columnWidth } = useMemo(() => {
+  const { timelineColumns, timelineStart, totalDays, columnWidth, monthViewColumns, timelineTotalWidth } = useMemo(() => {
     if (viewMode === 'week') {
       const start = startOfWeek(addDays(now, -7))
       const cols = getWeekColumns(start, WEEK_VIEW_WEEKS)
@@ -81,17 +81,22 @@ export function GanttChart({ projectId }: GanttChartProps) {
         timelineStart: start,
         totalDays: WEEK_VIEW_WEEKS * 7,
         columnWidth: COL_WIDTH_WEEK,
+        monthViewColumns: null as MonthViewColumn[] | null,
+        timelineTotalWidth: cols.length * COL_WIDTH_WEEK,
       }
     }
-    const start = startOfMonth(addDays(now, -14))
-    const cols = getMonthColumns(start, MONTH_VIEW_MONTHS)
-    const end = new Date(start)
-    end.setMonth(end.getMonth() + MONTH_VIEW_MONTHS)
+    // 월 단위: 전월부터 시작, 6개월 표시
+    const adjustedStart = new Date(now.getFullYear(), now.getMonth() - 1, 1)
+    const monthCols = getMonthViewColumns(adjustedStart, MONTH_VIEW_MONTHS)
+    const end = new Date(adjustedStart.getFullYear(), adjustedStart.getMonth() + MONTH_VIEW_MONTHS, 1)
+    const total = daysBetween(adjustedStart, end)
     return {
-      timelineColumns: cols,
-      timelineStart: start,
-      totalDays: daysBetween(start, end),
-      columnWidth: COL_WIDTH_MONTH,
+      timelineColumns: [] as DateColumn[],
+      timelineStart: adjustedStart,
+      totalDays: total,
+      columnWidth: 0,
+      monthViewColumns: monthCols,
+      timelineTotalWidth: total * DAY_WIDTH_MONTH,
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [viewMode])
@@ -291,13 +296,17 @@ export function GanttChart({ projectId }: GanttChartProps) {
 
               {/* 오른쪽: 타임라인 */}
               <div className="min-w-0 flex-1">
-                <GanttHeader columns={timelineColumns} columnWidth={columnWidth} />
+                {viewMode === 'week' ? (
+                  <GanttHeader viewMode="week" columns={timelineColumns} columnWidth={columnWidth} />
+                ) : (
+                  monthViewColumns && <GanttHeader viewMode="month" monthViewColumns={monthViewColumns} dayWidth={DAY_WIDTH_MONTH} />
+                )}
                 <div
                   className="relative"
-                  style={{ minWidth: timelineColumns.length * columnWidth }}
+                  style={{ minWidth: timelineTotalWidth }}
                 >
-                  {/* 주말 음영 */}
-                  {weekendColumns.map((colIdx) => (
+                  {/* 주말 음영 (주 단위만) */}
+                  {viewMode === 'week' && weekendColumns.map((colIdx) => (
                     <div
                       key={`weekend-${colIdx}`}
                       className="pointer-events-none absolute top-0 bottom-0 bg-slate-200/50 dark:bg-slate-700/25"
@@ -309,13 +318,33 @@ export function GanttChart({ projectId }: GanttChartProps) {
                   ))}
 
                   {/* 수직 그리드 라인 */}
-                  <div
-                    className="pointer-events-none absolute inset-0"
-                    style={{
-                      backgroundImage: `repeating-linear-gradient(to right, transparent, transparent ${columnWidth - 1}px, var(--border) ${columnWidth - 1}px, var(--border) ${columnWidth}px)`,
-                      backgroundSize: `${columnWidth}px 100%`,
-                    }}
-                  />
+                  {viewMode === 'week' ? (
+                    <div
+                      className="pointer-events-none absolute inset-0"
+                      style={{
+                        backgroundImage: `repeating-linear-gradient(to right, transparent, transparent ${columnWidth - 1}px, var(--border) ${columnWidth - 1}px, var(--border) ${columnWidth}px)`,
+                        backgroundSize: `${columnWidth}px 100%`,
+                      }}
+                    />
+                  ) : (
+                    monthViewColumns && (() => {
+                      let offset = 0
+                      return monthViewColumns.map((col, i) => {
+                        offset += col.days * DAY_WIDTH_MONTH
+                        return (
+                          <div
+                            key={`month-line-${i}`}
+                            className="pointer-events-none absolute top-0 bottom-0"
+                            style={{
+                              left: offset,
+                              width: 1,
+                              backgroundColor: 'var(--border)',
+                            }}
+                          />
+                        )
+                      })
+                    })()
+                  )}
 
                   {/* 오늘 표시선 + 라벨 */}
                   {todayOffset >= 0 && todayOffset <= 100 && (
