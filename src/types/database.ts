@@ -89,6 +89,11 @@ export interface Database {
           name: string
           description: string | null
           owner_id: string
+          feature_labels: boolean
+          feature_subtasks: boolean
+          feature_dependencies: boolean
+          feature_attachments: boolean
+          feature_comments: boolean
           created_at: string
           updated_at: string
         }
@@ -97,12 +102,22 @@ export interface Database {
           name: string
           description?: string | null
           owner_id: string
+          feature_labels?: boolean
+          feature_subtasks?: boolean
+          feature_dependencies?: boolean
+          feature_attachments?: boolean
+          feature_comments?: boolean
           created_at?: string
           updated_at?: string
         }
         Update: {
           name?: string
           description?: string | null
+          feature_labels?: boolean
+          feature_subtasks?: boolean
+          feature_dependencies?: boolean
+          feature_attachments?: boolean
+          feature_comments?: boolean
           updated_at?: string
         }
         Relationships: [
@@ -157,6 +172,7 @@ export interface Database {
           title: string
           position: number
           wip_limit: number | null
+          is_done_column: boolean
           created_at: string
           updated_at: string
         }
@@ -166,6 +182,7 @@ export interface Database {
           title: string
           position: number
           wip_limit?: number | null
+          is_done_column?: boolean
           created_at?: string
           updated_at?: string
         }
@@ -173,6 +190,7 @@ export interface Database {
           title?: string
           position?: number
           wip_limit?: number | null
+          is_done_column?: boolean
           updated_at?: string
         }
         Relationships: [

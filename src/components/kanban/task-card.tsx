@@ -69,7 +69,21 @@ export function TaskCard({ task, index, onClick, members, isDragDisabled = false
                 </div>
               )}
               <span className="flex items-center gap-1 text-sm font-medium leading-snug min-w-0">
-                {isBlocked && <Lock className="h-3 w-3 shrink-0 text-amber-500" />}
+                {isBlocked && (
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <span className="inline-flex shrink-0 items-center gap-0.5 rounded bg-amber-100 px-1 py-0.5 text-[10px] font-medium text-amber-700 dark:bg-amber-900/40 dark:text-amber-400">
+                          <Lock className="h-3 w-3" />
+                          대기 중
+                        </span>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>선행 작업 완료 후 진행 가능</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                )}
                 <span className="break-words">{task.title}</span>
               </span>
             </CardHeader>

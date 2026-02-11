@@ -1,7 +1,7 @@
 'use client'
 
 import { useMemo, useState } from 'react'
-import { ArrowRight, Link2, Plus, Trash2, X } from 'lucide-react'
+import { ArrowLeft, ArrowRight, Link2, Plus, Trash2, X } from 'lucide-react'
 
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -93,7 +93,7 @@ export function DependencySection({ taskId, projectId, canEdit }: DependencySect
         <div className="flex items-center gap-2">
           <Link2 className="text-muted-foreground h-4 w-4" />
           <span className="text-sm font-medium">
-            의존성 ({totalCount})
+            연결된 작업 ({totalCount})
           </span>
         </div>
         {canEdit && !showAdd && (
@@ -104,15 +104,19 @@ export function DependencySection({ taskId, projectId, canEdit }: DependencySect
         )}
       </div>
 
-      {/* 이 태스크가 차단하는 목록 */}
+      {/* 후속 작업 목록 */}
       {blockingDeps.length > 0 && (
         <div className="space-y-1">
-          <span className="text-muted-foreground text-xs font-medium">차단 중 (Blocks)</span>
+          <div>
+            <span className="text-muted-foreground text-xs font-medium">후속 작업</span>
+            <p className="text-muted-foreground text-[11px]">이 작업이 끝나야 시작할 수 있는 작업</p>
+          </div>
           <ul className="space-y-1">
             {blockingDeps.map((dep) => (
               <DependencyItem
                 key={dep.id}
                 label={getTaskTitle(dep.blocked_task_id)}
+                direction="next"
                 onDelete={canEdit ? () => handleDelete(dep.id) : undefined}
               />
             ))}
@@ -120,15 +124,19 @@ export function DependencySection({ taskId, projectId, canEdit }: DependencySect
         </div>
       )}
 
-      {/* 이 태스크를 차단하는 목록 */}
+      {/* 선행 작업 목록 */}
       {blockedByDeps.length > 0 && (
         <div className="space-y-1">
-          <span className="text-muted-foreground text-xs font-medium">차단됨 (Blocked by)</span>
+          <div>
+            <span className="text-muted-foreground text-xs font-medium">선행 작업</span>
+            <p className="text-muted-foreground text-[11px]">이 작업 전에 먼저 끝내야 할 작업</p>
+          </div>
           <ul className="space-y-1">
             {blockedByDeps.map((dep) => (
               <DependencyItem
                 key={dep.id}
                 label={getTaskTitle(dep.blocking_task_id)}
+                direction="prev"
                 onDelete={canEdit ? () => handleDelete(dep.id) : undefined}
               />
             ))}
@@ -141,12 +149,12 @@ export function DependencySection({ taskId, projectId, canEdit }: DependencySect
         <div className="space-y-2 rounded-md border p-2">
           <div className="flex items-center gap-2">
             <Select value={direction} onValueChange={setDirection}>
-              <SelectTrigger className="h-8 w-36 text-xs">
+              <SelectTrigger className="h-8 w-48 text-xs">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value={DEPENDENCY_DIRECTION.BLOCKS}>차단 (Blocks)</SelectItem>
-                <SelectItem value={DEPENDENCY_DIRECTION.BLOCKED_BY}>차단됨 (Blocked by)</SelectItem>
+                <SelectItem value={DEPENDENCY_DIRECTION.BLOCKS}>이 작업 다음에 할 작업</SelectItem>
+                <SelectItem value={DEPENDENCY_DIRECTION.BLOCKED_BY}>이 작업 전에 할 작업</SelectItem>
               </SelectContent>
             </Select>
             <Button
@@ -191,9 +199,11 @@ export function DependencySection({ taskId, projectId, canEdit }: DependencySect
   )
 }
 
-function DependencyItem({ label, onDelete }: { label: string; onDelete?: () => void }) {
+function DependencyItem({ label, direction, onDelete }: { label: string; direction?: 'next' | 'prev'; onDelete?: () => void }) {
   return (
     <li className="group flex items-center gap-2 rounded-md px-1 py-1 hover:bg-accent/50">
+      {direction === 'next' && <ArrowRight className="text-muted-foreground h-3 w-3 shrink-0" />}
+      {direction === 'prev' && <ArrowLeft className="text-muted-foreground h-3 w-3 shrink-0" />}
       <Badge variant="outline" className="max-w-full truncate text-xs font-normal">
         {label}
       </Badge>

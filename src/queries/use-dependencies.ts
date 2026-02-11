@@ -37,7 +37,7 @@ export function useCreateDependency(projectId: string) {
       // 클라이언트 측 순환 감지
       const existing = queryClient.getQueryData<TaskDependency[]>(dependencyKeys.list(projectId))
       if (existing && hasCyclicDependency(existing, input.blocking_task_id, input.blocked_task_id)) {
-        throw new Error('순환 의존성이 감지되었습니다')
+        throw new Error('순환 연결이 감지되었습니다 (A→B→A 불가)')
       }
 
       const result = await createDependency(supabase, input)
@@ -46,10 +46,10 @@ export function useCreateDependency(projectId: string) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: dependencyKeys.list(projectId) })
-      toast.success('의존성이 추가되었습니다')
+      toast.success('작업 연결이 추가되었습니다')
     },
     onError: (error) => {
-      toast.error(error.message || '의존성 추가에 실패했습니다')
+      toast.error(error.message || '작업 연결 추가에 실패했습니다')
     },
   })
 }
@@ -80,7 +80,7 @@ export function useDeleteDependency(projectId: string) {
       if (context?.previous) {
         queryClient.setQueryData(dependencyKeys.list(projectId), context.previous)
       }
-      toast.error('의존성 삭제에 실패했습니다')
+      toast.error('작업 연결 해제에 실패했습니다')
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: dependencyKeys.list(projectId) })

@@ -2,7 +2,7 @@
 
 import { useRef, useState } from 'react'
 import { Droppable } from '@hello-pangea/dnd'
-import { Gauge, MoreHorizontal, Pencil, Plus, Trash2 } from 'lucide-react'
+import { CheckCircle2, Gauge, MoreHorizontal, Pencil, Plus, Trash2 } from 'lucide-react'
 
 import {
   AlertDialog,
@@ -39,6 +39,7 @@ interface KanbanColumnProps {
   onRenameColumn: (columnId: string, title: string) => void
   onDeleteColumn: (columnId: string) => void
   onSetWipLimit?: (columnId: string) => void
+  onToggleDone?: (columnId: string, isDone: boolean) => void
   canEdit: boolean
   canDeleteColumn: boolean
   canMoveAll: boolean
@@ -57,6 +58,7 @@ export function KanbanColumn({
   onRenameColumn,
   onDeleteColumn,
   onSetWipLimit,
+  onToggleDone,
   canEdit,
   canDeleteColumn,
   canMoveAll,
@@ -117,6 +119,9 @@ export function KanbanColumn({
           ) : (
             <>
               <h3 className="truncate text-sm font-semibold">{column.title}</h3>
+              {column.is_done_column && (
+                <CheckCircle2 className="h-4 w-4 shrink-0 text-green-600 dark:text-green-400" aria-label="완료 컬럼" />
+              )}
               <span className={cn(
                 'shrink-0 rounded-full px-2 py-0.5 text-xs font-medium',
                 isOverWipLimit
@@ -150,6 +155,13 @@ export function KanbanColumn({
                       <DropdownMenuItem onClick={() => onSetWipLimit(column.id)}>
                         <Gauge className="mr-2 h-4 w-4" />
                         WIP 제한 설정
+                      </DropdownMenuItem>
+                    )}
+                    {onToggleDone && (
+                      <DropdownMenuItem onClick={() => onToggleDone(column.id, !column.is_done_column)}>
+                        <CheckCircle2 className={cn('mr-2 h-4 w-4', column.is_done_column && 'text-green-600 dark:text-green-400')} />
+                        완료 컬럼으로 지정
+                        {column.is_done_column && <span className="ml-auto text-xs text-green-600 dark:text-green-400">&#10003;</span>}
                       </DropdownMenuItem>
                     )}
                     <DropdownMenuSeparator />

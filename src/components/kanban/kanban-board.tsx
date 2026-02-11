@@ -15,7 +15,7 @@ import { filterTasks } from '@/lib/task-filter'
 import { useColumns, useCreateColumn, useUpdateColumn, useDeleteColumn } from '@/queries/use-columns'
 import { useDependencies } from '@/queries/use-dependencies'
 import { useLabels, useTaskLabels } from '@/queries/use-labels'
-import { useProjectMembers } from '@/queries/use-projects'
+import { useProject, useProjectMembers } from '@/queries/use-projects'
 import { useTasks, useMoveTask } from '@/queries/use-tasks'
 import { useKanbanFilterStore } from '@/stores/kanban-filter-store'
 import type { Tables } from '@/types/database'
@@ -42,6 +42,7 @@ export function KanbanBoard({ projectId }: KanbanBoardProps) {
   const router = useRouter()
   const searchParams = useSearchParams()
   const { user } = useAuth()
+  const { data: project } = useProject(projectId)
   const { data: columns, isLoading: columnsLoading } = useColumns(projectId)
   const { data: tasks, isLoading: tasksLoading } = useTasks(projectId)
   const { data: members } = useProjectMembers(projectId)
@@ -55,6 +56,15 @@ export function KanbanBoard({ projectId }: KanbanBoardProps) {
   const canEdit = currentRole !== MEMBER_ROLE.VIEWER
   const canDeleteAll = currentRole === MEMBER_ROLE.OWNER || currentRole === MEMBER_ROLE.ADMIN
 
+  // 프로젝트 기능 설정
+  const projectFeatures = useMemo(() => ({
+    feature_labels: project?.feature_labels ?? false,
+    feature_subtasks: project?.feature_subtasks ?? false,
+    feature_dependencies: project?.feature_dependencies ?? false,
+    feature_attachments: project?.feature_attachments ?? false,
+    feature_comments: project?.feature_comments ?? false,
+  }), [project])
+
   // 라벨 데이터
   const { data: labels } = useLabels(projectId)
   const { data: taskLabelsData } = useTaskLabels(projectId)
@@ -62,15 +72,55 @@ export function KanbanBoard({ projectId }: KanbanBoardProps) {
   // 의존성 데이터
   const { data: dependencies } = useDependencies(projectId)
 
-  // blocked 태스크 ID Set (다른 태스크에 의해 차단되는 태스크)
+  // 완료 컬럼 ID Set
+  const doneColumnIds = useMemo(() => {
+    const set = new Set<string>()
+    if (!columns) return set
+    for (const col of columns) {
+      if (col.is_done_column) set.add(col.id)
+    }
+    return set
+  }, [columns])
+
+  // task→column 매핑
+  const taskColumnMap = useMemo(() => {
+    const map = new Map<string, string>()
+    if (!tasks) return map
+    for (const task of tasks) {
+      map.set(task.id, task.column_id)
+    }
+    return map
+  }, [tasks])
+
+  // 선행 작업 대기 중인 태스크 ID Set
+  // 선행 작업이 모두 완료 컬럼에 있으면 대기 중 해제
   const blockedTaskIds = useMemo(() => {
     const set = new Set<string>()
     if (!dependencies) return set
+
+    // blocked_task_id별로 모든 blocking_task_id를 그룹핑
+    const blockersByTask = new Map<string, string[]>()
     for (const dep of dependencies) {
-      set.add(dep.blocked_task_id)
+      const existing = blockersByTask.get(dep.blocked_task_id)
+      if (existing) {
+        existing.push(dep.blocking_task_id)
+      } else {
+        blockersByTask.set(dep.blocked_task_id, [dep.blocking_task_id])
+      }
     }
+
+    for (const [blockedId, blockerIds] of blockersByTask) {
+      const allBlockersDone = blockerIds.every((blockerId) => {
+        const columnId = taskColumnMap.get(blockerId)
+        return columnId !== undefined && doneColumnIds.has(columnId)
+      })
+      if (!allBlockersDone) {
+        set.add(blockedId)
+      }
+    }
+
     return set
-  }, [dependencies])
+  }, [dependencies, taskColumnMap, doneColumnIds])
 
   // 필터 상태
   const { searchText, priorities, assigneeIds, dueDateRange, labelIds, swimlaneMode } = useKanbanFilterStore()
@@ -236,6 +286,14 @@ export function KanbanBoard({ projectId }: KanbanBoardProps) {
     [deleteColumnMutation],
   )
 
+  // 완료 컬럼 토글
+  const handleToggleDone = useCallback(
+    (columnId: string, isDone: boolean) => {
+      updateColumnMutation.mutate({ columnId, input: { is_done_column: isDone } })
+    },
+    [updateColumnMutation],
+  )
+
   if (columnsLoading || tasksLoading) {
     return (
       <div className="flex gap-4 overflow-hidden">
@@ -286,8 +344,8 @@ export function KanbanBoard({ projectId }: KanbanBoardProps) {
             canMoveAll={canDeleteAll}
             currentUserId={user?.id}
             members={members}
-            labels={labels}
-            taskLabelMap={taskLabelMap}
+            labels={projectFeatures.feature_labels ? labels : undefined}
+            taskLabelMap={projectFeatures.feature_labels ? taskLabelMap : new Map()}
             blockedTaskIds={blockedTaskIds}
           />
         ) : (
@@ -302,13 +360,14 @@ export function KanbanBoard({ projectId }: KanbanBoardProps) {
                 onRenameColumn={handleRenameColumn}
                 onDeleteColumn={handleDeleteColumn}
                 onSetWipLimit={canDeleteAll ? setWipLimitColumnId : undefined}
+                onToggleDone={canDeleteAll ? handleToggleDone : undefined}
                 canEdit={canEdit}
                 canDeleteColumn={canDeleteAll}
                 canMoveAll={canDeleteAll}
                 currentUserId={user?.id}
                 members={members}
-                labels={labels}
-                taskLabelMap={taskLabelMap}
+                labels={projectFeatures.feature_labels ? labels : undefined}
+                taskLabelMap={projectFeatures.feature_labels ? taskLabelMap : new Map()}
                 blockedTaskIds={blockedTaskIds}
               />
             ))}
@@ -353,8 +412,9 @@ export function KanbanBoard({ projectId }: KanbanBoardProps) {
         }}
         canEdit={canEdit}
         canDeleteAll={canDeleteAll}
-        labels={labels}
-        taskLabelIds={displayedTask ? taskLabelMap.get(displayedTask.id) : undefined}
+        labels={projectFeatures.feature_labels ? labels : undefined}
+        taskLabelIds={displayedTask && projectFeatures.feature_labels ? taskLabelMap.get(displayedTask.id) : undefined}
+        projectFeatures={projectFeatures}
       />
 
       {/* WIP 제한 설정 다이얼로그 */}

@@ -1,7 +1,9 @@
 'use client'
 
-import { useCallback } from 'react'
-import { Paperclip } from 'lucide-react'
+import { useCallback, useEffect, useState } from 'react'
+import { ChevronDown, Paperclip } from 'lucide-react'
+
+import { cn } from '@/lib/utils'
 
 import { useSupabase } from '@/components/providers/supabase-provider'
 import { useAuth } from '@/hooks/use-auth'
@@ -25,6 +27,16 @@ export function AttachmentSection({ taskId, projectId, canUpload, canDeleteAll }
   const uploadMutation = useUploadAttachment(taskId)
   const deleteMutation = useDeleteAttachment(taskId)
 
+  const hasAttachments = !!attachments && attachments.length > 0
+  const [isOpen, setIsOpen] = useState(false)
+
+  // 첨부파일 로딩 완료 후: 있으면 펼침, 없으면 접힘
+  useEffect(() => {
+    if (!isLoading) {
+      setIsOpen(hasAttachments)
+    }
+  }, [isLoading, hasAttachments])
+
   const handleFileSelect = useCallback(
     (file: File) => {
       if (!user) return
@@ -42,37 +54,46 @@ export function AttachmentSection({ taskId, projectId, canUpload, canDeleteAll }
 
   return (
     <div>
-      <div className="mb-2 flex items-center gap-2">
+      <button
+        type="button"
+        className="flex w-full cursor-pointer items-center gap-2"
+        onClick={() => setIsOpen((prev) => !prev)}
+      >
         <Paperclip className="h-4 w-4" />
         <span className="text-sm font-medium">
-          첨부파일 {attachments && attachments.length > 0 ? `(${attachments.length})` : ''}
+          첨부파일 {hasAttachments ? `(${attachments.length})` : ''}
         </span>
-      </div>
+        <ChevronDown className={cn('ml-auto h-4 w-4 transition-transform', isOpen && 'rotate-180')} />
+      </button>
 
-      {isLoading ? (
-        <p className="text-muted-foreground py-4 text-center text-sm">로딩 중...</p>
-      ) : attachments && attachments.length > 0 ? (
-        <div className="space-y-2">
-          {attachments.map((attachment) => (
-            <AttachmentItem
-              key={attachment.id}
-              attachment={attachment}
-              publicUrl={getPublicUrl(supabase, attachment.file_path)}
-              canDelete={canDeleteAll || attachment.user_id === user?.id}
-              onDelete={handleDelete}
-            />
-          ))}
-        </div>
-      ) : (
-        <p className="text-muted-foreground py-2 text-center text-sm">첨부파일이 없습니다</p>
-      )}
+      {isOpen && (
+        <div className="mt-2">
+          {isLoading ? (
+            <p className="text-muted-foreground py-4 text-center text-sm">로딩 중...</p>
+          ) : hasAttachments ? (
+            <div className="space-y-2">
+              {attachments.map((attachment) => (
+                <AttachmentItem
+                  key={attachment.id}
+                  attachment={attachment}
+                  publicUrl={getPublicUrl(supabase, attachment.file_path)}
+                  canDelete={canDeleteAll || attachment.user_id === user?.id}
+                  onDelete={handleDelete}
+                />
+              ))}
+            </div>
+          ) : (
+            <p className="text-muted-foreground py-2 text-center text-sm">첨부파일이 없습니다</p>
+          )}
 
-      {canUpload && (
-        <div className="mt-3">
-          <FileUploadButton
-            onFileSelect={handleFileSelect}
-            isPending={uploadMutation.isPending}
-          />
+          {canUpload && (
+            <div className="mt-3">
+              <FileUploadButton
+                onFileSelect={handleFileSelect}
+                isPending={uploadMutation.isPending}
+              />
+            </div>
+          )}
         </div>
       )}
     </div>

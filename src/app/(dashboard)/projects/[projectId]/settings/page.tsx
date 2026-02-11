@@ -4,7 +4,7 @@ import { use, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Trash2, UserPlus, Shield, Crown } from 'lucide-react'
+import { Trash2, UserPlus, Shield, Crown, Tag, ListChecks, Link2, Paperclip, MessageSquare } from 'lucide-react'
 
 import {
   AlertDialog,
@@ -23,6 +23,7 @@ import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Switch } from '@/components/ui/switch'
 import { useAuth } from '@/hooks/use-auth'
 import { useProject, useProjectMembers, useInviteMember, useUpdateMemberRole, useRemoveMember, useUpdateProject, useDeleteProject } from '@/queries/use-projects'
 import { LabelManager } from '@/components/kanban/label-manager'
@@ -302,8 +303,43 @@ export default function ProjectSettingsPage({ params }: ProjectSettingsPageProps
         )}
       </Card>
 
-      {/* 라벨 관리 — owner/admin만 */}
-      {isOwnerOrAdmin && (
+      {/* 기능 설정 — owner/admin만 */}
+      {isOwnerOrAdmin && project && (
+        <Card className="p-6 space-y-4">
+          <h3 className="text-lg font-semibold">기능 설정</h3>
+          <p className="text-muted-foreground text-sm">
+            프로젝트에서 사용할 기능을 선택합니다. 비활성화된 기능은 태스크 상세에서 숨겨집니다.
+          </p>
+          <div className="space-y-3">
+            {([
+              { key: 'feature_labels', label: '라벨', description: '태스크에 라벨을 할당하여 분류합니다', icon: Tag },
+              { key: 'feature_subtasks', label: '서브태스크', description: '태스크를 세부 항목으로 나누어 관리합니다', icon: ListChecks },
+              { key: 'feature_dependencies', label: '연결된 작업', description: '태스크 간 선행/후행 관계를 설정합니다', icon: Link2 },
+              { key: 'feature_attachments', label: '첨부파일', description: '태스크에 파일을 첨부합니다', icon: Paperclip },
+              { key: 'feature_comments', label: '댓글', description: '태스크에 댓글을 남깁니다', icon: MessageSquare },
+            ] as const).map(({ key, label, description, icon: Icon }) => (
+              <div key={key} className="flex items-center justify-between rounded-lg border p-3">
+                <div className="flex items-center gap-3">
+                  <Icon className="text-muted-foreground h-4 w-4" />
+                  <div>
+                    <p className="text-sm font-medium">{label}</p>
+                    <p className="text-muted-foreground text-xs">{description}</p>
+                  </div>
+                </div>
+                <Switch
+                  checked={project[key]}
+                  onCheckedChange={(checked) => {
+                    updateMutation.mutate({ [key]: checked })
+                  }}
+                />
+              </div>
+            ))}
+          </div>
+        </Card>
+      )}
+
+      {/* 라벨 관리 — owner/admin만, 라벨 기능이 활성화된 경우만 */}
+      {isOwnerOrAdmin && project?.feature_labels && (
         <Card className="p-6 space-y-4">
           <h3 className="text-lg font-semibold">라벨 관리</h3>
           <p className="text-muted-foreground text-sm">

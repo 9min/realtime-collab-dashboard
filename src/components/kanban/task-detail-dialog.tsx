@@ -57,6 +57,14 @@ const PRIORITY_LABELS = {
   urgent: '긴급',
 } as const
 
+interface ProjectFeatures {
+  feature_labels: boolean
+  feature_subtasks: boolean
+  feature_dependencies: boolean
+  feature_attachments: boolean
+  feature_comments: boolean
+}
+
 interface TaskDetailDialogProps {
   projectId: string
   task: Tables<'tasks'> | null
@@ -66,9 +74,10 @@ interface TaskDetailDialogProps {
   canDeleteAll?: boolean
   labels?: Tables<'labels'>[]
   taskLabelIds?: string[]
+  projectFeatures?: ProjectFeatures
 }
 
-export function TaskDetailDialog({ projectId, task, open, onOpenChange, canEdit = true, canDeleteAll = false, labels, taskLabelIds }: TaskDetailDialogProps) {
+export function TaskDetailDialog({ projectId, task, open, onOpenChange, canEdit = true, canDeleteAll = false, labels, taskLabelIds, projectFeatures }: TaskDetailDialogProps) {
   const { user } = useAuth()
   const updateTaskMutation = useUpdateTask(projectId)
   const deleteTaskMutation = useDeleteTask(projectId)
@@ -219,7 +228,7 @@ export function TaskDetailDialog({ projectId, task, open, onOpenChange, canEdit 
           </div>
 
           {/* 라벨 */}
-          {labels && labels.length > 0 && (
+          {projectFeatures?.feature_labels !== false && labels && labels.length > 0 && (
             <div className="flex items-center gap-2">
               <span className="text-muted-foreground w-16 text-sm">라벨</span>
               <div className="flex flex-wrap items-center gap-1">
@@ -263,42 +272,54 @@ export function TaskDetailDialog({ projectId, task, open, onOpenChange, canEdit 
           <Separator />
 
           {/* 서브태스크 섹션 */}
-          <SubtaskSection
-            taskId={task.id}
-            projectId={projectId}
-            canEdit={canInteract}
-          />
-
-          <Separator />
+          {projectFeatures?.feature_subtasks !== false && (
+            <>
+              <SubtaskSection
+                taskId={task.id}
+                projectId={projectId}
+                canEdit={canInteract}
+              />
+              <Separator />
+            </>
+          )}
 
           {/* 의존성 섹션 */}
-          <DependencySection
-            taskId={task.id}
-            projectId={projectId}
-            canEdit={canInteract}
-          />
-
-          <Separator />
+          {projectFeatures?.feature_dependencies !== false && (
+            <>
+              <DependencySection
+                taskId={task.id}
+                projectId={projectId}
+                canEdit={canInteract}
+              />
+              <Separator />
+            </>
+          )}
 
           {/* 첨부파일 섹션 */}
-          <AttachmentSection
-            taskId={task.id}
-            projectId={projectId}
-            canUpload={canEdit}
-            canDeleteAll={canDeleteAll}
-          />
-
-          <Separator />
+          {projectFeatures?.feature_attachments !== false && (
+            <>
+              <AttachmentSection
+                taskId={task.id}
+                projectId={projectId}
+                canUpload={canEdit}
+                canDeleteAll={canDeleteAll}
+              />
+              <Separator />
+            </>
+          )}
 
           {/* 댓글 섹션 */}
-          <CommentSection
-            taskId={task.id}
-            projectId={projectId}
-            canComment={canEdit}
-            canDeleteAll={canDeleteAll}
-          />
-
-          <Separator />
+          {projectFeatures?.feature_comments !== false && (
+            <>
+              <CommentSection
+                taskId={task.id}
+                projectId={projectId}
+                canComment={canEdit}
+                canDeleteAll={canDeleteAll}
+              />
+              <Separator />
+            </>
+          )}
 
           {/* 메타 정보 */}
           <div className="text-muted-foreground flex justify-between text-xs">

@@ -1,7 +1,9 @@
 'use client'
 
-import { useCallback } from 'react'
-import { MessageSquare } from 'lucide-react'
+import { useCallback, useEffect, useState } from 'react'
+import { ChevronDown, MessageSquare } from 'lucide-react'
+
+import { cn } from '@/lib/utils'
 
 import { Separator } from '@/components/ui/separator'
 import { useAuth } from '@/hooks/use-auth'
@@ -27,6 +29,14 @@ export function CommentSection({ taskId, projectId, canComment, canDeleteAll }: 
   const deleteMutation = useDeleteComment(taskId, projectId)
 
   const memberList = members ?? []
+  const hasComments = !!comments && comments.length > 0
+  const [isOpen, setIsOpen] = useState(false)
+
+  useEffect(() => {
+    if (!isLoading) {
+      setIsOpen(hasComments)
+    }
+  }, [isLoading, hasComments])
 
   const handleCreate = useCallback(
     (content: string, mentions: string[]) => {
@@ -52,38 +62,47 @@ export function CommentSection({ taskId, projectId, canComment, canDeleteAll }: 
 
   return (
     <div>
-      <div className="mb-2 flex items-center gap-2">
+      <button
+        type="button"
+        className="flex w-full cursor-pointer items-center gap-2"
+        onClick={() => setIsOpen((prev) => !prev)}
+      >
         <MessageSquare className="h-4 w-4" />
         <span className="text-sm font-medium">
-          댓글 {comments && comments.length > 0 ? `(${comments.length})` : ''}
+          댓글 {hasComments ? `(${comments.length})` : ''}
         </span>
-      </div>
+        <ChevronDown className={cn('ml-auto h-4 w-4 transition-transform', isOpen && 'rotate-180')} />
+      </button>
 
-      {isLoading ? (
-        <p className="text-muted-foreground py-4 text-center text-sm">로딩 중...</p>
-      ) : comments && comments.length > 0 ? (
-        <div className="max-h-64 space-y-0 overflow-y-auto">
-          {comments.map((comment) => (
-            <div key={comment.id}>
-              <CommentItem
-                comment={comment}
-                currentUserId={user?.id ?? ''}
-                canDelete={canDeleteAll || comment.user_id === user?.id}
-                onUpdate={handleUpdate}
-                onDelete={handleDelete}
-                members={memberList}
-              />
-              <Separator />
+      {isOpen && (
+        <div className="mt-2">
+          {isLoading ? (
+            <p className="text-muted-foreground py-4 text-center text-sm">로딩 중...</p>
+          ) : hasComments ? (
+            <div className="max-h-64 space-y-0 overflow-y-auto">
+              {comments.map((comment) => (
+                <div key={comment.id}>
+                  <CommentItem
+                    comment={comment}
+                    currentUserId={user?.id ?? ''}
+                    canDelete={canDeleteAll || comment.user_id === user?.id}
+                    onUpdate={handleUpdate}
+                    onDelete={handleDelete}
+                    members={memberList}
+                  />
+                  <Separator />
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
-      ) : (
-        <p className="text-muted-foreground py-4 text-center text-sm">아직 댓글이 없습니다</p>
-      )}
+          ) : (
+            <p className="text-muted-foreground py-4 text-center text-sm">아직 댓글이 없습니다</p>
+          )}
 
-      {canComment && (
-        <div className="mt-3">
-          <CommentForm onSubmit={handleCreate} isPending={createMutation.isPending} members={memberList} />
+          {canComment && (
+            <div className="mt-3">
+              <CommentForm onSubmit={handleCreate} isPending={createMutation.isPending} members={memberList} />
+            </div>
+          )}
         </div>
       )}
     </div>

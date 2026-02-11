@@ -15,7 +15,7 @@ import {
   updateMemberRole,
   removeMember,
 } from '@/services/project-service'
-import type { InsertTables } from '@/types/database'
+import type { InsertTables, UpdateTables } from '@/types/database'
 import type { MemberRole } from '@/types/common'
 
 // Query Key 팩토리
@@ -83,7 +83,7 @@ export function useUpdateProject(projectId: string) {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: async (input: Pick<InsertTables<'projects'>, 'name' | 'description'>) => {
+    mutationFn: async (input: UpdateTables<'projects'>) => {
       const result = await updateProject(supabase, projectId, input)
       if (result.error) throw new Error(result.error.message)
       return result.data

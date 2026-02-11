@@ -1,7 +1,7 @@
 import type { SupabaseClient } from '@supabase/supabase-js'
 
 import type { MemberRole, ServiceResult } from '@/types/common'
-import type { Database, Tables, InsertTables } from '@/types/database'
+import type { Database, Tables, InsertTables, UpdateTables } from '@/types/database'
 
 type Client = SupabaseClient<Database>
 type Project = Tables<'projects'>
@@ -123,11 +123,11 @@ export async function createProject(
 export async function updateProject(
   supabase: Client,
   projectId: string,
-  input: Pick<InsertTables<'projects'>, 'name' | 'description'>,
+  input: UpdateTables<'projects'>,
 ): Promise<ServiceResult<Project>> {
   const { data, error } = await supabase
     .from('projects')
-    .update({ name: input.name, description: input.description ?? null })
+    .update(input)
     .eq('id', projectId)
     .select('*')
     .returns<Project[]>()
