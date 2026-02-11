@@ -155,6 +155,34 @@ export const MOCK_TASKS = [
   },
 ] as const
 
+// ── 첨부파일 ──
+export const MOCK_ATTACHMENTS = [
+  {
+    id: 'attach-001',
+    task_id: 'task-001',
+    project_id: MOCK_PROJECT.id,
+    user_id: MOCK_USER.id,
+    file_name: 'design-spec.pdf',
+    file_path: `${MOCK_PROJECT.id}/task-001/design-spec.pdf`,
+    file_size: 2048,
+    content_type: 'application/pdf',
+    created_at: '2025-01-12T00:00:00.000Z',
+    profiles: MOCK_PROFILE,
+  },
+  {
+    id: 'attach-002',
+    task_id: 'task-001',
+    project_id: MOCK_PROJECT.id,
+    user_id: MOCK_USER.id,
+    file_name: 'screenshot.png',
+    file_path: `${MOCK_PROJECT.id}/task-001/screenshot.png`,
+    file_size: 4096,
+    content_type: 'image/png',
+    created_at: '2025-01-12T01:00:00.000Z',
+    profiles: MOCK_PROFILE,
+  },
+] as const
+
 // ── 라벨 ──
 export const MOCK_LABELS = [
   {

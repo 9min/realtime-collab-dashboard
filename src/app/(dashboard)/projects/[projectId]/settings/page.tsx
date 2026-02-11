@@ -1,6 +1,7 @@
 'use client'
 
 import { use, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -53,6 +54,7 @@ interface ProjectSettingsPageProps {
 
 export default function ProjectSettingsPage({ params }: ProjectSettingsPageProps) {
   const { projectId } = use(params)
+  const router = useRouter()
   const { user } = useAuth()
   const { data: project, isLoading: projectLoading, isError: projectError } = useProject(projectId)
   const { data: members, isLoading: membersLoading, isError: membersError } = useProjectMembers(projectId)
@@ -417,7 +419,9 @@ export default function ProjectSettingsPage({ params }: ProjectSettingsPageProps
                   <AlertDialogCancel>취소</AlertDialogCancel>
                   <AlertDialogAction
                     className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                    onClick={() => deleteMutation.mutate(projectId)}
+                    onClick={() => deleteMutation.mutate(projectId, {
+                      onSuccess: () => router.push('/projects'),
+                    })}
                   >
                     삭제
                   </AlertDialogAction>

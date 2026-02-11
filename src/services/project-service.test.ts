@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, vi } from 'vitest'
 import type { SupabaseClient } from '@supabase/supabase-js'
 
 import type { Database } from '@/types/database'
@@ -8,6 +8,7 @@ import {
   MOCK_PROJECT_ID,
   MOCK_USER_ID_2,
   MOCK_MEMBER_ID,
+  MOCK_TASK_ID_1,
   mockProject,
   mockMember,
   mockMemberWithProfile,
@@ -176,7 +177,12 @@ describe('project-service', () => {
   describe('deleteProject', () => {
     it('프로젝트를 삭제하고 성공을 반환한다', async () => {
       const client = createMockSupabaseClient({
-        fromResponses: [{ data: null, error: null }],
+        fromResponses: [
+          // 1. task_attachments 조회 (없음)
+          { data: [], error: null },
+          // 2. projects 삭제
+          { data: null, error: null },
+        ],
       }) as Client
 
       const result = await deleteProject(client, MOCK_PROJECT_ID)
@@ -186,12 +192,84 @@ describe('project-service', () => {
 
     it('에러 시 error를 반환한다', async () => {
       const client = createMockSupabaseClient({
-        fromResponses: [{ data: null, error: { code: '23503', message: 'FK violation' } }],
+        fromResponses: [
+          // 1. task_attachments 조회
+          { data: [], error: null },
+          // 2. projects 삭제 실패
+          { data: null, error: { code: '23503', message: 'FK violation' } },
+        ],
       }) as Client
 
       const result = await deleteProject(client, MOCK_PROJECT_ID)
 
       expect(result.error?.code).toBe('23503')
+    })
+
+    it('프로젝트 삭제 시 첨부파일 Storage도 정리한다', async () => {
+      const attachments = [
+        { file_path: `${MOCK_PROJECT_ID}/${MOCK_TASK_ID_1}/file1.pdf` },
+        { file_path: `${MOCK_PROJECT_ID}/${MOCK_TASK_ID_1}/file2.png` },
+      ]
+
+      const client = createMockSupabaseClient({
+        fromResponses: [
+          // 1. task_attachments 조회
+          { data: attachments, error: null },
+          // 2. projects 삭제
+          { data: null, error: null },
+        ],
+      }) as Client
+
+      const result = await deleteProject(client, MOCK_PROJECT_ID)
+
+      expect(result.error).toBeNull()
+      // storage.from('task-attachments').remove() 호출 확인
+      const mockClient = client as unknown as { storage: { from: ReturnType<typeof vi.fn>; _bucket: { remove: ReturnType<typeof vi.fn> } } }
+      expect(mockClient.storage.from).toHaveBeenCalledWith('task-attachments')
+      expect(mockClient.storage._bucket.remove).toHaveBeenCalledWith([
+        `${MOCK_PROJECT_ID}/${MOCK_TASK_ID_1}/file1.pdf`,
+        `${MOCK_PROJECT_ID}/${MOCK_TASK_ID_1}/file2.png`,
+      ])
+    })
+
+    it('첨부파일이 없으면 Storage 호출을 스킵한다', async () => {
+      const client = createMockSupabaseClient({
+        fromResponses: [
+          // 1. task_attachments 조회 (빈 배열)
+          { data: [], error: null },
+          // 2. projects 삭제
+          { data: null, error: null },
+        ],
+      }) as Client
+
+      const result = await deleteProject(client, MOCK_PROJECT_ID)
+
+      expect(result.error).toBeNull()
+      const mockClient = client as unknown as { storage: { from: ReturnType<typeof vi.fn>; _bucket: { remove: ReturnType<typeof vi.fn> } } }
+      expect(mockClient.storage._bucket.remove).not.toHaveBeenCalled()
+    })
+
+    it('Storage 삭제 실패해도 프로젝트 삭제는 성공한다', async () => {
+      const attachments = [
+        { file_path: `${MOCK_PROJECT_ID}/${MOCK_TASK_ID_1}/file1.pdf` },
+      ]
+
+      const client = createMockSupabaseClient({
+        fromResponses: [
+          // 1. task_attachments 조회
+          { data: attachments, error: null },
+          // 2. projects 삭제
+          { data: null, error: null },
+        ],
+        storage: {
+          removeResponse: { data: null, error: { message: 'Storage error' } },
+        },
+      }) as Client
+
+      const result = await deleteProject(client, MOCK_PROJECT_ID)
+
+      // Storage 실패에도 프로젝트 삭제는 성공
+      expect(result.error).toBeNull()
     })
   })
 

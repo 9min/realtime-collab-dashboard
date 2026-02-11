@@ -110,11 +110,28 @@ export async function updateTask(
   return { data, error: null }
 }
 
-// 태스크 삭제
+// 태스크 삭제 (Storage 첨부파일 정리 포함)
 export async function deleteTask(
   supabase: Client,
   taskId: string,
 ): Promise<ServiceResult<null>> {
+  // 1. 해당 태스크의 모든 첨부파일 file_path 조회
+  const { data: attachments } = await supabase
+    .from('task_attachments')
+    .select('file_path')
+    .eq('task_id', taskId)
+    .returns<Pick<Tables<'task_attachments'>, 'file_path'>[]>()
+
+  // 2. Storage에서 파일 일괄 삭제 (첨부파일이 있을 때만)
+  const filePaths = attachments?.map((a) => a.file_path).filter(Boolean) ?? []
+  if (filePaths.length > 0) {
+    await supabase.storage
+      .from('task-attachments')
+      .remove(filePaths)
+    // Storage 삭제 실패는 태스크 삭제를 막지 않음 (best-effort)
+  }
+
+  // 3. 태스크 삭제
   const { error } = await supabase
     .from('tasks')
     .delete()

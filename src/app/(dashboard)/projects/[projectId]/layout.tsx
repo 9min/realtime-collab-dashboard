@@ -1,6 +1,6 @@
 'use client'
 
-import { use, useCallback, useMemo, type ReactNode } from 'react'
+import { use, useCallback, useEffect, useMemo, type ReactNode } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
 import { ArrowLeft, LayoutDashboard, Columns3, Activity, GanttChart, Calendar, Settings } from 'lucide-react'
 
@@ -34,7 +34,7 @@ export default function ProjectLayout({ children, params }: ProjectLayoutProps) 
   const { user } = useAuth()
   const router = useRouter()
   const pathname = usePathname()
-  const { data: project, isLoading } = useProject(projectId)
+  const { data: project, isLoading, isError } = useProject(projectId)
   const { data: members } = useProjectMembers(projectId)
   const { onlineUsers } = usePresence(projectId)
 
@@ -54,6 +54,13 @@ export default function ProjectLayout({ children, params }: ProjectLayoutProps) 
     [toggleHelp, router, basePath],
   )
   useKeyboardShortcuts(shortcuts)
+
+  // 프로젝트 조회 실패 시 (삭제됨 등) 목록으로 리다이렉트
+  useEffect(() => {
+    if (isError) {
+      router.replace('/projects')
+    }
+  }, [isError, router])
 
   // 뷰어는 설정 탭 숨김
   const currentRole = members?.find((m) => m.user_id === user?.id)?.role

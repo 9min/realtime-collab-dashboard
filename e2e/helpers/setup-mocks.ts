@@ -16,6 +16,7 @@ import {
   MOCK_TASKS,
   MOCK_LABELS,
   MOCK_TASK_LABELS,
+  MOCK_ATTACHMENTS,
   MOCK_NOTIFICATIONS,
   MOCK_DASHBOARD_LAYOUT,
   MOCK_ACTIVITY_LOGS,
@@ -190,6 +191,18 @@ export async function setupApiMocks(page: Page) {
 
   // Storage API 모킹
   await page.route('**/storage/v1/**', async (route) => {
+    const method = route.request().method()
+
+    if (method === 'DELETE') {
+      // Storage 파일 삭제 요청
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify([]),
+      })
+      return
+    }
+
     await route.fulfill({
       status: 200,
       contentType: 'application/json',
@@ -237,7 +250,7 @@ function getTableData(tableName: string, params: URLSearchParams): unknown {
       return []
 
     case 'task_attachments':
-      return []
+      return MOCK_ATTACHMENTS
 
     case 'notifications':
       if (selectParam.includes('actor:profiles')) {

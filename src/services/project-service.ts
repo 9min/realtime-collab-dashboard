@@ -143,11 +143,33 @@ export async function updateProject(
   return { data, error: null }
 }
 
-// 프로젝트 삭제
+// 프로젝트 삭제 (Storage 첨부파일 정리 포함)
 export async function deleteProject(
   supabase: Client,
   projectId: string,
 ): Promise<ServiceResult<null>> {
+  // 1. 해당 프로젝트의 모든 첨부파일 file_path 조회
+  const { data: attachments } = await supabase
+    .from('task_attachments')
+    .select('file_path')
+    .eq('project_id', projectId)
+    .returns<Pick<Tables<'task_attachments'>, 'file_path'>[]>()
+
+  // 2. Storage에서 파일 일괄 삭제 (첨부파일이 있을 때만)
+  const filePaths = attachments?.map((a) => a.file_path).filter(Boolean) ?? []
+  if (filePaths.length > 0) {
+    // Supabase Storage remove()는 한 번에 최대 ~1000개 처리 가능 — 배치 분할
+    const BATCH_SIZE = 100
+    for (let i = 0; i < filePaths.length; i += BATCH_SIZE) {
+      const batch = filePaths.slice(i, i + BATCH_SIZE)
+      await supabase.storage
+        .from('task-attachments')
+        .remove(batch)
+      // Storage 삭제 실패는 프로젝트 삭제를 막지 않음 (best-effort)
+    }
+  }
+
+  // 3. 프로젝트 삭제 (CASCADE로 관련 레코드 정리)
   const { error } = await supabase
     .from('projects')
     .delete()
