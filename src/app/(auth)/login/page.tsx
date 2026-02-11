@@ -3,15 +3,21 @@
 import { useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 
-import { Loader2 } from 'lucide-react'
+import { KanbanSquare, LayoutDashboard, Loader2, Users } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent } from '@/components/ui/card'
 import { createBrowserClient } from '@/lib/supabase/client'
 
 const ERROR_MESSAGES: Record<string, string> = {
   auth_callback_error: 'OAuth 인증에 실패했습니다. 다시 시도해주세요.',
 }
+
+const FEATURES = [
+  { icon: LayoutDashboard, label: '대시보드', color: 'text-blue-500 dark:text-blue-400' },
+  { icon: KanbanSquare, label: '칸반 보드', color: 'text-violet-500 dark:text-violet-400' },
+  { icon: Users, label: '실시간 협업', color: 'text-emerald-500 dark:text-emerald-400' },
+] as const
 
 export default function LoginPage() {
   const searchParams = useSearchParams()
@@ -36,79 +42,100 @@ export default function LoginPage() {
   }
 
   return (
-    <Card className="w-full shadow-xl">
-      <CardHeader className="text-center">
-        <CardTitle className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-2xl text-transparent dark:from-blue-400 dark:to-indigo-400">실시간 협업 일정관리</CardTitle>
-        <CardDescription>소규모 팀을 위한 실시간 협업 대시보드</CardDescription>
-      </CardHeader>
-      <CardContent className="flex flex-col gap-3">
-        {errorCode && (
-          <div className="bg-destructive/10 text-destructive rounded-md p-3 text-center text-sm">
-            <p>{ERROR_MESSAGES[errorCode] ?? '알 수 없는 에러가 발생했습니다.'}</p>
-            {errorDetail && (
-              <p className="mt-1 text-xs opacity-75">{errorDetail}</p>
+    <div className="flex flex-col items-center motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-4 motion-safe:duration-700">
+      {/* 타이틀 영역 */}
+      <div className="mb-8 text-center">
+        <h1 className="text-4xl font-bold tracking-tight">
+          <span className="bg-gradient-to-r from-blue-600 via-violet-600 to-emerald-500 bg-clip-text text-transparent dark:from-blue-400 dark:via-violet-400 dark:to-emerald-400">
+            실시간 협업 일정관리
+          </span>
+        </h1>
+        <p className="text-muted-foreground mt-2 text-sm">
+          소규모 팀을 위한 실시간 협업 대시보드
+        </p>
+
+        {/* 핵심 기능 배지 */}
+        <div className="mt-5 flex items-center justify-center gap-3">
+          {FEATURES.map(({ icon: Icon, label, color }) => (
+            <div key={label} className="flex items-center gap-1.5 rounded-full border bg-white/60 px-3 py-1.5 text-xs font-medium backdrop-blur-sm dark:bg-slate-800/60">
+              <Icon className={`h-3.5 w-3.5 ${color}`} />
+              <span className="text-foreground/80">{label}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* 로그인 카드 */}
+      <Card className="w-full border-slate-200/60 bg-white/70 shadow-xl backdrop-blur-xl dark:border-slate-700/60 dark:bg-slate-900/70">
+        <CardContent className="flex flex-col gap-3 pt-6">
+          {errorCode && (
+            <div className="bg-destructive/10 text-destructive rounded-md p-3 text-center text-sm">
+              <p>{ERROR_MESSAGES[errorCode] ?? '알 수 없는 에러가 발생했습니다.'}</p>
+              {errorDetail && (
+                <p className="mt-1 text-xs opacity-75">{errorDetail}</p>
+              )}
+            </div>
+          )}
+
+          <Button
+            variant="outline"
+            className="w-full bg-white/50 dark:bg-slate-800/50"
+            onClick={() => handleOAuthLogin('github')}
+            disabled={isLoading !== null}
+          >
+            {isLoading === 'github' ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                리다이렉트 중...
+              </>
+            ) : (
+              <>
+                <GitHubIcon className="mr-2 h-5 w-5" />
+                GitHub로 로그인
+              </>
             )}
-          </div>
-        )}
+          </Button>
 
-        <Button
-          variant="outline"
-          className="w-full"
-          onClick={() => handleOAuthLogin('github')}
-          disabled={isLoading !== null}
-        >
-          {isLoading === 'github' ? (
-            <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              리다이렉트 중...
-            </>
-          ) : (
-            <>
-              <GitHubIcon className="mr-2 h-5 w-5" />
-              GitHub로 로그인
-            </>
-          )}
-        </Button>
+          <Button
+            variant="outline"
+            className="w-full bg-white/50 dark:bg-slate-800/50"
+            onClick={() => handleOAuthLogin('google')}
+            disabled={isLoading !== null}
+          >
+            {isLoading === 'google' ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                리다이렉트 중...
+              </>
+            ) : (
+              <>
+                <GoogleIcon className="mr-2 h-5 w-5" />
+                Google로 로그인
+              </>
+            )}
+          </Button>
 
-        <Button
-          variant="outline"
-          className="w-full"
-          onClick={() => handleOAuthLogin('google')}
-          disabled={isLoading !== null}
-        >
-          {isLoading === 'google' ? (
-            <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              리다이렉트 중...
-            </>
-          ) : (
-            <>
-              <GoogleIcon className="mr-2 h-5 w-5" />
-              Google로 로그인
-            </>
-          )}
-        </Button>
-
-        <Button
-          variant="outline"
-          className="w-full bg-[#FEE500] text-[#191919] hover:bg-[#FEE500]/90 hover:text-[#191919] dark:bg-[#FEE500]/90 dark:hover:bg-[#FEE500]/80"
-          onClick={() => handleOAuthLogin('kakao')}
-          disabled={isLoading !== null}
-        >
-          {isLoading === 'kakao' ? (
-            <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              리다이렉트 중...
-            </>
-          ) : (
-            <>
-              <KakaoIcon className="mr-2 h-5 w-5" />
-              Kakao로 로그인
-            </>
-          )}
-        </Button>
-      </CardContent>
-    </Card>
+          <Button
+            variant="outline"
+            className="w-full bg-[#FEE500] text-[#191919] hover:bg-[#FEE500]/90 hover:text-[#191919] dark:bg-[#FEE500]/90 dark:hover:bg-[#FEE500]/80"
+            onClick={() => handleOAuthLogin('kakao')}
+            disabled={isLoading !== null}
+          >
+            {isLoading === 'kakao' ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                리다이렉트 중...
+              </>
+            ) : (
+              <>
+                <KakaoIcon className="mr-2 h-5 w-5" />
+                Kakao로 로그인
+              </>
+            )}
+          </Button>
+        </CardContent>
+      </Card>
+    </div>
   )
 }
 
