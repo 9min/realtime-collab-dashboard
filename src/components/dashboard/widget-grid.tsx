@@ -93,7 +93,7 @@ export function WidgetGrid({ projectId }: WidgetGridProps) {
   const { data: savedLayout, isLoading } = useDashboardLayout(projectId)
   const { data: members } = useProjectMembers(projectId)
   const saveMutation = useSaveDashboardLayout(projectId)
-  const { width, containerRef, mounted } = useContainerWidth()
+  const { width, containerRef, mounted } = useContainerWidth({ measureBeforeMount: true })
 
   const { isEditMode, toggleEditMode, isAddWidgetOpen, setAddWidgetOpen } = useDashboardStore()
 
@@ -174,7 +174,7 @@ export function WidgetGrid({ projectId }: WidgetGridProps) {
   }
 
   return (
-    <div ref={containerRef} className="flex flex-col gap-4">
+    <div ref={containerRef} className="flex flex-col gap-4 overflow-hidden">
       {canEdit && (
         <div className="flex items-center justify-end gap-2">
           {isEditMode && (
