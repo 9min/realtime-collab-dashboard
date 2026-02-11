@@ -140,185 +140,218 @@ export default function ProjectSettingsPage({ params }: ProjectSettingsPageProps
     )
   }
 
+  const FEATURE_ITEMS = [
+    { key: 'feature_subtasks', label: '서브태스크', description: '태스크를 세부 항목으로 나누어 관리합니다', icon: ListChecks },
+    { key: 'feature_dependencies', label: '연결된 작업', description: '태스크 간 선행/후행 관계를 설정합니다', icon: Link2 },
+    { key: 'feature_attachments', label: '첨부파일', description: '태스크에 파일을 첨부합니다', icon: Paperclip },
+    { key: 'feature_comments', label: '댓글', description: '태스크에 댓글을 남깁니다', icon: MessageSquare },
+  ] as const
+
   return (
-    <div className="space-y-8 max-w-2xl">
+    <div className="space-y-10 max-w-2xl pb-8">
       <div>
         <h2 className="text-2xl font-bold">프로젝트 설정</h2>
-        <p className="text-muted-foreground mt-1">프로젝트 정보 수정 및 멤버 관리</p>
+        <p className="text-muted-foreground mt-1">프로젝트 정보와 기능을 관리합니다</p>
       </div>
 
-      {/* 프로젝트 정보 */}
-      <Card className="p-6 space-y-4">
-        <h3 className="text-lg font-semibold">프로젝트 정보</h3>
-        {isEditing ? (
-          <div className="space-y-3">
-            <Input
-              value={projectName}
-              onChange={(e) => setProjectName(e.target.value)}
-              placeholder="프로젝트 이름"
-            />
-            <Input
-              value={projectDescription}
-              onChange={(e) => setProjectDescription(e.target.value)}
-              placeholder="프로젝트 설명 (선택)"
-            />
-            <div className="flex gap-2">
-              <Button onClick={handleSaveProject} disabled={updateMutation.isPending}>
-                저장
-              </Button>
-              <Button variant="outline" onClick={() => setIsEditing(false)}>
-                취소
-              </Button>
-            </div>
-          </div>
-        ) : (
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="font-medium">{project?.name}</p>
-              <p className="text-muted-foreground text-sm">{project?.description || '설명 없음'}</p>
-            </div>
-            {isOwnerOrAdmin && (
-              <Button variant="outline" size="sm" onClick={handleEditProject}>
-                수정
-              </Button>
-            )}
-          </div>
-        )}
-      </Card>
+      {/* ── 일반 ── */}
+      <section className="space-y-4">
+        <h3 className="text-sm font-semibold tracking-wide text-muted-foreground uppercase">일반</h3>
 
-      {/* 멤버 관리 */}
-      <Card className="p-6 space-y-4">
-        <h3 className="text-lg font-semibold">
-          멤버 ({members?.length ?? 0})
-        </h3>
-
-        {/* 멤버 초대 폼 */}
-        {isOwnerOrAdmin && (
-          <form onSubmit={handleInvite} className="flex gap-2">
-            <div className="flex-1">
+        {/* 프로젝트 정보 */}
+        <Card className="p-5 space-y-4">
+          <h4 className="text-base font-semibold">프로젝트 정보</h4>
+          {isEditing ? (
+            <div className="space-y-3">
               <Input
-                {...register('email')}
-                type="email"
-                placeholder="이메일로 초대"
+                value={projectName}
+                onChange={(e) => setProjectName(e.target.value)}
+                placeholder="프로젝트 이름"
               />
-              {errors.email && (
-                <p className="text-destructive mt-1 text-xs">{errors.email.message}</p>
+              <Input
+                value={projectDescription}
+                onChange={(e) => setProjectDescription(e.target.value)}
+                placeholder="프로젝트 설명 (선택)"
+              />
+              <div className="flex gap-2">
+                <Button onClick={handleSaveProject} disabled={updateMutation.isPending}>
+                  저장
+                </Button>
+                <Button variant="outline" onClick={() => setIsEditing(false)}>
+                  취소
+                </Button>
+              </div>
+            </div>
+          ) : (
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="font-medium">{project?.name}</p>
+                <p className="text-muted-foreground text-sm">{project?.description || '설명 없음'}</p>
+              </div>
+              {isOwnerOrAdmin && (
+                <Button variant="outline" size="sm" onClick={handleEditProject}>
+                  수정
+                </Button>
               )}
             </div>
-            <Select
-              defaultValue={MEMBER_ROLE.MEMBER}
-              onValueChange={(v) => setValue('role', v)}
-            >
-              <SelectTrigger className="w-28">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value={MEMBER_ROLE.ADMIN}>관리자</SelectItem>
-                <SelectItem value={MEMBER_ROLE.MEMBER}>멤버</SelectItem>
-                <SelectItem value={MEMBER_ROLE.VIEWER}>뷰어</SelectItem>
-              </SelectContent>
-            </Select>
-            <Button type="submit" disabled={inviteMutation.isPending}>
-              <UserPlus className="mr-2 h-4 w-4" />
-              초대
-            </Button>
-          </form>
-        )}
+          )}
+        </Card>
 
-        {/* 멤버 목록 */}
-        {membersLoading ? (
-          <div className="space-y-3">
-            {Array.from({ length: 3 }).map((_, i) => (
-              <div key={i} className="bg-muted h-14 animate-pulse rounded" />
-            ))}
-          </div>
-        ) : (
-          <div className="divide-y">
-            {members?.map((member) => {
-              const profile = member.profiles
-              const roleConfig = ROLE_CONFIG[member.role as keyof typeof ROLE_CONFIG]
-              const isCurrentUser = member.user_id === user?.id
-              const isOwner = member.role === MEMBER_ROLE.OWNER
-              const canChangeRole = isOwnerOrAdmin && !isOwner && !isCurrentUser
-              const canRemove = isOwnerOrAdmin && !isOwner && !isCurrentUser
+        {/* 멤버 관리 */}
+        <Card className="p-5 space-y-4">
+          <h4 className="text-base font-semibold">
+            멤버 ({members?.length ?? 0})
+          </h4>
 
-              return (
-                <div key={member.id} className="flex items-center gap-3 py-3">
-                  <Avatar>
-                    <AvatarImage src={profile?.avatar_url ?? undefined} />
-                    <AvatarFallback>
-                      {profile?.full_name?.slice(0, 2).toUpperCase() ?? '??'}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="min-w-0 flex-1">
-                    <p className="text-sm font-medium">
-                      {profile?.full_name ?? '사용자'}
-                      {isCurrentUser && (
-                        <span className="text-muted-foreground ml-1">(나)</span>
-                      )}
-                    </p>
-                    <p className="text-muted-foreground text-xs">{profile?.email}</p>
+          {isOwnerOrAdmin && (
+            <form onSubmit={handleInvite} className="flex gap-2">
+              <div className="flex-1">
+                <Input
+                  {...register('email')}
+                  type="email"
+                  placeholder="이메일로 초대"
+                />
+                {errors.email && (
+                  <p className="text-destructive mt-1 text-xs">{errors.email.message}</p>
+                )}
+              </div>
+              <Select
+                defaultValue={MEMBER_ROLE.MEMBER}
+                onValueChange={(v) => setValue('role', v)}
+              >
+                <SelectTrigger className="w-28">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value={MEMBER_ROLE.ADMIN}>관리자</SelectItem>
+                  <SelectItem value={MEMBER_ROLE.MEMBER}>멤버</SelectItem>
+                  <SelectItem value={MEMBER_ROLE.VIEWER}>뷰어</SelectItem>
+                </SelectContent>
+              </Select>
+              <Button type="submit" disabled={inviteMutation.isPending}>
+                <UserPlus className="mr-2 h-4 w-4" />
+                초대
+              </Button>
+            </form>
+          )}
+
+          {membersLoading ? (
+            <div className="space-y-3">
+              {Array.from({ length: 3 }).map((_, i) => (
+                <div key={i} className="bg-muted h-14 animate-pulse rounded" />
+              ))}
+            </div>
+          ) : (
+            <div className="divide-y">
+              {members?.map((member) => {
+                const profile = member.profiles
+                const roleConfig = ROLE_CONFIG[member.role as keyof typeof ROLE_CONFIG]
+                const isCurrentUser = member.user_id === user?.id
+                const isOwner = member.role === MEMBER_ROLE.OWNER
+                const canChangeRole = isOwnerOrAdmin && !isOwner && !isCurrentUser
+                const canRemove = isOwnerOrAdmin && !isOwner && !isCurrentUser
+
+                return (
+                  <div key={member.id} className="flex items-center gap-3 py-3">
+                    <Avatar>
+                      <AvatarImage src={profile?.avatar_url ?? undefined} />
+                      <AvatarFallback>
+                        {profile?.full_name?.slice(0, 2).toUpperCase() ?? '??'}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-sm font-medium">
+                        {profile?.full_name ?? '사용자'}
+                        {isCurrentUser && (
+                          <span className="text-muted-foreground ml-1">(나)</span>
+                        )}
+                      </p>
+                      <p className="text-muted-foreground text-xs">{profile?.email}</p>
+                    </div>
+                    {canChangeRole ? (
+                      <Select
+                        value={member.role}
+                        onValueChange={(role) =>
+                          updateRoleMutation.mutate({
+                            memberId: member.id,
+                            role: role as 'admin' | 'member' | 'viewer',
+                          })
+                        }
+                        disabled={updateRoleMutation.isPending}
+                      >
+                        <SelectTrigger className="w-28 h-8 text-xs">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value={MEMBER_ROLE.ADMIN}>관리자</SelectItem>
+                          <SelectItem value={MEMBER_ROLE.MEMBER}>멤버</SelectItem>
+                          <SelectItem value={MEMBER_ROLE.VIEWER}>뷰어</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    ) : (
+                      <Badge variant={roleConfig?.variant ?? 'outline'}>
+                        {roleConfig?.icon && <roleConfig.icon className="mr-1 h-3 w-3" />}
+                        {roleConfig?.label ?? member.role}
+                      </Badge>
+                    )}
+                    {canRemove && (
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="text-destructive h-8 w-8"
+                        onClick={() => removeMutation.mutate(member.id)}
+                        disabled={removeMutation.isPending}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    )}
                   </div>
-                  {canChangeRole ? (
-                    <Select
-                      value={member.role}
-                      onValueChange={(role) =>
-                        updateRoleMutation.mutate({
-                          memberId: member.id,
-                          role: role as 'admin' | 'member' | 'viewer',
-                        })
-                      }
-                      disabled={updateRoleMutation.isPending}
-                    >
-                      <SelectTrigger className="w-28 h-8 text-xs">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value={MEMBER_ROLE.ADMIN}>관리자</SelectItem>
-                        <SelectItem value={MEMBER_ROLE.MEMBER}>멤버</SelectItem>
-                        <SelectItem value={MEMBER_ROLE.VIEWER}>뷰어</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  ) : (
-                    <Badge variant={roleConfig?.variant ?? 'outline'}>
-                      {roleConfig?.icon && <roleConfig.icon className="mr-1 h-3 w-3" />}
-                      {roleConfig?.label ?? member.role}
-                    </Badge>
-                  )}
-                  {canRemove && (
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="text-destructive h-8 w-8"
-                      onClick={() => removeMutation.mutate(member.id)}
-                      disabled={removeMutation.isPending}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  )}
-                </div>
-              )
-            })}
-          </div>
-        )}
-      </Card>
+                )
+              })}
+            </div>
+          )}
+        </Card>
+      </section>
 
-      {/* 기능 설정 — owner/admin만 */}
+      {/* ── 기능 설정 ── owner/admin만 */}
       {isOwnerOrAdmin && project && (
-        <Card className="p-6 space-y-4">
-          <h3 className="text-lg font-semibold">기능 설정</h3>
-          <p className="text-muted-foreground text-sm">
-            프로젝트에서 사용할 기능을 선택합니다. 비활성화된 기능은 태스크 상세에서 숨겨집니다.
-          </p>
-          <div className="space-y-3">
-            {([
-              { key: 'feature_labels', label: '라벨', description: '태스크에 라벨을 할당하여 분류합니다', icon: Tag },
-              { key: 'feature_subtasks', label: '서브태스크', description: '태스크를 세부 항목으로 나누어 관리합니다', icon: ListChecks },
-              { key: 'feature_dependencies', label: '연결된 작업', description: '태스크 간 선행/후행 관계를 설정합니다', icon: Link2 },
-              { key: 'feature_attachments', label: '첨부파일', description: '태스크에 파일을 첨부합니다', icon: Paperclip },
-              { key: 'feature_comments', label: '댓글', description: '태스크에 댓글을 남깁니다', icon: MessageSquare },
-            ] as const).map(({ key, label, description, icon: Icon }) => (
-              <div key={key} className="flex items-center justify-between rounded-lg border p-3">
+        <section className="space-y-4">
+          <div>
+            <h3 className="text-sm font-semibold tracking-wide text-muted-foreground uppercase">기능 설정</h3>
+            <p className="text-muted-foreground text-xs mt-1">
+              비활성화된 기능은 태스크 상세에서 숨겨집니다
+            </p>
+          </div>
+
+          <Card className="divide-y p-0 overflow-hidden">
+            {/* 라벨 — 토글 + 인라인 라벨 관리 */}
+            <div>
+              <div className="flex items-center justify-between p-4">
+                <div className="flex items-center gap-3">
+                  <Tag className="text-muted-foreground h-4 w-4" />
+                  <div>
+                    <p className="text-sm font-medium">라벨</p>
+                    <p className="text-muted-foreground text-xs">태스크에 라벨을 할당하여 분류합니다</p>
+                  </div>
+                </div>
+                <Switch
+                  checked={project.feature_labels}
+                  onCheckedChange={(checked) => {
+                    updateMutation.mutate({ feature_labels: checked })
+                  }}
+                />
+              </div>
+              {project.feature_labels && (
+                <div className="border-t bg-muted/30 px-4 py-4">
+                  <p className="text-muted-foreground text-xs font-medium mb-3">라벨 관리</p>
+                  <LabelManager projectId={projectId} />
+                </div>
+              )}
+            </div>
+
+            {/* 나머지 기능 토글 */}
+            {FEATURE_ITEMS.map(({ key, label, description, icon: Icon }) => (
+              <div key={key} className="flex items-center justify-between p-4">
                 <div className="flex items-center gap-3">
                   <Icon className="text-muted-foreground h-4 w-4" />
                   <div>
@@ -334,65 +367,65 @@ export default function ProjectSettingsPage({ params }: ProjectSettingsPageProps
                 />
               </div>
             ))}
-          </div>
-        </Card>
+          </Card>
+        </section>
       )}
 
-      {/* 라벨 관리 — owner/admin만, 라벨 기능이 활성화된 경우만 */}
-      {isOwnerOrAdmin && project?.feature_labels && (
-        <Card className="p-6 space-y-4">
-          <h3 className="text-lg font-semibold">라벨 관리</h3>
-          <p className="text-muted-foreground text-sm">
-            프로젝트에서 사용할 라벨을 관리합니다. 라벨은 태스크에 할당하여 분류할 수 있습니다.
-          </p>
-          <LabelManager projectId={projectId} />
-        </Card>
-      )}
-
-      {/* 외부 연동 */}
+      {/* ── 외부 연동 ── owner/admin만 */}
       {isOwnerOrAdmin && (
-        <Card className="p-6 space-y-4">
-          <h3 className="text-lg font-semibold">외부 연동</h3>
-          <p className="text-muted-foreground text-sm">
-            Slack, GitHub 등 외부 서비스와 연동하여 프로젝트 알림을 받을 수 있습니다.
-          </p>
-          <IntegrationSettings projectId={projectId} isOwnerOrAdmin={isOwnerOrAdmin} />
-        </Card>
+        <section className="space-y-4">
+          <div>
+            <h3 className="text-sm font-semibold tracking-wide text-muted-foreground uppercase">외부 연동</h3>
+            <p className="text-muted-foreground text-xs mt-1">
+              Slack, GitHub 등 외부 서비스와 연동합니다
+            </p>
+          </div>
+
+          <Card className="p-5">
+            <IntegrationSettings projectId={projectId} isOwnerOrAdmin={isOwnerOrAdmin} />
+          </Card>
+        </section>
       )}
 
-      {/* 위험 영역 */}
+      {/* ── 위험 영역 ── owner만 */}
       {currentMember?.role === MEMBER_ROLE.OWNER && (
-        <Card className="border-destructive/50 p-6 space-y-4">
-          <h3 className="text-destructive text-lg font-semibold">위험 영역</h3>
-          <p className="text-muted-foreground text-sm">
-            프로젝트를 삭제하면 모든 데이터(태스크, 컬럼, 멤버)가 영구 삭제됩니다.
-          </p>
-          <AlertDialog>
-            <AlertDialogTrigger asChild>
-              <Button variant="destructive" disabled={deleteMutation.isPending}>
-                프로젝트 삭제
-              </Button>
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>프로젝트를 삭제하시겠습니까?</AlertDialogTitle>
-                <AlertDialogDescription>
-                  &quot;{project?.name}&quot; 프로젝트와 모든 데이터(태스크, 컬럼, 멤버)가 영구 삭제됩니다.
-                  <br />이 작업은 되돌릴 수 없습니다.
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel>취소</AlertDialogCancel>
-                <AlertDialogAction
-                  className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                  onClick={() => deleteMutation.mutate(projectId)}
-                >
-                  삭제
-                </AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
-        </Card>
+        <section className="space-y-4">
+          <h3 className="text-sm font-semibold tracking-wide text-destructive/70 uppercase">위험 영역</h3>
+
+          <Card className="border-destructive/30 p-5 space-y-4">
+            <div>
+              <h4 className="text-base font-semibold">프로젝트 삭제</h4>
+              <p className="text-muted-foreground text-sm mt-1">
+                프로젝트를 삭제하면 모든 데이터(태스크, 컬럼, 멤버)가 영구 삭제됩니다.
+              </p>
+            </div>
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button variant="destructive" disabled={deleteMutation.isPending}>
+                  프로젝트 삭제
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>프로젝트를 삭제하시겠습니까?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    &quot;{project?.name}&quot; 프로젝트와 모든 데이터(태스크, 컬럼, 멤버)가 영구 삭제됩니다.
+                    <br />이 작업은 되돌릴 수 없습니다.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>취소</AlertDialogCancel>
+                  <AlertDialogAction
+                    className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                    onClick={() => deleteMutation.mutate(projectId)}
+                  >
+                    삭제
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          </Card>
+        </section>
       )}
     </div>
   )

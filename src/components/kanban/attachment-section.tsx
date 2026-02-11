@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useState } from 'react'
 import { ChevronDown, Paperclip } from 'lucide-react'
 
 import { cn } from '@/lib/utils'
@@ -28,14 +28,9 @@ export function AttachmentSection({ taskId, projectId, canUpload, canDeleteAll }
   const deleteMutation = useDeleteAttachment(taskId)
 
   const hasAttachments = !!attachments && attachments.length > 0
-  const [isOpen, setIsOpen] = useState(false)
-
-  // 첨부파일 로딩 완료 후: 있으면 펼침, 없으면 접힘
-  useEffect(() => {
-    if (!isLoading) {
-      setIsOpen(hasAttachments)
-    }
-  }, [isLoading, hasAttachments])
+  // null = 유저가 아직 토글하지 않음 → 데이터 기반으로 결정
+  const [userToggle, setUserToggle] = useState<boolean | null>(null)
+  const isOpen = userToggle ?? (!isLoading && hasAttachments)
 
   const handleFileSelect = useCallback(
     (file: File) => {
@@ -57,7 +52,7 @@ export function AttachmentSection({ taskId, projectId, canUpload, canDeleteAll }
       <button
         type="button"
         className="flex w-full cursor-pointer items-center gap-2"
-        onClick={() => setIsOpen((prev) => !prev)}
+        onClick={() => setUserToggle((prev) => !(prev ?? isOpen))}
       >
         <Paperclip className="h-4 w-4" />
         <span className="text-sm font-medium">

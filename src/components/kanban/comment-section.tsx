@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useState } from 'react'
 import { ChevronDown, MessageSquare } from 'lucide-react'
 
 import { cn } from '@/lib/utils'
@@ -30,13 +30,9 @@ export function CommentSection({ taskId, projectId, canComment, canDeleteAll }: 
 
   const memberList = members ?? []
   const hasComments = !!comments && comments.length > 0
-  const [isOpen, setIsOpen] = useState(false)
-
-  useEffect(() => {
-    if (!isLoading) {
-      setIsOpen(hasComments)
-    }
-  }, [isLoading, hasComments])
+  // null = 유저가 아직 토글하지 않음 → 데이터 기반으로 결정
+  const [userToggle, setUserToggle] = useState<boolean | null>(null)
+  const isOpen = userToggle ?? (!isLoading && hasComments)
 
   const handleCreate = useCallback(
     (content: string, mentions: string[]) => {
@@ -65,7 +61,7 @@ export function CommentSection({ taskId, projectId, canComment, canDeleteAll }: 
       <button
         type="button"
         className="flex w-full cursor-pointer items-center gap-2"
-        onClick={() => setIsOpen((prev) => !prev)}
+        onClick={() => setUserToggle((prev) => !(prev ?? isOpen))}
       >
         <MessageSquare className="h-4 w-4" />
         <span className="text-sm font-medium">
