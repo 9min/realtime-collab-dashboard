@@ -163,18 +163,16 @@ export function WidgetGrid({ projectId }: WidgetGridProps) {
     [layout],
   )
 
-  if (isLoading) {
-    return (
-      <div role="status" aria-busy="true" aria-label="대시보드 로딩 중" className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {Array.from({ length: 4 }).map((_, i) => (
-          <Skeleton key={i} className="h-64 rounded-lg" />
-        ))}
-      </div>
-    )
-  }
-
   return (
     <div ref={containerRef} className="flex flex-col gap-4 overflow-hidden">
+      {isLoading ? (
+        <div role="status" aria-busy="true" aria-label="대시보드 로딩 중" className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <Skeleton key={i} className="h-64 rounded-lg" />
+          ))}
+        </div>
+      ) : (
+        <>
       {canEdit && (
         <div className="flex items-center justify-end gap-2">
           {isEditMode && (
@@ -238,6 +236,8 @@ export function WidgetGrid({ projectId }: WidgetGridProps) {
         onAdd={handleAddWidget}
         existingTypes={existingTypes}
       />
+        </>
+      )}
     </div>
   )
 }
