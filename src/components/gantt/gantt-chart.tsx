@@ -252,7 +252,10 @@ export function GanttChart({ projectId }: GanttChartProps) {
                   return (
                     <div key={group.column.id}>
                       {/* 컬럼 헤더 */}
-                      <div className="bg-slate-100/80 border-border flex items-center gap-2 border-b px-3 py-1 text-xs font-semibold dark:bg-slate-800/50">
+                      <div
+                        className="bg-slate-100/80 border-border flex items-center gap-2 border-b px-3 text-xs font-semibold dark:bg-slate-800/50"
+                        style={{ height: COLUMN_HEADER_ROW_HEIGHT }}
+                      >
                         <span>{group.column.title}</span>
                         <Badge variant="secondary" className="text-[10px] px-1.5 py-0 h-4">
                           {group.tasks.length}
@@ -390,6 +393,8 @@ export function GanttChart({ projectId }: GanttChartProps) {
                 </div>
               </div>
             </div>
+            {/* 스크롤바 여백 — Radix ScrollBar(h-2.5)가 마지막 행을 가리지 않도록 */}
+            <div className="h-3 shrink-0" aria-hidden="true" />
             <ScrollBar orientation="horizontal" />
           </ScrollArea>
         </TooltipProvider>

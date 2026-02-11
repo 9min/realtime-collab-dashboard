@@ -17,7 +17,7 @@ export function GanttHeader({ columns, columnWidth }: GanttHeaderProps) {
   const monthGroups = useMemo(() => getMonthGroups(columns), [columns])
 
   return (
-    <div className="border-border border-b" style={{ minWidth: columns.length * columnWidth }}>
+    <div className="border-border border-b" style={{ height: HEADER_HEIGHT, minWidth: columns.length * columnWidth }}>
       {/* 상단: 월 그룹 */}
       <div className="flex">
         {monthGroups.map((group, i) => (
