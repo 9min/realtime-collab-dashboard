@@ -323,10 +323,10 @@ export default function ProjectSettingsPage({ params }: ProjectSettingsPageProps
             </p>
           </div>
 
-          <Card className="divide-y p-0 overflow-hidden">
+          <Card className="divide-y gap-0 p-0 overflow-hidden">
             {/* 라벨 — 토글 + 인라인 라벨 관리 */}
             <div>
-              <div className="flex items-center justify-between p-4">
+              <div className="flex items-center justify-between px-4 py-3">
                 <div className="flex items-center gap-3">
                   <Tag className="text-muted-foreground h-4 w-4" />
                   <div>
@@ -351,7 +351,7 @@ export default function ProjectSettingsPage({ params }: ProjectSettingsPageProps
 
             {/* 나머지 기능 토글 */}
             {FEATURE_ITEMS.map(({ key, label, description, icon: Icon }) => (
-              <div key={key} className="flex items-center justify-between p-4">
+              <div key={key} className="flex items-center justify-between px-4 py-3">
                 <div className="flex items-center gap-3">
                   <Icon className="text-muted-foreground h-4 w-4" />
                   <div>
