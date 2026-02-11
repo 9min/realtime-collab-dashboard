@@ -112,6 +112,7 @@ export function useDeleteAccount() {
       toast.success('계정이 삭제되었습니다')
       queryClient.clear()
       await signOut()
+      window.location.href = '/login'
     },
     onError: () => {
       toast.error('계정 삭제에 실패했습니다')
