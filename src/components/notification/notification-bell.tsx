@@ -32,6 +32,11 @@ export function NotificationBell() {
       if (!notification.is_read) {
         markAsReadMutation.mutate(notification.id)
       }
+      if (notification.entity_type === 'user_message') {
+        router.push('/admin')
+        return
+      }
+      if (!notification.project_id) return
       const boardUrl = `/projects/${notification.project_id}/board`
       if (notification.entity_type === 'task' && notification.entity_id) {
         router.push(`${boardUrl}?taskId=${notification.entity_id}`)

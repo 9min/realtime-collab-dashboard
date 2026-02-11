@@ -11,7 +11,7 @@ test.describe('로그인 페이지', () => {
     await page.goto('/login')
 
     // 타이틀 확인
-    await expect(page.getByText('실시간 협업 일정관리')).toBeVisible()
+    await expect(page.getByText('실시간 협업 일정관리 도구')).toBeVisible()
     await expect(page.getByText('소규모 팀을 위한 실시간 협업 대시보드')).toBeVisible()
   })
 

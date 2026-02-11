@@ -19,7 +19,7 @@ const geistMono = Geist_Mono({
 })
 
 export const metadata: Metadata = {
-  title: '실시간 협업 일정관리',
+  title: '실시간 협업 일정관리 도구',
   description: '소규모 팀을 위한 실시간 협업 대시보드',
 }
 

@@ -14,6 +14,6 @@ test.describe('Smoke Tests', () => {
 
   test('로그인 페이지에 앱 타이틀이 표시된다', async ({ page }) => {
     await page.goto('/login')
-    await expect(page.getByText('실시간 협업 일정관리')).toBeVisible()
+    await expect(page.getByText('실시간 협업 일정관리 도구')).toBeVisible()
   })
 })

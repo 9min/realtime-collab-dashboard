@@ -1,7 +1,7 @@
 'use client'
 
 import { memo } from 'react'
-import { Bell, MessageSquare, AtSign, Clock } from 'lucide-react'
+import { Bell, MessageSquare, AtSign, Clock, Mail } from 'lucide-react'
 
 import { cn } from '@/lib/utils'
 import type { NotificationWithActor } from '@/types/notification'
@@ -44,6 +44,10 @@ const ICON_CONFIG = {
   [NOTIFICATION_TYPE.DUE_SOON]: {
     icon: Clock,
     className: 'bg-orange-100 text-orange-600 dark:bg-orange-900/50 dark:text-orange-400',
+  },
+  [NOTIFICATION_TYPE.USER_MESSAGE]: {
+    icon: Mail,
+    className: 'bg-amber-100 text-amber-600 dark:bg-amber-900/50 dark:text-amber-400',
   },
 } as const
 

@@ -45,9 +45,9 @@ export default function LoginPage() {
     <div className="flex flex-col items-center motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-4 motion-safe:duration-700">
       {/* 타이틀 영역 */}
       <div className="mb-8 text-center">
-        <h1 className="text-4xl font-bold tracking-tight">
+        <h1 className="whitespace-nowrap text-4xl font-bold tracking-tight">
           <span className="bg-gradient-to-r from-blue-600 via-violet-600 to-emerald-500 bg-clip-text text-transparent dark:from-blue-400 dark:via-violet-400 dark:to-emerald-400">
-            실시간 협업 일정관리
+            실시간 협업 일정관리 도구
           </span>
         </h1>
         <p className="text-muted-foreground mt-2 text-sm">

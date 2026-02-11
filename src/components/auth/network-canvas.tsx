@@ -13,6 +13,10 @@ const CARD_BASE_W = 56
 const CARD_BASE_H = 38
 const LINE_COUNT_OPTIONS = [2, 3, 4] // 카드 내 텍스트 라인 수
 
+// Idle drift: 마우스 없이도 자연스럽게 떠다니는 효과
+const IDLE_DRIFT_STRENGTH = 0.15
+const IDLE_DRIFT_SPEED = 0.0004 // 낮을수록 느리고 부드러움
+
 interface CardNode {
   x: number
   y: number
@@ -25,6 +29,8 @@ interface CardNode {
   lineWidths: number[] // 텍스트 라인 너비 비율 (0~1)
   hasCheckbox: boolean
   hasBadge: boolean
+  driftPhaseX: number  // idle drift 위상 오프셋
+  driftPhaseY: number
 }
 
 const ACCENT_COLORS_LIGHT = [
@@ -59,6 +65,8 @@ function createCards(width: number, height: number): CardNode[] {
     ),
     hasCheckbox: Math.random() > 0.5,
     hasBadge: Math.random() > 0.6,
+    driftPhaseX: Math.random() * Math.PI * 2,
+    driftPhaseY: Math.random() * Math.PI * 2,
   }))
 }
 
@@ -94,6 +102,7 @@ export function NetworkCanvas() {
 
     const isDark = resolvedTheme === 'dark'
     let animId = 0
+    const startTime = performance.now()
 
     const handleResize = () => {
       const dpr = window.devicePixelRatio || 1
@@ -127,7 +136,13 @@ export function NetworkCanvas() {
       ctx.clearRect(0, 0, canvas.width, canvas.height)
 
       // Update positions
+      const elapsed = performance.now() - startTime
       for (const card of cards) {
+        // Idle drift: 사인파 기반 부드러운 자율 움직임
+        const t = elapsed * IDLE_DRIFT_SPEED * (card.z * 0.5 + 0.5)
+        card.vx += Math.sin(t + card.driftPhaseX) * IDLE_DRIFT_STRENGTH * 0.01
+        card.vy += Math.cos(t + card.driftPhaseY) * IDLE_DRIFT_STRENGTH * 0.01
+
         const dx = card.x - mouse.x
         const dy = card.y - mouse.y
         const dist = Math.sqrt(dx * dx + dy * dy)

@@ -5,12 +5,14 @@ import {
   ChevronRight,
   FolderOpen,
   Loader2,
+  MessageSquare,
   Search,
   ShieldCheck,
   ShieldOff,
   Users,
   UserCog,
   FolderKanban,
+  CheckCheck,
 } from 'lucide-react'
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
@@ -20,8 +22,10 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Input } from '@/components/ui/input'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useMyProfile, useAllUsers, useAllProjectMemberships, useSetAdminStatus } from '@/queries/use-admin'
+import { useAllUserMessages, useMarkMessageRead } from '@/queries/use-user-messages'
 import { useAuth } from '@/hooks/use-auth'
 import type { ProjectMembership } from '@/services/admin-service'
+import type { UserMessage } from '@/types/user-message'
 
 const ROLE_LABELS: Record<ProjectMembership['role'], string> = {
   owner: '소유자',
@@ -108,9 +112,23 @@ export default function AdminPage() {
   const { data: users, isLoading: usersLoading } = useAllUsers()
   const { data: memberships, isLoading: membershipsLoading } = useAllProjectMemberships()
   const setAdminStatus = useSetAdminStatus()
+  const { data: userMessages } = useAllUserMessages()
+  const markMessageRead = useMarkMessageRead()
 
   const [expandedUsers, setExpandedUsers] = useState<Set<string>>(new Set())
   const [searchQuery, setSearchQuery] = useState('')
+
+  const messagesByUser = useMemo(() => {
+    const map = new Map<string, UserMessage>()
+    if (!userMessages) return map
+
+    for (const m of userMessages) {
+      if (!map.has(m.user_id)) {
+        map.set(m.user_id, m)
+      }
+    }
+    return map
+  }, [userMessages])
 
   const membershipsByUser = useMemo(() => {
     const map = new Map<string, ProjectMembership[]>()
@@ -252,6 +270,8 @@ export default function AdminPage() {
               const initial = profile.full_name?.[0] ?? profile.email[0]?.toUpperCase() ?? '?'
               const isExpanded = expandedUsers.has(profile.id)
               const userMemberships = membershipsByUser.get(profile.id) ?? []
+              const userMessage = messagesByUser.get(profile.id)
+              const hasUnreadMessage = userMessage && !userMessage.is_read
 
               return (
                 <div
@@ -281,10 +301,16 @@ export default function AdminPage() {
                         <AvatarFallback className="text-xs">{initial}</AvatarFallback>
                       </Avatar>
                       <div className="min-w-0">
-                        <p className="truncate text-sm font-medium">
+                        <p className="flex items-center gap-1.5 truncate text-sm font-medium">
                           {profile.full_name ?? '이름 없음'}
                           {isCurrentUser && (
-                            <span className="text-muted-foreground ml-1 text-xs">(나)</span>
+                            <span className="text-muted-foreground text-xs">(나)</span>
+                          )}
+                          {hasUnreadMessage && (
+                            <span className="relative flex h-4 w-4 shrink-0 items-center justify-center">
+                              <MessageSquare className="h-3.5 w-3.5 text-blue-500" />
+                              <span className="absolute -right-0.5 -top-0.5 h-1.5 w-1.5 rounded-full bg-blue-500" />
+                            </span>
                           )}
                         </p>
                         <p className="text-muted-foreground truncate text-xs">{profile.email}</p>
@@ -344,6 +370,49 @@ export default function AdminPage() {
                         <p className="text-muted-foreground py-1 text-sm">
                           참여 중인 프로젝트 없음
                         </p>
+                      )}
+
+                      {userMessage && (
+                        <div className="mt-3 space-y-2 border-t border-dashed pt-3">
+                          <div className="flex items-start gap-2">
+                            <MessageSquare className="text-muted-foreground mt-0.5 h-3.5 w-3.5 shrink-0" />
+                            <div className="min-w-0 flex-1">
+                              <div className="rounded-lg bg-muted px-3 py-2">
+                                <p className="text-sm whitespace-pre-wrap break-words">{userMessage.message}</p>
+                              </div>
+                              <p className="text-muted-foreground mt-1 text-xs">
+                                {new Date(userMessage.created_at).toLocaleDateString('ko-KR', {
+                                  year: 'numeric',
+                                  month: 'long',
+                                  day: 'numeric',
+                                  hour: '2-digit',
+                                  minute: '2-digit',
+                                })}
+                              </p>
+                            </div>
+                          </div>
+                          {!userMessage.is_read && (
+                            <div className="flex justify-end">
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="h-7 gap-1 text-xs"
+                                disabled={markMessageRead.isPending}
+                                onClick={(e) => {
+                                  e.stopPropagation()
+                                  markMessageRead.mutate(userMessage.id)
+                                }}
+                              >
+                                {markMessageRead.isPending ? (
+                                  <Loader2 className="h-3 w-3 animate-spin" />
+                                ) : (
+                                  <CheckCheck className="h-3 w-3" />
+                                )}
+                                읽음
+                              </Button>
+                            </div>
+                          )}
+                        </div>
                       )}
                     </div>
                   )}

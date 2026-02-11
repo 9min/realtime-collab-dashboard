@@ -15,6 +15,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { useAuth } from '@/hooks/use-auth'
+import { useNotificationRealtime } from '@/hooks/use-notification-realtime'
 import { useMyProfile } from '@/queries/use-admin'
 import { useProfile } from '@/queries/use-profile'
 
@@ -29,6 +30,7 @@ import { ThemeToggle } from './theme-toggle'
 
 export function Header() {
   const { user, isAuthenticated, signOut } = useAuth()
+  useNotificationRealtime()
   const { data: myProfile } = useMyProfile()
   const { data: profile } = useProfile()
   const router = useRouter()
@@ -53,7 +55,7 @@ export function Header() {
           href="/projects"
           className="text-lg font-semibold text-primary-foreground transition-opacity hover:opacity-80"
         >
-          실시간 협업 일정관리
+          실시간 협업 일정관리 도구
         </Link>
       </nav>
       <div className="flex items-center gap-2 text-primary-foreground">

@@ -12,7 +12,6 @@ import { chartKeys } from '@/queries/use-chart-data'
 import { columnKeys } from '@/queries/use-columns'
 import { commentKeys } from '@/queries/use-comments'
 import { dependencyKeys } from '@/queries/use-dependencies'
-import { notificationKeys } from '@/queries/use-notifications'
 import { labelKeys } from '@/queries/use-labels'
 import { subtaskKeys } from '@/queries/use-subtasks'
 import { taskKeys } from '@/queries/use-tasks'
@@ -226,24 +225,7 @@ export function useRealtimeSubscription(projectId: string) {
             queryClient.invalidateQueries({ queryKey: activityKeys.list(projectId) })
           },
         )
-        // notifications 변경 감지
-        .on(
-          'postgres_changes',
-          {
-            event: 'INSERT',
-            schema: 'public',
-            table: 'notifications',
-          },
-          (payload) => {
-            const record = payload.new as Record<string, unknown> | undefined
-            const currentUserId = userIdRef.current
-            if (currentUserId && record && record['user_id'] === currentUserId) {
-              queryClient.invalidateQueries({ queryKey: notificationKeys.list(currentUserId) })
-              queryClient.invalidateQueries({ queryKey: notificationKeys.unreadCount(currentUserId) })
-              toast.info('새 알림이 도착했습니다', { duration: 3000 })
-            }
-          },
-        )
+        // notifications: 글로벌 구독(useNotificationRealtime)으로 이전됨
         // task_attachments 변경 감지
         .on(
           'postgres_changes',

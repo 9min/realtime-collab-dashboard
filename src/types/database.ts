@@ -326,7 +326,7 @@ export interface Database {
       notifications: {
         Row: {
           id: string
-          project_id: string
+          project_id: string | null
           user_id: string
           actor_id: string | null
           type: string
@@ -339,7 +339,7 @@ export interface Database {
         }
         Insert: {
           id?: string
-          project_id: string
+          project_id?: string | null
           user_id: string
           actor_id?: string | null
           type: string
@@ -659,6 +659,35 @@ export interface Database {
             columns: ['project_id']
             isOneToOne: false
             referencedRelation: 'projects'
+            referencedColumns: ['id']
+          },
+        ]
+      }
+      user_messages: {
+        Row: {
+          id: string
+          user_id: string
+          message: string
+          is_read: boolean
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          message: string
+          is_read?: boolean
+          created_at?: string
+        }
+        Update: {
+          message?: string
+          is_read?: boolean
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'user_messages_user_id_fkey'
+            columns: ['user_id']
+            isOneToOne: false
+            referencedRelation: 'profiles'
             referencedColumns: ['id']
           },
         ]
