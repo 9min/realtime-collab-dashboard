@@ -10,7 +10,7 @@ import { toast } from 'sonner'
 
 import { Button } from '@/components/ui/button'
 import { useAuth } from '@/hooks/use-auth'
-import { MEMBER_ROLE, PRIORITY_LABELS, SWIMLANE_MODE, TASK_PRIORITY } from '@/lib/constants'
+import { MAX_COLUMNS, MEMBER_ROLE, PRIORITY_LABELS, SWIMLANE_MODE, TASK_PRIORITY } from '@/lib/constants'
 import { filterTasks } from '@/lib/task-filter'
 import { useColumns, useCreateColumn, useUpdateColumn, useDeleteColumn } from '@/queries/use-columns'
 import { useDependencies } from '@/queries/use-dependencies'
@@ -313,8 +313,8 @@ export function KanbanBoard({ projectId }: KanbanBoardProps) {
               />
             ))}
 
-            {/* 컬럼 추가 버튼 — owner/admin만 */}
-            {canDeleteAll && (
+            {/* 컬럼 추가 버튼 — owner/admin만, 최대 MAX_COLUMNS개 */}
+            {canDeleteAll && (columns?.length ?? 0) < MAX_COLUMNS && (
               <Button
                 variant="outline"
                 className="h-12 w-72 shrink-0 border-dashed"

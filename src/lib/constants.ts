@@ -1,3 +1,6 @@
+// 칸반 컬럼 최대 개수
+export const MAX_COLUMNS = 4
+
 // 태스크 우선순위
 export const TASK_PRIORITY = {
   LOW: 'low',
