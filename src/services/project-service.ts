@@ -281,6 +281,72 @@ export async function updateMemberRole(
   return { data, error: null }
 }
 
+// 프로필 검색 (이름 또는 이메일)
+export async function searchProfiles(
+  supabase: Client,
+  query: string,
+  excludeUserIds: string[],
+): Promise<ServiceResult<Pick<Profile, 'id' | 'email' | 'full_name' | 'avatar_url'>[]>> {
+  let builder = supabase
+    .from('profiles')
+    .select('id, email, full_name, avatar_url')
+    .or(`full_name.ilike.%${query}%,email.ilike.%${query}%`)
+    .limit(10)
+
+  if (excludeUserIds.length > 0) {
+    builder = builder.not('id', 'in', `(${excludeUserIds.join(',')})`)
+  }
+
+  const { data, error } = await builder.returns<Pick<Profile, 'id' | 'email' | 'full_name' | 'avatar_url'>[]>()
+
+  if (error) {
+    return { data: null, error: { code: error.code, message: error.message } }
+  }
+
+  return { data: data ?? [], error: null }
+}
+
+// 멤버 초대 (userId 기반 — 검색으로 이미 user_id를 알고 있을 때)
+export async function inviteMemberById(
+  supabase: Client,
+  projectId: string,
+  userId: string,
+  role: 'owner' | 'admin' | 'member' | 'viewer',
+): Promise<ServiceResult<ProjectMember>> {
+  // 1. 이미 멤버인지 확인
+  const { data: existing } = await supabase
+    .from('project_members')
+    .select('id')
+    .eq('project_id', projectId)
+    .eq('user_id', userId)
+    .returns<Pick<ProjectMember, 'id'>[]>()
+    .maybeSingle()
+
+  if (existing) {
+    return {
+      data: null,
+      error: { code: 'ALREADY_MEMBER', message: '이미 프로젝트 멤버입니다' },
+    }
+  }
+
+  // 2. 멤버 추가
+  const { data, error } = await supabase
+    .from('project_members')
+    .insert({ project_id: projectId, user_id: userId, role })
+    .select('*')
+    .returns<ProjectMember[]>()
+    .single()
+
+  if (error || !data) {
+    return {
+      data: null,
+      error: { code: error?.code ?? 'UNKNOWN', message: error?.message ?? '멤버 초대 실패' },
+    }
+  }
+
+  return { data, error: null }
+}
+
 // 멤버 제거
 export async function removeMember(
   supabase: Client,

@@ -125,6 +125,20 @@ export function useRealtimeSubscription(projectId: string) {
             queryClient.invalidateQueries({ queryKey: activityKeys.list(projectId) })
           },
         )
+        // projects 테이블 삭제 감지 (프로젝트 삭제 시 다른 멤버에게 알림)
+        .on(
+          'postgres_changes',
+          {
+            event: 'DELETE',
+            schema: 'public',
+            table: 'projects',
+            filter: `id=eq.${projectId}`,
+          },
+          () => {
+            queryClient.invalidateQueries({ queryKey: ['projects', projectId] })
+            queryClient.invalidateQueries({ queryKey: ['projects'] })
+          },
+        )
         // project_members 변경 감지
         .on(
           'postgres_changes',
@@ -136,6 +150,7 @@ export function useRealtimeSubscription(projectId: string) {
           },
           () => {
             queryClient.invalidateQueries({ queryKey: ['projects', projectId, 'members'] })
+            queryClient.invalidateQueries({ queryKey: ['projects', projectId] })
             queryClient.invalidateQueries({ queryKey: activityKeys.list(projectId) })
           },
         )

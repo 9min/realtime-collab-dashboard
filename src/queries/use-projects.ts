@@ -12,6 +12,8 @@ import {
   deleteProject,
   getProjectMembers,
   inviteMember,
+  inviteMemberById,
+  searchProfiles,
   updateMemberRole,
   removeMember,
 } from '@/services/project-service'
@@ -23,6 +25,7 @@ export const projectKeys = {
   all: ['projects'] as const,
   detail: (id: string) => ['projects', id] as const,
   members: (id: string) => ['projects', id, 'members'] as const,
+  searchProfiles: (query: string) => ['profiles', 'search', query] as const,
 }
 
 // 내 프로젝트 목록
@@ -195,6 +198,43 @@ export function useRemoveMember(projectId: string) {
     },
     onError: () => {
       toast.error('멤버 제거에 실패했습니다')
+    },
+  })
+}
+
+// 프로필 검색
+export function useSearchProfiles(query: string, excludeUserIds: string[]) {
+  const supabase = useSupabase()
+
+  return useQuery({
+    // eslint-disable-next-line @tanstack/query/exhaustive-deps
+    queryKey: projectKeys.searchProfiles(query),
+    queryFn: async () => {
+      const result = await searchProfiles(supabase, query, excludeUserIds)
+      if (result.error) throw new Error(result.error.message)
+      return result.data
+    },
+    enabled: query.length >= 2,
+  })
+}
+
+// 멤버 초대 (userId 기반)
+export function useInviteMemberById(projectId: string) {
+  const supabase = useSupabase()
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: async ({ userId, role }: { userId: string; role: MemberRole }) => {
+      const result = await inviteMemberById(supabase, projectId, userId, role)
+      if (result.error) throw new Error(result.error.message)
+      return result.data
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: projectKeys.members(projectId) })
+      toast.success('멤버가 초대되었습니다')
+    },
+    onError: (error) => {
+      toast.error(error.message || '멤버 초대에 실패했습니다')
     },
   })
 }

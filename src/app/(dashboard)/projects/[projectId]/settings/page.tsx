@@ -2,9 +2,6 @@
 
 import { use, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { useForm } from 'react-hook-form'
-import { z } from 'zod'
-import { zodResolver } from '@hookform/resolvers/zod'
 import { Trash2, UserPlus, Shield, Crown, Tag, ListChecks, Link2, Paperclip, MessageSquare } from 'lucide-react'
 
 import {
@@ -26,19 +23,20 @@ import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Switch } from '@/components/ui/switch'
 import { useAuth } from '@/hooks/use-auth'
-import { useProject, useProjectMembers, useInviteMember, useUpdateMemberRole, useRemoveMember, useUpdateProject, useDeleteProject } from '@/queries/use-projects'
+import { useProject, useProjectMembers, useInviteMemberById, useUpdateMemberRole, useRemoveMember, useUpdateProject, useDeleteProject } from '@/queries/use-projects'
 import { LabelManager } from '@/components/kanban/label-manager'
+import { MemberInviteCombobox } from '@/components/project/member-invite-combobox'
 import { IntegrationSettings } from '@/components/project/integration-settings'
 import { MEMBER_ROLE } from '@/lib/constants'
 import type { MemberRole } from '@/types/common'
 
-// 초대 폼 스키마
-const inviteSchema = z.object({
-  email: z.string().email('유효한 이메일을 입력해주세요'),
-  role: z.string(),
-})
-
-type InviteFormData = z.infer<typeof inviteSchema>
+// 선택된 사용자 타입
+interface SelectedUser {
+  id: string
+  email: string
+  full_name: string | null
+  avatar_url: string | null
+}
 
 // 역할별 아이콘/라벨
 const ROLE_CONFIG = {
@@ -58,7 +56,7 @@ export default function ProjectSettingsPage({ params }: ProjectSettingsPageProps
   const { user } = useAuth()
   const { data: project, isLoading: projectLoading, isError: projectError } = useProject(projectId)
   const { data: members, isLoading: membersLoading, isError: membersError } = useProjectMembers(projectId)
-  const inviteMutation = useInviteMember(projectId)
+  const inviteMutation = useInviteMemberById(projectId)
   const updateRoleMutation = useUpdateMemberRole(projectId)
   const removeMutation = useRemoveMember(projectId)
   const updateMutation = useUpdateProject(projectId)
@@ -67,29 +65,26 @@ export default function ProjectSettingsPage({ params }: ProjectSettingsPageProps
   const [isEditing, setIsEditing] = useState(false)
   const [projectName, setProjectName] = useState('')
   const [projectDescription, setProjectDescription] = useState('')
-
-  const {
-    register,
-    handleSubmit,
-    reset,
-    setValue,
-    formState: { errors },
-  } = useForm<InviteFormData>({
-    resolver: zodResolver(inviteSchema),
-    defaultValues: { email: '', role: MEMBER_ROLE.MEMBER },
-  })
+  const [selectedUser, setSelectedUser] = useState<SelectedUser | null>(null)
+  const [inviteRole, setInviteRole] = useState<string>(MEMBER_ROLE.MEMBER)
 
   // 현재 유저의 역할 확인
   const currentMember = members?.find((m) => m.user_id === user?.id)
   const isOwnerOrAdmin =
     currentMember?.role === MEMBER_ROLE.OWNER || currentMember?.role === MEMBER_ROLE.ADMIN
 
-  const handleInvite = handleSubmit((data) => {
+  const handleInvite = () => {
+    if (!selectedUser) return
     inviteMutation.mutate(
-      { email: data.email, role: data.role as MemberRole },
-      { onSuccess: () => reset() },
+      { userId: selectedUser.id, role: inviteRole as MemberRole },
+      {
+        onSuccess: () => {
+          setSelectedUser(null)
+          setInviteRole(MEMBER_ROLE.MEMBER)
+        },
+      },
     )
-  })
+  }
 
   const handleEditProject = () => {
     if (!project) return
@@ -206,20 +201,17 @@ export default function ProjectSettingsPage({ params }: ProjectSettingsPageProps
           </h4>
 
           {isOwnerOrAdmin && (
-            <form onSubmit={handleInvite} className="flex gap-2">
+            <div className="flex gap-2">
               <div className="flex-1">
-                <Input
-                  {...register('email')}
-                  type="email"
-                  placeholder="이메일로 초대"
+                <MemberInviteCombobox
+                  projectId={projectId}
+                  value={selectedUser}
+                  onSelect={setSelectedUser}
                 />
-                {errors.email && (
-                  <p className="text-destructive mt-1 text-xs">{errors.email.message}</p>
-                )}
               </div>
               <Select
-                defaultValue={MEMBER_ROLE.MEMBER}
-                onValueChange={(v) => setValue('role', v)}
+                value={inviteRole}
+                onValueChange={setInviteRole}
               >
                 <SelectTrigger className="w-28">
                   <SelectValue />
@@ -230,11 +222,14 @@ export default function ProjectSettingsPage({ params }: ProjectSettingsPageProps
                   <SelectItem value={MEMBER_ROLE.VIEWER}>뷰어</SelectItem>
                 </SelectContent>
               </Select>
-              <Button type="submit" disabled={inviteMutation.isPending}>
+              <Button
+                onClick={handleInvite}
+                disabled={!selectedUser || inviteMutation.isPending}
+              >
                 <UserPlus className="mr-2 h-4 w-4" />
                 초대
               </Button>
-            </form>
+            </div>
           )}
 
           {membersLoading ? (

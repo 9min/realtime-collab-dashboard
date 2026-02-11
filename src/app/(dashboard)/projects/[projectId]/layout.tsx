@@ -2,9 +2,19 @@
 
 import { use, useCallback, useEffect, useMemo, type ReactNode } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
+import { useQueryClient } from '@tanstack/react-query'
 import { ArrowLeft, LayoutDashboard, Columns3, Activity, GanttChart, Calendar, Settings } from 'lucide-react'
 
 import { OnlineUsers } from '@/components/presence/online-users'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog'
 import { Button } from '@/components/ui/button'
 import { useAuth } from '@/hooks/use-auth'
 import { useKeyboardShortcuts } from '@/hooks/use-keyboard-shortcuts'
@@ -12,13 +22,15 @@ import { MEMBER_ROLE } from '@/lib/constants'
 import { SHORTCUT_KEYS } from '@/lib/keyboard-shortcuts'
 import { cn } from '@/lib/utils'
 import { usePresence } from '@/hooks/use-presence'
-import { useProject, useProjectMembers } from '@/queries/use-projects'
+import { projectKeys, useProject, useProjectMembers } from '@/queries/use-projects'
 import { useShortcutHelpStore } from '@/stores/shortcut-help-store'
 
 interface ProjectLayoutProps {
   children: ReactNode
   params: Promise<{ projectId: string }>
 }
+
+const PROJECT_POLL_INTERVAL = 15_000 // 15초마다 프로젝트 존재 여부 확인
 
 const ALL_NAV_ITEMS = [
   { label: '대시보드', href: '', icon: LayoutDashboard },
@@ -34,6 +46,7 @@ export default function ProjectLayout({ children, params }: ProjectLayoutProps) 
   const { user } = useAuth()
   const router = useRouter()
   const pathname = usePathname()
+  const queryClient = useQueryClient()
   const { data: project, isLoading, isError } = useProject(projectId)
   const { data: members } = useProjectMembers(projectId)
   const { onlineUsers } = usePresence(projectId)
@@ -55,12 +68,49 @@ export default function ProjectLayout({ children, params }: ProjectLayoutProps) 
   )
   useKeyboardShortcuts(shortcuts)
 
-  // 프로젝트 조회 실패 시 (삭제됨 등) 목록으로 리다이렉트
+  // 프로젝트 삭제/접근 불가 감지
+  // TanStack Query는 에러 후에도 이전 data를 유지 → project가 있으면 한 번은 로드 성공한 것
+  // - isError + project 존재 → 삭제 안내 다이얼로그
+  // - isError + project 없음 → 최초 로드 실패, 조용히 리다이렉트
+  const showDeletedDialog = isError && !!project
+
   useEffect(() => {
-    if (isError) {
+    if (isError && !project) {
       router.replace('/projects')
     }
-  }, [isError, router])
+  }, [isError, project, router])
+
+  // 프로젝트 존재 여부 주기적 확인 (Realtime이 RLS로 이벤트 전달 못할 때 대비)
+  useEffect(() => {
+    if (!projectId || showDeletedDialog) return
+
+    const interval = setInterval(() => {
+      queryClient.invalidateQueries({ queryKey: projectKeys.detail(projectId) })
+    }, PROJECT_POLL_INTERVAL)
+
+    return () => clearInterval(interval)
+  }, [projectId, queryClient, showDeletedDialog])
+
+  // 뮤테이션 실패 시 즉시 프로젝트 존재 여부 재확인
+  // (삭제된 프로젝트에서 태스크 생성 등 시도 → 에러 → 프로젝트 쿼리 재검증)
+  useEffect(() => {
+    if (showDeletedDialog) return
+
+    const unsubscribe = queryClient.getMutationCache().subscribe((event) => {
+      if (event.type === 'updated' && event.mutation.state.status === 'error') {
+        queryClient.invalidateQueries({ queryKey: projectKeys.detail(projectId) })
+      }
+    })
+
+    return unsubscribe
+  }, [queryClient, projectId, showDeletedDialog])
+
+  // 삭제 감지 시 프로젝트 목록 캐시 제거 (메인 화면에서 삭제된 프로젝트가 보이지 않도록)
+  useEffect(() => {
+    if (showDeletedDialog) {
+      queryClient.removeQueries({ queryKey: projectKeys.all })
+    }
+  }, [showDeletedDialog, queryClient])
 
   // 뷰어는 설정 탭 숨김
   const currentRole = members?.find((m) => m.user_id === user?.id)?.role
@@ -75,6 +125,24 @@ export default function ProjectLayout({ children, params }: ProjectLayoutProps) 
 
   return (
     <div className="space-y-6">
+      {/* 프로젝트 삭제 안내 다이얼로그 */}
+      <AlertDialog open={showDeletedDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>프로젝트가 삭제되었습니다</AlertDialogTitle>
+            <AlertDialogDescription>
+              이 프로젝트가 삭제되어 더 이상 접근할 수 없습니다.
+              프로젝트 목록으로 이동합니다.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogAction onClick={() => router.replace('/projects')}>
+              확인
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
       {/* 프로젝트 헤더 */}
       <div className="flex items-center gap-3">
         <Button
