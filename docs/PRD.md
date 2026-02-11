@@ -39,7 +39,7 @@
 ```
 Given 인증되지 않은 사용자가 앱에 접근할 때
 When 로그인 페이지가 표시되면
-Then GitHub, Google 또는 카카오 OAuth로 로그인할 수 있다
+Then Google 또는 카카오 OAuth로 로그인할 수 있다
 
 Given 로그인된 사용자가 브라우저를 닫았다가 다시 열 때
 When 세션이 유효하면
@@ -57,7 +57,7 @@ When "새 프로젝트" 버튼을 클릭하면
 Then 프로젝트 이름/설명을 입력하고 프로젝트를 생성할 수 있다
 
 Given 프로젝트 소유자가 설정 페이지에 있을 때
-When 이메일로 멤버를 초대하면
+When 사용자 검색으로 멤버를 초대하면
 Then 해당 유저가 프로젝트에 참여할 수 있다
 ```
 
@@ -159,11 +159,25 @@ When owner/repo/PAT를 입력하면
 Then 태스크 생성 시 GitHub Issue가 자동으로 생성된다
 ```
 
-### US-13: System Monitoring
+### US-13: Service Statistics
 ```
-Given 관리자가 모니터링 대시보드에 접속할 때
-When 시스템 상태를 확인하면
-Then 캐시 히트율, 에러 트렌드, 활성 사용자 수를 확인할 수 있다
+Given 관리자가 서비스 통계 페이지에 접속할 때
+When 서비스 현황을 확인하면
+Then 전체 사용자 수, 프로젝트 수, 태스크 수, 스토리지 사용량을 확인할 수 있다
+```
+
+### US-15: User Messages
+```
+Given 신규 사용자가 프로젝트에 참여하지 않은 상태일 때
+When 관리자에게 메시지를 작성하여 전송하면
+Then 관리자에게 알림이 전달되고, 관리자가 사용자 관리 페이지에서 메시지를 확인할 수 있다
+```
+
+### US-16: Project Feature Flags
+```
+Given 프로젝트 소유자/관리자가 설정 페이지에 있을 때
+When 기능 토글(라벨, 서브태스크, 의존성, 첨부파일, 댓글)을 변경하면
+Then 비활성화된 기능이 태스크 상세에서 숨겨진다
 ```
 
 ### US-14: Connection Resilience
@@ -184,30 +198,34 @@ Then 폴링 폴백으로 전환되어 데이터 동기화가 유지된다
 ### Phase 1: Core (MVP) — ✅ 구현 완료
 
 #### F1. Authentication ✅
-- **OAuth Provider**: GitHub, Google, 카카오
+- **OAuth Provider**: Google, 카카오
 - **세션 관리**: Supabase Auth (JWT, httpOnly cookie)
 - **Protected Routes**: Middleware에서 세션 검증
 - **프로필**: OAuth에서 가져온 이름, 아바타 자동 세팅
+- **로그인 페이지**: 칸반 카드 네트워크 배경 애니메이션 (Canvas 기반, Idle Drift)
+- **계정 삭제 후 리다이렉트**: 로그인 페이지로 자동 이동
 - **Acceptance Criteria**:
-  - [x] GitHub OAuth 로그인/로그아웃
   - [x] Google OAuth 로그인/로그아웃
   - [x] 카카오 OAuth 로그인/로그아웃
   - [x] 세션 만료 시 자동 리다이렉트
   - [x] 인증되지 않은 경로 접근 차단
+  - [x] 로그인 페이지 네트워크 배경 애니메이션
 
 #### F2. Project Management ✅
 - **프로젝트 CRUD**: 생성, 조회, 수정, 삭제 (소유자만)
-- **멤버 관리**: 초대 (owner/admin), 역할 (owner, admin, member, viewer)
+- **멤버 관리**: Combobox 사용자 검색 기반 초대 (owner/admin), 역할 (owner, admin, member, viewer)
 - **프로젝트 목록**: 참여 중인 프로젝트 리스트
 - **프로젝트 생성 시 기본 컬럼 자동 생성** (RPC: `create_project_with_defaults`)
-- **CASCADE 삭제**: 프로젝트 삭제 시 연관 데이터 자동 정리
+- **CASCADE 삭제**: 프로젝트 삭제 시 연관 데이터 + Storage 파일 자동 정리
+- **프로젝트 삭제 감지**: 삭제된 프로젝트 멤버에게 알림
 - **Acceptance Criteria**:
   - [x] 프로젝트 생성 (이름, 설명)
-  - [x] 멤버 초대 (이메일 기반)
+  - [x] 멤버 초대 (사용자 검색 Combobox)
   - [x] 역할별 권한 분리
-  - [x] 프로젝트 삭제 (owner만)
+  - [x] 프로젝트 삭제 (owner만) + Storage 정리
   - [x] 멤버 역할 변경 (owner/admin)
   - [x] 멤버 제거
+  - [x] 프로젝트 삭제 감지 알림
 
 #### F3. Dashboard Layout ✅
 - **Grid System**: CSS Grid 기반 반응형 레이아웃 (12 컬럼)
@@ -223,13 +241,17 @@ Then 폴링 폴백으로 전환되어 데이터 동기화가 유지된다
 
 #### F4. Kanban Board ✅
 - **컬럼 관리**: 기본 컬럼 (To Do, In Progress, Done) + 커스텀 추가/삭제/이름 변경
+- **컬럼 최대 4개 제한**
+- **완료 컬럼 플래그**: `is_done_column` — 선행 작업 완료 판정 기준
 - **태스크 CRUD**: 생성, 조회, 수정, 삭제
 - **태스크 속성**: 제목, 설명 (Markdown), 우선순위 (low/medium/high/urgent), 담당자, 마감일
 - **Drag & Drop**: 컬럼 간 태스크 이동, 컬럼 내 순서 변경, 컬럼 순서 변경
 - **태스크 카드 전체 영역 드래그 가능**
 - **삭제 시 AlertDialog 컨펌 통일**
+- **태스크 삭제 시 Storage 첨부파일 자동 정리**
 - **Acceptance Criteria**:
-  - [x] 컬럼 CRUD + 이름 변경
+  - [x] 컬럼 CRUD + 이름 변경 (최대 4개)
+  - [x] 완료 컬럼 지정
   - [x] 태스크 CRUD
   - [x] DnD로 태스크 이동 (컬럼 간 + 컬럼 내)
   - [x] 컬럼 순서 DnD
@@ -308,15 +330,17 @@ Then 폴링 폴백으로 전환되어 데이터 동기화가 유지된다
   - [x] 파일 다운로드/삭제
 
 #### F11. Notifications ✅
-- **알림 유형**: task_assigned, commented, mentioned, due_soon
+- **알림 유형**: task_assigned, commented, mentioned, due_soon, user_message
 - **UI**: 헤더 벨 아이콘 + 미읽은 수 뱃지
-- **실시간 전달**: Realtime으로 즉시 알림
+- **실시간 전달**: Realtime Postgres Changes로 즉시 알림 (글로벌 구독)
+- **project_id nullable**: 프로젝트와 무관한 알림 지원 (예: 신규 사용자 메시지)
 - **Acceptance Criteria**:
   - [x] 알림 벨 + 미읽은 수 표시
   - [x] 알림 목록 표시
   - [x] 개별/전체 읽음 처리
   - [x] 클릭 시 해당 엔티티로 이동
-  - [x] 실시간 알림 전달
+  - [x] 실시간 알림 전달 (글로벌 Realtime 구독)
+  - [x] 사용자 메시지 알림 지원
 
 #### F12. Activity Log ✅
 - **자동 기록**: 트리거 기반 활동 추적 (태스크, 컬럼, 멤버, 댓글, 서브태스크)
@@ -430,13 +454,15 @@ Then 폴링 폴백으로 전환되어 데이터 동기화가 유지된다
 - **관리자 플래그**: `is_admin` 프로필 필드
 - **사용자 관리**: 전체 사용자 목록 + 검색
 - **관리자 권한 토글**: admin 상태 부여/해제
-- **프로젝트 멤버십 조회**: 모든 프로젝트의 멤버 현황
-- **통계**: 총 사용자 수, 프로젝트 수, 멤버십 수
+- **프로젝트 멤버십 조회**: 모든 프로젝트의 멤버 현황 (사용자 카드 펼침)
+- **통계**: 총 사용자 수, 관리자 수, 프로젝트 수
+- **사용자 메시지 관리**: 읽지 않은 메시지 배지 + 메시지 내용 표시 + 읽음 처리
 - **Acceptance Criteria**:
   - [x] 관리자 전용 페이지
   - [x] 사용자 목록 + 검색
   - [x] 관리자 권한 토글
   - [x] 프로젝트 멤버십 조회
+  - [x] 사용자 메시지 배지 + 읽음 처리
 
 #### F22. Keyboard Shortcuts ✅
 - **글로벌 검색**: Cmd+K / Ctrl+K
@@ -499,21 +525,19 @@ Then 폴링 폴백으로 전환되어 데이터 동기화가 유지된다
   - [x] Graceful degradation (Redis 없이도 동작)
   - [x] 캐시 hit/miss 추적
 
-#### F27. Monitoring Dashboard ✅
+#### F27. Service Statistics Dashboard ✅
 - **경로**: `/admin/monitoring` (관리자 전용)
-- **차트 위젯**:
-  - 에러 트렌드 차트 (7일간, Sentry 연동 준비)
-  - 캐시 히트율 차트
-  - 활성 사용자 차트 (30분 윈도우)
-  - 시스템 상태 카드 (Realtime/API/Uptime)
+- **DB 기반 통계 카드**:
+  - 전체 사용자 수
+  - 프로젝트 수
+  - 태스크 수
+  - 스토리지 사용량 (사용량/한도 + 프로그레스 바)
 - **API**: `/api/admin/monitoring` 엔드포인트
-- **서비스**: `monitoring-service.ts`
+- **서비스**: `monitoring-service.ts` (Supabase 직접 쿼리)
 - **Acceptance Criteria**:
-  - [x] 관리자 전용 모니터링 페이지
-  - [x] 캐시 메트릭 시각화
-  - [x] 에러 트렌드 차트
-  - [x] 활성 사용자 수 표시
-  - [x] 시스템 상태 표시
+  - [x] 관리자 전용 서비스 통계 페이지
+  - [x] 사용자/프로젝트/태스크 카운트
+  - [x] 스토리지 사용량 시각화
 
 #### F28. External Integrations (Slack & GitHub) ✅
 - **Slack 연동**:
@@ -620,6 +644,49 @@ Then 폴링 폴백으로 전환되어 데이터 동기화가 유지된다
 
 ---
 
+### Phase 9: User Experience & Administration — ✅ 구현 완료
+
+#### F34. Project Feature Flags ✅
+- **프로젝트별 기능 토글**: Owner/Admin이 설정 페이지에서 On/Off
+- **토글 가능 기능**: 라벨, 서브태스크, 의존성, 첨부파일, 댓글
+- **기본값**: 모든 기능 TRUE (활성화)
+- **UI 반영**: 비활성화된 기능은 태스크 상세에서 숨김
+- **DB**: `projects` 테이블에 `feature_*` boolean 컬럼 (마이그레이션 028, 030)
+- **Acceptance Criteria**:
+  - [x] 설정 페이지 기능 토글 UI (Switch)
+  - [x] 라벨 토글 시 인라인 라벨 매니저 표시/숨김
+  - [x] 비활성화된 기능 태스크 상세에서 숨김
+  - [x] 기본값 TRUE
+
+#### F35. User Messages (신규 사용자 → 관리자) ✅
+- **대상**: 프로젝트 미참여 비관리자 사용자
+- **메시지 전송**: 프로젝트 빈 상태에서 textarea + 전송 버튼 (최대 200자)
+- **1회 제한**: 이미 전송한 경우 "메시지가 전송되었습니다" 안내
+- **관리자 알림**: DB 트리거로 모든 관리자에게 `user_message` 알림 자동 생성
+- **관리자 UI**: 사용자 카드에 읽지 않은 메시지 배지 + 펼침 영역에서 메시지 확인 + 읽음 처리
+- **DB**: `user_messages` 테이블 (마이그레이션 031, 032)
+- **RLS**: 본인 메시지 조회/삽입, 관리자 전체 조회/읽음 업데이트
+- **Acceptance Criteria**:
+  - [x] 비관리자 빈 상태에서 메시지 전송 폼
+  - [x] 1회 전송 후 재전송 방지
+  - [x] 관리자 알림 트리거
+  - [x] 관리자 사용자 카드에 메시지 배지
+  - [x] 메시지 읽음 처리
+
+#### F36. Login Page Visual Enhancement ✅
+- **배경 애니메이션**: Canvas 기반 칸반 카드 네트워크 (20개 카드 노드 + 연결선)
+- **물리 시뮬레이션**: 마우스 반발력 + 속도 감쇠 + Idle Drift
+- **Idle Drift**: 마우스 없이도 카드가 사인/코사인 파동으로 자연스럽게 떠다님
+- **3D 깊이감**: z 값 기반 카드 크기/투명도/속도 차이
+- **다크 모드 호환**: 테마에 따라 카드/연결선 색상 변경
+- **Acceptance Criteria**:
+  - [x] Canvas 배경 애니메이션 렌더링
+  - [x] 마우스 인터랙션
+  - [x] Idle Drift 자연스러운 움직임
+  - [x] 다크 모드 호환
+
+---
+
 ## Future Features (Next)
 - **템플릿**: 프로젝트 템플릿으로 빠른 프로젝트 생성
 - **반복 태스크**: 주기적 태스크 자동 생성
@@ -706,13 +773,13 @@ Then 폴링 폴백으로 전환되어 데이터 동기화가 유지된다
 
 ## Database Schema
 
-### Tables (15개)
+### Tables (16개)
 | 테이블 | 용도 |
 |--------|------|
 | `profiles` | 사용자 프로필 (extends auth.users) |
-| `projects` | 프로젝트 |
+| `projects` | 프로젝트 (+ feature flag 컬럼) |
 | `project_members` | 프로젝트 멤버십 (N:N) |
-| `kanban_columns` | 칸반 컬럼 |
+| `kanban_columns` | 칸반 컬럼 (+ is_done_column, wip_limit) |
 | `tasks` | 태스크 |
 | `task_comments` | 태스크 댓글 |
 | `task_attachments` | 파일 첨부 |
@@ -720,18 +787,19 @@ Then 폴링 폴백으로 전환되어 데이터 동기화가 유지된다
 | `task_labels` | 태스크-라벨 연결 (N:N) |
 | `subtasks` | 서브태스크 |
 | `task_dependencies` | 태스크 의존성 |
-| `notifications` | 알림 |
+| `notifications` | 알림 (project_id nullable) |
 | `activity_logs` | 활동 로그 |
 | `dashboard_layouts` | 대시보드 레이아웃 |
 | `project_integrations` | 외부 연동 설정 (Slack, GitHub) |
+| `user_messages` | 신규 사용자 → 관리자 메시지 |
 
 ### RLS Policies
 - 모든 테이블에 RLS 활성화
 - 프로젝트 스코프 기반 정책
 - 헬퍼 함수: `is_project_member()`, `has_project_role()`, `is_admin()`
 
-### Migrations (26개)
-001~026 순차 마이그레이션으로 스키마 관리
+### Migrations (32개)
+001~032 순차 마이그레이션으로 스키마 관리
 
 ---
 
