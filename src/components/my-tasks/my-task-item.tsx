@@ -1,6 +1,5 @@
 'use client'
 
-import { useRouter } from 'next/navigation'
 import { Calendar } from 'lucide-react'
 
 import { Badge } from '@/components/ui/badge'
@@ -10,13 +9,12 @@ import type { MyTaskWithProject } from '@/services/my-tasks-service'
 
 interface MyTaskItemProps {
   task: MyTaskWithProject
+  onTaskClick?: (task: MyTaskWithProject) => void
 }
 
-export function MyTaskItem({ task }: MyTaskItemProps) {
-  const router = useRouter()
-
+export function MyTaskItem({ task, onTaskClick }: MyTaskItemProps) {
   const handleClick = () => {
-    router.push(`/projects/${task.project_id}/board?taskId=${task.id}`)
+    onTaskClick?.(task)
   }
 
   return (

@@ -1,13 +1,19 @@
 'use client'
 
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
+import dynamic from 'next/dynamic'
 import { AlertTriangle, CalendarCheck, CalendarClock, CalendarDays, CalendarOff, Inbox } from 'lucide-react'
 
 import { useAuth } from '@/hooks/use-auth'
 import { useMyTasks } from '@/queries/use-my-tasks'
 import { groupMyTasks, type GroupedMyTasks } from '@/lib/my-tasks-utils'
+import type { MyTaskWithProject } from '@/services/my-tasks-service'
 
 import { MyTaskItem } from './my-task-item'
+
+const TaskDetailDialog = dynamic(
+  () => import('@/components/kanban/task-detail-dialog').then((mod) => ({ default: mod.TaskDetailDialog })),
+)
 
 const SECTIONS: Array<{
   key: keyof GroupedMyTasks
@@ -26,6 +32,7 @@ const SECTIONS: Array<{
 export function MyTasksView() {
   const { user } = useAuth()
   const { data: tasks, isLoading } = useMyTasks(user?.id)
+  const [selectedTask, setSelectedTask] = useState<MyTaskWithProject | null>(null)
 
   const grouped = useMemo(() => {
     if (!tasks) return null
@@ -66,12 +73,22 @@ export function MyTasksView() {
             </h3>
             <div className="space-y-2">
               {sectionTasks.map((task) => (
-                <MyTaskItem key={task.id} task={task} />
+                <MyTaskItem key={task.id} task={task} onTaskClick={setSelectedTask} />
               ))}
             </div>
           </section>
         )
       })}
+
+      {selectedTask && (
+        <TaskDetailDialog
+          projectId={selectedTask.project_id}
+          task={selectedTask}
+          open={!!selectedTask}
+          onOpenChange={(open) => { if (!open) setSelectedTask(null) }}
+          canEdit
+        />
+      )}
     </div>
   )
 }

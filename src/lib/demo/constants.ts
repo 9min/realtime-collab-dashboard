@@ -28,3 +28,8 @@ export const DEMO_LABEL_IDS = {
   DESIGN: 'demo-label-0000-000000000003',
   DOCS: 'demo-label-0000-000000000004',
 } as const
+
+// 반복 태스크 ID
+export const DEMO_RECURRENCE_IDS = {
+  WEEKLY_REVIEW: 'demo-rec-0000-000000000001',
+} as const

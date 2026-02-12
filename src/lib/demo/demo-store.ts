@@ -126,6 +126,7 @@ class DemoDataStore {
       tasks: {
         profiles: { table: 'profiles', fkColumn: 'assignee_id', type: 'object' },
         projects: { table: 'projects', fkColumn: 'project_id', type: 'object' },
+        kanban_columns: { table: 'kanban_columns', fkColumn: 'column_id', type: 'object' },
       },
       task_comments: {
         profiles: { table: 'profiles', fkColumn: 'user_id', type: 'object' },
@@ -152,12 +153,21 @@ class DemoDataStore {
         blocking_task: { table: 'tasks', fkColumn: 'blocking_task_id', type: 'object' },
         blocked_task: { table: 'tasks', fkColumn: 'blocked_task_id', type: 'object' },
       },
+      task_favorites: {
+        tasks: { table: 'tasks', fkColumn: 'task_id', type: 'object' },
+        profiles: { table: 'profiles', fkColumn: 'user_id', type: 'object' },
+      },
+      task_recurrences: {
+        tasks: { table: 'tasks', fkColumn: 'task_id', type: 'object' },
+        projects: { table: 'projects', fkColumn: 'project_id', type: 'object' },
+        profiles: { table: 'profiles', fkColumn: 'created_by', type: 'object' },
+      },
     }
     return relations[table]?.[relationName] ?? null
   }
 
   private getSchemaFields(table: string): Record<string, boolean> {
-    const tablesWithUpdatedAt = ['profiles', 'projects', 'kanban_columns', 'tasks', 'subtasks', 'task_comments', 'dashboard_layouts', 'project_integrations']
+    const tablesWithUpdatedAt = ['profiles', 'projects', 'kanban_columns', 'tasks', 'subtasks', 'task_comments', 'dashboard_layouts', 'project_integrations', 'task_recurrences']
     if (tablesWithUpdatedAt.includes(table)) {
       return { updated_at: true }
     }

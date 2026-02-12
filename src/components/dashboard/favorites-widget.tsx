@@ -1,17 +1,23 @@
 'use client'
 
+import { useState } from 'react'
+import dynamic from 'next/dynamic'
 import { Star } from 'lucide-react'
-import { useRouter } from 'next/navigation'
 
 import { useAuth } from '@/hooks/use-auth'
 import { useFavoriteTasks } from '@/queries/use-favorites'
 import { PRIORITY_DOT_COLORS, PRIORITY_LABELS } from '@/lib/constants'
 import { cn } from '@/lib/utils'
+import type { FavoriteTaskWithProject } from '@/types/favorite'
+
+const TaskDetailDialog = dynamic(
+  () => import('@/components/kanban/task-detail-dialog').then((mod) => ({ default: mod.TaskDetailDialog })),
+)
 
 export function FavoritesWidget() {
   const { user } = useAuth()
   const { data: tasks, isLoading } = useFavoriteTasks(user?.id)
-  const router = useRouter()
+  const [selectedTask, setSelectedTask] = useState<FavoriteTaskWithProject | null>(null)
 
   if (isLoading) {
     return (
@@ -36,7 +42,7 @@ export function FavoritesWidget() {
         <button
           key={task.id}
           className="flex items-center gap-2 rounded-md px-2 py-1.5 text-left transition-colors hover:bg-muted/60"
-          onClick={() => router.push(`/projects/${task.project_id}/board?taskId=${task.id}`)}
+          onClick={() => setSelectedTask(task)}
         >
           <Star className="h-3.5 w-3.5 shrink-0 fill-amber-400 text-amber-400" />
           <div className="min-w-0 flex-1">
@@ -49,6 +55,16 @@ export function FavoritesWidget() {
           </span>
         </button>
       ))}
+
+      {selectedTask && (
+        <TaskDetailDialog
+          projectId={selectedTask.project_id}
+          task={selectedTask}
+          open={!!selectedTask}
+          onOpenChange={(open) => { if (!open) setSelectedTask(null) }}
+          canEdit
+        />
+      )}
     </div>
   )
 }

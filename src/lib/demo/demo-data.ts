@@ -4,6 +4,7 @@ import {
   DEMO_MEMBER_IDS,
   DEMO_COLUMN_IDS,
   DEMO_LABEL_IDS,
+  DEMO_RECURRENCE_IDS,
 } from './constants'
 
 // ── 날짜 헬퍼 ──
@@ -646,6 +647,7 @@ export const DEMO_DASHBOARD_LAYOUTS = [
       { widget_id: 'default-weekly-progress', type: 'weekly-progress', x: 4, y: 0, w: 4, h: 3 },
       { widget_id: 'default-burndown', type: 'burndown', x: 8, y: 0, w: 4, h: 3 },
       { widget_id: 'default-member-list', type: 'member-list', x: 0, y: 3, w: 4, h: 3 },
+      { widget_id: 'default-my-favorites', type: 'my-favorites', x: 4, y: 3, w: 4, h: 3 },
     ],
     created_at: isoAgo(14),
     updated_at: NOW,
@@ -668,6 +670,37 @@ export const DEMO_USER_MESSAGES = [
   },
 ]
 
+// ── Task Favorites ──
+
+export const DEMO_TASK_FAVORITES = [
+  { id: 'demo-fav-001', user_id: DEMO_USER_ID, task_id: 'demo-task-001', created_at: isoAgo(2) },
+  { id: 'demo-fav-002', user_id: DEMO_USER_ID, task_id: 'demo-task-005', created_at: isoAgo(1) },
+  { id: 'demo-fav-003', user_id: DEMO_USER_ID, task_id: 'demo-task-006', created_at: isoAgo(0) },
+]
+
+// ── Task Recurrences ──
+
+export const DEMO_TASK_RECURRENCES = [
+  {
+    id: DEMO_RECURRENCE_IDS.WEEKLY_REVIEW,
+    task_id: 'demo-task-004',
+    project_id: DEMO_PROJECT_ID,
+    frequency: 'weekly',
+    interval_value: 1,
+    day_of_week: 1,
+    day_of_month: null,
+    next_due_date: daysFromNow(7),
+    is_active: true,
+    created_by: DEMO_USER_ID,
+    created_at: isoAgo(10),
+    updated_at: isoAgo(10),
+  },
+]
+
+// ── Due Date Notifications Log ──
+
+export const DEMO_DUE_DATE_NOTIFICATIONS_LOG: Record<string, unknown>[] = []
+
 // ── 전체 데이터 맵 (테이블명 → 데이터 배열) ──
 
 export function createInitialDemoData(): Map<string, Record<string, unknown>[]> {
@@ -689,6 +722,9 @@ export function createInitialDemoData(): Map<string, Record<string, unknown>[]> 
   map.set('dashboard_layouts', structuredClone(DEMO_DASHBOARD_LAYOUTS) as Record<string, unknown>[])
   map.set('project_integrations', structuredClone(DEMO_PROJECT_INTEGRATIONS) as Record<string, unknown>[])
   map.set('user_messages', structuredClone(DEMO_USER_MESSAGES) as Record<string, unknown>[])
+  map.set('task_favorites', structuredClone(DEMO_TASK_FAVORITES) as Record<string, unknown>[])
+  map.set('task_recurrences', structuredClone(DEMO_TASK_RECURRENCES) as Record<string, unknown>[])
+  map.set('due_date_notifications_log', structuredClone(DEMO_DUE_DATE_NOTIFICATIONS_LOG) as Record<string, unknown>[])
 
   return map
 }
