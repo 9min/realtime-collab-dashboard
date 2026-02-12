@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import dynamic from 'next/dynamic'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { DragDropContext, type DropResult } from '@hello-pangea/dnd'
@@ -125,7 +125,15 @@ export function KanbanBoard({ projectId }: KanbanBoardProps) {
   }, [dependencies, taskColumnMap, doneColumnIds])
 
   // 필터 상태
-  const { searchText, priorities, assigneeIds, dueDateRange, labelIds, swimlaneMode } = useKanbanFilterStore()
+  const { searchText, priorities, assigneeIds, dueDateRange, labelIds, swimlaneMode, setAssigneeIds } = useKanbanFilterStore()
+
+  // URL ?assignee= 파라미터로 담당자 필터 적용 (워크로드 차트에서 이동 시)
+  const assigneeParam = searchParams.get('assignee')
+  useEffect(() => {
+    if (assigneeParam) {
+      setAssigneeIds([assigneeParam])
+    }
+  }, [assigneeParam, setAssigneeIds])
 
   // 태스크 생성 다이얼로그 상태
   const [createTaskColumnId, setCreateTaskColumnId] = useState<string | null>(null)
