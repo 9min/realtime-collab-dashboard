@@ -21,8 +21,9 @@ export function FavoriteButton({ taskId, size = 'sm', className }: FavoriteButto
 
   const isFavorite = favoriteIds?.has(taskId) ?? false
 
-  const handleToggle = (e: React.MouseEvent) => {
+  const handleToggle = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation()
+    e.currentTarget.blur()
     toggleFavorite.mutate({ taskId, isFavorite })
   }
 
@@ -33,10 +34,11 @@ export function FavoriteButton({ taskId, size = 'sm', className }: FavoriteButto
           <Button
             variant="ghost"
             size="icon"
+            tabIndex={-1}
             className={cn(
               'shrink-0',
               size === 'sm' ? 'h-6 w-6' : 'h-8 w-8',
-              className,
+              isFavorite ? 'opacity-100' : className,
             )}
             onClick={handleToggle}
             aria-label={isFavorite ? '즐겨찾기 해제' : '즐겨찾기 추가'}
