@@ -85,6 +85,22 @@ function handleRpc(fnName: string, params: Record<string, unknown>): { data: unk
         })
       }
 
+      // 기본 라벨 생성
+      const defaultLabels = [
+        { name: 'Bug', color: '#EF4444' },
+        { name: 'Design', color: '#8B5CF6' },
+        { name: 'Docs', color: '#22C55E' },
+        { name: 'Feature', color: '#3B82F6' },
+      ]
+      for (const label of defaultLabels) {
+        demoDataStore.insertRow('labels', {
+          project_id: projectId,
+          name: label.name,
+          color: label.color,
+          created_at: now,
+        })
+      }
+
       return { data: projectId, error: null }
     }
 
