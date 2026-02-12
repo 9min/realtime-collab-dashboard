@@ -20,23 +20,32 @@ interface SupabaseProviderProps {
 
 export function SupabaseProvider({ children }: SupabaseProviderProps) {
   const isDemoMode = useDemoModeStore((s) => s.isDemoMode)
+  const hydrated = useDemoModeStore((s) => s.hydrated)
+  const hydrate = useDemoModeStore((s) => s.hydrate)
+
+  // 클라이언트 마운트 시 쿠키에서 데모 모드 상태 동기화
+  useEffect(() => {
+    if (!hydrated) hydrate()
+  }, [hydrated, hydrate])
 
   const supabase = useMemo(
     () => (isDemoMode ? createMockSupabaseClient() : createBrowserClient()),
     [isDemoMode],
   )
-  const [isReady, setIsReady] = useState(isDemoMode)
+  const [sessionReady, setSessionReady] = useState(false)
 
   // 브라우저 클라이언트 세션 초기화 보장
   // getSession()으로 쿠키에서 JWT를 읽어 내부 auth 상태를 설정한 뒤
   // children을 렌더링하여 DB 요청 시 auth.uid()가 정상 동작하도록 함
-  // 데모 모드에서는 getSession() 대기 불필요 (초기값에서 이미 isReady=true)
+  // 데모 모드에서는 getSession() 대기 불필요 (아래 isReady에서 바로 true)
   useEffect(() => {
-    if (isDemoMode) return
+    if (!hydrated || isDemoMode) return
     supabase.auth.getSession().then(() => {
-      setIsReady(true)
+      setSessionReady(true)
     })
-  }, [supabase, isDemoMode])
+  }, [supabase, isDemoMode, hydrated])
+
+  const isReady = hydrated && (isDemoMode || sessionReady)
 
   if (!isReady) {
     return null

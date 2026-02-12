@@ -1,16 +1,14 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useSyncExternalStore } from 'react'
 import { useTheme } from 'next-themes'
 import { Toaster as SonnerToaster } from 'sonner'
 
+const noop = () => () => {}
+
 export function Toaster() {
   const { theme = 'system' } = useTheme()
-  const [mounted, setMounted] = useState(false)
-
-  useEffect(() => {
-    setMounted(true)
-  }, [])
+  const mounted = useSyncExternalStore(noop, () => true, () => false)
 
   if (!mounted) return null
 
