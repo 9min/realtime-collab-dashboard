@@ -1,7 +1,5 @@
 'use client'
 
-import { useRouter, useParams } from 'next/navigation'
-
 import { PRIORITY_DOT_COLORS } from '@/lib/constants'
 import { cn } from '@/lib/utils'
 import type { Task } from '@/types/kanban'
@@ -13,19 +11,12 @@ interface CalendarDayCellProps {
   isCurrentMonth: boolean
   isToday: boolean
   tasks: Task[]
+  onTaskClick: (task: Task) => void
 }
 
-export function CalendarDayCell({ date, isCurrentMonth, isToday, tasks }: CalendarDayCellProps) {
-  const router = useRouter()
-  const params = useParams()
-  const projectId = params.projectId as string
-
+export function CalendarDayCell({ date, isCurrentMonth, isToday, tasks, onTaskClick }: CalendarDayCellProps) {
   const visibleTasks = tasks.slice(0, MAX_VISIBLE_TASKS)
   const remainingCount = tasks.length - MAX_VISIBLE_TASKS
-
-  const handleTaskClick = (taskId: string) => {
-    router.push(`/projects/${projectId}/board?taskId=${taskId}`)
-  }
 
   return (
     <div
@@ -49,7 +40,7 @@ export function CalendarDayCell({ date, isCurrentMonth, isToday, tasks }: Calend
         {visibleTasks.map((task) => (
           <button
             key={task.id}
-            onClick={() => handleTaskClick(task.id)}
+            onClick={() => onTaskClick(task)}
             className="hover:bg-accent flex w-full items-center gap-1 rounded px-1 py-0.5 text-left transition-colors"
           >
             <span

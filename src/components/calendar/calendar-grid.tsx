@@ -13,13 +13,14 @@ const WEEKDAY_LABELS = ['일', '월', '화', '수', '목', '금', '토'] as cons
 
 interface CalendarGridProps {
   tasksByDate: Map<string, Task[]>
+  onTaskClick: (task: Task) => void
 }
 
 function dateKey(date: Date): string {
   return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`
 }
 
-export function CalendarGrid({ tasksByDate }: CalendarGridProps) {
+export function CalendarGrid({ tasksByDate, onTaskClick }: CalendarGridProps) {
   const { currentDate, viewMode } = useCalendarStore()
 
   const days: CalendarDay[] = useMemo(() => {
@@ -57,6 +58,7 @@ export function CalendarGrid({ tasksByDate }: CalendarGridProps) {
             isCurrentMonth={day.isCurrentMonth}
             isToday={day.isToday}
             tasks={tasksByDate.get(dateKey(day.date)) ?? []}
+            onTaskClick={onTaskClick}
           />
         ))}
       </div>

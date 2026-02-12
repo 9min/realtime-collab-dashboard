@@ -46,7 +46,7 @@ describe('CalendarGrid', () => {
   })
 
   it('7개의 요일 헤더를 렌더링한다', () => {
-    render(<CalendarGrid tasksByDate={emptyTasksByDate} />)
+    render(<CalendarGrid tasksByDate={emptyTasksByDate} onTaskClick={vi.fn()} />)
 
     expect(screen.getByText('일')).toBeInTheDocument()
     expect(screen.getByText('월')).toBeInTheDocument()
@@ -58,7 +58,7 @@ describe('CalendarGrid', () => {
   })
 
   it('주말 헤더(일, 토)에 rose 색상 클래스가 적용된다', () => {
-    render(<CalendarGrid tasksByDate={emptyTasksByDate} />)
+    render(<CalendarGrid tasksByDate={emptyTasksByDate} onTaskClick={vi.fn()} />)
 
     const sundayHeader = screen.getByText('일')
     const saturdayHeader = screen.getByText('토')
@@ -68,7 +68,7 @@ describe('CalendarGrid', () => {
   })
 
   it('평일 헤더에는 rose 색상이 적용되지 않는다', () => {
-    render(<CalendarGrid tasksByDate={emptyTasksByDate} />)
+    render(<CalendarGrid tasksByDate={emptyTasksByDate} onTaskClick={vi.fn()} />)
 
     const mondayHeader = screen.getByText('월')
     const wednesdayHeader = screen.getByText('수')
@@ -81,7 +81,7 @@ describe('CalendarGrid', () => {
   })
 
   it('월 뷰에서 42개(6주)의 날짜 셀을 렌더링한다', () => {
-    render(<CalendarGrid tasksByDate={emptyTasksByDate} />)
+    render(<CalendarGrid tasksByDate={emptyTasksByDate} onTaskClick={vi.fn()} />)
 
     const cells = screen.getAllByTestId('calendar-day-cell')
     expect(cells).toHaveLength(42)
@@ -90,7 +90,7 @@ describe('CalendarGrid', () => {
   it('주 뷰에서 7개의 날짜 셀을 렌더링한다', () => {
     mockCalendarState.viewMode = 'week'
 
-    render(<CalendarGrid tasksByDate={emptyTasksByDate} />)
+    render(<CalendarGrid tasksByDate={emptyTasksByDate} onTaskClick={vi.fn()} />)
 
     const cells = screen.getAllByTestId('calendar-day-cell')
     expect(cells).toHaveLength(7)
@@ -115,7 +115,7 @@ describe('CalendarGrid', () => {
     const tasksByDate = new Map<string, Task[]>()
     tasksByDate.set('2026-02-15', [mockTask])
 
-    render(<CalendarGrid tasksByDate={tasksByDate} />)
+    render(<CalendarGrid tasksByDate={tasksByDate} onTaskClick={vi.fn()} />)
 
     // 2026-02-15에 해당하는 셀의 task-count가 1이어야 함
     const cells = screen.getAllByTestId('calendar-day-cell')
@@ -132,7 +132,7 @@ describe('CalendarGrid', () => {
   })
 
   it('태스크가 없는 날짜에는 빈 배열이 전달된다', () => {
-    render(<CalendarGrid tasksByDate={emptyTasksByDate} />)
+    render(<CalendarGrid tasksByDate={emptyTasksByDate} onTaskClick={vi.fn()} />)
 
     const taskCounts = screen.getAllByTestId('task-count')
     taskCounts.forEach((el) => {
@@ -143,7 +143,7 @@ describe('CalendarGrid', () => {
   it('currentDate가 변경되면 해당 월의 그리드를 렌더링한다', () => {
     mockCalendarState.currentDate = new Date(2026, 0, 1) // January 2026
 
-    render(<CalendarGrid tasksByDate={emptyTasksByDate} />)
+    render(<CalendarGrid tasksByDate={emptyTasksByDate} onTaskClick={vi.fn()} />)
 
     const cells = screen.getAllByTestId('calendar-day-cell')
     // January 2026 starts on Thursday, so first cell should be Dec 28 (Sunday)

@@ -6,15 +6,7 @@ import type { Task } from '@/types/kanban'
 
 import { CalendarDayCell } from './calendar-day-cell'
 
-// useParams를 테스트별로 제어하기 위해 재정의
-const mockPush = vi.fn()
-
-vi.mock('next/navigation', () => ({
-  useRouter: () => ({ push: mockPush }),
-  useParams: () => ({ projectId: 'test-project' }),
-  usePathname: () => '/',
-  useSearchParams: () => new URLSearchParams(),
-}))
+const mockOnTaskClick = vi.fn()
 
 function createMockTask(overrides: Partial<Task> = {}): Task {
   return {
@@ -40,10 +32,11 @@ describe('CalendarDayCell', () => {
     isCurrentMonth: true,
     isToday: false,
     tasks: [] as Task[],
+    onTaskClick: mockOnTaskClick,
   }
 
   beforeEach(() => {
-    mockPush.mockClear()
+    mockOnTaskClick.mockClear()
   })
 
   it('날짜 숫자를 올바르게 렌더링한다', () => {
@@ -154,34 +147,26 @@ describe('CalendarDayCell', () => {
     expect(screen.queryByText(/더보기/)).not.toBeInTheDocument()
   })
 
-  it('태스크 클릭 시 해당 태스크 상세 페이지로 이동한다', async () => {
+  it('태스크 클릭 시 onTaskClick 콜백이 태스크 객체와 함께 호출된다', async () => {
     const user = userEvent.setup()
-    const tasks = [
-      createMockTask({ id: 'task-abc-123', title: 'Navigate Task', priority: 'medium' }),
-    ]
+    const task = createMockTask({ id: 'task-abc-123', title: 'Navigate Task', priority: 'medium' })
 
-    render(<CalendarDayCell {...baseProps} tasks={tasks} />)
+    render(<CalendarDayCell {...baseProps} tasks={[task]} />)
 
     await user.click(screen.getByText('Navigate Task'))
 
-    expect(mockPush).toHaveBeenCalledWith(
-      '/projects/test-project/board?taskId=task-abc-123',
-    )
+    expect(mockOnTaskClick).toHaveBeenCalledWith(task)
   })
 
-  it('여러 태스크 중 특정 태스크 클릭 시 올바른 taskId로 이동한다', async () => {
+  it('여러 태스크 중 특정 태스크 클릭 시 올바른 태스크 객체로 콜백이 호출된다', async () => {
     const user = userEvent.setup()
-    const tasks = [
-      createMockTask({ id: 'task-1', title: 'First', priority: 'low' }),
-      createMockTask({ id: 'task-2', title: 'Second', priority: 'high' }),
-    ]
+    const task1 = createMockTask({ id: 'task-1', title: 'First', priority: 'low' })
+    const task2 = createMockTask({ id: 'task-2', title: 'Second', priority: 'high' })
 
-    render(<CalendarDayCell {...baseProps} tasks={tasks} />)
+    render(<CalendarDayCell {...baseProps} tasks={[task1, task2]} />)
 
     await user.click(screen.getByText('Second'))
 
-    expect(mockPush).toHaveBeenCalledWith(
-      '/projects/test-project/board?taskId=task-2',
-    )
+    expect(mockOnTaskClick).toHaveBeenCalledWith(task2)
   })
 })
