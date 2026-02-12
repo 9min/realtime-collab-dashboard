@@ -22,9 +22,7 @@ import type { Tables } from '@/types/database'
 import type { TaskPriority } from '@/types/common'
 import type { KanbanColumnWithTasks } from '@/types/kanban'
 
-import { BulkDeleteDialog } from './bulk-delete-dialog'
 import { CreateTaskForm } from './create-task-form'
-import { ExportButton } from './export-button'
 import { KanbanColumn } from './kanban-column'
 import { SwimlaneBoard } from './swimlane-board'
 import { TaskFilterBar } from './task-filter-bar'
@@ -322,18 +320,15 @@ export function KanbanBoard({ projectId }: KanbanBoardProps) {
 
   return (
     <>
-      {/* 필터 바 + 일괄 삭제 */}
-      <div className="flex flex-wrap items-start gap-3">
-        <div className="flex-1">
-          <TaskFilterBar members={members ?? []} labels={labels ?? []} />
-        </div>
-        <div className="flex gap-2 pb-4">
-          <ExportButton projectId={projectId} />
-          {canDeleteAll && (
-            <BulkDeleteDialog projectId={projectId} tasks={tasks ?? []} />
-          )}
-        </div>
-      </div>
+      {/* 필터 바 */}
+      <TaskFilterBar
+        members={members ?? []}
+        labels={labels ?? []}
+        projectId={projectId}
+        projectName={project?.name}
+        canDeleteAll={canDeleteAll}
+        tasks={tasks ?? []}
+      />
 
       <DragDropContext onDragEnd={handleDragEnd}>
         {swimlaneGroups ? (

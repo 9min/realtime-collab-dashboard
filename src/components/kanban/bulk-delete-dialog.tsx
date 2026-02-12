@@ -33,13 +33,19 @@ import type { Task } from '@/types/kanban'
 interface BulkDeleteDialogProps {
   projectId: string
   tasks: Task[]
+  externalOpen?: boolean
+  onExternalOpenChange?: (open: boolean) => void
 }
 
-export function BulkDeleteDialog({ projectId, tasks }: BulkDeleteDialogProps) {
-  const [dialogOpen, setDialogOpen] = useState(false)
+export function BulkDeleteDialog({ projectId, tasks, externalOpen, onExternalOpenChange }: BulkDeleteDialogProps) {
+  const [internalOpen, setInternalOpen] = useState(false)
   const [confirmOpen, setConfirmOpen] = useState(false)
   const [beforeDate, setBeforeDate] = useState('')
   const bulkDeleteMutation = useBulkDeleteTasks(projectId)
+
+  const isControlled = externalOpen !== undefined
+  const dialogOpen = isControlled ? externalOpen : internalOpen
+  const setDialogOpen = isControlled ? (onExternalOpenChange ?? setInternalOpen) : setInternalOpen
 
   const targetTasks = useMemo(() => {
     if (!beforeDate) return []
@@ -69,12 +75,14 @@ export function BulkDeleteDialog({ projectId, tasks }: BulkDeleteDialogProps) {
 
   return (
     <Dialog open={dialogOpen} onOpenChange={handleDialogOpenChange}>
-      <DialogTrigger asChild>
-        <Button variant="outline" size="sm" className="gap-1.5">
-          <Trash2 className="h-4 w-4" />
-          일괄 삭제
-        </Button>
-      </DialogTrigger>
+      {!isControlled && (
+        <DialogTrigger asChild>
+          <Button variant="outline" size="sm" className="gap-1.5">
+            <Trash2 className="h-4 w-4" />
+            일괄 삭제
+          </Button>
+        </DialogTrigger>
+      )}
       <DialogContent>
         <DialogHeader>
           <DialogTitle>태스크 일괄 삭제</DialogTitle>

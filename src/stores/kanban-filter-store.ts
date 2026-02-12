@@ -21,6 +21,7 @@ interface KanbanFilterState {
   dueDateRange: DateRange
   setDueDateFrom: (date: string | null) => void
   setDueDateTo: (date: string | null) => void
+  clearDueDateRange: () => void
 
   labelIds: string[]
   toggleLabelId: (id: string) => void
@@ -67,6 +68,8 @@ export const useKanbanFilterStore = create<KanbanFilterState>((set, get) => ({
 
   setDueDateTo: (date) =>
     set((state) => ({ dueDateRange: { ...state.dueDateRange, to: date } })),
+
+  clearDueDateRange: () => set({ dueDateRange: { from: null, to: null } }),
 
   toggleLabelId: (id) =>
     set((state) => ({
