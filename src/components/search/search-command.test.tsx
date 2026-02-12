@@ -11,6 +11,14 @@ vi.mock('@/components/providers/supabase-provider', () => ({
   useSupabase: () => ({}),
 }))
 
+vi.mock('@/hooks/use-auth', () => ({
+  useAuth: () => ({ user: { id: 'user-1' } }),
+}))
+
+vi.mock('@/queries/use-favorites', () => ({
+  useFavoriteIds: () => ({ data: new Set() }),
+}))
+
 vi.mock('@/stores/search-store', () => ({
   useSearchStore: () => ({
     isOpen: true,

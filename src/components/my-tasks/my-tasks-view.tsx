@@ -1,0 +1,77 @@
+'use client'
+
+import { useMemo } from 'react'
+import { AlertTriangle, CalendarCheck, CalendarClock, CalendarDays, CalendarOff, Inbox } from 'lucide-react'
+
+import { useAuth } from '@/hooks/use-auth'
+import { useMyTasks } from '@/queries/use-my-tasks'
+import { groupMyTasks, type GroupedMyTasks } from '@/lib/my-tasks-utils'
+
+import { MyTaskItem } from './my-task-item'
+
+const SECTIONS: Array<{
+  key: keyof GroupedMyTasks
+  label: string
+  icon: typeof AlertTriangle
+  emptyText: string
+  accentClass: string
+}> = [
+  { key: 'overdue', label: '기한 초과', icon: AlertTriangle, emptyText: '', accentClass: 'text-rose-500' },
+  { key: 'today', label: '오늘', icon: CalendarCheck, emptyText: '', accentClass: 'text-blue-500' },
+  { key: 'thisWeek', label: '이번 주', icon: CalendarDays, emptyText: '', accentClass: 'text-emerald-500' },
+  { key: 'upcoming', label: '예정', icon: CalendarClock, emptyText: '', accentClass: 'text-amber-500' },
+  { key: 'noDueDate', label: '마감일 미정', icon: CalendarOff, emptyText: '', accentClass: 'text-muted-foreground' },
+]
+
+export function MyTasksView() {
+  const { user } = useAuth()
+  const { data: tasks, isLoading } = useMyTasks(user?.id)
+
+  const grouped = useMemo(() => {
+    if (!tasks) return null
+    return groupMyTasks(tasks)
+  }, [tasks])
+
+  if (isLoading) {
+    return (
+      <div className="space-y-4">
+        {Array.from({ length: 3 }).map((_, i) => (
+          <div key={i} className="h-16 animate-pulse rounded-lg bg-muted" />
+        ))}
+      </div>
+    )
+  }
+
+  if (!tasks || tasks.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center gap-3 py-16 text-muted-foreground">
+        <Inbox className="h-12 w-12 opacity-30" />
+        <p className="text-sm">배정된 태스크가 없습니다</p>
+      </div>
+    )
+  }
+
+  return (
+    <div className="space-y-6">
+      {grouped && SECTIONS.map(({ key, label, icon: Icon, accentClass }) => {
+        const sectionTasks = grouped[key]
+        if (sectionTasks.length === 0) return null
+
+        return (
+          <section key={key}>
+            <h3 className={`mb-3 flex items-center gap-2 text-sm font-semibold ${accentClass}`}>
+              <Icon className="h-4 w-4" />
+              {label}
+              <span className="text-muted-foreground font-normal">({sectionTasks.length})</span>
+            </h3>
+            <div className="space-y-2">
+              {sectionTasks.map((task) => (
+                <MyTaskItem key={task.id} task={task} />
+              ))}
+            </div>
+          </section>
+        )
+      })}
+    </div>
+  )
+}

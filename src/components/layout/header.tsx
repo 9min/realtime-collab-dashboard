@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { BarChart3, Keyboard, LogOut, ShieldCheck, UserCog } from 'lucide-react'
+import { BarChart3, Keyboard, ListTodo, LogOut, ShieldCheck, UserCog } from 'lucide-react'
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
@@ -68,6 +68,15 @@ export function Header() {
           <span className="sm:hidden">협업 도구</span>
           <span className="hidden sm:inline">실시간 협업 일정관리 도구</span>
         </Link>
+        {(isAuthenticated || isDemoMode) && (
+          <Link
+            href="/my-tasks"
+            className="flex shrink-0 items-center gap-1 rounded-md px-2 py-1 text-sm text-primary-foreground/80 transition-colors hover:bg-primary-foreground/10 hover:text-primary-foreground"
+          >
+            <ListTodo className="h-4 w-4" />
+            <span className="hidden sm:inline">내 할 일</span>
+          </Link>
+        )}
         {isDemoMode && (
           <Badge variant="secondary" className="bg-amber-100 text-amber-800 hover:bg-amber-100 dark:bg-amber-900/50 dark:text-amber-200">
             데모 모드

@@ -12,6 +12,15 @@ import type { Tables } from '@/types/database'
 
 import { KanbanColumn } from './kanban-column'
 
+// favorite-button mock (avoids need for useAuth/useSupabase in kanban tests)
+vi.mock('./favorite-button', () => ({
+  FavoriteButton: () => null,
+}))
+
+vi.mock('./recurrence-badge', () => ({
+  RecurrenceBadge: () => null,
+}))
+
 // @hello-pangea/dnd mock
 vi.mock('@hello-pangea/dnd', () => ({
   Droppable: ({ children }: { children: (provided: unknown, snapshot: unknown) => React.ReactNode }) =>

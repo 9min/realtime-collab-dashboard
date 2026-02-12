@@ -51,6 +51,13 @@ export const WIDGET_REGISTRY: WidgetConfig[] = [
     defaultSize: { w: 4, h: 3 },
     minSize: { w: 3, h: 2 },
   },
+  {
+    type: WIDGET_TYPE.MY_FAVORITES,
+    title: '즐겨찾기',
+    description: '즐겨찾기한 태스크 목록',
+    defaultSize: { w: 4, h: 3 },
+    minSize: { w: 3, h: 2 },
+  },
 ]
 
 // 차트 데이터 타입

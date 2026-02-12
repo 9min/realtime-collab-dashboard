@@ -3,7 +3,7 @@
 import { use, useCallback, useEffect, useMemo, type ReactNode } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
 import { useQueryClient } from '@tanstack/react-query'
-import { ArrowLeft, LayoutDashboard, Columns3, Activity, GanttChart, Calendar, Settings } from 'lucide-react'
+import { ArrowLeft, BarChart3 as BarChartIcon, LayoutDashboard, Columns3, Activity, GanttChart, Calendar, Settings } from 'lucide-react'
 
 import { OnlineUsers } from '@/components/presence/online-users'
 import {
@@ -37,6 +37,7 @@ const ALL_NAV_ITEMS = [
   { label: '칸반 보드', href: '/board', icon: Columns3 },
   { label: '간트 차트', href: '/gantt', icon: GanttChart },
   { label: '캘린더', href: '/calendar', icon: Calendar },
+  { label: '워크로드', href: '/workload', icon: BarChartIcon },
   { label: '활동 로그', href: '/activity', icon: Activity },
   { label: '설정', href: '/settings', icon: Settings, adminOnly: true },
 ] as const

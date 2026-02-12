@@ -134,6 +134,7 @@ export const WIDGET_TYPE = {
   WEEKLY_PROGRESS: 'weekly-progress',
   BURNDOWN: 'burndown',
   MEMBER_LIST: 'member-list',
+  MY_FAVORITES: 'my-favorites',
 } as const
 
 // 위젯 그리드 설정

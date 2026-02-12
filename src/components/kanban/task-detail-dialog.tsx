@@ -37,10 +37,12 @@ import type { Tables } from '@/types/database'
 const UNASSIGNED_VALUE = '__none__'
 
 import { AttachmentSection } from './attachment-section'
+import { FavoriteButton } from './favorite-button'
 import { CommentSection } from './comment-section'
 import { DependencySection } from './dependency-section'
 import { LabelBadge } from './label-badge'
 import { LabelPicker } from './label-picker'
+import { RecurrenceSection } from './recurrence-section'
 import { SubtaskSection } from './subtask-section'
 
 const PRIORITY_STYLES = {
@@ -140,7 +142,7 @@ export function TaskDetailDialog({ projectId, task, open, onOpenChange, canEdit 
     <Dialog open={open} onOpenChange={(v) => { if (!v) setIsEditing(false); onOpenChange(v) }}>
       <DialogContent className="flex max-h-[85vh] flex-col sm:max-w-xl">
         <DialogHeader>
-          <DialogTitle className="pr-8">
+          <DialogTitle className="flex items-center gap-2 pr-8">
             {isEditing ? (
               <Input
                 value={editTitle}
@@ -149,7 +151,10 @@ export function TaskDetailDialog({ projectId, task, open, onOpenChange, canEdit 
                 autoFocus
               />
             ) : (
-              task.title
+              <>
+                <span className="min-w-0 break-words">{task.title}</span>
+                <FavoriteButton taskId={task.id} size="default" />
+              </>
             )}
           </DialogTitle>
         </DialogHeader>
@@ -294,6 +299,14 @@ export function TaskDetailDialog({ projectId, task, open, onOpenChange, canEdit 
               <Separator />
             </>
           )}
+
+          {/* 반복 설정 */}
+          <RecurrenceSection
+            taskId={task.id}
+            projectId={projectId}
+            canEdit={canInteract}
+          />
+          <Separator />
 
           {/* 첨부파일 섹션 */}
           {projectFeatures?.feature_attachments !== false && (

@@ -7,6 +7,14 @@ import { mockTasks, mockLabels, MOCK_USER_ID, MOCK_USER_ID_2 } from '@/__tests__
 
 import { TaskCard } from './task-card'
 
+vi.mock('./favorite-button', () => ({
+  FavoriteButton: () => null,
+}))
+
+vi.mock('./recurrence-badge', () => ({
+  RecurrenceBadge: () => null,
+}))
+
 // @hello-pangea/dnd mock — Draggable을 투명하게 렌더
 vi.mock('@hello-pangea/dnd', () => ({
   Draggable: ({ children }: { children: (provided: unknown, snapshot: unknown) => React.ReactNode }) =>

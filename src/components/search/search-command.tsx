@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { FileText, FolderKanban, Loader2, MessageSquare } from 'lucide-react'
+import { FileText, FolderKanban, Loader2, MessageSquare, Star } from 'lucide-react'
 
 import {
   Command,
@@ -19,12 +19,16 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
+import { useAuth } from '@/hooks/use-auth'
+import { useFavoriteIds } from '@/queries/use-favorites'
 import { useSearch } from '@/queries/use-search'
 import { useSearchStore } from '@/stores/search-store'
 
 export function SearchCommand() {
   const router = useRouter()
   const { isOpen, setOpen, reset } = useSearchStore()
+  const { user } = useAuth()
+  const { data: favoriteIds } = useFavoriteIds(user?.id)
   const [inputValue, setInputValue] = useState('')
   const { data: results, isLoading } = useSearch(inputValue)
 
@@ -118,7 +122,11 @@ export function SearchCommand() {
                     value={`task-${t.id}`}
                     onSelect={() => handleSelect(() => router.push(`/projects/${t.projectId}/board?taskId=${t.id}`))}
                   >
-                    <FileText className="text-muted-foreground mr-2 h-4 w-4" />
+                    {favoriteIds?.has(t.id) ? (
+                      <Star className="mr-2 h-4 w-4 shrink-0 fill-amber-400 text-amber-400" />
+                    ) : (
+                      <FileText className="text-muted-foreground mr-2 h-4 w-4" />
+                    )}
                     <div className="min-w-0">
                       <p className="truncate text-sm font-medium">{t.title}</p>
                       <p className="text-muted-foreground truncate text-xs">{t.projectName}</p>

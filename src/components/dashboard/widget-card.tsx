@@ -31,11 +31,17 @@ const MemberListWidget = dynamic(
   { loading: () => <WidgetSkeleton /> },
 )
 
+const FavoritesWidget = dynamic(
+  () => import('./favorites-widget').then((mod) => ({ default: mod.FavoritesWidget })),
+  { loading: () => <WidgetSkeleton /> },
+)
+
 const WIDGET_ACCENT: Record<string, string> = {
   [WIDGET_TYPE.TASK_STATUS]: 'border-t-blue-500',
   [WIDGET_TYPE.WEEKLY_PROGRESS]: 'border-t-emerald-500',
   [WIDGET_TYPE.BURNDOWN]: 'border-t-orange-500',
   [WIDGET_TYPE.MEMBER_LIST]: 'border-t-violet-500',
+  [WIDGET_TYPE.MY_FAVORITES]: 'border-t-amber-500',
 }
 
 interface WidgetCardProps {
@@ -97,6 +103,8 @@ function WidgetContent({ type, projectId }: { type: WidgetType; projectId: strin
       return <BurndownChart projectId={projectId} />
     case WIDGET_TYPE.MEMBER_LIST:
       return <MemberListWidget projectId={projectId} />
+    case WIDGET_TYPE.MY_FAVORITES:
+      return <FavoritesWidget />
     default:
       return (
         <div className="text-muted-foreground flex h-full items-center justify-center text-sm">

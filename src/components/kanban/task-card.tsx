@@ -11,7 +11,9 @@ import { cn } from '@/lib/utils'
 import type { Tables } from '@/types/database'
 import type { Label } from '@/types/label'
 
+import { FavoriteButton } from './favorite-button'
 import { LabelBadge } from './label-badge'
+import { RecurrenceBadge } from './recurrence-badge'
 
 interface MemberProfile {
   user_id: string
@@ -26,9 +28,10 @@ interface TaskCardProps {
   isDragDisabled?: boolean
   taskLabels?: Label[]
   isBlocked?: boolean
+  isRecurring?: boolean
 }
 
-export function TaskCard({ task, index, onClick, members, isDragDisabled = false, taskLabels, isBlocked = false }: TaskCardProps) {
+export function TaskCard({ task, index, onClick, members, isDragDisabled = false, taskLabels, isBlocked = false, isRecurring = false }: TaskCardProps) {
   const assignee = task.assignee_id
     ? members?.find((m) => m.user_id === task.assignee_id)?.profiles
     : null
@@ -44,7 +47,7 @@ export function TaskCard({ task, index, onClick, members, isDragDisabled = false
         >
           <Card
             className={cn(
-              'bg-card shadow-sm transition-shadow hover:shadow-md focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 outline-none',
+              'group bg-card shadow-sm transition-shadow hover:shadow-md focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 outline-none',
               isDragDisabled ? 'cursor-default' : 'cursor-grab active:cursor-grabbing',
               snapshot.isDragging && 'shadow-lg ring-2 ring-primary/20',
               isBlocked && 'border-amber-400 dark:border-amber-600',
@@ -83,10 +86,12 @@ export function TaskCard({ task, index, onClick, members, isDragDisabled = false
                     </Tooltip>
                   </TooltipProvider>
                 )}
+                <RecurrenceBadge isRecurring={isRecurring} />
                 <span className="break-words">{task.title}</span>
               </span>
             </CardHeader>
             <CardContent className="flex items-center gap-2 px-3 pb-3 pt-1">
+              <FavoriteButton taskId={task.id} size="sm" className="opacity-0 group-hover:opacity-100 transition-opacity" />
               <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
                 <span className={cn('h-2 w-2 rounded-full shrink-0', PRIORITY_DOT_COLORS[task.priority])} />
                 {PRIORITY_LABELS[task.priority]}

@@ -11,6 +11,15 @@ import {
 
 import { SwimlaneBoard } from './swimlane-board'
 
+// favorite-button mock (avoids need for useAuth/useSupabase)
+vi.mock('./favorite-button', () => ({
+  FavoriteButton: () => null,
+}))
+
+vi.mock('./recurrence-badge', () => ({
+  RecurrenceBadge: () => null,
+}))
+
 // @hello-pangea/dnd mock
 vi.mock('@hello-pangea/dnd', () => ({
   Droppable: ({ children }: { children: (provided: unknown, snapshot: unknown) => React.ReactNode }) =>
