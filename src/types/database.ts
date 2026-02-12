@@ -628,6 +628,44 @@ export interface Database {
           },
         ]
       }
+      kanban_filter_presets: {
+        Row: {
+          id: string
+          project_id: string
+          user_id: string
+          filters: Json
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          project_id: string
+          user_id: string
+          filters?: Json
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          filters?: Json
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'kanban_filter_presets_project_id_fkey'
+            columns: ['project_id']
+            isOneToOne: false
+            referencedRelation: 'projects'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'kanban_filter_presets_user_id_fkey'
+            columns: ['user_id']
+            isOneToOne: false
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          },
+        ]
+      }
       project_integrations: {
         Row: {
           id: string

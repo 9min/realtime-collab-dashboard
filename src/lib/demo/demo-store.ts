@@ -162,12 +162,16 @@ class DemoDataStore {
         projects: { table: 'projects', fkColumn: 'project_id', type: 'object' },
         profiles: { table: 'profiles', fkColumn: 'created_by', type: 'object' },
       },
+      kanban_filter_presets: {
+        profiles: { table: 'profiles', fkColumn: 'user_id', type: 'object' },
+        projects: { table: 'projects', fkColumn: 'project_id', type: 'object' },
+      },
     }
     return relations[table]?.[relationName] ?? null
   }
 
   private getSchemaFields(table: string): Record<string, boolean> {
-    const tablesWithUpdatedAt = ['profiles', 'projects', 'kanban_columns', 'tasks', 'subtasks', 'task_comments', 'dashboard_layouts', 'project_integrations', 'task_recurrences']
+    const tablesWithUpdatedAt = ['profiles', 'projects', 'kanban_columns', 'tasks', 'subtasks', 'task_comments', 'dashboard_layouts', 'project_integrations', 'task_recurrences', 'kanban_filter_presets']
     if (tablesWithUpdatedAt.includes(table)) {
       return { updated_at: true }
     }

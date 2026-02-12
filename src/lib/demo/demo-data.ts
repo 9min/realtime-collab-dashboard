@@ -725,6 +725,7 @@ export function createInitialDemoData(): Map<string, Record<string, unknown>[]> 
   map.set('task_favorites', structuredClone(DEMO_TASK_FAVORITES) as Record<string, unknown>[])
   map.set('task_recurrences', structuredClone(DEMO_TASK_RECURRENCES) as Record<string, unknown>[])
   map.set('due_date_notifications_log', structuredClone(DEMO_DUE_DATE_NOTIFICATIONS_LOG) as Record<string, unknown>[])
+  map.set('kanban_filter_presets', [] as Record<string, unknown>[])
 
   return map
 }

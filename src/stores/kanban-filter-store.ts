@@ -7,6 +7,14 @@ interface DateRange {
   to: string | null
 }
 
+export interface SavedFilterPreset {
+  priorities: TaskPriority[]
+  assigneeIds: string[]
+  dueDateRange: DateRange
+  labelIds: string[]
+  swimlaneMode: SwimlaneMode
+}
+
 interface KanbanFilterState {
   searchText: string
   setSearchText: (text: string) => void
@@ -31,6 +39,9 @@ interface KanbanFilterState {
 
   resetFilters: () => void
   hasActiveFilters: () => boolean
+
+  hydrate: (preset: SavedFilterPreset) => void
+  getSavedState: () => SavedFilterPreset
 }
 
 const INITIAL_STATE = {
@@ -92,5 +103,19 @@ export const useKanbanFilterStore = create<KanbanFilterState>((set, get) => ({
       state.dueDateRange.to !== null ||
       state.labelIds.length > 0
     )
+  },
+
+  hydrate: (preset) =>
+    set({
+      priorities: preset.priorities,
+      assigneeIds: preset.assigneeIds,
+      dueDateRange: preset.dueDateRange,
+      labelIds: preset.labelIds,
+      swimlaneMode: preset.swimlaneMode,
+    }),
+
+  getSavedState: () => {
+    const { priorities, assigneeIds, dueDateRange, labelIds, swimlaneMode } = get()
+    return { priorities, assigneeIds, dueDateRange, labelIds, swimlaneMode }
   },
 }))

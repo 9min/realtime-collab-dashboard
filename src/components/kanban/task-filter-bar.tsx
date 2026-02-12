@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { CalendarDays, Check, ChevronDown, Download, MoreHorizontal, Search, Trash2, X } from 'lucide-react'
 
 import { Badge } from '@/components/ui/badge'
@@ -19,6 +19,7 @@ import { useExport } from '@/hooks/use-export'
 import { PRIORITY_LABELS, PRIORITY_DOT_COLORS, SWIMLANE_MODE, TASK_PRIORITY } from '@/lib/constants'
 import { UNASSIGNED_ID } from '@/lib/task-filter'
 import { cn } from '@/lib/utils'
+import { useKanbanFilterPreset, useSaveKanbanFilterPreset } from '@/queries/use-kanban-filter-preset'
 import { useKanbanFilterStore } from '@/stores/kanban-filter-store'
 import type { Tables } from '@/types/database'
 import type { SwimlaneMode, TaskPriority } from '@/types/common'
@@ -40,6 +41,8 @@ interface TaskFilterBarProps {
   tasks?: Task[]
 }
 
+const FILTER_SAVE_DEBOUNCE_MS = 1000
+
 export function TaskFilterBar({ members, labels, projectId, projectName, canDeleteAll, tasks }: TaskFilterBarProps) {
   const {
     searchText,
@@ -58,9 +61,47 @@ export function TaskFilterBar({ members, labels, projectId, projectName, canDele
     setSwimlaneMode,
     resetFilters,
     hasActiveFilters,
+    hydrate,
+    getSavedState,
   } = useKanbanFilterStore()
 
   const [dueDateOpen, setDueDateOpen] = useState(false)
+
+  // ── 필터 프리셋 로드 & 자동 저장 ──
+  const { data: presetData, isSuccess: presetLoaded } = useKanbanFilterPreset(projectId ?? '')
+  const saveMutation = useSaveKanbanFilterPreset(projectId ?? '')
+  const hydratedRef = useRef(false)
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  // 최초 로드 시 서버 프리셋으로 hydrate
+  useEffect(() => {
+    if (presetLoaded && !hydratedRef.current) {
+      hydratedRef.current = true
+      if (presetData) {
+        hydrate(presetData)
+      }
+    }
+  }, [presetLoaded, presetData, hydrate])
+
+  // 필터 변경 시 debounce 자동 저장
+  useEffect(() => {
+    if (!projectId || !hydratedRef.current) return
+
+    if (debounceRef.current) {
+      clearTimeout(debounceRef.current)
+    }
+
+    debounceRef.current = setTimeout(() => {
+      saveMutation.mutate(getSavedState())
+    }, FILTER_SAVE_DEBOUNCE_MS)
+
+    return () => {
+      if (debounceRef.current) {
+        clearTimeout(debounceRef.current)
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [priorities, assigneeIds, dueDateRange, labelIds, swimlaneMode, projectId])
 
   const exportMutation = useExport(projectId ?? '', projectName)
 
