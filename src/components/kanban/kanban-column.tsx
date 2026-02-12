@@ -25,6 +25,7 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { Input } from '@/components/ui/input'
 import { ScrollArea } from '@/components/ui/scroll-area'
+import { COLUMN_COLORS, COLUMN_DEFAULT_COLORS } from '@/lib/constants'
 import { cn } from '@/lib/utils'
 import type { Tables } from '@/types/database'
 import type { Label } from '@/types/label'
@@ -98,13 +99,15 @@ export function KanbanColumn({
     }
   }
 
+  const columnColor = COLUMN_COLORS[column.title] ?? COLUMN_DEFAULT_COLORS
+
   return (
     <div className={cn(
       'flex w-72 shrink-0 flex-col overflow-hidden rounded-lg border bg-muted/60 shadow-sm dark:bg-muted/30',
       isOverWipLimit && 'border-red-400 dark:border-red-600',
     )} style={{ height: 'calc(100vh - 220px)', minHeight: 300 }}>
       {/* 컬럼 헤더 */}
-      <div className="flex items-center justify-between border-b bg-gradient-to-r from-blue-50 to-indigo-50 px-3 py-2 dark:from-blue-900/40 dark:to-indigo-900/40">
+      <div className={cn('flex items-center justify-between border-b bg-gradient-to-r px-3 py-2', columnColor.gradient)}>
         <div className="flex min-w-0 items-center gap-2">
           {isEditing ? (
             <Input
@@ -126,7 +129,7 @@ export function KanbanColumn({
                 'shrink-0 rounded-full px-2 py-0.5 text-xs font-medium',
                 isOverWipLimit
                   ? 'bg-red-100 text-red-700 dark:bg-red-900/50 dark:text-red-300'
-                  : 'bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300',
+                  : columnColor.badge,
               )}>
                 {wipLimit !== null ? `${tasks.length}/${wipLimit}` : tasks.length}
               </span>

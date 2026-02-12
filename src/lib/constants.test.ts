@@ -22,11 +22,12 @@ describe('constants', () => {
   })
 
   describe('DEFAULT_COLUMNS', () => {
-    it('기본 3개 컬럼 (To Do, In Progress, Done)', () => {
-      expect(DEFAULT_COLUMNS).toHaveLength(3)
-      expect(DEFAULT_COLUMNS[0].title).toBe('To Do')
-      expect(DEFAULT_COLUMNS[1].title).toBe('In Progress')
-      expect(DEFAULT_COLUMNS[2].title).toBe('Done')
+    it('기본 4개 컬럼 (할 일, 진행 중, 완료, 논의 필요)', () => {
+      expect(DEFAULT_COLUMNS).toHaveLength(4)
+      expect(DEFAULT_COLUMNS[0].title).toBe('할 일')
+      expect(DEFAULT_COLUMNS[1].title).toBe('진행 중')
+      expect(DEFAULT_COLUMNS[2].title).toBe('완료')
+      expect(DEFAULT_COLUMNS[3].title).toBe('논의 필요')
     })
 
     it('position이 0부터 순차 증가', () => {

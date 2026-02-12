@@ -64,7 +64,7 @@ export const MOCK_COLUMNS = [
   {
     id: 'col-todo',
     project_id: MOCK_PROJECT.id,
-    title: 'Todo',
+    title: '할 일',
     description: null,
     position: 0,
     created_at: '2025-01-10T00:00:00.000Z',
@@ -73,7 +73,7 @@ export const MOCK_COLUMNS = [
   {
     id: 'col-progress',
     project_id: MOCK_PROJECT.id,
-    title: 'In Progress',
+    title: '진행 중',
     description: null,
     position: 1,
     created_at: '2025-01-10T00:00:00.000Z',
@@ -82,7 +82,7 @@ export const MOCK_COLUMNS = [
   {
     id: 'col-done',
     project_id: MOCK_PROJECT.id,
-    title: 'Done',
+    title: '완료',
     description: null,
     position: 2,
     created_at: '2025-01-10T00:00:00.000Z',

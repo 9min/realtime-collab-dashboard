@@ -1,10 +1,18 @@
 'use client'
 
+import { useEffect, useState } from 'react'
 import { useTheme } from 'next-themes'
 import { Toaster as SonnerToaster } from 'sonner'
 
 export function Toaster() {
   const { theme = 'system' } = useTheme()
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  if (!mounted) return null
 
   return (
     <SonnerToaster

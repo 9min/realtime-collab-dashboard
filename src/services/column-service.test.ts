@@ -58,7 +58,7 @@ describe('column-service', () => {
 
       const result = await createColumn(client, {
         project_id: MOCK_PROJECT_ID,
-        title: 'To Do',
+        title: '할 일',
         position: 0,
       })
 

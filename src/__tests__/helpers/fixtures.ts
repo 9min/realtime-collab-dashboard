@@ -55,7 +55,7 @@ export const mockColumns: Tables<'kanban_columns'>[] = [
   {
     id: MOCK_COLUMN_ID_TODO,
     project_id: MOCK_PROJECT_ID,
-    title: 'To Do',
+    title: '할 일',
     position: 0,
     wip_limit: null,
     is_done_column: false,
@@ -65,7 +65,7 @@ export const mockColumns: Tables<'kanban_columns'>[] = [
   {
     id: MOCK_COLUMN_ID_PROGRESS,
     project_id: MOCK_PROJECT_ID,
-    title: 'In Progress',
+    title: '진행 중',
     position: 1,
     wip_limit: null,
     is_done_column: false,
@@ -75,7 +75,7 @@ export const mockColumns: Tables<'kanban_columns'>[] = [
   {
     id: MOCK_COLUMN_ID_DONE,
     project_id: MOCK_PROJECT_ID,
-    title: 'Done',
+    title: '완료',
     position: 2,
     wip_limit: null,
     is_done_column: false,

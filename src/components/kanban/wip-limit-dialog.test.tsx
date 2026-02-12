@@ -9,7 +9,7 @@ import { WipLimitDialog } from './wip-limit-dialog'
 const defaultProps = {
   open: true,
   onOpenChange: vi.fn(),
-  columnTitle: 'In Progress',
+  columnTitle: '진행 중',
   currentLimit: 5,
   onSave: vi.fn(),
 }
@@ -24,7 +24,7 @@ describe('WipLimitDialog', () => {
 
     expect(screen.getByText('WIP 제한 설정')).toBeInTheDocument()
     expect(
-      screen.getByText(/In Progress/, { exact: false }),
+      screen.getByText(/진행 중/, { exact: false }),
     ).toBeInTheDocument()
   })
 

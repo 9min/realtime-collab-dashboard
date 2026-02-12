@@ -16,7 +16,7 @@ vi.mock('@/services/chart-service', () => ({
 import { getTaskStatusData, getWeeklyProgressData, getBurndownData } from '@/services/chart-service'
 import { useTaskStatusChart, useWeeklyProgressChart, useBurndownChart, chartKeys } from './use-chart-data'
 
-const mockStatusData = [{ name: 'To Do', value: 3, color: '#3b82f6' }]
+const mockStatusData = [{ name: '할 일', value: 3, color: '#3b82f6' }]
 const mockWeeklyData = [{ date: '1월 1일', completed: 2, created: 3 }]
 const mockBurndownData = [{ date: '1월 1일', remaining: 5, ideal: 4 }]
 

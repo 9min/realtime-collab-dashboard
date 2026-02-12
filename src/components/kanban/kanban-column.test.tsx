@@ -35,8 +35,8 @@ vi.mock('@hello-pangea/dnd', () => ({
 }))
 
 const defaultProps = {
-  column: mockColumns[0], // 'To Do'
-  tasks: [mockTasks[0]], // Task 1 is in To Do column
+  column: mockColumns[0], // '할 일'
+  tasks: [mockTasks[0]], // Task 1 is in 할 일 column
   onAddTask: vi.fn(),
   onTaskClick: vi.fn(),
   onRenameColumn: vi.fn(),
@@ -50,7 +50,7 @@ describe('KanbanColumn', () => {
   it('컬럼 제목을 렌더링한다', () => {
     renderWithProviders(<KanbanColumn {...defaultProps} />)
 
-    expect(screen.getByText('To Do')).toBeInTheDocument()
+    expect(screen.getByText('할 일')).toBeInTheDocument()
   })
 
   it('태스크 수를 렌더링한다', () => {

@@ -38,12 +38,12 @@ const defaultProps = {
     {
       key: 'high',
       label: '높음',
-      tasks: [mockTasks[1]], // Task 2 (high priority, In Progress column)
+      tasks: [mockTasks[1]], // Task 2 (high priority, 진행 중 column)
     },
     {
       key: 'medium',
       label: '보통',
-      tasks: [mockTasks[0]], // Task 1 (medium priority, To Do column)
+      tasks: [mockTasks[0]], // Task 1 (medium priority, 할 일 column)
     },
   ],
   columns: mockColumns,
@@ -78,9 +78,9 @@ describe('SwimlaneBoard', () => {
     renderWithProviders(<SwimlaneBoard {...defaultProps} />)
 
     // 각 그룹마다 컬럼 헤더가 반복 렌더링됨
-    const todoHeaders = screen.getAllByText('To Do')
-    const progressHeaders = screen.getAllByText('In Progress')
-    const doneHeaders = screen.getAllByText('Done')
+    const todoHeaders = screen.getAllByText('할 일')
+    const progressHeaders = screen.getAllByText('진행 중')
+    const doneHeaders = screen.getAllByText('완료')
 
     // 2개 그룹 x 3개 컬럼 = 각 컬럼명이 2번씩 나타남
     expect(todoHeaders).toHaveLength(2)
@@ -91,7 +91,7 @@ describe('SwimlaneBoard', () => {
   it('올바른 그룹/컬럼 셀 안에 태스크를 렌더링한다', () => {
     renderWithProviders(<SwimlaneBoard {...defaultProps} />)
 
-    // Task 1 (medium, To Do column)과 Task 2 (high, In Progress column)
+    // Task 1 (medium, 할 일 column)과 Task 2 (high, 진행 중 column)
     expect(screen.getByText('Task 1')).toBeInTheDocument()
     expect(screen.getByText('Task 2')).toBeInTheDocument()
   })
@@ -120,9 +120,9 @@ describe('SwimlaneBoard', () => {
 
     expect(screen.getByText('긴급')).toBeInTheDocument()
     // 컬럼 서브헤더는 여전히 렌더링
-    expect(screen.getByText('To Do')).toBeInTheDocument()
-    expect(screen.getByText('In Progress')).toBeInTheDocument()
-    expect(screen.getByText('Done')).toBeInTheDocument()
+    expect(screen.getByText('할 일')).toBeInTheDocument()
+    expect(screen.getByText('진행 중')).toBeInTheDocument()
+    expect(screen.getByText('완료')).toBeInTheDocument()
   })
 
   it('태스크 수 뱃지가 그룹의 전체 태스크 수를 반영한다', () => {

@@ -67,9 +67,10 @@ function handleRpc(fnName: string, params: Record<string, unknown>): { data: unk
 
       // 기본 컬럼 생성
       const defaultCols = [
-        { title: 'To Do', position: 0, is_done_column: false },
-        { title: 'In Progress', position: 1, is_done_column: false },
-        { title: 'Done', position: 2, is_done_column: true },
+        { title: '할 일', position: 0, is_done_column: false },
+        { title: '진행 중', position: 1, is_done_column: false },
+        { title: '완료', position: 2, is_done_column: true },
+        { title: '논의 필요', position: 3, is_done_column: false },
       ]
       for (const col of defaultCols) {
         demoDataStore.insertRow('kanban_columns', {

@@ -70,7 +70,7 @@ export function CreateProjectDialog() {
           <DialogHeader>
             <DialogTitle>새 프로젝트 만들기</DialogTitle>
             <DialogDescription>
-              프로젝트를 생성하면 기본 칸반 보드(To Do, In Progress, Done)가 함께 생성됩니다.
+              프로젝트를 생성하면 기본 칸반 보드(할 일, 진행 중, 완료, 논의 필요)가 함께 생성됩니다.
             </DialogDescription>
           </DialogHeader>
           <div className="mt-4 space-y-4">

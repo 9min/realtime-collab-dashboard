@@ -34,15 +34,15 @@ describe('chart-service', () => {
 
       expect(result.error).toBeNull()
       expect(result.data).toHaveLength(3)
-      // To Do: 1개, In Progress: 1개, Done: 1개
+      // 할 일: 1개, 진행 중: 1개, 완료: 1개
       expect(result.data?.[0]).toEqual(
-        expect.objectContaining({ name: 'To Do', value: 1, color: expect.any(String) }),
+        expect.objectContaining({ name: '할 일', value: 1, color: expect.any(String) }),
       )
       expect(result.data?.[1]).toEqual(
-        expect.objectContaining({ name: 'In Progress', value: 1 }),
+        expect.objectContaining({ name: '진행 중', value: 1 }),
       )
       expect(result.data?.[2]).toEqual(
-        expect.objectContaining({ name: 'Done', value: 1 }),
+        expect.objectContaining({ name: '완료', value: 1 }),
       )
     })
 
@@ -94,13 +94,13 @@ describe('chart-service', () => {
   // ── getWeeklyProgressData ──
   describe('getWeeklyProgressData', () => {
     it('7일간 생성/완료 데이터를 반환한다', async () => {
-      const doneColumn = mockColumns[2] // Done 컬럼
+      const doneColumn = mockColumns[2] // 완료 컬럼
 
       const client = createMockSupabaseClient({
         fromResponses: [
           // tasks 조회
           { data: mockTasks, error: null },
-          // 마지막 컬럼(Done) 조회
+          // 마지막 컬럼(완료) 조회
           { data: [doneColumn], error: null },
         ],
       }) as Client
@@ -131,11 +131,11 @@ describe('chart-service', () => {
       expect(result.error).not.toBeNull()
     })
 
-    it('Done 컬럼이 없으면 completed는 0이다', async () => {
+    it('완료 컬럼이 없으면 completed는 0이다', async () => {
       const client = createMockSupabaseClient({
         fromResponses: [
           { data: mockTasks, error: null },
-          // Done 컬럼이 없음
+          // 완료 컬럼이 없음
           { data: [], error: null },
         ],
       }) as Client

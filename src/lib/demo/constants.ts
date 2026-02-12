@@ -18,6 +18,7 @@ export const DEMO_COLUMN_IDS = {
   TODO: 'demo-col-0000-0000-000000000001',
   IN_PROGRESS: 'demo-col-0000-0000-000000000002',
   DONE: 'demo-col-0000-0000-000000000003',
+  DISCUSSION: 'demo-col-0000-0000-000000000004',
 } as const
 
 // 라벨 ID
