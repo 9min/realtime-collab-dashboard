@@ -1,9 +1,22 @@
 import { NextRequest, NextResponse } from 'next/server'
 
 import { RATE_LIMIT } from '@/lib/constants'
+import { DEMO_COOKIE_NAME } from '@/lib/demo/constants'
 import { createRateLimiter } from '@/lib/rate-limit'
 
 type RouteHandler = (req: NextRequest, context?: unknown) => Promise<NextResponse> | NextResponse
+
+// 데모 모드 요청 차단 — 서버 API는 실제 Supabase를 사용하므로 데모 모드에서 호출 차단
+export function isDemoRequest(req: NextRequest): boolean {
+  return req.cookies.has(DEMO_COOKIE_NAME)
+}
+
+export function demoModeResponse(): NextResponse {
+  return NextResponse.json(
+    { error: '데모 모드에서는 지원되지 않는 기능입니다' },
+    { status: 403 },
+  )
+}
 
 interface RateLimitOptions {
   interval?: number

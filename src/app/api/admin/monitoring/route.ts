@@ -1,11 +1,13 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 
+import { isDemoRequest, demoModeResponse } from '@/lib/api-middleware'
 import { createServerClient } from '@/lib/supabase/server'
 import { cacheGet } from '@/lib/cache'
 import { CACHE_TTL } from '@/lib/cache-keys'
 import { getMonitoringStats } from '@/services/monitoring-service'
 
-export async function GET() {
+export async function GET(req: NextRequest) {
+  if (isDemoRequest(req)) return demoModeResponse()
   const supabase = await createServerClient()
 
   // Auth check

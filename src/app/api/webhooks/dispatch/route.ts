@@ -1,10 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
 
+import { isDemoRequest, demoModeResponse } from '@/lib/api-middleware'
 import { createServerClient } from '@/lib/supabase/server'
 import { dispatchToSlack, dispatchToGitHub } from '@/services/webhook-dispatcher'
 import type { ProjectIntegration, SlackConfig, GitHubConfig, WebhookPayload } from '@/types/integration'
 
 export async function POST(req: NextRequest) {
+  if (isDemoRequest(req)) return demoModeResponse()
   const secret = process.env.WEBHOOK_DISPATCH_SECRET
   const authHeader = req.headers.get('x-webhook-secret')
 

@@ -1,13 +1,14 @@
 'use client'
 
 import { useState } from 'react'
-import { useSearchParams } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 
-import { KanbanSquare, LayoutDashboard, Loader2, Users } from 'lucide-react'
+import { KanbanSquare, LayoutDashboard, Loader2, Play, Users } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { createBrowserClient } from '@/lib/supabase/client'
+import { useDemoModeStore } from '@/stores/demo-mode-store'
 
 const ERROR_MESSAGES: Record<string, string> = {
   auth_callback_error: 'OAuth 인증에 실패했습니다. 다시 시도해주세요.',
@@ -21,9 +22,12 @@ const FEATURES = [
 
 export default function LoginPage() {
   const searchParams = useSearchParams()
+  const router = useRouter()
   const errorCode = searchParams.get('error')
   const errorDetail = searchParams.get('detail')
   const [isLoading, setIsLoading] = useState<'google' | 'kakao' | null>(null)
+  const [isDemoLoading, setIsDemoLoading] = useState(false)
+  const enterDemoMode = useDemoModeStore((s) => s.enterDemoMode)
 
   const handleOAuthLogin = async (provider: 'google' | 'kakao') => {
     setIsLoading(provider)
@@ -39,6 +43,12 @@ export default function LoginPage() {
     if (error) {
       setIsLoading(null)
     }
+  }
+
+  const handleDemoMode = () => {
+    setIsDemoLoading(true)
+    enterDemoMode()
+    router.push('/projects')
   }
 
   return (
@@ -81,7 +91,7 @@ export default function LoginPage() {
             variant="outline"
             className="w-full bg-white/50 dark:bg-slate-800/50"
             onClick={() => handleOAuthLogin('google')}
-            disabled={isLoading !== null}
+            disabled={isLoading !== null || isDemoLoading}
           >
             {isLoading === 'google' ? (
               <>
@@ -100,7 +110,7 @@ export default function LoginPage() {
             variant="outline"
             className="w-full bg-[#FEE500] text-[#191919] hover:bg-[#FEE500]/90 hover:text-[#191919] dark:bg-[#FEE500]/90 dark:hover:bg-[#FEE500]/80"
             onClick={() => handleOAuthLogin('kakao')}
-            disabled={isLoading !== null}
+            disabled={isLoading !== null || isDemoLoading}
           >
             {isLoading === 'kakao' ? (
               <>
@@ -111,6 +121,38 @@ export default function LoginPage() {
               <>
                 <KakaoIcon className="mr-2 h-5 w-5" />
                 Kakao로 로그인
+              </>
+            )}
+          </Button>
+
+          {/* 구분선 */}
+          <div className="relative my-1">
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t" />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-white/70 px-2 text-muted-foreground dark:bg-slate-900/70">
+                또는
+              </span>
+            </div>
+          </div>
+
+          {/* 체험하기 버튼 */}
+          <Button
+            variant="outline"
+            className="w-full border-emerald-300 bg-emerald-50/50 text-emerald-700 hover:bg-emerald-100/50 hover:text-emerald-800 dark:border-emerald-700 dark:bg-emerald-950/30 dark:text-emerald-300 dark:hover:bg-emerald-950/50"
+            onClick={handleDemoMode}
+            disabled={isLoading !== null || isDemoLoading}
+          >
+            {isDemoLoading ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                준비 중...
+              </>
+            ) : (
+              <>
+                <Play className="mr-2 h-4 w-4" />
+                로그인 없이 체험하기
               </>
             )}
           </Button>

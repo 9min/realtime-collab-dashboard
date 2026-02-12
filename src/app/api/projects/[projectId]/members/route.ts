@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { isDemoRequest, demoModeResponse } from '@/lib/api-middleware'
 import { createServerClient } from '@/lib/supabase/server'
 import { cacheGet } from '@/lib/cache'
 import { CACHE_KEYS, CACHE_TTL } from '@/lib/cache-keys'
@@ -7,6 +8,7 @@ export async function GET(
   _req: NextRequest,
   { params }: { params: Promise<{ projectId: string }> },
 ) {
+  if (isDemoRequest(_req)) return demoModeResponse()
   const { projectId } = await params
   const supabase = await createServerClient()
 

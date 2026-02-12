@@ -1,11 +1,12 @@
 import { createClient } from '@supabase/supabase-js'
 import { NextRequest, NextResponse } from 'next/server'
 
-import { withRateLimit } from '@/lib/api-middleware'
+import { isDemoRequest, demoModeResponse, withRateLimit } from '@/lib/api-middleware'
 import { RATE_LIMIT } from '@/lib/constants'
 import { createServerClient } from '@/lib/supabase/server'
 
 async function handler(_req: NextRequest) {
+  if (isDemoRequest(_req)) return demoModeResponse()
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
   const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY
 

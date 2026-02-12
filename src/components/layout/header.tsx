@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation'
 import { BarChart3, Keyboard, LogOut, ShieldCheck, UserCog } from 'lucide-react'
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -19,6 +20,7 @@ import { useNotificationRealtime } from '@/hooks/use-notification-realtime'
 import { useMyProfile } from '@/queries/use-admin'
 import { useProfile } from '@/queries/use-profile'
 
+import { useDemoModeStore } from '@/stores/demo-mode-store'
 import { useShortcutHelpStore } from '@/stores/shortcut-help-store'
 
 import { ProfileEditDialog } from '../profile/profile-edit-dialog'
@@ -37,7 +39,15 @@ export function Header() {
   const toggleShortcutHelp = useShortcutHelpStore((s) => s.toggle)
   const [profileOpen, setProfileOpen] = useState(false)
 
+  const isDemoMode = useDemoModeStore((s) => s.isDemoMode)
+  const exitDemoMode = useDemoModeStore((s) => s.exitDemoMode)
+
   const handleSignOut = async () => {
+    if (isDemoMode) {
+      exitDemoMode()
+      router.push('/login')
+      return
+    }
     await signOut()
     router.push('/login')
   }
@@ -50,13 +60,18 @@ export function Header() {
 
   return (
     <header className="sticky top-0 z-50 flex h-14 items-center justify-between bg-primary px-6 shadow-md dark:bg-primary">
-      <nav>
+      <nav className="flex items-center gap-3">
         <Link
           href="/projects"
           className="text-lg font-semibold text-primary-foreground transition-opacity hover:opacity-80"
         >
           실시간 협업 일정관리 도구
         </Link>
+        {isDemoMode && (
+          <Badge variant="secondary" className="bg-amber-100 text-amber-800 hover:bg-amber-100 dark:bg-amber-900/50 dark:text-amber-200">
+            데모 모드
+          </Badge>
+        )}
       </nav>
       <div className="flex items-center gap-2 text-primary-foreground">
         <SearchTrigger />
@@ -75,7 +90,7 @@ export function Header() {
         <SearchCommand />
         <ShortcutHelpDialog />
 
-        {isAuthenticated && user && (
+        {(isAuthenticated || isDemoMode) && (
           <>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -92,14 +107,16 @@ export function Header() {
               <DropdownMenuContent align="end" className="w-48">
                 <div className="px-2 py-1.5">
                   <p className="text-sm font-medium">{displayName}</p>
-                  <p className="text-muted-foreground text-xs">{user.email}</p>
+                  <p className="text-muted-foreground text-xs">{user?.email ?? 'demo@example.com'}</p>
                 </div>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => setProfileOpen(true)}>
-                  <UserCog className="mr-2 h-4 w-4" />
-                  프로필 설정
-                </DropdownMenuItem>
-                {myProfile?.is_admin && (
+                {!isDemoMode && (
+                  <DropdownMenuItem onClick={() => setProfileOpen(true)}>
+                    <UserCog className="mr-2 h-4 w-4" />
+                    프로필 설정
+                  </DropdownMenuItem>
+                )}
+                {!isDemoMode && myProfile?.is_admin && (
                   <>
                     <DropdownMenuItem onClick={() => router.push('/admin')}>
                       <ShieldCheck className="mr-2 h-4 w-4" />
@@ -113,12 +130,14 @@ export function Header() {
                 )}
                 <DropdownMenuItem onClick={handleSignOut}>
                   <LogOut className="mr-2 h-4 w-4" />
-                  로그아웃
+                  {isDemoMode ? '데모 종료' : '로그아웃'}
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
 
-            <ProfileEditDialog open={profileOpen} onOpenChange={setProfileOpen} />
+            {!isDemoMode && (
+              <ProfileEditDialog open={profileOpen} onOpenChange={setProfileOpen} />
+            )}
           </>
         )}
       </div>

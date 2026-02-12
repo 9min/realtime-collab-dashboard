@@ -3,6 +3,18 @@ import { type NextRequest, NextResponse } from 'next/server'
 
 // Middleware에서 세션 갱신 + 인증 상태 확인
 export async function updateSession(request: NextRequest) {
+  // 데모 모드: cookie가 있으면 auth 체크 없이 통과
+  const isDemoMode = request.cookies.has('demo_mode')
+  if (isDemoMode) {
+    const isAuthRoute = request.nextUrl.pathname.startsWith('/login')
+    if (isAuthRoute) {
+      const url = request.nextUrl.clone()
+      url.pathname = '/projects'
+      return NextResponse.redirect(url)
+    }
+    return NextResponse.next({ request })
+  }
+
   let supabaseResponse = NextResponse.next({ request })
 
   const supabase = createServerClient(
