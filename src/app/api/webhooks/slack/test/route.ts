@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 
 import { isDemoRequest, demoModeResponse } from '@/lib/api-middleware'
 import { createServerClient } from '@/lib/supabase/server'
+import { isValidSlackWebhookUrl } from '@/lib/url-validator'
 
 export async function POST(req: NextRequest) {
   if (isDemoRequest(req)) return demoModeResponse()
@@ -16,6 +17,13 @@ export async function POST(req: NextRequest) {
 
   if (!webhookUrl) {
     return NextResponse.json({ error: 'webhookUrl이 필요합니다' }, { status: 400 })
+  }
+
+  if (!isValidSlackWebhookUrl(webhookUrl)) {
+    return NextResponse.json(
+      { error: 'Slack Webhook URL만 허용됩니다 (https://hooks.slack.com/services/...)' },
+      { status: 400 },
+    )
   }
 
   try {

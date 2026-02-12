@@ -23,7 +23,7 @@ const BASE_PAYLOAD: WebhookPayload = {
 
 describe('dispatchToSlack', () => {
   const slackConfig: SlackConfig = {
-    webhookUrl: 'https://hooks.slack.com/services/test',
+    webhookUrl: 'https://hooks.slack.com/services/T00000000/B00000000/xxxxxxxxxxxxxxxxxxxxxxxx',
     channel: '#dev',
     events: ['task_created', 'task_updated'],
   }
@@ -37,7 +37,7 @@ describe('dispatchToSlack', () => {
     expect(mockFetch).toHaveBeenCalledOnce()
 
     const [url, options] = mockFetch.mock.calls[0]
-    expect(url).toBe('https://hooks.slack.com/services/test')
+    expect(url).toBe(slackConfig.webhookUrl)
     expect(options.method).toBe('POST')
 
     const body = JSON.parse(options.body)
@@ -76,7 +76,7 @@ describe('dispatchToSlack', () => {
 
   it('omits channel when not specified', async () => {
     const configWithoutChannel: SlackConfig = {
-      webhookUrl: 'https://hooks.slack.com/services/test',
+      webhookUrl: 'https://hooks.slack.com/services/T00000000/B00000000/xxxxxxxxxxxxxxxxxxxxxxxx',
       events: ['task_created'],
     }
 

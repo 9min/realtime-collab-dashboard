@@ -16,8 +16,12 @@ import { useUpsertIntegration, useDeleteIntegration, useToggleIntegration } from
 import { INTEGRATION_EVENT } from '@/types/integration'
 import type { ProjectIntegration, SlackConfig, IntegrationEvent } from '@/types/integration'
 
+const SLACK_WEBHOOK_REGEX = /^https:\/\/hooks\.slack\.com\/services\/T[A-Z0-9]+\/B[A-Z0-9]+\/[A-Za-z0-9]+$/
+
 const slackSchema = z.object({
-  webhookUrl: z.string().url('유효한 URL을 입력해주세요'),
+  webhookUrl: z.string()
+    .url('유효한 URL을 입력해주세요')
+    .regex(SLACK_WEBHOOK_REGEX, 'Slack Webhook URL 형식이 아닙니다 (https://hooks.slack.com/services/...)'),
   channel: z.string().optional(),
 })
 

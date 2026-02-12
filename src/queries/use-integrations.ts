@@ -3,37 +3,41 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 
-import { useSupabase } from '@/components/providers/supabase-provider'
-import { getProjectIntegrations, upsertIntegration, deleteIntegration, toggleIntegration } from '@/services/integration-service'
-import type { IntegrationType, SlackConfig, GitHubConfig } from '@/types/integration'
+import type { ProjectIntegration, IntegrationType, SlackConfig, GitHubConfig } from '@/types/integration'
 
 export const integrationKeys = {
   list: (projectId: string) => ['integrations', projectId] as const,
 }
 
 export function useIntegrations(projectId: string) {
-  const supabase = useSupabase()
-
   return useQuery({
-    // eslint-disable-next-line @tanstack/query/exhaustive-deps
     queryKey: integrationKeys.list(projectId),
     queryFn: async () => {
-      const result = await getProjectIntegrations(supabase, projectId)
-      if (result.error) throw new Error(result.error.message)
-      return result.data
+      const res = await fetch(`/api/projects/${projectId}/integrations`)
+      if (!res.ok) {
+        const body = await res.json()
+        throw new Error(body.error ?? '연동 목록 조회 실패')
+      }
+      return res.json() as Promise<ProjectIntegration[]>
     },
   })
 }
 
 export function useUpsertIntegration(projectId: string) {
-  const supabase = useSupabase()
   const queryClient = useQueryClient()
 
   return useMutation({
     mutationFn: async ({ type, config }: { type: IntegrationType; config: SlackConfig | GitHubConfig }) => {
-      const result = await upsertIntegration(supabase, projectId, type, config)
-      if (result.error) throw new Error(result.error.message)
-      return result.data
+      const res = await fetch(`/api/projects/${projectId}/integrations`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ type, config }),
+      })
+      if (!res.ok) {
+        const body = await res.json()
+        throw new Error(body.error ?? '연동 설정 저장 실패')
+      }
+      return res.json() as Promise<ProjectIntegration>
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: integrationKeys.list(projectId) })
@@ -46,14 +50,17 @@ export function useUpsertIntegration(projectId: string) {
 }
 
 export function useDeleteIntegration(projectId: string) {
-  const supabase = useSupabase()
   const queryClient = useQueryClient()
 
   return useMutation({
     mutationFn: async (integrationId: string) => {
-      const result = await deleteIntegration(supabase, integrationId)
-      if (result.error) throw new Error(result.error.message)
-      return result.data
+      const res = await fetch(`/api/projects/${projectId}/integrations/${integrationId}`, {
+        method: 'DELETE',
+      })
+      if (!res.ok) {
+        const body = await res.json()
+        throw new Error(body.error ?? '연동 삭제 실패')
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: integrationKeys.list(projectId) })
@@ -66,14 +73,20 @@ export function useDeleteIntegration(projectId: string) {
 }
 
 export function useToggleIntegration(projectId: string) {
-  const supabase = useSupabase()
   const queryClient = useQueryClient()
 
   return useMutation({
     mutationFn: async ({ integrationId, isActive }: { integrationId: string; isActive: boolean }) => {
-      const result = await toggleIntegration(supabase, integrationId, isActive)
-      if (result.error) throw new Error(result.error.message)
-      return result.data
+      const res = await fetch(`/api/projects/${projectId}/integrations/${integrationId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ isActive }),
+      })
+      if (!res.ok) {
+        const body = await res.json()
+        throw new Error(body.error ?? '연동 상태 변경 실패')
+      }
+      return res.json() as Promise<ProjectIntegration>
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: integrationKeys.list(projectId) })

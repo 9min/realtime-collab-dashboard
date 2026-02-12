@@ -18,7 +18,7 @@ import type { ProjectIntegration, GitHubConfig, IntegrationEvent } from '@/types
 const githubSchema = z.object({
   owner: z.string().min(1, '소유자를 입력해주세요'),
   repo: z.string().min(1, '리포지토리를 입력해주세요'),
-  token: z.string().min(1, 'Personal Access Token을 입력해주세요'),
+  token: z.string(),
 })
 
 type GitHubFormData = z.infer<typeof githubSchema>
@@ -45,16 +45,22 @@ export function GitHubIntegrationForm({ projectId, integration, isOwnerOrAdmin }
   const deleteMutation = useDeleteIntegration(projectId)
   const toggleMutation = useToggleIntegration(projectId)
 
+  const hasExistingToken = Boolean(integration)
+
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<GitHubFormData>({
-    resolver: zodResolver(githubSchema),
+    resolver: zodResolver(
+      hasExistingToken
+        ? githubSchema
+        : githubSchema.extend({ token: z.string().min(1, 'Personal Access Token을 입력해주세요') }),
+    ),
     defaultValues: {
       owner: config?.owner ?? '',
       repo: config?.repo ?? '',
-      token: config?.token ?? '',
+      token: '',
     },
   })
 
@@ -140,8 +146,11 @@ export function GitHubIntegrationForm({ projectId, integration, isOwnerOrAdmin }
           id="github-token"
           {...register('token')}
           type="password"
-          placeholder="ghp_..."
+          placeholder={hasExistingToken ? '변경하려면 새 토큰을 입력하세요' : 'ghp_...'}
         />
+        {hasExistingToken && (
+          <p className="text-muted-foreground text-xs">비워두면 기존 토큰이 유지됩니다</p>
+        )}
         {errors.token && (
           <p className="text-destructive text-xs">{errors.token.message}</p>
         )}

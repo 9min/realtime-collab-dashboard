@@ -1,3 +1,4 @@
+import { isValidSlackWebhookUrl } from '@/lib/url-validator'
 import type { WebhookPayload, SlackConfig, GitHubConfig } from '@/types/integration'
 
 interface SlackBlock {
@@ -36,6 +37,10 @@ export async function dispatchToSlack(
 ): Promise<{ success: boolean; error?: string }> {
   if (!config.events.includes(payload.eventType)) {
     return { success: true }
+  }
+
+  if (!isValidSlackWebhookUrl(config.webhookUrl)) {
+    return { success: false, error: 'Invalid Slack webhook URL' }
   }
 
   try {

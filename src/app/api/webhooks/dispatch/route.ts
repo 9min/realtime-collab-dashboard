@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 
 import { isDemoRequest, demoModeResponse } from '@/lib/api-middleware'
+import { decrypt } from '@/lib/crypto'
 import { createServerClient } from '@/lib/supabase/server'
 import { dispatchToSlack, dispatchToGitHub } from '@/services/webhook-dispatcher'
 import type { ProjectIntegration, SlackConfig, GitHubConfig, WebhookPayload } from '@/types/integration'
@@ -48,7 +49,9 @@ export async function POST(req: NextRequest) {
         return dispatchToSlack(integration.config as SlackConfig, body)
       }
       if (integration.type === 'github') {
-        return dispatchToGitHub(integration.config as GitHubConfig, body)
+        const ghConfig = integration.config as GitHubConfig
+        const decryptedConfig: GitHubConfig = { ...ghConfig, token: decrypt(ghConfig.token) }
+        return dispatchToGitHub(decryptedConfig, body)
       }
       return { success: false, error: `Unknown type: ${integration.type}` }
     }),
