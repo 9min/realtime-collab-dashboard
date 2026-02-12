@@ -39,8 +39,8 @@ import { GanttBar } from './gantt-bar'
 import { GanttDependencyArrows } from './gantt-dependency-arrows'
 import { GanttHeader, HEADER_HEIGHT } from './gantt-header'
 
-const WEEK_VIEW_WEEKS = 6
-const MONTH_VIEW_MONTHS = 6
+const MIN_WEEK_VIEW_WEEKS = 6
+const MIN_MONTH_VIEW_MONTHS = 6
 const COL_WIDTH_WEEK = 36
 const DAY_WIDTH_MONTH = 6
 const ROW_HEIGHT = 36
@@ -73,33 +73,70 @@ export function GanttChart({ projectId }: GanttChartProps) {
   const now = new Date()
 
   const { timelineColumns, timelineStart, totalDays, columnWidth, monthViewColumns, timelineTotalWidth } = useMemo(() => {
+    // 태스크 날짜 범위 계산
+    let taskMin: Date | null = null
+    let taskMax: Date | null = null
+    if (tasks && tasks.length > 0) {
+      for (const t of tasks) {
+        const s = new Date(t.created_at)
+        const e = t.due_date ? new Date(t.due_date) : null
+        if (!taskMin || s < taskMin) taskMin = s
+        if (e && (!taskMax || e > taskMax)) taskMax = e
+      }
+    }
+
     if (viewMode === 'week') {
-      const start = startOfWeek(addDays(now, -7))
-      const cols = getWeekColumns(start, WEEK_VIEW_WEEKS)
+      let start = startOfWeek(addDays(now, -7))
+      let end = addDays(start, MIN_WEEK_VIEW_WEEKS * 7)
+
+      if (taskMin && taskMin < start) {
+        start = startOfWeek(addDays(taskMin, -7))
+      }
+      if (taskMax && taskMax > end) {
+        end = addDays(taskMax, 7)
+      }
+
+      const weeksNeeded = Math.max(MIN_WEEK_VIEW_WEEKS, Math.ceil(daysBetween(start, end) / 7))
+      const cols = getWeekColumns(start, weeksNeeded)
       return {
         timelineColumns: cols,
         timelineStart: start,
-        totalDays: WEEK_VIEW_WEEKS * 7,
+        totalDays: weeksNeeded * 7,
         columnWidth: COL_WIDTH_WEEK,
         monthViewColumns: null as MonthViewColumn[] | null,
         timelineTotalWidth: cols.length * COL_WIDTH_WEEK,
       }
     }
-    // 월 단위: 전월부터 시작, 6개월 표시
-    const adjustedStart = new Date(now.getFullYear(), now.getMonth() - 1, 1)
-    const monthCols = getMonthViewColumns(adjustedStart, MONTH_VIEW_MONTHS)
-    const end = new Date(adjustedStart.getFullYear(), adjustedStart.getMonth() + MONTH_VIEW_MONTHS, 1)
-    const total = daysBetween(adjustedStart, end)
+
+    // 월 단위: 전월부터 시작, 태스크 범위에 맞게 확장
+    let monthStart = new Date(now.getFullYear(), now.getMonth() - 1, 1)
+    let monthEnd = new Date(monthStart.getFullYear(), monthStart.getMonth() + MIN_MONTH_VIEW_MONTHS, 1)
+
+    if (taskMin) {
+      const taskMinMonth = new Date(taskMin.getFullYear(), taskMin.getMonth(), 1)
+      if (taskMinMonth < monthStart) monthStart = taskMinMonth
+    }
+    if (taskMax && taskMax >= monthEnd) {
+      monthEnd = new Date(taskMax.getFullYear(), taskMax.getMonth() + 2, 1)
+    }
+
+    const monthCount = Math.max(
+      MIN_MONTH_VIEW_MONTHS,
+      (monthEnd.getFullYear() - monthStart.getFullYear()) * 12 + monthEnd.getMonth() - monthStart.getMonth(),
+    )
+    const monthCols = getMonthViewColumns(monthStart, monthCount)
+    const actualEnd = new Date(monthStart.getFullYear(), monthStart.getMonth() + monthCount, 1)
+    const total = daysBetween(monthStart, actualEnd)
     return {
       timelineColumns: [] as DateColumn[],
-      timelineStart: adjustedStart,
+      timelineStart: monthStart,
       totalDays: total,
       columnWidth: 0,
       monthViewColumns: monthCols,
       timelineTotalWidth: total * DAY_WIDTH_MONTH,
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [viewMode])
+  }, [viewMode, tasks])
 
   // 컬럼별로 태스크 그룹핑
   const groupedTasks = useMemo(() => {
