@@ -38,7 +38,9 @@ export function NotificationBell() {
       }
       if (!notification.project_id) return
       const boardUrl = `/projects/${notification.project_id}/board`
-      if (notification.entity_type === 'task' && notification.entity_id) {
+      if (notification.entity_type === 'project') {
+        router.push(boardUrl)
+      } else if (notification.entity_type === 'task' && notification.entity_id) {
         router.push(`${boardUrl}?taskId=${notification.entity_id}`)
       } else if (notification.entity_type === 'comment') {
         router.push(boardUrl)

@@ -6,6 +6,7 @@ export const NOTIFICATION_TYPE = {
   MENTIONED: 'mentioned',
   DUE_SOON: 'due_soon',
   USER_MESSAGE: 'user_message',
+  MEMBER_ADDED: 'member_added',
 } as const
 
 export type NotificationType = (typeof NOTIFICATION_TYPE)[keyof typeof NOTIFICATION_TYPE]

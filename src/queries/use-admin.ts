@@ -54,6 +54,33 @@ export function useAllProjectMemberships() {
   })
 }
 
+export function useForceDeleteUser() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: async (userId: string) => {
+      const res = await fetch('/api/admin/delete-user', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId }),
+      })
+      if (!res.ok) {
+        const data = await res.json() as { error?: string }
+        throw new Error(data.error ?? '사용자 삭제에 실패했습니다')
+      }
+      return res.json() as Promise<{ success: boolean }>
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: adminKeys.allUsers })
+      queryClient.invalidateQueries({ queryKey: adminKeys.allMemberships })
+      toast.success('사용자가 강제 탈퇴되었습니다')
+    },
+    onError: (error) => {
+      toast.error(error.message || '사용자 삭제에 실패했습니다')
+    },
+  })
+}
+
 export function useSetAdminStatus() {
   const supabase = useSupabase()
   const queryClient = useQueryClient()

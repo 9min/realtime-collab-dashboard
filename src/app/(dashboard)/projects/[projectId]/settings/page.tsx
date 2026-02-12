@@ -292,15 +292,36 @@ export default function ProjectSettingsPage({ params }: ProjectSettingsPageProps
                       </Badge>
                     )}
                     {canRemove && (
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="text-destructive h-8 w-8"
-                        onClick={() => removeMutation.mutate(member.id)}
-                        disabled={removeMutation.isPending}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="text-destructive h-8 w-8 cursor-pointer"
+                            disabled={removeMutation.isPending}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>멤버를 제거하시겠습니까?</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              {profile?.full_name ?? '사용자'}님을 프로젝트에서 제거합니다.
+                              제거된 멤버는 더 이상 이 프로젝트에 접근할 수 없습니다.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel className="cursor-pointer">취소</AlertDialogCancel>
+                            <AlertDialogAction
+                              className="cursor-pointer bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                              onClick={() => removeMutation.mutate(member.id)}
+                            >
+                              제거
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
                     )}
                   </div>
                 )

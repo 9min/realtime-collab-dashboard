@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useCallback } from 'react'
 import {
   ChevronRight,
   FolderOpen,
@@ -11,17 +11,28 @@ import {
   ShieldOff,
   Users,
   UserCog,
+  UserX,
   FolderKanban,
   CheckCheck,
 } from 'lucide-react'
 
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Skeleton } from '@/components/ui/skeleton'
-import { useMyProfile, useAllUsers, useAllProjectMemberships, useSetAdminStatus } from '@/queries/use-admin'
+import { useMyProfile, useAllUsers, useAllProjectMemberships, useSetAdminStatus, useForceDeleteUser } from '@/queries/use-admin'
 import { useAllUserMessages, useMarkMessageRead } from '@/queries/use-user-messages'
 import { useAuth } from '@/hooks/use-auth'
 import type { ProjectMembership } from '@/services/admin-service'
@@ -112,11 +123,15 @@ export default function AdminPage() {
   const { data: users, isLoading: usersLoading } = useAllUsers()
   const { data: memberships, isLoading: membershipsLoading } = useAllProjectMemberships()
   const setAdminStatus = useSetAdminStatus()
+  const forceDeleteUser = useForceDeleteUser()
   const { data: userMessages } = useAllUserMessages()
   const markMessageRead = useMarkMessageRead()
 
   const [expandedUsers, setExpandedUsers] = useState<Set<string>>(new Set())
   const [searchQuery, setSearchQuery] = useState('')
+  const [deleteTarget, setDeleteTarget] = useState<{ id: string; name: string; email: string } | null>(null)
+  const [deleteStep, setDeleteStep] = useState<1 | 2>(1)
+  const [confirmEmail, setConfirmEmail] = useState('')
 
   const messagesByUser = useMemo(() => {
     const map = new Map<string, UserMessage>()
@@ -163,6 +178,25 @@ export default function AdminPage() {
     const uniqueProjects = new Set(memberships.map((m) => m.project_id))
     return { total: users.length, admins: adminCount, projects: uniqueProjects.size }
   }, [users, memberships])
+
+  const openDeleteDialog = useCallback((profile: { id: string; full_name: string | null; email: string }) => {
+    setDeleteTarget({ id: profile.id, name: profile.full_name ?? profile.email, email: profile.email })
+    setDeleteStep(1)
+    setConfirmEmail('')
+  }, [])
+
+  const closeDeleteDialog = useCallback(() => {
+    setDeleteTarget(null)
+    setDeleteStep(1)
+    setConfirmEmail('')
+  }, [])
+
+  const handleDeleteConfirm = useCallback(() => {
+    if (!deleteTarget) return
+    forceDeleteUser.mutate(deleteTarget.id, {
+      onSuccess: () => closeDeleteDialog(),
+    })
+  }, [deleteTarget, forceDeleteUser, closeDeleteDialog])
 
   const isLoading = profileLoading || usersLoading || membershipsLoading
 
@@ -327,22 +361,33 @@ export default function AdminPage() {
                       </Badge>
 
                       {!isCurrentUser && (
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="h-8 cursor-pointer gap-1 text-xs"
-                          disabled={setAdminStatus.isPending}
-                          onClick={() => handleToggleAdmin(profile.id, profile.is_admin)}
-                        >
-                          {setAdminStatus.isPending ? (
-                            <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                          ) : profile.is_admin ? (
-                            <ShieldOff className="h-3.5 w-3.5" />
-                          ) : (
-                            <ShieldCheck className="h-3.5 w-3.5" />
-                          )}
-                          {profile.is_admin ? '해제' : '승격'}
-                        </Button>
+                        <>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-8 cursor-pointer gap-1 text-xs"
+                            disabled={setAdminStatus.isPending}
+                            onClick={() => handleToggleAdmin(profile.id, profile.is_admin)}
+                          >
+                            {setAdminStatus.isPending ? (
+                              <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                            ) : profile.is_admin ? (
+                              <ShieldOff className="h-3.5 w-3.5" />
+                            ) : (
+                              <ShieldCheck className="h-3.5 w-3.5" />
+                            )}
+                            {profile.is_admin ? '해제' : '승격'}
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-8 cursor-pointer gap-1 text-xs text-destructive hover:text-destructive"
+                            onClick={() => openDeleteDialog(profile)}
+                          >
+                            <UserX className="h-3.5 w-3.5" />
+                            강제 탈퇴
+                          </Button>
+                        </>
                       )}
                     </div>
                   </div>
@@ -422,6 +467,80 @@ export default function AdminPage() {
           </div>
         </CardContent>
       </Card>
+
+      {/* 1단계: 강제 탈퇴 경고 */}
+      <AlertDialog open={deleteTarget !== null && deleteStep === 1} onOpenChange={(open) => { if (!open) closeDeleteDialog() }}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>강제 탈퇴</AlertDialogTitle>
+            <AlertDialogDescription asChild>
+              <div className="space-y-2">
+                <p>
+                  정말로 <strong>{deleteTarget?.name}</strong>님을 강제 탈퇴시키겠습니까?
+                </p>
+                <ul className="list-disc space-y-1 pl-5 text-sm">
+                  <li>이 작업은 되돌릴 수 없습니다</li>
+                  <li>사용자의 소유 프로젝트와 관련 데이터가 모두 삭제됩니다</li>
+                  <li>다른 프로젝트에서의 참여 기록이 정리됩니다</li>
+                </ul>
+              </div>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="cursor-pointer">취소</AlertDialogCancel>
+            <AlertDialogAction
+              className="cursor-pointer bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              onClick={(e) => {
+                e.preventDefault()
+                setDeleteStep(2)
+              }}
+            >
+              탈퇴 진행
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* 2단계: 이메일 확인 */}
+      <AlertDialog open={deleteTarget !== null && deleteStep === 2} onOpenChange={(open) => { if (!open) closeDeleteDialog() }}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>최종 확인</AlertDialogTitle>
+            <AlertDialogDescription asChild>
+              <div className="space-y-3">
+                <p>
+                  확인을 위해 아래에 사용자의 이메일을 입력하세요.
+                </p>
+                <p className="font-mono text-sm font-medium text-foreground">
+                  {deleteTarget?.email}
+                </p>
+                <Input
+                  placeholder="이메일을 입력하세요"
+                  value={confirmEmail}
+                  onChange={(e) => setConfirmEmail(e.target.value)}
+                  autoFocus
+                />
+              </div>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="cursor-pointer" onClick={() => setDeleteStep(1)}>뒤로</AlertDialogCancel>
+            <AlertDialogAction
+              className="cursor-pointer bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              disabled={confirmEmail !== deleteTarget?.email || forceDeleteUser.isPending}
+              onClick={(e) => {
+                e.preventDefault()
+                handleDeleteConfirm()
+              }}
+            >
+              {forceDeleteUser.isPending ? (
+                <Loader2 className="mr-1 h-3.5 w-3.5 animate-spin" />
+              ) : null}
+              탈퇴
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   )
 }
