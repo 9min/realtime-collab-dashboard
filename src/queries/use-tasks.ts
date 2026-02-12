@@ -7,10 +7,13 @@ import { useSupabase } from '@/components/providers/supabase-provider'
 import { getTasksByProject, getTasksByProjectPaginated, createTask, updateTask, deleteTask, deleteTasksBefore, moveTask } from '@/services/task-service'
 import { chartKeys } from '@/queries/use-chart-data'
 import { QUERY_CONFIG } from '@/lib/constants'
+import { DEMO_COOKIE_NAME } from '@/lib/demo/constants'
 import type { InsertTables, UpdateTables } from '@/types/database'
 import type { Task, MoveTaskPayload } from '@/types/kanban'
 
 function dispatchWebhook(projectId: string, eventType: string, data: Record<string, unknown>) {
+  if (typeof document !== 'undefined' && document.cookie.includes(DEMO_COOKIE_NAME)) return
+
   fetch('/api/webhooks/dispatch', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
