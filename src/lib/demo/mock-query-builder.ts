@@ -26,6 +26,7 @@ export class MockQueryBuilder {
   private mutationSelectColumns: string | null = null
   private countOption: 'exact' | null = null
   private headOption = false
+  private upsertConflictColumns: string[] = ['id']
 
   constructor(tableName: string) {
     this.tableName = tableName
@@ -69,7 +70,9 @@ export class MockQueryBuilder {
   upsert(data: Row | Row[], options?: { onConflict?: string }): this {
     this.operation = 'upsert'
     this.insertData = data
-    void options
+    if (options?.onConflict) {
+      this.upsertConflictColumns = options.onConflict.split(',').map((c) => c.trim())
+    }
     return this
   }
 
@@ -344,7 +347,7 @@ export class MockQueryBuilder {
 
   private executeUpsert(): PostgrestResponse<unknown> {
     const dataArr = Array.isArray(this.insertData) ? this.insertData : [this.insertData!]
-    const upserted = demoDataStore.upsertRows(this.tableName, dataArr.map((d) => ({ ...d })))
+    const upserted = demoDataStore.upsertRows(this.tableName, dataArr.map((d) => ({ ...d })), this.upsertConflictColumns)
 
     if (this.mutationSelectColumns) {
       const result = this.applyColumnSelection(this.applyJoins(upserted))

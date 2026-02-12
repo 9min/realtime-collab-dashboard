@@ -76,16 +76,14 @@ export async function getWeeklyProgressData(
     return { data: null, error: { code: error.code, message: error.message } }
   }
 
-  // 마지막 컬럼(Done)에 있는 태스크의 updated_at 기준으로 완료 판단
-  const { data: columns } = await supabase
+  // is_done_column 플래그로 완료 컬럼 식별
+  const { data: doneColumns } = await supabase
     .from('kanban_columns')
-    .select('*')
+    .select('id')
     .eq('project_id', projectId)
-    .order('position', { ascending: false })
-    .limit(1)
-    .returns<Column[]>()
+    .eq('is_done_column', true)
 
-  const doneColumnId = columns?.[0]?.id
+  const doneColumnIds = new Set((doneColumns ?? []).map((c) => c.id))
 
   const dateFormatter = new Intl.DateTimeFormat('ko-KR', { month: 'short', day: 'numeric' })
   const data: WeeklyProgressData[] = []
@@ -110,7 +108,7 @@ export async function getWeeklyProgressData(
       if (t.createdAt >= dayStartTs && t.createdAt <= dayEndTs) {
         created++
       }
-      if (doneColumnId && t.columnId === doneColumnId && t.updatedAt >= dayStartTs && t.updatedAt <= dayEndTs) {
+      if (doneColumnIds.has(t.columnId) && t.updatedAt >= dayStartTs && t.updatedAt <= dayEndTs) {
         completed++
       }
     }
@@ -140,15 +138,13 @@ export async function getBurndownData(
     return { data: null, error: { code: error.code, message: error.message } }
   }
 
-  const { data: columns } = await supabase
+  const { data: doneColumns } = await supabase
     .from('kanban_columns')
-    .select('*')
+    .select('id')
     .eq('project_id', projectId)
-    .order('position', { ascending: false })
-    .limit(1)
-    .returns<Column[]>()
+    .eq('is_done_column', true)
 
-  const doneColumnId = columns?.[0]?.id
+  const doneColumnIds = new Set((doneColumns ?? []).map((c) => c.id))
   const totalTasks = tasks?.length ?? 0
 
   if (totalTasks === 0) {
@@ -164,11 +160,9 @@ export async function getBurndownData(
   const data: BurndownData[] = []
 
   // 타임스탬프 사전 계산 — 루프 내 Date 객체 생성 최소화
-  const doneTaskTimestamps = doneColumnId
-    ? (tasks ?? [])
-        .filter((t) => t.column_id === doneColumnId)
-        .map((t) => new Date(t.updated_at).getTime())
-    : []
+  const doneTaskTimestamps = (tasks ?? [])
+    .filter((t) => doneColumnIds.has(t.column_id))
+    .map((t) => new Date(t.updated_at).getTime())
 
   for (let i = 0; i < DAYS_RANGE; i++) {
     const date = new Date(startDate)
