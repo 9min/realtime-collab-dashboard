@@ -19,7 +19,7 @@ export function MyTaskItem({ task, onTaskClick }: MyTaskItemProps) {
 
   return (
     <button
-      className="flex w-full items-center gap-3 rounded-lg border bg-card px-4 py-3 text-left transition-colors hover:bg-accent/50"
+      className="flex w-full cursor-pointer items-center gap-3 rounded-lg border bg-card px-4 py-3 text-left outline-none transition-colors hover:bg-accent/50 focus-visible:ring-2 focus-visible:ring-ring"
       onClick={handleClick}
     >
       <div className="min-w-0 flex-1">

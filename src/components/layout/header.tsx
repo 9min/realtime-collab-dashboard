@@ -71,7 +71,7 @@ export function Header() {
         {(isAuthenticated || isDemoMode) && (
           <Link
             href="/my-tasks"
-            className="flex shrink-0 items-center gap-1 rounded-md px-2 py-1 text-sm text-primary-foreground/80 transition-colors hover:bg-primary-foreground/10 hover:text-primary-foreground"
+            className="flex shrink-0 items-center gap-1.5 rounded-md bg-primary-foreground/15 px-3 py-1.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary-foreground/25"
           >
             <ListTodo className="h-4 w-4" />
             <span className="hidden sm:inline">내 할 일</span>
