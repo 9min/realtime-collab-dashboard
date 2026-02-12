@@ -725,9 +725,69 @@ Then 폴링 폴백으로 전환되어 데이터 동기화가 유지된다
 
 ---
 
+### Phase 11: Advanced Features — ✅ 구현 완료
+
+#### F39. Due Date Reminders (마감일 알림) ✅
+- **Cron API**: `/api/cron/due-reminders` — 정기 실행으로 마감 임박 태스크 알림 생성
+- **알림 로그**: `due_date_notifications_log` 테이블로 중복 알림 방지
+- **DB**: 마이그레이션 035
+- **Acceptance Criteria**:
+  - [x] 마감 임박 태스크 자동 알림
+  - [x] 중복 알림 방지 (알림 로그)
+
+#### F40. Task Favorites (즐겨찾기) ✅
+- **태스크 즐겨찾기**: 사용자별 태스크 즐겨찾기 토글
+- **칸반 카드 표시**: 즐겨찾기된 태스크에 별표 아이콘
+- **DB**: `task_favorites` 테이블 (마이그레이션 036)
+- **Acceptance Criteria**:
+  - [x] 즐겨찾기 토글 (칸반 카드)
+  - [x] 즐겨찾기 상태 표시
+
+#### F41. Recurring Tasks (반복 태스크) ✅
+- **반복 설정**: 일간/주간/월간 주기 설정
+- **자동 생성**: 반복 주기에 따라 태스크 자동 복제
+- **반복 배지**: 칸반 카드에 반복 태스크 배지 표시
+- **DB**: `task_recurrences` 테이블 (마이그레이션 037)
+- **Acceptance Criteria**:
+  - [x] 반복 주기 설정 (일/주/월)
+  - [x] 반복 태스크 자동 생성
+  - [x] 칸반 카드 반복 배지
+
+#### F42. Default Labels (기본 라벨) ✅
+- **프로젝트 생성 시 기본 라벨 자동 생성**: Bug, Feature, Improvement, Documentation, Urgent
+- **DB**: 마이그레이션 038
+- **Acceptance Criteria**:
+  - [x] 프로젝트 생성 시 기본 라벨 5종 자동 생성
+
+#### F43. Workload Chart (워크로드 차트) ✅
+- **멤버별 태스크 분포 시각화**: 우선순위별 스택 바 차트
+- **워크로드 존**: 녹색(적정)/노란색(주의)/빨간색(과부하) 구간 표시
+- **칸반 연동**: 멤버 클릭 시 칸반 보드로 이동 + 담당자 필터 자동 적용
+- **경로**: `/projects/[projectId]/workload`
+- **Acceptance Criteria**:
+  - [x] 멤버별 우선순위 분포 바 차트
+  - [x] 워크로드 존 시각화
+  - [x] 멤버 클릭 → 칸반 담당자 필터 연동
+
+#### F44. My Tasks (내 태스크) ✅
+- **전체 프로젝트 태스크 통합 조회**: 사용자에게 할당된 모든 태스크를 한 화면에서 확인
+- **경로**: `/my-tasks`
+- **Acceptance Criteria**:
+  - [x] 전체 프로젝트 내 태스크 통합 목록
+
+#### F45. Kanban Filter Presets (칸반 필터 프리셋) ✅
+- **필터 자동 저장**: 칸반 보드 필터 설정을 프로젝트별/유저별 DB에 영구 저장
+- **자동 복원**: 칸반 보드 진입 시 저장된 필터 자동 적용
+- **Debounce 저장**: 필터 변경 시 1초 debounce로 자동 저장
+- **DB**: `kanban_filter_presets` 테이블 (마이그레이션 039)
+- **Acceptance Criteria**:
+  - [x] 필터 상태 자동 저장 (debounce)
+  - [x] 보드 진입 시 필터 자동 복원
+
+---
+
 ## Future Features (Next)
 - **템플릿**: 프로젝트 템플릿으로 빠른 프로젝트 생성
-- **반복 태스크**: 주기적 태스크 자동 생성
 - **시간 추적**: 태스크별 소요 시간 기록
 - **워크플로우 자동화**: 상태 변경 시 자동 액션 (예: Done 이동 시 알림)
 - **모바일 앱**: React Native 또는 PWA
@@ -811,7 +871,7 @@ Then 폴링 폴백으로 전환되어 데이터 동기화가 유지된다
 
 ## Database Schema
 
-### Tables (16개)
+### Tables (20개)
 | 테이블 | 용도 |
 |--------|------|
 | `profiles` | 사용자 프로필 (extends auth.users) |
@@ -830,14 +890,18 @@ Then 폴링 폴백으로 전환되어 데이터 동기화가 유지된다
 | `dashboard_layouts` | 대시보드 레이아웃 |
 | `project_integrations` | 외부 연동 설정 (Slack, GitHub) |
 | `user_messages` | 신규 사용자 → 관리자 메시지 |
+| `due_date_notifications_log` | 마감일 알림 중복 방지 로그 |
+| `task_favorites` | 태스크 즐겨찾기 (N:N) |
+| `task_recurrences` | 반복 태스크 설정 |
+| `kanban_filter_presets` | 칸반 필터 프리셋 저장 |
 
 ### RLS Policies
 - 모든 테이블에 RLS 활성화
 - 프로젝트 스코프 기반 정책
 - 헬퍼 함수: `is_project_member()`, `has_project_role()`, `is_admin()`
 
-### Migrations (33개)
-001~033 순차 마이그레이션으로 스키마 관리
+### Migrations (39개)
+001~039 순차 마이그레이션으로 스키마 관리
 
 ---
 

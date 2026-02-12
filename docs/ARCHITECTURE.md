@@ -63,76 +63,120 @@ src/
 ├── app/
 │   ├── (auth)/
 │   │   ├── login/
-│   │   │   └── page.tsx              # 로그인 페이지
+│   │   │   └── page.tsx              # 로그인 페이지 (Canvas 배경 애니메이션)
 │   │   ├── callback/
 │   │   │   └── route.ts              # OAuth 콜백 핸들러
 │   │   └── layout.tsx                # Auth 레이아웃 (centered)
 │   ├── (dashboard)/
+│   │   ├── admin/
+│   │   │   ├── page.tsx              # 관리자 패널 (사용자 관리)
+│   │   │   └── monitoring/
+│   │   │       └── page.tsx          # 서비스 통계 대시보드
+│   │   ├── my-tasks/
+│   │   │   └── page.tsx              # 내 태스크 (전체 프로젝트 통합)
 │   │   ├── projects/
 │   │   │   ├── page.tsx              # 프로젝트 목록
 │   │   │   └── [projectId]/
 │   │   │       ├── page.tsx          # 대시보드 (위젯 그리드)
 │   │   │       ├── board/
 │   │   │       │   └── page.tsx      # 칸반 보드
+│   │   │       ├── activity/
+│   │   │       │   └── page.tsx      # 활동 로그
+│   │   │       ├── calendar/
+│   │   │       │   └── page.tsx      # 캘린더 뷰
+│   │   │       ├── gantt/
+│   │   │       │   └── page.tsx      # 간트 차트
+│   │   │       ├── workload/
+│   │   │       │   └── page.tsx      # 워크로드 차트
 │   │   │       └── settings/
 │   │   │           └── page.tsx      # 프로젝트 설정
 │   │   └── layout.tsx                # Dashboard 레이아웃 (sidebar)
+│   ├── api/
+│   │   ├── admin/monitoring/         # 서비스 통계 API
+│   │   ├── auth/delete-account/      # 계정 삭제 API
+│   │   ├── cron/due-reminders/       # 마감일 알림 Cron API
+│   │   ├── projects/[projectId]/
+│   │   │   ├── integrations/         # 외부 연동 CRUD API
+│   │   │   └── members/              # 멤버 관리 API
+│   │   └── webhooks/
+│   │       ├── dispatch/             # Webhook 중앙 디스패치
+│   │       └── slack/test/           # Slack Webhook 테스트
 │   ├── layout.tsx                    # Root 레이아웃 (providers)
 │   ├── page.tsx                      # 랜딩 or 리다이렉트
 │   └── globals.css
 │
 ├── components/
 │   ├── ui/                           # shadcn/ui 기본 컴포넌트
-│   │   ├── button.tsx
-│   │   ├── card.tsx
-│   │   ├── dialog.tsx
-│   │   ├── dropdown-menu.tsx
-│   │   └── ...
-│   ├── layout/
-│   │   ├── sidebar.tsx               # 사이드바 네비게이션
-│   │   ├── header.tsx                # 상단 헤더
-│   │   └── theme-toggle.tsx          # 다크모드 토글
-│   ├── dashboard/
-│   │   ├── widget-grid.tsx           # 위젯 그리드 컨테이너
-│   │   ├── widget-card.tsx           # 개별 위젯 래퍼
-│   │   └── add-widget-dialog.tsx     # 위젯 추가 다이얼로그
-│   ├── kanban/
+│   ├── layout/                       # 사이드바, 헤더, 테마 토글
+│   ├── auth/                         # 로그인 페이지 Canvas 배경
+│   ├── dashboard/                    # 위젯 그리드, 위젯 카드
+│   ├── kanban/                       # 칸반 보드, 컬럼, 태스크 카드, 필터바
 │   │   ├── kanban-board.tsx          # 칸반 보드 컨테이너
 │   │   ├── kanban-column.tsx         # 단일 컬럼
 │   │   ├── task-card.tsx             # 태스크 카드
 │   │   ├── task-detail-dialog.tsx    # 태스크 상세/편집
-│   │   └── create-task-form.tsx      # 태스크 생성 폼
-│   ├── charts/
-│   │   ├── task-status-chart.tsx     # 상태 분포 파이 차트
-│   │   ├── weekly-progress-chart.tsx # 주간 진행률 라인 차트
-│   │   └── burndown-chart.tsx        # 번다운 차트
-│   ├── presence/
-│   │   ├── online-users.tsx          # 온라인 유저 목록
-│   │   └── user-avatar.tsx           # 유저 아바타 (온라인 표시)
-│   └── providers/
-│       ├── query-provider.tsx        # TanStack Query Provider
-│       ├── theme-provider.tsx        # next-themes Provider
-│       └── supabase-provider.tsx     # Supabase client Provider
+│   │   ├── task-filter-bar.tsx       # 필터 바 (검색, 우선순위, 담당자, 마감일, 라벨)
+│   │   ├── swimlane-board.tsx        # 스윔레인 뷰
+│   │   ├── favorite-button.tsx       # 즐겨찾기 토글
+│   │   ├── recurrence-section.tsx    # 반복 태스크 설정
+│   │   ├── label-manager.tsx         # 라벨 매니저
+│   │   ├── dependency-section.tsx    # 의존성 관리
+│   │   ├── subtask-section.tsx       # 서브태스크
+│   │   ├── comment-section.tsx       # 댓글 스레드
+│   │   ├── attachment-section.tsx    # 첨부파일
+│   │   └── ...                       # 기타 (bulk-delete, export, wip-limit 등)
+│   ├── charts/                       # 차트 위젯 (파이, 라인, 번다운)
+│   ├── calendar/                     # 캘린더 뷰
+│   ├── gantt/                        # 간트 차트
+│   ├── workload/                     # 워크로드 차트
+│   ├── activity/                     # 활동 로그 피드
+│   ├── my-tasks/                     # 내 태스크 목록
+│   ├── notification/                 # 알림 벨, 알림 목록
+│   ├── presence/                     # 온라인 유저 목록, 아바타
+│   ├── profile/                      # 프로필 편집, 아바타 업로드
+│   ├── project/                      # 프로젝트 CRUD, 멤버 관리
+│   ├── realtime/                     # Realtime 연결 상태 표시
+│   ├── search/                       # 글로벌 검색 (Cmd+K)
+│   └── providers/                    # Query, Theme, Supabase Provider
 │
 ├── hooks/
 │   ├── use-auth.ts                   # 인증 상태 및 액션
 │   ├── use-realtime-subscription.ts  # Supabase Realtime 구독 추상화
+│   ├── use-notification-realtime.ts  # 글로벌 알림 Realtime 구독
 │   ├── use-presence.ts               # Presence 구독/상태
 │   ├── use-optimistic-mutation.ts    # Optimistic Update 공통 훅
-│   └── use-media-query.ts           # 반응형 감지
+│   ├── use-keyboard-shortcuts.ts     # 키보드 단축키
+│   ├── use-export.ts                 # CSV 내보내기
+│   └── use-media-query.ts            # 반응형 감지
 │
 ├── lib/
 │   ├── supabase/
 │   │   ├── client.ts                 # Browser용 Supabase client
 │   │   ├── server.ts                 # Server용 Supabase client
 │   │   └── middleware.ts             # Auth middleware helper
+│   ├── demo/                         # 데모 모드 (Mock Supabase)
+│   │   ├── constants.ts              # 데모 상수 (게스트 유저 등)
+│   │   ├── demo-data.ts              # 샘플 데이터셋
+│   │   ├── demo-store.ts             # 인메모리 데이터 저장소
+│   │   ├── mock-auth.ts              # Mock 인증
+│   │   ├── mock-query-builder.ts     # Mock Supabase 쿼리 빌더
+│   │   ├── mock-realtime.ts          # Mock Realtime 채널
+│   │   └── mock-supabase-client.ts   # Mock Supabase 클라이언트
 │   ├── utils.ts                      # cn() 등 유틸리티
-│   └── constants.ts                  # 매직넘버 상수화
+│   └── constants.ts                  # 매직넘버, 우선순위 색상 상수
 │
 ├── stores/
 │   ├── ui-store.ts                   # 사이드바 열림/닫힘, 모달 상태
 │   ├── dashboard-store.ts            # 위젯 레이아웃 상태
-│   └── kanban-store.ts              # DnD 중간 상태
+│   ├── kanban-store.ts               # DnD 중간 상태
+│   ├── kanban-filter-store.ts        # 칸반 필터 상태 (검색, 우선순위, 담당자 등)
+│   ├── activity-filter-store.ts      # 활동 로그 필터
+│   ├── calendar-store.ts             # 캘린더 뷰 상태
+│   ├── gantt-store.ts                # 간트 차트 상태
+│   ├── realtime-store.ts             # Realtime 연결 상태
+│   ├── search-store.ts               # 글로벌 검색 상태
+│   ├── shortcut-help-store.ts        # 단축키 도움말 다이얼로그
+│   └── demo-mode-store.ts            # 데모 모드 상태
 │
 ├── services/
 │   ├── auth-service.ts               # 인증 관련 API
@@ -140,20 +184,70 @@ src/
 │   ├── task-service.ts               # 태스크 CRUD
 │   ├── column-service.ts             # 컬럼 CRUD
 │   ├── dashboard-service.ts          # 레이아웃 저장/불러오기
-│   └── chart-service.ts              # 차트 데이터 집계 (서버사이드)
+│   ├── chart-service.ts              # 차트 데이터 집계
+│   ├── comment-service.ts            # 댓글 CRUD
+│   ├── attachment-service.ts         # 첨부파일 CRUD
+│   ├── notification-service.ts       # 알림 관리
+│   ├── activity-service.ts           # 활동 로그 조회
+│   ├── subtask-service.ts            # 서브태스크 CRUD
+│   ├── label-service.ts              # 라벨 CRUD
+│   ├── dependency-service.ts         # 태스크 의존성 CRUD
+│   ├── search-service.ts             # 글로벌 검색
+│   ├── export-service.ts             # CSV 내보내기
+│   ├── admin-service.ts              # 관리자 기능
+│   ├── monitoring-service.ts         # 서비스 통계
+│   ├── integration-service.ts        # 외부 연동 (Slack/GitHub)
+│   ├── webhook-dispatcher.ts         # Webhook 중앙 디스패치
+│   ├── user-message-service.ts       # 사용자 메시지
+│   ├── favorite-service.ts           # 즐겨찾기
+│   ├── recurrence-service.ts         # 반복 태스크
+│   ├── workload-service.ts           # 워크로드 데이터 집계
+│   ├── my-tasks-service.ts           # 내 태스크 조회
+│   └── kanban-filter-service.ts      # 칸반 필터 프리셋 저장/조회
 │
 ├── queries/
 │   ├── use-projects.ts               # 프로젝트 목록/상세 쿼리
 │   ├── use-tasks.ts                  # 태스크 목록 쿼리 + mutations
 │   ├── use-columns.ts                # 컬럼 쿼리 + mutations
 │   ├── use-dashboard-layout.ts       # 레이아웃 쿼리 + mutations
-│   └── use-chart-data.ts             # 차트 집계 데이터 쿼리
+│   ├── use-chart-data.ts             # 차트 집계 데이터 쿼리
+│   ├── use-comments.ts               # 댓글 쿼리 + mutations
+│   ├── use-attachments.ts            # 첨부파일 쿼리 + mutations
+│   ├── use-notifications.ts          # 알림 쿼리 + mutations
+│   ├── use-activity-logs.ts          # 활동 로그 쿼리 (infinite)
+│   ├── use-subtasks.ts               # 서브태스크 쿼리 + mutations
+│   ├── use-labels.ts                 # 라벨 쿼리 + mutations
+│   ├── use-dependencies.ts           # 의존성 쿼리 + mutations
+│   ├── use-search.ts                 # 글로벌 검색 쿼리
+│   ├── use-profile.ts                # 프로필 쿼리 + mutations
+│   ├── use-admin.ts                  # 관리자 쿼리
+│   ├── use-monitoring.ts             # 서비스 통계 쿼리
+│   ├── use-integrations.ts           # 외부 연동 쿼리
+│   ├── use-user-messages.ts          # 사용자 메시지 쿼리
+│   ├── use-favorites.ts              # 즐겨찾기 쿼리 + mutations
+│   ├── use-recurrences.ts            # 반복 태스크 쿼리 + mutations
+│   ├── use-workload.ts               # 워크로드 쿼리
+│   ├── use-my-tasks.ts               # 내 태스크 쿼리
+│   └── use-kanban-filter-preset.ts   # 칸반 필터 프리셋 쿼리 + mutations
 │
 ├── types/
 │   ├── database.ts                   # Supabase 생성 타입 (auto-generated)
 │   ├── kanban.ts                     # 칸반 관련 타입
 │   ├── dashboard.ts                  # 대시보드/위젯 타입
-│   └── common.ts                     # 공통 유틸리티 타입
+│   ├── common.ts                     # 공통 유틸리티 타입
+│   ├── activity.ts                   # 활동 로그 타입
+│   ├── attachment.ts                 # 첨부파일 타입
+│   ├── comment.ts                    # 댓글 타입
+│   ├── dependency.ts                 # 의존성 타입
+│   ├── favorite.ts                   # 즐겨찾기 타입
+│   ├── integration.ts                # 외부 연동 타입
+│   ├── label.ts                      # 라벨 타입
+│   ├── monitoring.ts                 # 서비스 통계 타입
+│   ├── notification.ts               # 알림 타입
+│   ├── recurrence.ts                 # 반복 태스크 타입
+│   ├── search.ts                     # 검색 결과 타입
+│   ├── user-message.ts               # 사용자 메시지 타입
+│   └── workload.ts                   # 워크로드 타입
 │
 └── middleware.ts                      # Next.js Middleware (Auth guard)
 ```
@@ -340,6 +434,50 @@ CREATE TABLE dashboard_layouts (
 
 -- layout JSONB 구조:
 -- [{ "widget_id": "task-status", "x": 0, "y": 0, "w": 6, "h": 4 }, ...]
+```
+
+### Additional Tables (Phase 2~11)
+
+```sql
+-- 태스크 댓글
+CREATE TABLE task_comments (id, task_id, user_id, content, created_at, updated_at);
+
+-- 파일 첨부
+CREATE TABLE task_attachments (id, task_id, user_id, file_name, file_url, file_size, file_type, created_at);
+
+-- 라벨
+CREATE TABLE labels (id, project_id, name, color, created_at);
+CREATE TABLE task_labels (task_id, label_id, PRIMARY KEY(task_id, label_id));
+
+-- 서브태스크
+CREATE TABLE subtasks (id, task_id, title, is_completed, position, created_by, created_at, updated_at);
+
+-- 태스크 의존성
+CREATE TABLE task_dependencies (id, blocking_task_id, blocked_task_id, project_id, created_at);
+
+-- 알림
+CREATE TABLE notifications (id, user_id, project_id, type, title, body, entity_type, entity_id, actor_id, is_read, created_at);
+
+-- 활동 로그
+CREATE TABLE activity_logs (id, project_id, user_id, action, entity_type, entity_id, metadata, created_at);
+
+-- 외부 연동
+CREATE TABLE project_integrations (id, project_id, provider, config, enabled, created_at, updated_at);
+
+-- 사용자 메시지
+CREATE TABLE user_messages (id, user_id, content, is_read, created_at);
+
+-- 마감일 알림 로그
+CREATE TABLE due_date_notifications_log (id, task_id, notification_type, sent_at);
+
+-- 즐겨찾기
+CREATE TABLE task_favorites (id, task_id, user_id, created_at, UNIQUE(task_id, user_id));
+
+-- 반복 태스크
+CREATE TABLE task_recurrences (id, task_id, project_id, frequency, interval_value, next_run_at, last_run_at, is_active, created_by, created_at, updated_at);
+
+-- 칸반 필터 프리셋
+CREATE TABLE kanban_filter_presets (id, project_id, user_id, filters JSONB, created_at, updated_at, UNIQUE(project_id, user_id));
 ```
 
 ### updated_at 자동 갱신
@@ -682,10 +820,10 @@ const queryConfig = {
 ## Auth Flow
 
 ```
-1. 사용자가 "Login with GitHub" 클릭
-   └→ supabase.auth.signInWithOAuth({ provider: 'github' })
+1. 사용자가 "Login with Google" 또는 "Login with 카카오" 클릭
+   └→ supabase.auth.signInWithOAuth({ provider: 'google' | 'kakao' })
 
-2. GitHub OAuth 페이지로 리다이렉트
+2. OAuth 페이지로 리다이렉트
    └→ 사용자 인증 동의
 
 3. Callback URL로 리다이렉트
