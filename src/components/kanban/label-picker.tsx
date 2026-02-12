@@ -46,7 +46,7 @@ export function LabelPicker({ projectId, taskId, assignedLabelIds, canEdit }: La
               key={label.id}
               onClick={() => handleToggle(label)}
               className={cn(
-                'flex w-full items-center gap-2 rounded-sm px-2 py-1.5 text-sm transition-colors',
+                'flex w-full cursor-pointer items-center gap-2 rounded-sm px-2 py-1.5 text-sm transition-colors',
                 'hover:bg-accent hover:text-accent-foreground',
                 isAssigned && 'bg-accent/50',
               )}

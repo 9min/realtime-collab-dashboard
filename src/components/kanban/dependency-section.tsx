@@ -178,7 +178,7 @@ export function DependencySection({ taskId, projectId, canEdit }: DependencySect
               {selectableTasks.slice(0, 10).map((t) => (
                 <li key={t.id}>
                   <button
-                    className="flex w-full items-center gap-2 rounded-sm px-2 py-1.5 text-left text-sm hover:bg-accent"
+                    className="flex w-full cursor-pointer items-center gap-2 rounded-sm px-2 py-1.5 text-left text-sm hover:bg-accent"
                     onClick={() => handleAdd(t.id)}
                     disabled={createMutation.isPending}
                   >

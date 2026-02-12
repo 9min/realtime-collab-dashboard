@@ -41,7 +41,7 @@ export function FavoritesWidget() {
       {tasks.map((task) => (
         <button
           key={task.id}
-          className="flex items-center gap-2 rounded-md px-2 py-1.5 text-left transition-colors hover:bg-muted/60"
+          className="flex cursor-pointer items-center gap-2 rounded-md px-2 py-1.5 text-left transition-colors hover:bg-muted/60"
           onClick={() => setSelectedTask(task)}
         >
           <Star className="h-3.5 w-3.5 shrink-0 fill-amber-400 text-amber-400" />

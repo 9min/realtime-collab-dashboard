@@ -219,7 +219,7 @@ export function TaskFilterBar({ members, labels, projectId, projectName, canDele
                       aria-checked={isActive}
                       onClick={() => toggleLabelId(label.id)}
                       className={cn(
-                        'flex w-full items-center gap-2 rounded-sm px-2 py-1.5 text-sm transition-colors',
+                        'flex w-full cursor-pointer items-center gap-2 rounded-sm px-2 py-1.5 text-sm transition-colors',
                         'hover:bg-accent hover:text-accent-foreground',
                         isActive && 'bg-accent/50',
                       )}
@@ -399,7 +399,7 @@ export function TaskFilterBar({ members, labels, projectId, projectName, canDele
               {PRIORITY_LABELS[p]}
               <button
                 onClick={() => togglePriority(p)}
-                className="ml-0.5 rounded-full p-0.5 hover:bg-muted"
+                className="ml-0.5 cursor-pointer rounded-full p-0.5 hover:bg-muted"
                 aria-label={`${PRIORITY_LABELS[p]} 필터 제거`}
               >
                 <X className="h-3 w-3" />
@@ -415,7 +415,7 @@ export function TaskFilterBar({ members, labels, projectId, projectName, canDele
                 {name}
                 <button
                   onClick={() => toggleAssigneeId(id)}
-                  className="ml-0.5 rounded-full p-0.5 hover:bg-muted"
+                  className="ml-0.5 cursor-pointer rounded-full p-0.5 hover:bg-muted"
                   aria-label={`${name} 필터 제거`}
                 >
                   <X className="h-3 w-3" />
@@ -442,7 +442,7 @@ export function TaskFilterBar({ members, labels, projectId, projectName, canDele
                 {label.name}
                 <button
                   onClick={() => toggleLabelId(id)}
-                  className="ml-0.5 rounded-full p-0.5 hover:bg-muted"
+                  className="ml-0.5 cursor-pointer rounded-full p-0.5 hover:bg-muted"
                   aria-label={`${label.name} 필터 제거`}
                 >
                   <X className="h-3 w-3" />
@@ -460,7 +460,7 @@ export function TaskFilterBar({ members, labels, projectId, projectName, canDele
               {dueDateRange.to ? formatDate(dueDateRange.to) : '...'}
               <button
                 onClick={clearDueDateRange}
-                className="ml-0.5 rounded-full p-0.5 hover:bg-muted"
+                className="ml-0.5 cursor-pointer rounded-full p-0.5 hover:bg-muted"
                 aria-label="마감일 필터 제거"
               >
                 <X className="h-3 w-3" />

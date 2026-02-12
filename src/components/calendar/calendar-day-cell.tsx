@@ -41,7 +41,7 @@ export function CalendarDayCell({ date, isCurrentMonth, isToday, tasks, onTaskCl
           <button
             key={task.id}
             onClick={() => onTaskClick(task)}
-            className="hover:bg-accent flex w-full items-center gap-1 rounded px-1 py-0.5 text-left transition-colors"
+            className="hover:bg-accent flex w-full cursor-pointer items-center gap-1 rounded px-1 py-0.5 text-left transition-colors"
           >
             <span
               className={cn(

@@ -62,7 +62,7 @@ export const NotificationItem = memo(function NotificationItem({ notification, o
     <button
       onClick={() => onClick(notification)}
       className={cn(
-        'hover:bg-muted/80 flex w-full items-start gap-3 px-4 py-3 text-left transition-colors',
+        'hover:bg-muted/80 flex w-full cursor-pointer items-start gap-3 px-4 py-3 text-left transition-colors',
         !notification.is_read && 'bg-blue-50/60 dark:bg-blue-950/20',
       )}
     >
