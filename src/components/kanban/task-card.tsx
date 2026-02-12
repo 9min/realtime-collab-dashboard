@@ -4,10 +4,9 @@ import { Draggable } from '@hello-pangea/dnd'
 import { Calendar, Lock } from 'lucide-react'
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
-import { PRIORITY_LABELS, PRIORITY_BADGE_STYLES } from '@/lib/constants'
+import { PRIORITY_LABELS, PRIORITY_DOT_COLORS } from '@/lib/constants'
 import { cn } from '@/lib/utils'
 import type { Tables } from '@/types/database'
 import type { Label } from '@/types/label'
@@ -88,9 +87,10 @@ export function TaskCard({ task, index, onClick, members, isDragDisabled = false
               </span>
             </CardHeader>
             <CardContent className="flex items-center gap-2 px-3 pb-3 pt-1">
-              <Badge variant="secondary" className={cn('text-xs', PRIORITY_BADGE_STYLES[task.priority])}>
+              <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
+                <span className={cn('h-2 w-2 rounded-full shrink-0', PRIORITY_DOT_COLORS[task.priority])} />
                 {PRIORITY_LABELS[task.priority]}
-              </Badge>
+              </span>
               {task.due_date && (
                 <span className="text-muted-foreground flex items-center gap-1 text-xs">
                   <Calendar className="h-3 w-3" />
