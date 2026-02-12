@@ -59,13 +59,14 @@ export function Header() {
     profile?.full_name?.[0] ?? user?.email?.[0]?.toUpperCase() ?? '?'
 
   return (
-    <header className="sticky top-0 z-50 flex h-14 items-center justify-between bg-primary px-6 shadow-md dark:bg-primary">
-      <nav className="flex items-center gap-3">
+    <header className="sticky top-0 z-50 flex h-14 items-center justify-between bg-primary px-3 shadow-md sm:px-6 dark:bg-primary">
+      <nav className="flex min-w-0 items-center gap-2 sm:gap-3">
         <Link
           href="/projects"
-          className="text-lg font-semibold text-primary-foreground transition-opacity hover:opacity-80"
+          className="shrink-0 text-base font-semibold text-primary-foreground transition-opacity hover:opacity-80 sm:text-lg"
         >
-          실시간 협업 일정관리 도구
+          <span className="sm:hidden">협업 도구</span>
+          <span className="hidden sm:inline">실시간 협업 일정관리 도구</span>
         </Link>
         {isDemoMode && (
           <Badge variant="secondary" className="bg-amber-100 text-amber-800 hover:bg-amber-100 dark:bg-amber-900/50 dark:text-amber-200">
