@@ -26,6 +26,7 @@ interface SwimlaneBoardProps {
   labels?: Label[]
   taskLabelMap?: Map<string, string[]>
   blockedTaskIds?: Set<string>
+  recurringTaskIds?: Set<string>
 }
 
 export function SwimlaneBoard({
@@ -38,6 +39,7 @@ export function SwimlaneBoard({
   labels,
   taskLabelMap,
   blockedTaskIds,
+  recurringTaskIds,
 }: SwimlaneBoardProps) {
   return (
     <div className="space-y-4 overflow-x-auto pb-4">
@@ -93,6 +95,7 @@ export function SwimlaneBoard({
                                 isDragDisabled={!canMoveAll && task.assignee_id !== null && task.assignee_id !== currentUserId}
                                 taskLabels={taskLabelsForCard}
                                 isBlocked={blockedTaskIds?.has(task.id)}
+                                isRecurring={recurringTaskIds?.has(task.id)}
                               />
                             )
                           })}

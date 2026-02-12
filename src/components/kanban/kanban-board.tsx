@@ -16,6 +16,7 @@ import { useColumns, useCreateColumn, useUpdateColumn, useDeleteColumn } from '@
 import { useDependencies } from '@/queries/use-dependencies'
 import { useLabels, useTaskLabels } from '@/queries/use-labels'
 import { useProject, useProjectMembers } from '@/queries/use-projects'
+import { useProjectRecurrences } from '@/queries/use-recurrences'
 import { useTasks, useMoveTask } from '@/queries/use-tasks'
 import { useKanbanFilterStore } from '@/stores/kanban-filter-store'
 import type { Tables } from '@/types/database'
@@ -69,6 +70,9 @@ export function KanbanBoard({ projectId }: KanbanBoardProps) {
 
   // 의존성 데이터
   const { data: dependencies } = useDependencies(projectId)
+
+  // 반복 태스크 ID Set
+  const { data: recurringTaskIds } = useProjectRecurrences(projectId)
 
   // 완료 컬럼 ID Set
   const doneColumnIds = useMemo(() => {
@@ -342,6 +346,7 @@ export function KanbanBoard({ projectId }: KanbanBoardProps) {
             labels={projectFeatures.feature_labels ? labels : undefined}
             taskLabelMap={projectFeatures.feature_labels ? taskLabelMap : new Map()}
             blockedTaskIds={blockedTaskIds}
+            recurringTaskIds={recurringTaskIds}
           />
         ) : (
           <div className="flex gap-4 overflow-x-auto pb-4">
@@ -364,6 +369,7 @@ export function KanbanBoard({ projectId }: KanbanBoardProps) {
                 labels={projectFeatures.feature_labels ? labels : undefined}
                 taskLabelMap={projectFeatures.feature_labels ? taskLabelMap : new Map()}
                 blockedTaskIds={blockedTaskIds}
+                recurringTaskIds={recurringTaskIds}
               />
             ))}
 

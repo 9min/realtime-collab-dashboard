@@ -49,6 +49,7 @@ interface KanbanColumnProps {
   labels?: Label[]
   taskLabelMap?: Map<string, string[]>
   blockedTaskIds?: Set<string>
+  recurringTaskIds?: Set<string>
 }
 
 export function KanbanColumn({
@@ -68,6 +69,7 @@ export function KanbanColumn({
   labels,
   taskLabelMap,
   blockedTaskIds,
+  recurringTaskIds,
 }: KanbanColumnProps) {
   const [isEditing, setIsEditing] = useState(false)
   const [editTitle, setEditTitle] = useState(column.title)
@@ -235,6 +237,7 @@ export function KanbanColumn({
                     isDragDisabled={!canMoveAll && task.assignee_id !== null && task.assignee_id !== currentUserId}
                     taskLabels={taskLabelsForCard}
                     isBlocked={blockedTaskIds?.has(task.id)}
+                    isRecurring={recurringTaskIds?.has(task.id)}
                   />
                 )
               })}
