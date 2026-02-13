@@ -195,6 +195,40 @@ class DemoDataStore {
         profiles: { table: 'profiles', fkColumn: 'user_id', type: 'object' },
         projects: { table: 'projects', fkColumn: 'project_id', type: 'object' },
       },
+      task_assignees: {
+        profiles: { table: 'profiles', fkColumn: 'user_id', type: 'object' },
+        tasks: { table: 'tasks', fkColumn: 'task_id', type: 'object' },
+      },
+      custom_field_definitions: {
+        projects: { table: 'projects', fkColumn: 'project_id', type: 'object' },
+      },
+      task_custom_field_values: {
+        custom_field_definitions: {
+          table: 'custom_field_definitions',
+          fkColumn: 'field_id',
+          type: 'object',
+        },
+        tasks: { table: 'tasks', fkColumn: 'task_id', type: 'object' },
+      },
+      sprints: {
+        projects: { table: 'projects', fkColumn: 'project_id', type: 'object' },
+        profiles: { table: 'profiles', fkColumn: 'created_by', type: 'object' },
+      },
+      automation_rules: {
+        projects: { table: 'projects', fkColumn: 'project_id', type: 'object' },
+        profiles: { table: 'profiles', fkColumn: 'created_by', type: 'object' },
+      },
+      automation_executions: {
+        automation_rules: { table: 'automation_rules', fkColumn: 'rule_id', type: 'object' },
+      },
+      time_entries: {
+        tasks: { table: 'tasks', fkColumn: 'task_id', type: 'object' },
+        profiles: { table: 'profiles', fkColumn: 'user_id', type: 'object' },
+      },
+      task_templates: {
+        projects: { table: 'projects', fkColumn: 'project_id', type: 'object' },
+        profiles: { table: 'profiles', fkColumn: 'created_by', type: 'object' },
+      },
     }
     return relations[table]?.[relationName] ?? null
   }
@@ -211,6 +245,14 @@ class DemoDataStore {
       'project_integrations',
       'task_recurrences',
       'kanban_filter_presets',
+      'task_assignees',
+      'custom_field_definitions',
+      'task_custom_field_values',
+      'sprints',
+      'automation_rules',
+      'automation_executions',
+      'time_entries',
+      'task_templates',
     ]
     if (tablesWithUpdatedAt.includes(table)) {
       return { updated_at: true }

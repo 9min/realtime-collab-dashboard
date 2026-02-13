@@ -1,6 +1,6 @@
 'use client'
 
-import { BarChart3, PieChart, Star, TrendingDown, Users } from 'lucide-react'
+import { BarChart3, Clock, PieChart, Star, TrendingDown, Users } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
 import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -22,6 +22,7 @@ const WIDGET_ICONS: Record<string, typeof PieChart> = {
   [WIDGET_TYPE.BURNDOWN]: TrendingDown,
   [WIDGET_TYPE.MEMBER_LIST]: Users,
   [WIDGET_TYPE.MY_FAVORITES]: Star,
+  [WIDGET_TYPE.TIME_REPORT]: Clock,
 }
 
 export function AddWidgetDialog({
