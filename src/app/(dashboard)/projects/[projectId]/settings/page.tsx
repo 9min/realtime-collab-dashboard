@@ -36,6 +36,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 import {
   Select,
   SelectContent,
@@ -142,8 +143,8 @@ export default function ProjectSettingsPage({ params }: ProjectSettingsPageProps
     return (
       <div className="max-w-2xl space-y-8">
         <div>
-          <h2 className="text-2xl font-bold">프로젝트 설정</h2>
-          <p className="text-muted-foreground mt-1">프로젝트 정보 수정 및 멤버 관리</p>
+          <h2 className="text-xl font-bold">프로젝트 설정</h2>
+          <p className="text-muted-foreground text-sm">프로젝트 정보 수정 및 멤버 관리</p>
         </div>
         <div className="space-y-3 rounded-xl border p-6">
           <div className="bg-muted h-6 w-32 animate-pulse rounded" />
@@ -164,8 +165,8 @@ export default function ProjectSettingsPage({ params }: ProjectSettingsPageProps
     return (
       <div className="max-w-2xl space-y-8">
         <div>
-          <h2 className="text-2xl font-bold">프로젝트 설정</h2>
-          <p className="text-muted-foreground mt-1">프로젝트 정보 수정 및 멤버 관리</p>
+          <h2 className="text-xl font-bold">프로젝트 설정</h2>
+          <p className="text-muted-foreground text-sm">프로젝트 정보 수정 및 멤버 관리</p>
         </div>
         <div className="bg-destructive/10 rounded-xl border p-6">
           <p className="text-destructive">
@@ -224,8 +225,8 @@ export default function ProjectSettingsPage({ params }: ProjectSettingsPageProps
   return (
     <div className="max-w-2xl space-y-10 pb-8">
       <div>
-        <h2 className="text-2xl font-bold">프로젝트 설정</h2>
-        <p className="text-muted-foreground mt-1">프로젝트 정보와 기능을 관리합니다</p>
+        <h2 className="text-xl font-bold">프로젝트 설정</h2>
+        <p className="text-muted-foreground text-sm">프로젝트 정보와 기능을 관리합니다</p>
       </div>
 
       {/* ── 일반 ── */}
@@ -239,16 +240,24 @@ export default function ProjectSettingsPage({ params }: ProjectSettingsPageProps
           <h4 className="text-base font-semibold">프로젝트 정보</h4>
           {isEditing ? (
             <div className="space-y-3">
-              <Input
-                value={projectName}
-                onChange={(e) => setProjectName(e.target.value)}
-                placeholder="프로젝트 이름"
-              />
-              <Input
-                value={projectDescription}
-                onChange={(e) => setProjectDescription(e.target.value)}
-                placeholder="프로젝트 설명 (선택)"
-              />
+              <div className="space-y-1.5">
+                <Label htmlFor="project-name">프로젝트 이름</Label>
+                <Input
+                  id="project-name"
+                  value={projectName}
+                  onChange={(e) => setProjectName(e.target.value)}
+                  placeholder="프로젝트 이름"
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="project-description">프로젝트 설명 (선택)</Label>
+                <Input
+                  id="project-description"
+                  value={projectDescription}
+                  onChange={(e) => setProjectDescription(e.target.value)}
+                  placeholder="프로젝트 설명 (선택)"
+                />
+              </div>
               <div className="flex gap-2">
                 <Button onClick={handleSaveProject} disabled={updateMutation.isPending}>
                   저장
@@ -432,6 +441,7 @@ export default function ProjectSettingsPage({ params }: ProjectSettingsPageProps
                   onCheckedChange={(checked) => {
                     updateMutation.mutate({ feature_labels: checked })
                   }}
+                  aria-label="라벨 기능 토글"
                 />
               </div>
               {project.feature_labels && (
@@ -459,6 +469,7 @@ export default function ProjectSettingsPage({ params }: ProjectSettingsPageProps
                   onCheckedChange={(checked) => {
                     updateMutation.mutate({ feature_templates: checked })
                   }}
+                  aria-label="템플릿 기능 토글"
                 />
               </div>
               {project.feature_templates !== false && (
@@ -493,6 +504,7 @@ export default function ProjectSettingsPage({ params }: ProjectSettingsPageProps
                       unknown
                     >)
                   }}
+                  aria-label="커스텀 필드 기능 토글"
                 />
               </div>
               {((project as unknown as Record<string, unknown>).feature_custom_fields as
@@ -529,6 +541,7 @@ export default function ProjectSettingsPage({ params }: ProjectSettingsPageProps
                       unknown
                     >)
                   }}
+                  aria-label="자동화 기능 토글"
                 />
               </div>
               {((project as unknown as Record<string, unknown>).feature_automations as
@@ -559,6 +572,7 @@ export default function ProjectSettingsPage({ params }: ProjectSettingsPageProps
                     onCheckedChange={(checked) => {
                       updateMutation.mutate({ [key]: checked } as Record<string, unknown>)
                     }}
+                    aria-label={`${label} 기능 토글`}
                   />
                 </div>
               )
