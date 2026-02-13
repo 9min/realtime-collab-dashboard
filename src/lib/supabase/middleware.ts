@@ -10,6 +10,13 @@ import {
 
 // Middleware에서 세션 갱신 + 인증 상태 확인
 export async function updateSession(request: NextRequest) {
+  // ── 점검 모드가 꺼져있을 때 /maintenance 직접 접근 차단 ──
+  if (!isMaintenanceEnabled() && request.nextUrl.pathname === MAINTENANCE_PATH) {
+    const url = request.nextUrl.clone()
+    url.pathname = '/'
+    return NextResponse.redirect(url)
+  }
+
   // ── 점검 모드 게이트 (Supabase 호출 전에 차단) ──
   if (isMaintenanceEnabled()) {
     const { pathname } = request.nextUrl
