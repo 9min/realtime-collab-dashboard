@@ -18,7 +18,7 @@ import {
 } from '@/components/ui/alert-dialog'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { MarkdownRenderer } from '@/components/ui/markdown-renderer'
 import { Textarea } from '@/components/ui/textarea'
@@ -161,6 +161,7 @@ export function TaskDetailDialog({ projectId, task, open, onOpenChange, canEdit 
               </>
             )}
           </DialogTitle>
+          <DialogDescription className="sr-only">태스크 상세 정보</DialogDescription>
         </DialogHeader>
 
         <div className="flex min-h-0 flex-col gap-4 overflow-y-auto pr-2">
