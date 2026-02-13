@@ -338,7 +338,7 @@ Then 폴링 폴백으로 전환되어 데이터 동기화가 유지된다
   - [x] 파일 다운로드/삭제
 
 #### F11. Notifications ✅
-- **알림 유형**: task_assigned, commented, mentioned, due_soon, user_message
+- **알림 유형**: task_assigned, commented, mentioned, due_soon, user_message, member_added
 - **UI**: 헤더 벨 아이콘 + 미읽은 수 뱃지
 - **실시간 전달**: Realtime Postgres Changes로 즉시 알림 (글로벌 구독)
 - **project_id nullable**: 프로젝트와 무관한 알림 지원 (예: 신규 사용자 메시지)
@@ -349,6 +349,7 @@ Then 폴링 폴백으로 전환되어 데이터 동기화가 유지된다
   - [x] 클릭 시 해당 엔티티로 이동
   - [x] 실시간 알림 전달 (글로벌 Realtime 구독)
   - [x] 사용자 메시지 알림 지원
+  - [x] 프로젝트 초대 알림 (member_added)
 
 #### F12. Activity Log ✅
 - **자동 기록**: 트리거 기반 활동 추적 (태스크, 컬럼, 멤버, 댓글, 서브태스크)
@@ -462,14 +463,18 @@ Then 폴링 폴백으로 전환되어 데이터 동기화가 유지된다
 - **관리자 플래그**: `is_admin` 프로필 필드
 - **사용자 관리**: 전체 사용자 목록 + 검색
 - **관리자 권한 토글**: admin 상태 부여/해제
+- **관리자 강제 탈퇴**: 관리자가 사용자를 서비스에서 강제 삭제 (`/api/admin/delete-user`)
 - **프로젝트 멤버십 조회**: 모든 프로젝트의 멤버 현황 (사용자 카드 펼침)
+- **멤버 제거 확인**: 프로젝트에서 멤버 제거 시 AlertDialog 컨펌
 - **통계**: 총 사용자 수, 관리자 수, 프로젝트 수
 - **사용자 메시지 관리**: 읽지 않은 메시지 배지 + 메시지 내용 표시 + 읽음 처리
 - **Acceptance Criteria**:
   - [x] 관리자 전용 페이지
   - [x] 사용자 목록 + 검색
   - [x] 관리자 권한 토글
+  - [x] 관리자 강제 탈퇴
   - [x] 프로젝트 멤버십 조회
+  - [x] 멤버 제거 확인 다이얼로그
   - [x] 사용자 메시지 배지 + 읽음 처리
 
 #### F22. Keyboard Shortcuts ✅
@@ -683,7 +688,7 @@ Then 폴링 폴백으로 전환되어 데이터 동기화가 유지된다
   - [x] 메시지 읽음 처리
 
 #### F36. Login Page Visual Enhancement ✅
-- **배경 애니메이션**: Canvas 기반 칸반 카드 네트워크 (20개 카드 노드 + 연결선)
+- **배경 애니메이션**: Canvas 기반 칸반 카드 네트워크 (30개 카드 노드 + 연결선)
 - **물리 시뮬레이션**: 마우스 반발력 + 속도 감쇠 + Idle Drift
 - **Idle Drift**: 마우스 없이도 카드가 사인/코사인 파동으로 자연스럽게 떠다님
 - **3D 깊이감**: z 값 기반 카드 크기/투명도/속도 차이
@@ -783,6 +788,45 @@ Then 폴링 폴백으로 전환되어 데이터 동기화가 유지된다
 - **Acceptance Criteria**:
   - [x] 필터 상태 자동 저장 (debounce)
   - [x] 보드 진입 시 필터 자동 복원
+
+#### F46. Project Invitation Notification (프로젝트 초대 알림) ✅
+- **멤버 추가 시 알림**: 프로젝트에 새 멤버가 추가되면 해당 사용자에게 `member_added` 알림 자동 생성
+- **DB 트리거**: `project_members` INSERT 시 알림 생성 (마이그레이션 040)
+- **Acceptance Criteria**:
+  - [x] 멤버 추가 시 초대 알림 자동 생성
+  - [x] 알림 목록에서 프로젝트 초대 알림 확인
+
+---
+
+### Phase 12: Operations & Polish — ✅ 구현 완료
+
+#### F47. Maintenance Mode (점검 모드) ✅
+- **JSON 설정 기반**: `maintenance.json` 파일로 점검 모드 활성화/비활성화
+- **미들웨어 리다이렉트**: 점검 모드 활성 시 모든 페이지를 `/maintenance`로 리다이렉트
+- **점검 페이지**: 점검 안내 UI 표시
+- **비활성 시 차단**: 점검 모드 비활성 상태에서 `/maintenance` 직접 접근 차단
+- **Acceptance Criteria**:
+  - [x] JSON 설정으로 점검 모드 On/Off
+  - [x] 미들웨어 기반 리다이렉트
+  - [x] 점검 안내 페이지 렌더링
+  - [x] 비활성 시 `/maintenance` 직접 접근 차단
+
+#### F48. OG Image & Favicon (메타데이터) ✅
+- **커스텀 파비콘**: 그라데이션 그리드 아이콘 적용
+- **OG 이미지**: OpenGraph 메타데이터 + OG 이미지 생성
+- **공개 경로 허용**: 미들웨어에서 OG 이미지/아이콘 경로 인증 우회
+- **Acceptance Criteria**:
+  - [x] 커스텀 파비콘 적용
+  - [x] OG 이미지 생성 및 메타데이터 설정
+
+#### F49. Accessibility Improvements (접근성 개선) ✅
+- **다이얼로그 포커스 관리**: 다이얼로그 열림 시 포커스를 콘텐츠로 이동하여 `aria-hidden` 충돌 해결
+- **DialogDescription 추가**: 스크린 리더 호환을 위한 설명 추가
+- **자동 포커스 제거**: 태스크 상세 다이얼로그 열림 시 불필요한 버튼 자동 포커스 방지
+- **Acceptance Criteria**:
+  - [x] 다이얼로그 포커스 충돌 해결
+  - [x] DialogDescription 적용
+  - [x] 자동 포커스 최적화
 
 ---
 
@@ -900,8 +944,8 @@ Then 폴링 폴백으로 전환되어 데이터 동기화가 유지된다
 - 프로젝트 스코프 기반 정책
 - 헬퍼 함수: `is_project_member()`, `has_project_role()`, `is_admin()`
 
-### Migrations (39개)
-001~039 순차 마이그레이션으로 스키마 관리
+### Migrations (40개)
+001~040 순차 마이그레이션으로 스키마 관리
 
 ---
 

@@ -3,7 +3,7 @@
 소규모 팀(2-8명)을 위한 실시간 협업 대시보드. 칸반 보드, 커스텀 위젯, 실시간 동기화 지원.
 
 ## Tech Stack
-- **Framework**: Next.js 15 (App Router) + TypeScript (strict)
+- **Framework**: Next.js 16 (App Router) + TypeScript (strict)
 - **Styling**: Tailwind CSS + shadcn/ui
 - **Server State**: TanStack Query v5
 - **Client State**: Zustand
@@ -314,6 +314,13 @@ test: task-service 단위 테스트 추가
 docs: 아키텍처 다이어그램 업데이트
 chore: Vitest 커버리지 임계값 설정
 ```
+
+### Git Push 규칙
+- **`git push`는 사용자가 명시적으로 "푸시해줘"라고 요청할 때만 실행**
+- 커밋 완료 후 자동으로 push하지 않음
+- "커밋해줘"는 커밋만 수행 — push 포함하지 않음
+- "커밋하고 푸시해줘"처럼 push가 명시된 경우에만 push 실행
+- 이전 요청에서 push를 허용했더라도 다음 커밋에 자동 적용하지 않음 (매번 명시 필요)
 
 
 <claude-mem-context>

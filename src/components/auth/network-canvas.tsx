@@ -3,7 +3,7 @@
 import { useEffect, useRef } from 'react'
 import { useTheme } from 'next-themes'
 
-const CARD_COUNT = 20
+const CARD_COUNT = 30
 const CONNECTION_DISTANCE = 220
 const MOUSE_REPEL_DISTANCE = 140
 const MOUSE_REPEL_FORCE = 0.6
@@ -198,7 +198,7 @@ export function NetworkCanvas() {
       const sorted = [...cards].sort((a, b) => a.z - b.z)
 
       for (const card of sorted) {
-        const scale = card.z * 0.7 + 0.3
+        const scale = card.z * 0.85 + 0.15
         const cw = CARD_BASE_W * scale
         const ch = CARD_BASE_H * scale
         const opacity = card.z * 0.45 + 0.1

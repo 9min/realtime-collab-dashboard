@@ -6,7 +6,7 @@
 
 | Category | Technology |
 |----------|-----------|
-| Framework | Next.js 15 (App Router) + TypeScript (strict) |
+| Framework | Next.js 16 (App Router) + TypeScript (strict) |
 | Styling | Tailwind CSS + shadcn/ui |
 | Server State | TanStack Query v5 |
 | Client State | Zustand |
@@ -32,7 +32,7 @@
 ### Collaboration
 - **Comments & Mentions**: Markdown 댓글, @멘션 자동완성, 알림 연동
 - **File Attachments**: Supabase Storage (최대 10MB/파일)
-- **Notifications**: 실시간 알림 (벨 아이콘 + 미읽은 수)
+- **Notifications**: 실시간 알림 (벨 아이콘 + 미읽은 수), 프로젝트 초대 알림
 - **Activity Log**: 트리거 기반 활동 추적, 필터링, 통계
 
 ### Advanced
@@ -56,6 +56,8 @@
 - **Rate Limiting**: Sliding Window 기반 API 요청 제한
 - **Redis Caching**: Upstash Cache-Aside 패턴 (Graceful Degradation)
 - **Connection Resilience**: 지수 백오프 재연결 + 폴링 폴백
+- **Maintenance Mode**: JSON 설정 기반 점검 모드 (미들웨어 리다이렉트)
+- **OG Image & Favicon**: 커스텀 그라데이션 파비콘 + OpenGraph 메타데이터
 
 ## Getting Started
 
@@ -114,7 +116,7 @@ pnpm test:e2e         # E2E 테스트 (Playwright)
 ## Database
 
 - **20개 테이블**: profiles, projects, project_members, kanban_columns, tasks, task_comments, task_attachments, labels, task_labels, subtasks, task_dependencies, notifications, activity_logs, dashboard_layouts, project_integrations, user_messages, due_date_notifications_log, task_favorites, task_recurrences, kanban_filter_presets
-- **39개 마이그레이션**: `supabase/migrations/` 순차 관리
+- **40개 마이그레이션**: `supabase/migrations/` 순차 관리
 - **RLS**: 모든 테이블에 Row Level Security 적용
 
 ## Documentation

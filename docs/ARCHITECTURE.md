@@ -41,7 +41,7 @@
 
 | Category | Technology | 선택 이유 |
 |----------|-----------|-----------|
-| Framework | Next.js 15 (App Router) | RSC, Server Actions, 성능 최적화 |
+| Framework | Next.js 16 (App Router) | RSC, Server Actions, 성능 최적화 |
 | Language | TypeScript (strict) | 타입 안정성, 리팩토링 안전성 |
 | Styling | Tailwind CSS + shadcn/ui | 빠른 개발, 일관된 디자인 시스템 |
 | Server State | TanStack Query v5 | 캐싱, 자동 리페칭, optimistic update |
@@ -91,8 +91,13 @@ src/
 │   │   │       └── settings/
 │   │   │           └── page.tsx      # 프로젝트 설정
 │   │   └── layout.tsx                # Dashboard 레이아웃 (sidebar)
+│   ├── maintenance/
+│   │   └── page.tsx                  # 점검 모드 안내 페이지
 │   ├── api/
-│   │   ├── admin/monitoring/         # 서비스 통계 API
+│   │   ├── admin/
+│   │   │   ├── monitoring/           # 서비스 통계 API
+│   │   │   ├── stats/                # 관리자 통계 API
+│   │   │   └── delete-user/          # 관리자 강제 탈퇴 API
 │   │   ├── auth/delete-account/      # 계정 삭제 API
 │   │   ├── cron/due-reminders/       # 마감일 알림 Cron API
 │   │   ├── projects/[projectId]/
@@ -163,7 +168,15 @@ src/
 │   │   ├── mock-realtime.ts          # Mock Realtime 채널
 │   │   └── mock-supabase-client.ts   # Mock Supabase 클라이언트
 │   ├── utils.ts                      # cn() 등 유틸리티
-│   └── constants.ts                  # 매직넘버, 우선순위 색상 상수
+│   ├── constants.ts                  # 매직넘버, 우선순위 색상 상수
+│   ├── cache-keys.ts                 # TanStack Query 캐시 키 팩토리
+│   ├── rate-limit.ts                 # 레이트 리미팅 로직
+│   ├── redis.ts                      # Upstash Redis 클라이언트
+│   ├── cache.ts                      # Cache-Aside 캐싱 레이어
+│   ├── maintenance.ts                # 점검 모드 설정 로드
+│   ├── task-filter.ts                # 태스크 필터링 로직
+│   ├── mention-utils.ts              # @멘션 파싱/감지
+│   └── gantt-utils.ts                # 간트 차트 계산
 │
 ├── stores/
 │   ├── ui-store.ts                   # 사이드바 열림/닫힘, 모달 상태
@@ -436,7 +449,7 @@ CREATE TABLE dashboard_layouts (
 -- [{ "widget_id": "task-status", "x": 0, "y": 0, "w": 6, "h": 4 }, ...]
 ```
 
-### Additional Tables (Phase 2~11)
+### Additional Tables (Phase 2~12)
 
 ```sql
 -- 태스크 댓글
