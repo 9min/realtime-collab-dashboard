@@ -28,11 +28,14 @@ import { useDependencies } from '@/queries/use-dependencies'
 import { useLabels, useTaskLabels } from '@/queries/use-labels'
 import { useProject, useProjectMembers } from '@/queries/use-projects'
 import { useProjectRecurrences } from '@/queries/use-recurrences'
+import { useProjectTaskAssignees } from '@/queries/use-task-assignees'
 import { useTasks, useMoveTask } from '@/queries/use-tasks'
 import { useKanbanFilterStore } from '@/stores/kanban-filter-store'
 import type { Tables } from '@/types/database'
 import type { TaskPriority } from '@/types/common'
 import type { KanbanColumnWithTasks } from '@/types/kanban'
+
+import { SprintHeader } from '@/components/sprint/sprint-header'
 
 import { CreateTaskForm } from './create-task-form'
 import { KanbanColumn } from './kanban-column'
@@ -74,6 +77,18 @@ export function KanbanBoard({ projectId }: KanbanBoardProps) {
       feature_dependencies: project?.feature_dependencies ?? false,
       feature_attachments: project?.feature_attachments ?? false,
       feature_comments: project?.feature_comments ?? false,
+      feature_multi_assignees: project?.feature_multi_assignees ?? true,
+      feature_time_tracking:
+        ((project as unknown as Record<string, unknown>)?.feature_time_tracking as
+          | boolean
+          | undefined) ?? false,
+      feature_custom_fields:
+        ((project as unknown as Record<string, unknown>)?.feature_custom_fields as
+          | boolean
+          | undefined) ?? false,
+      feature_sprints:
+        ((project as unknown as Record<string, unknown>)?.feature_sprints as boolean | undefined) ??
+        false,
     }),
     [project],
   )
@@ -87,6 +102,24 @@ export function KanbanBoard({ projectId }: KanbanBoardProps) {
 
   // 반복 태스크 ID Set
   const { data: recurringTaskIds } = useProjectRecurrences(projectId)
+
+  // 다중 담당자 데이터
+  const { data: projectTaskAssignees } = useProjectTaskAssignees(projectId)
+
+  // task→assignees 맵 생성
+  const taskAssigneeMap = useMemo(() => {
+    const map = new Map<string, NonNullable<typeof projectTaskAssignees>>()
+    if (!projectTaskAssignees) return map
+    for (const ta of projectTaskAssignees) {
+      const existing = map.get(ta.task_id)
+      if (existing) {
+        existing.push(ta)
+      } else {
+        map.set(ta.task_id, [ta])
+      }
+    }
+    return map
+  }, [projectTaskAssignees])
 
   // 완료 컬럼 ID Set
   const doneColumnIds = useMemo(() => {
@@ -189,6 +222,21 @@ export function KanbanBoard({ projectId }: KanbanBoardProps) {
     return map
   }, [taskLabelsData])
 
+  // task→user_id[] 맵 (필터용)
+  const taskAssigneeUserIds = useMemo(() => {
+    const map = new Map<string, string[]>()
+    if (!projectTaskAssignees) return map
+    for (const ta of projectTaskAssignees) {
+      const existing = map.get(ta.task_id)
+      if (existing) {
+        existing.push(ta.user_id)
+      } else {
+        map.set(ta.task_id, [ta.user_id])
+      }
+    }
+    return map
+  }, [projectTaskAssignees])
+
   // 컬럼별 태스크 그룹핑 + 필터 적용
   const columnsWithTasks: KanbanColumnWithTasks[] = useMemo(() => {
     if (!columns || !tasks) return []
@@ -199,6 +247,7 @@ export function KanbanBoard({ projectId }: KanbanBoardProps) {
       dueDateRange,
       labelIds,
       taskLabelMap,
+      taskAssigneeUserIds,
     })
     return columns.map((column) => ({
       ...column,
@@ -206,7 +255,17 @@ export function KanbanBoard({ projectId }: KanbanBoardProps) {
         .filter((t) => t.column_id === column.id)
         .sort((a, b) => a.position - b.position),
     }))
-  }, [columns, tasks, searchText, priorities, assigneeIds, dueDateRange, labelIds, taskLabelMap])
+  }, [
+    columns,
+    tasks,
+    searchText,
+    priorities,
+    assigneeIds,
+    dueDateRange,
+    labelIds,
+    taskLabelMap,
+    taskAssigneeUserIds,
+  ])
 
   // 스윔레인 그룹 계산
   const swimlaneGroups = useMemo(() => {
@@ -219,6 +278,7 @@ export function KanbanBoard({ projectId }: KanbanBoardProps) {
       dueDateRange,
       labelIds,
       taskLabelMap,
+      taskAssigneeUserIds,
     })
 
     if (swimlaneMode === SWIMLANE_MODE.ASSIGNEE) {
@@ -273,6 +333,7 @@ export function KanbanBoard({ projectId }: KanbanBoardProps) {
     dueDateRange,
     labelIds,
     taskLabelMap,
+    taskAssigneeUserIds,
   ])
 
   // DnD 완료 핸들러 — 뷰어는 무시, 일반 멤버는 본인 태스크만
@@ -396,6 +457,13 @@ export function KanbanBoard({ projectId }: KanbanBoardProps) {
         tasks={tasks ?? []}
       />
 
+      {/* 스프린트 헤더 */}
+      {projectFeatures.feature_sprints && (
+        <div className="mb-4">
+          <SprintHeader projectId={projectId} canManage={canDeleteAll} />
+        </div>
+      )}
+
       <DragDropContext onDragEnd={handleDragEnd}>
         {swimlaneGroups ? (
           <SwimlaneBoard
@@ -432,6 +500,9 @@ export function KanbanBoard({ projectId }: KanbanBoardProps) {
                 taskLabelMap={projectFeatures.feature_labels ? taskLabelMap : new Map()}
                 blockedTaskIds={blockedTaskIds}
                 recurringTaskIds={recurringTaskIds}
+                taskAssigneeMap={
+                  projectFeatures.feature_multi_assignees !== false ? taskAssigneeMap : undefined
+                }
               />
             ))}
 

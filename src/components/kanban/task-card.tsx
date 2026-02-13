@@ -10,7 +10,9 @@ import { PRIORITY_LABELS, PRIORITY_DOT_COLORS } from '@/lib/constants'
 import { cn } from '@/lib/utils'
 import type { Tables } from '@/types/database'
 import type { Label } from '@/types/label'
+import type { TaskAssigneeWithProfile } from '@/types/task-assignee'
 
+import { AvatarGroup } from './assignee-picker'
 import { FavoriteButton } from './favorite-button'
 import { LabelBadge } from './label-badge'
 import { RecurrenceBadge } from './recurrence-badge'
@@ -29,6 +31,7 @@ interface TaskCardProps {
   taskLabels?: Label[]
   isBlocked?: boolean
   isRecurring?: boolean
+  taskAssignees?: TaskAssigneeWithProfile[]
 }
 
 export function TaskCard({
@@ -40,10 +43,14 @@ export function TaskCard({
   taskLabels,
   isBlocked = false,
   isRecurring = false,
+  taskAssignees,
 }: TaskCardProps) {
-  const assignee = task.assignee_id
-    ? members?.find((m) => m.user_id === task.assignee_id)?.profiles
-    : null
+  // Multi-assignee mode: use taskAssignees if available, otherwise fallback to single assignee_id
+  const hasMultiAssignees = taskAssignees && taskAssignees.length > 0
+  const assignee =
+    !hasMultiAssignees && task.assignee_id
+      ? members?.find((m) => m.user_id === task.assignee_id)?.profiles
+      : null
 
   return (
     <Draggable draggableId={task.id} index={index} isDragDisabled={isDragDisabled}>
@@ -123,22 +130,28 @@ export function TaskCard({
                   })}
                 </span>
               )}
-              {assignee && (
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Avatar className="ml-auto h-6 w-6">
-                        <AvatarImage src={assignee.avatar_url ?? undefined} />
-                        <AvatarFallback className="text-[10px]">
-                          {(assignee.full_name ?? assignee.email).charAt(0).toUpperCase()}
-                        </AvatarFallback>
-                      </Avatar>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p>{assignee.full_name ?? assignee.email}</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
+              {hasMultiAssignees ? (
+                <div className="ml-auto">
+                  <AvatarGroup assignees={taskAssignees} maxDisplay={3} />
+                </div>
+              ) : (
+                assignee && (
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Avatar className="ml-auto h-6 w-6">
+                          <AvatarImage src={assignee.avatar_url ?? undefined} />
+                          <AvatarFallback className="text-[10px]">
+                            {(assignee.full_name ?? assignee.email).charAt(0).toUpperCase()}
+                          </AvatarFallback>
+                        </Avatar>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>{assignee.full_name ?? assignee.email}</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                )
               )}
             </CardContent>
           </Card>

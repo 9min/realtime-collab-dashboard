@@ -17,15 +17,10 @@ describe('workload-service', () => {
       ]
 
       const tasks = [
-        { assignee_id: 'user-1', priority: 'high' },
-        { assignee_id: 'user-1', priority: 'medium' },
-        { assignee_id: 'user-2', priority: 'low' },
+        { id: 'task-1', assignee_id: 'user-1', priority: 'high' },
+        { id: 'task-2', assignee_id: 'user-1', priority: 'medium' },
+        { id: 'task-3', assignee_id: 'user-2', priority: 'low' },
       ]
-
-      const selectFn = vi.fn()
-      const eqFn = vi.fn()
-      const notFn = vi.fn()
-      const neqFn = vi.fn()
 
       const mock = {
         from: vi.fn((table: string) => {
@@ -45,11 +40,17 @@ describe('workload-service', () => {
               }),
             }
           }
+          if (table === 'task_assignees') {
+            return {
+              select: vi.fn().mockReturnValue({
+                eq: vi.fn().mockResolvedValue({ data: [], error: null }),
+              }),
+            }
+          }
           // tasks
-          selectFn.mockReturnValue({ eq: eqFn })
-          eqFn.mockReturnValue({ not: notFn })
-          notFn.mockReturnValue({ neq: neqFn })
-          neqFn.mockResolvedValue({ data: tasks, error: null })
+          const neqFn = vi.fn().mockResolvedValue({ data: tasks, error: null })
+          const eqFn = vi.fn().mockReturnValue({ neq: neqFn })
+          const selectFn = vi.fn().mockReturnValue({ eq: eqFn })
           return { select: selectFn }
         }),
       }

@@ -5,6 +5,11 @@ import {
   DEMO_COLUMN_IDS,
   DEMO_LABEL_IDS,
   DEMO_RECURRENCE_IDS,
+  DEMO_TASK_ASSIGNEE_IDS,
+  DEMO_TEMPLATE_IDS,
+  DEMO_TIME_ENTRY_IDS,
+  DEMO_CUSTOM_FIELD_IDS,
+  DEMO_SPRINT_IDS,
 } from './constants'
 
 // ── 날짜 헬퍼 ──
@@ -77,6 +82,12 @@ export const DEMO_PROJECTS = [
     feature_dependencies: true,
     feature_attachments: true,
     feature_comments: true,
+    feature_multi_assignees: true,
+    feature_templates: true,
+    feature_time_tracking: true,
+    feature_custom_fields: true,
+    feature_sprints: false,
+    feature_automations: false,
     created_at: isoAgo(14),
     updated_at: NOW,
   },
@@ -1022,6 +1033,273 @@ export const DEMO_TASK_RECURRENCES = [
 
 export const DEMO_DUE_DATE_NOTIFICATIONS_LOG: Record<string, unknown>[] = []
 
+// ── Task Assignees (다중 담당자) ──
+
+export const DEMO_TASK_ASSIGNEES = [
+  {
+    id: DEMO_TASK_ASSIGNEE_IDS.TA_001,
+    task_id: 'demo-task-001',
+    user_id: DEMO_USER_ID,
+    role: 'assignee',
+    created_at: isoAgo(7),
+  },
+  {
+    id: DEMO_TASK_ASSIGNEE_IDS.TA_002,
+    task_id: 'demo-task-001',
+    user_id: DEMO_MEMBER_IDS.ALICE,
+    role: 'watcher',
+    created_at: isoAgo(6),
+  },
+  {
+    id: DEMO_TASK_ASSIGNEE_IDS.TA_003,
+    task_id: 'demo-task-005',
+    user_id: DEMO_MEMBER_IDS.ALICE,
+    role: 'assignee',
+    created_at: isoAgo(10),
+  },
+  {
+    id: DEMO_TASK_ASSIGNEE_IDS.TA_004,
+    task_id: 'demo-task-005',
+    user_id: DEMO_USER_ID,
+    role: 'watcher',
+    created_at: isoAgo(9),
+  },
+  {
+    id: DEMO_TASK_ASSIGNEE_IDS.TA_005,
+    task_id: 'demo-task-006',
+    user_id: DEMO_USER_ID,
+    role: 'assignee',
+    created_at: isoAgo(8),
+  },
+]
+
+// ── Task Templates ──
+
+export const DEMO_TASK_TEMPLATES = [
+  {
+    id: DEMO_TEMPLATE_IDS.BUG_REPORT,
+    project_id: DEMO_PROJECT_ID,
+    created_by: DEMO_USER_ID,
+    name: '버그 리포트',
+    description_template:
+      '## 버그 설명\n\n## 재현 순서\n1. \n2. \n3. \n\n## 기대 결과\n\n## 실제 결과\n\n## 스크린샷',
+    priority: 'high',
+    subtasks_template: [
+      { title: '재현 확인', position: 0 },
+      { title: '원인 분석', position: 1 },
+      { title: '수정 코드 작성', position: 2 },
+      { title: '테스트 추가', position: 3 },
+    ],
+    labels_template: [DEMO_LABEL_IDS.BUG],
+    is_personal: false,
+    position: 0,
+    created_at: isoAgo(10),
+    updated_at: isoAgo(10),
+  },
+  {
+    id: DEMO_TEMPLATE_IDS.FEATURE_REQUEST,
+    project_id: DEMO_PROJECT_ID,
+    created_by: DEMO_USER_ID,
+    name: '기능 요청',
+    description_template: '## 기능 설명\n\n## 사용 시나리오\n\n## 기대 효과\n\n## 기술적 고려사항',
+    priority: 'medium',
+    subtasks_template: [
+      { title: '요구사항 분석', position: 0 },
+      { title: '기술 설계', position: 1 },
+      { title: '구현', position: 2 },
+      { title: '테스트', position: 3 },
+      { title: '문서화', position: 4 },
+    ],
+    labels_template: [DEMO_LABEL_IDS.FEATURE],
+    is_personal: false,
+    position: 1,
+    created_at: isoAgo(10),
+    updated_at: isoAgo(10),
+  },
+  {
+    id: DEMO_TEMPLATE_IDS.IMPROVEMENT,
+    project_id: DEMO_PROJECT_ID,
+    created_by: DEMO_MEMBER_IDS.ALICE,
+    name: '개선 사항',
+    description_template: '## 현재 상태\n\n## 개선 목표\n\n## 변경 사항\n\n## 영향 범위',
+    priority: 'low',
+    subtasks_template: [
+      { title: '현황 분석', position: 0 },
+      { title: '개선안 작성', position: 1 },
+      { title: '적용', position: 2 },
+    ],
+    labels_template: [DEMO_LABEL_IDS.DESIGN],
+    is_personal: true,
+    position: 2,
+    created_at: isoAgo(8),
+    updated_at: isoAgo(8),
+  },
+]
+
+// ── Time Entries ──
+
+export const DEMO_TIME_ENTRIES = [
+  {
+    id: DEMO_TIME_ENTRY_IDS.TE_001,
+    task_id: 'demo-task-005',
+    project_id: DEMO_PROJECT_ID,
+    user_id: DEMO_MEMBER_IDS.ALICE,
+    duration_minutes: 120,
+    description: 'Supabase Realtime 채널 구독 설정',
+    started_at: isoAgo(4),
+    ended_at: isoAgo(4),
+    created_at: isoAgo(4),
+    updated_at: isoAgo(4),
+  },
+  {
+    id: DEMO_TIME_ENTRY_IDS.TE_002,
+    task_id: 'demo-task-005',
+    project_id: DEMO_PROJECT_ID,
+    user_id: DEMO_MEMBER_IDS.ALICE,
+    duration_minutes: 90,
+    description: 'WebSocket 연결 테스트',
+    started_at: isoAgo(3),
+    ended_at: isoAgo(3),
+    created_at: isoAgo(3),
+    updated_at: isoAgo(3),
+  },
+  {
+    id: DEMO_TIME_ENTRY_IDS.TE_003,
+    task_id: 'demo-task-006',
+    project_id: DEMO_PROJECT_ID,
+    user_id: DEMO_USER_ID,
+    duration_minutes: 180,
+    description: '타임라인 렌더링 엔진 1차 구현',
+    started_at: isoAgo(3),
+    ended_at: isoAgo(3),
+    created_at: isoAgo(3),
+    updated_at: isoAgo(3),
+  },
+  {
+    id: DEMO_TIME_ENTRY_IDS.TE_004,
+    task_id: 'demo-task-006',
+    project_id: DEMO_PROJECT_ID,
+    user_id: DEMO_USER_ID,
+    duration_minutes: 60,
+    description: '월 단위 컬럼 너비 계산 로직',
+    started_at: isoAgo(2),
+    ended_at: isoAgo(2),
+    created_at: isoAgo(2),
+    updated_at: isoAgo(2),
+  },
+  {
+    id: DEMO_TIME_ENTRY_IDS.TE_005,
+    task_id: 'demo-task-007',
+    project_id: DEMO_PROJECT_ID,
+    user_id: DEMO_MEMBER_IDS.BOB,
+    duration_minutes: 150,
+    description: 'CommandDialog 기반 검색 UI 구현',
+    started_at: isoAgo(2),
+    ended_at: isoAgo(2),
+    created_at: isoAgo(2),
+    updated_at: isoAgo(2),
+  },
+  {
+    id: DEMO_TIME_ENTRY_IDS.TE_006,
+    task_id: 'demo-task-001',
+    project_id: DEMO_PROJECT_ID,
+    user_id: DEMO_USER_ID,
+    duration_minutes: 45,
+    description: '프로필 페이지 와이어프레임 작성',
+    started_at: isoAgo(5),
+    ended_at: isoAgo(5),
+    created_at: isoAgo(5),
+    updated_at: isoAgo(5),
+  },
+]
+
+// ── Custom Field Definitions ──
+
+export const DEMO_CUSTOM_FIELD_DEFINITIONS = [
+  {
+    id: DEMO_CUSTOM_FIELD_IDS.STORY_POINTS,
+    project_id: DEMO_PROJECT_ID,
+    name: '스토리 포인트',
+    field_type: 'number',
+    options: null,
+    is_required: false,
+    position: 0,
+    created_at: isoAgo(10),
+    updated_at: isoAgo(10),
+  },
+  {
+    id: DEMO_CUSTOM_FIELD_IDS.ENVIRONMENT,
+    project_id: DEMO_PROJECT_ID,
+    name: '환경',
+    field_type: 'select',
+    options: ['개발', '스테이징', '프로덕션'],
+    is_required: false,
+    position: 1,
+    created_at: isoAgo(10),
+    updated_at: isoAgo(10),
+  },
+]
+
+// ── Custom Field Values ──
+
+export const DEMO_CUSTOM_FIELD_VALUES = [
+  {
+    id: 'demo-cfv-001',
+    task_id: 'demo-task-001',
+    field_id: DEMO_CUSTOM_FIELD_IDS.STORY_POINTS,
+    value: '5',
+    created_at: isoAgo(7),
+    updated_at: isoAgo(7),
+  },
+  {
+    id: 'demo-cfv-002',
+    task_id: 'demo-task-004',
+    field_id: DEMO_CUSTOM_FIELD_IDS.ENVIRONMENT,
+    value: '프로덕션',
+    created_at: isoAgo(3),
+    updated_at: isoAgo(3),
+  },
+]
+
+// ── Sprints ──
+
+export const DEMO_SPRINTS = [
+  {
+    id: DEMO_SPRINT_IDS.SPRINT_1,
+    project_id: DEMO_PROJECT_ID,
+    name: '스프린트 1',
+    goal: '핵심 기능 구현 및 기본 UI 완성',
+    start_date: daysFromNow(-14),
+    end_date: daysFromNow(-1),
+    status: 'completed',
+    created_by: DEMO_USER_ID,
+    completed_at: isoAgo(1),
+    created_at: isoAgo(14),
+    updated_at: isoAgo(1),
+  },
+  {
+    id: DEMO_SPRINT_IDS.SPRINT_2,
+    project_id: DEMO_PROJECT_ID,
+    name: '스프린트 2',
+    goal: '알림, 검색, 간트 차트 구현',
+    start_date: daysFromNow(0),
+    end_date: daysFromNow(13),
+    status: 'active',
+    created_by: DEMO_USER_ID,
+    completed_at: null,
+    created_at: isoAgo(1),
+    updated_at: isoAgo(1),
+  },
+]
+
+// ── Automation Rules ──
+
+export const DEMO_AUTOMATION_RULES: Record<string, unknown>[] = []
+
+// ── Automation Executions ──
+
+export const DEMO_AUTOMATION_EXECUTIONS: Record<string, unknown>[] = []
+
 // ── 전체 데이터 맵 (테이블명 → 데이터 배열) ──
 
 export function createInitialDemoData(): Map<string, Record<string, unknown>[]> {
@@ -1053,6 +1331,23 @@ export function createInitialDemoData(): Map<string, Record<string, unknown>[]> 
     structuredClone(DEMO_DUE_DATE_NOTIFICATIONS_LOG) as Record<string, unknown>[],
   )
   map.set('kanban_filter_presets', [] as Record<string, unknown>[])
+  map.set('task_assignees', structuredClone(DEMO_TASK_ASSIGNEES) as Record<string, unknown>[])
+  map.set('task_templates', structuredClone(DEMO_TASK_TEMPLATES) as Record<string, unknown>[])
+  map.set('time_entries', structuredClone(DEMO_TIME_ENTRIES) as Record<string, unknown>[])
+  map.set(
+    'custom_field_definitions',
+    structuredClone(DEMO_CUSTOM_FIELD_DEFINITIONS) as Record<string, unknown>[],
+  )
+  map.set(
+    'task_custom_field_values',
+    structuredClone(DEMO_CUSTOM_FIELD_VALUES) as Record<string, unknown>[],
+  )
+  map.set('sprints', structuredClone(DEMO_SPRINTS) as Record<string, unknown>[])
+  map.set('automation_rules', structuredClone(DEMO_AUTOMATION_RULES) as Record<string, unknown>[])
+  map.set(
+    'automation_executions',
+    structuredClone(DEMO_AUTOMATION_EXECUTIONS) as Record<string, unknown>[],
+  )
 
   return map
 }

@@ -29,6 +29,7 @@ import { COLUMN_COLORS, COLUMN_DEFAULT_COLORS } from '@/lib/constants'
 import { cn } from '@/lib/utils'
 import type { Tables } from '@/types/database'
 import type { Label } from '@/types/label'
+import type { TaskAssigneeWithProfile } from '@/types/task-assignee'
 
 import { TaskCard } from './task-card'
 
@@ -50,6 +51,7 @@ interface KanbanColumnProps {
   taskLabelMap?: Map<string, string[]>
   blockedTaskIds?: Set<string>
   recurringTaskIds?: Set<string>
+  taskAssigneeMap?: Map<string, TaskAssigneeWithProfile[]>
 }
 
 export function KanbanColumn({
@@ -70,6 +72,7 @@ export function KanbanColumn({
   taskLabelMap,
   blockedTaskIds,
   recurringTaskIds,
+  taskAssigneeMap,
 }: KanbanColumnProps) {
   const [isEditing, setIsEditing] = useState(false)
   const [editTitle, setEditTitle] = useState(column.title)
@@ -272,6 +275,7 @@ export function KanbanColumn({
                     taskLabels={taskLabelsForCard}
                     isBlocked={blockedTaskIds?.has(task.id)}
                     isRecurring={recurringTaskIds?.has(task.id)}
+                    taskAssignees={taskAssigneeMap?.get(task.id)}
                   />
                 )
               })}

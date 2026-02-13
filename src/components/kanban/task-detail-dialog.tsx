@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Calendar, Columns3, Trash2, User } from 'lucide-react'
+import { Calendar, ChevronDown, Clock, Columns3, Trash2, User } from 'lucide-react'
 
 import {
   AlertDialog,
@@ -44,6 +44,15 @@ import type { Tables } from '@/types/database'
 
 const UNASSIGNED_VALUE = '__none__'
 
+import { CustomFieldSection } from '@/components/custom-fields/custom-field-section'
+import { TimeEntryForm } from '@/components/time/time-entry-form'
+import { TimeEntryList } from '@/components/time/time-entry-list'
+import { TimerWidget } from '@/components/time/timer-widget'
+import { TimeSummary } from '@/components/time/time-summary'
+import { useTimeEntriesByTask } from '@/queries/use-time-entries'
+import { useTimerStore } from '@/stores/timer-store'
+
+import { AssigneePicker } from './assignee-picker'
 import { AttachmentSection } from './attachment-section'
 import { FavoriteButton } from './favorite-button'
 import { CommentSection } from './comment-section'
@@ -73,6 +82,9 @@ interface ProjectFeatures {
   feature_dependencies: boolean
   feature_attachments: boolean
   feature_comments: boolean
+  feature_multi_assignees?: boolean
+  feature_time_tracking?: boolean
+  feature_custom_fields?: boolean
 }
 
 interface TaskDetailDialogProps {
@@ -108,6 +120,13 @@ export function TaskDetailDialog({
   // 담당자 기반 권한: 담당자 없으면 모든 멤버 가능, 있으면 owner/admin/담당자만
   const canInteract =
     canDeleteAll || (canEdit && (task?.assignee_id === null || task?.assignee_id === user?.id))
+
+  // 시간 추적 접기/펼치기
+  const { data: timeEntries } = useTimeEntriesByTask(task?.id ?? '')
+  const timerActiveTaskId = useTimerStore((s) => s.activeTaskId)
+  const hasTimeData = (timeEntries && timeEntries.length > 0) || timerActiveTaskId === task?.id
+  const [timeTrackingToggle, setTimeTrackingToggle] = useState<boolean | null>(null)
+  const isTimeTrackingOpen = timeTrackingToggle ?? hasTimeData
 
   // 편집 모드 상태
   const [isEditing, setIsEditing] = useState(false)
@@ -231,35 +250,42 @@ export function TaskDetailDialog({
             )}
           </div>
 
-          {/* 담당자 */}
-          <div className="flex items-center gap-2">
-            <span className="text-muted-foreground w-16 text-sm">담당자</span>
-            {isEditing ? (
-              <Select
-                value={editAssigneeId || UNASSIGNED_VALUE}
-                onValueChange={(v) => setEditAssigneeId(v === UNASSIGNED_VALUE ? '' : v)}
-              >
-                <SelectTrigger className="w-40">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value={UNASSIGNED_VALUE}>미배정</SelectItem>
-                  {members?.map((m) => (
-                    <SelectItem key={m.user_id} value={m.user_id}>
-                      {m.profiles.full_name ?? m.profiles.email}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            ) : assigneeProfile ? (
-              <span className="flex items-center gap-1 text-sm">
-                <User className="h-4 w-4" />
-                {assigneeProfile.full_name ?? assigneeProfile.email}
-              </span>
-            ) : (
-              <span className="text-muted-foreground text-sm">미배정</span>
-            )}
-          </div>
+          {/* 담당자 (다중 담당자 모드) */}
+          {projectFeatures?.feature_multi_assignees !== false ? (
+            <div className="flex items-start gap-2">
+              <span className="text-muted-foreground mt-1 w-16 text-sm">담당자</span>
+              <AssigneePicker taskId={task.id} projectId={projectId} canEdit={canInteract} />
+            </div>
+          ) : (
+            <div className="flex items-center gap-2">
+              <span className="text-muted-foreground w-16 text-sm">담당자</span>
+              {isEditing ? (
+                <Select
+                  value={editAssigneeId || UNASSIGNED_VALUE}
+                  onValueChange={(v) => setEditAssigneeId(v === UNASSIGNED_VALUE ? '' : v)}
+                >
+                  <SelectTrigger className="w-40">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value={UNASSIGNED_VALUE}>미배정</SelectItem>
+                    {members?.map((m) => (
+                      <SelectItem key={m.user_id} value={m.user_id}>
+                        {m.profiles.full_name ?? m.profiles.email}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              ) : assigneeProfile ? (
+                <span className="flex items-center gap-1 text-sm">
+                  <User className="h-4 w-4" />
+                  {assigneeProfile.full_name ?? assigneeProfile.email}
+                </span>
+              ) : (
+                <span className="text-muted-foreground text-sm">미배정</span>
+              )}
+            </div>
+          )}
 
           {/* 마감일 */}
           <div className="flex items-center gap-2">
@@ -367,6 +393,50 @@ export function TaskDetailDialog({
                 canComment={canEdit}
                 canDeleteAll={canDeleteAll}
               />
+              <Separator />
+            </>
+          )}
+
+          {/* 시간 추적 섹션 */}
+          {projectFeatures?.feature_time_tracking !== false && (
+            <>
+              <div>
+                <button
+                  type="button"
+                  className="flex w-full cursor-pointer items-center gap-2"
+                  onClick={() => setTimeTrackingToggle((prev) => !(prev ?? isTimeTrackingOpen))}
+                >
+                  <Clock className="h-4 w-4" />
+                  <span className="text-sm font-medium">
+                    시간 추적{' '}
+                    {timeEntries && timeEntries.length > 0 ? `(${timeEntries.length})` : ''}
+                  </span>
+                  <ChevronDown
+                    className={cn(
+                      'ml-auto h-4 w-4 transition-transform',
+                      isTimeTrackingOpen && 'rotate-180',
+                    )}
+                  />
+                </button>
+                {isTimeTrackingOpen && (
+                  <div className="mt-3 space-y-3">
+                    <div className="flex items-center justify-between">
+                      <TimeSummary taskId={task.id} />
+                      <TimerWidget taskId={task.id} projectId={projectId} />
+                    </div>
+                    <TimeEntryList taskId={task.id} projectId={projectId} canEdit={canInteract} />
+                    {canInteract && <TimeEntryForm taskId={task.id} projectId={projectId} />}
+                  </div>
+                )}
+              </div>
+              <Separator />
+            </>
+          )}
+
+          {/* 커스텀 필드 섹션 */}
+          {projectFeatures?.feature_custom_fields !== false && (
+            <>
+              <CustomFieldSection taskId={task.id} projectId={projectId} canEdit={canInteract} />
               <Separator />
             </>
           )}

@@ -357,6 +357,9 @@ perf/<대상>          # 성능 개선 (예: perf/virtualized-list)
 - PR 제목: 커밋 메시지 형식과 동일 (`<type>: <subject>`)
 - PR 본문: Summary (변경 요약) + Test plan (검증 방법) 포함
 - PR 생성은 사용자가 변경 내용을 확인한 후에만 진행
+- **최소 1명의 리뷰어 승인 필수** — ruleset에 의해 승인 없이 머지 불가
+- 새 커밋 push 시 기존 리뷰 승인 자동 dismiss — 재승인 필요
+- 리뷰 스레드(코멘트)는 모두 resolve 후 머지 가능
 
 ### 머지 후 정리
 ```bash

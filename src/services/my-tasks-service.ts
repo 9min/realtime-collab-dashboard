@@ -10,15 +10,45 @@ export interface MyTaskWithProject extends Tables<'tasks'> {
   column_title: string
 }
 
+/**
+ * 내 태스크 조회
+ *
+ * 1) task_assignees 테이블에서 해당 유저가 assignee/watcher인 태스크 ID 조회
+ * 2) 기존 assignee_id 기반 태스크도 포함 (하위 호환)
+ * 3) 두 결과를 합쳐서 중복 제거 후 반환
+ */
 export async function getMyTasks(
   supabase: Client,
   userId: string,
 ): Promise<ServiceResult<MyTaskWithProject[]>> {
-  const { data, error } = await supabase
+  // 1. task_assignees 기반 태스크 조회
+  const { data: assigneeEntries, error: assigneeError } = await supabase
+    .from('task_assignees')
+    .select('task_id')
+    .eq('user_id', userId)
+
+  if (assigneeError) {
+    return { data: null, error: { code: assigneeError.code, message: assigneeError.message } }
+  }
+
+  const assignedTaskIds = (assigneeEntries ?? []).map(
+    (e) => (e as Record<string, unknown>).task_id as string,
+  )
+
+  // 2. 기존 assignee_id 기반 + task_assignees 기반 통합 조회
+  // assignee_id = userId OR id IN (assignedTaskIds)
+  let query = supabase
     .from('tasks')
     .select('*, projects:project_id(name), kanban_columns:column_id(title)')
-    .eq('assignee_id', userId)
     .order('due_date', { ascending: true, nullsFirst: false })
+
+  if (assignedTaskIds.length > 0) {
+    query = query.or(`assignee_id.eq.${userId},id.in.(${assignedTaskIds.join(',')})`)
+  } else {
+    query = query.eq('assignee_id', userId)
+  }
+
+  const { data, error } = await query
 
   if (error) {
     return { data: null, error: { code: error.code, message: error.message } }

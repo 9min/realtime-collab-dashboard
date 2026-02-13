@@ -12,6 +12,12 @@ import {
   Link2,
   Paperclip,
   MessageSquare,
+  FileText,
+  Users,
+  Clock,
+  SlidersHorizontal,
+  IterationCw,
+  Zap,
 } from 'lucide-react'
 
 import {
@@ -48,7 +54,10 @@ import {
   useUpdateProject,
   useDeleteProject,
 } from '@/queries/use-projects'
+import { AutomationManager } from '@/components/automation/automation-manager'
+import { CustomFieldManager } from '@/components/custom-fields/custom-field-manager'
 import { LabelManager } from '@/components/kanban/label-manager'
+import { TemplateManager } from '@/components/project/template-manager'
 import { MemberInviteCombobox } from '@/components/project/member-invite-combobox'
 import { IntegrationSettings } from '@/components/project/integration-settings'
 import { MEMBER_ROLE } from '@/lib/constants'
@@ -169,6 +178,12 @@ export default function ProjectSettingsPage({ params }: ProjectSettingsPageProps
 
   const FEATURE_ITEMS = [
     {
+      key: 'feature_multi_assignees',
+      label: '다중 담당자',
+      description: '태스크에 여러 담당자와 워처를 지정합니다',
+      icon: Users,
+    },
+    {
       key: 'feature_subtasks',
       label: '서브태스크',
       description: '태스크를 세부 항목으로 나누어 관리합니다',
@@ -191,6 +206,18 @@ export default function ProjectSettingsPage({ params }: ProjectSettingsPageProps
       label: '댓글',
       description: '태스크에 댓글을 남깁니다',
       icon: MessageSquare,
+    },
+    {
+      key: 'feature_time_tracking',
+      label: '시간 추적',
+      description: '태스크별 소요 시간을 기록하고 리포트합니다',
+      icon: Clock,
+    },
+    {
+      key: 'feature_sprints',
+      label: '스프린트',
+      description: '시간 기반 반복 주기로 업무를 계획합니다',
+      icon: IterationCw,
     },
   ] as const
 
@@ -415,24 +442,127 @@ export default function ProjectSettingsPage({ params }: ProjectSettingsPageProps
               )}
             </div>
 
-            {/* 나머지 기능 토글 */}
-            {FEATURE_ITEMS.map(({ key, label, description, icon: Icon }) => (
-              <div key={key} className="flex items-center justify-between px-4 py-3">
+            {/* 템플릿 — 토글 + 인라인 템플릿 관리 */}
+            <div>
+              <div className="flex items-center justify-between px-4 py-3">
                 <div className="flex items-center gap-3">
-                  <Icon className="text-muted-foreground h-4 w-4" />
+                  <FileText className="text-muted-foreground h-4 w-4" />
                   <div>
-                    <p className="text-sm font-medium">{label}</p>
-                    <p className="text-muted-foreground text-xs">{description}</p>
+                    <p className="text-sm font-medium">템플릿</p>
+                    <p className="text-muted-foreground text-xs">
+                      자주 사용하는 태스크 형식을 템플릿으로 저장합니다
+                    </p>
                   </div>
                 </div>
                 <Switch
-                  checked={project[key]}
+                  checked={project.feature_templates ?? true}
                   onCheckedChange={(checked) => {
-                    updateMutation.mutate({ [key]: checked })
+                    updateMutation.mutate({ feature_templates: checked })
                   }}
                 />
               </div>
-            ))}
+              {project.feature_templates !== false && (
+                <div className="bg-muted/30 border-t px-4 py-4">
+                  <p className="text-muted-foreground mb-3 text-xs font-medium">템플릿 관리</p>
+                  <TemplateManager projectId={projectId} />
+                </div>
+              )}
+            </div>
+
+            {/* 커스텀 필드 — 토글 + 인라인 관리 */}
+            <div>
+              <div className="flex items-center justify-between px-4 py-3">
+                <div className="flex items-center gap-3">
+                  <SlidersHorizontal className="text-muted-foreground h-4 w-4" />
+                  <div>
+                    <p className="text-sm font-medium">커스텀 필드</p>
+                    <p className="text-muted-foreground text-xs">
+                      프로젝트에 맞는 사용자 정의 필드를 추가합니다
+                    </p>
+                  </div>
+                </div>
+                <Switch
+                  checked={
+                    ((project as unknown as Record<string, unknown>).feature_custom_fields as
+                      | boolean
+                      | undefined) ?? false
+                  }
+                  onCheckedChange={(checked) => {
+                    updateMutation.mutate({ feature_custom_fields: checked } as Record<
+                      string,
+                      unknown
+                    >)
+                  }}
+                />
+              </div>
+              {((project as unknown as Record<string, unknown>).feature_custom_fields as
+                | boolean
+                | undefined) && (
+                <div className="bg-muted/30 border-t px-4 py-4">
+                  <p className="text-muted-foreground mb-3 text-xs font-medium">커스텀 필드 관리</p>
+                  <CustomFieldManager projectId={projectId} />
+                </div>
+              )}
+            </div>
+
+            {/* 자동화 — 토글 + 인라인 관리 */}
+            <div>
+              <div className="flex items-center justify-between px-4 py-3">
+                <div className="flex items-center gap-3">
+                  <Zap className="text-muted-foreground h-4 w-4" />
+                  <div>
+                    <p className="text-sm font-medium">자동화</p>
+                    <p className="text-muted-foreground text-xs">
+                      트리거-액션 규칙으로 반복 작업을 자동화합니다
+                    </p>
+                  </div>
+                </div>
+                <Switch
+                  checked={
+                    ((project as unknown as Record<string, unknown>).feature_automations as
+                      | boolean
+                      | undefined) ?? false
+                  }
+                  onCheckedChange={(checked) => {
+                    updateMutation.mutate({ feature_automations: checked } as Record<
+                      string,
+                      unknown
+                    >)
+                  }}
+                />
+              </div>
+              {((project as unknown as Record<string, unknown>).feature_automations as
+                | boolean
+                | undefined) && (
+                <div className="bg-muted/30 border-t px-4 py-4">
+                  <p className="text-muted-foreground mb-3 text-xs font-medium">자동화 규칙 관리</p>
+                  <AutomationManager projectId={projectId} />
+                </div>
+              )}
+            </div>
+
+            {/* 나머지 기능 토글 */}
+            {FEATURE_ITEMS.map(({ key, label, description, icon: Icon }) => {
+              const projectRaw = project as unknown as Record<string, unknown>
+              const isChecked = (projectRaw[key] as boolean | undefined) ?? true
+              return (
+                <div key={key} className="flex items-center justify-between px-4 py-3">
+                  <div className="flex items-center gap-3">
+                    <Icon className="text-muted-foreground h-4 w-4" />
+                    <div>
+                      <p className="text-sm font-medium">{label}</p>
+                      <p className="text-muted-foreground text-xs">{description}</p>
+                    </div>
+                  </div>
+                  <Switch
+                    checked={isChecked}
+                    onCheckedChange={(checked) => {
+                      updateMutation.mutate({ [key]: checked } as Record<string, unknown>)
+                    }}
+                  />
+                </div>
+              )
+            })}
           </Card>
         </section>
       )}

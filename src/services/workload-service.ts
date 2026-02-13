@@ -31,9 +31,8 @@ export async function getWorkload(
 
   let taskQuery = supabase
     .from('tasks')
-    .select('assignee_id, priority')
+    .select('id, assignee_id, priority')
     .eq('project_id', projectId)
-    .not('assignee_id', 'is', null)
 
   if (doneColumnIds.length > 0) {
     // 필터: 완료 컬럼에 있지 않은 태스크만
@@ -46,6 +45,26 @@ export async function getWorkload(
 
   if (tasksError) {
     return { data: null, error: { code: tasksError.code, message: tasksError.message } }
+  }
+
+  // 2-b. task_assignees 조회 (다중 담당자)
+  const { data: taskAssignees } = await supabase
+    .from('task_assignees')
+    .select('task_id, user_id')
+    .eq('project_id', projectId)
+
+  // task_id → user_id[] 맵 생성
+  const taskAssigneeMap = new Map<string, string[]>()
+  for (const ta of taskAssignees ?? []) {
+    const raw = ta as Record<string, unknown>
+    const taskId = raw.task_id as string
+    const userId = raw.user_id as string
+    const existing = taskAssigneeMap.get(taskId)
+    if (existing) {
+      existing.push(userId)
+    } else {
+      taskAssigneeMap.set(taskId, [userId])
+    }
   }
 
   // 3. 멤버별 태스크 집계
@@ -69,12 +88,28 @@ export async function getWorkload(
   }
 
   for (const task of tasks ?? []) {
-    const assigneeId = task.assignee_id as string
-    const entry = workloadMap.get(assigneeId)
-    if (entry) {
-      const priority = task.priority as keyof MemberWorkload['tasksByPriority']
-      entry.tasksByPriority[priority]++
-      entry.totalTasks++
+    const taskRaw = task as Record<string, unknown>
+    const taskId = taskRaw.id as string
+    const priority = taskRaw.priority as keyof MemberWorkload['tasksByPriority']
+    const multiAssignees = taskAssigneeMap.get(taskId)
+
+    if (multiAssignees && multiAssignees.length > 0) {
+      // 다중 담당자: 각 담당자에게 워크로드 카운트
+      for (const uid of multiAssignees) {
+        const entry = workloadMap.get(uid)
+        if (entry) {
+          entry.tasksByPriority[priority]++
+          entry.totalTasks++
+        }
+      }
+    } else if (taskRaw.assignee_id) {
+      // 레거시 단일 담당자
+      const assigneeId = taskRaw.assignee_id as string
+      const entry = workloadMap.get(assigneeId)
+      if (entry) {
+        entry.tasksByPriority[priority]++
+        entry.totalTasks++
+      }
     }
   }
 

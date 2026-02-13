@@ -2,15 +2,35 @@ import { describe, it, expect, vi } from 'vitest'
 
 import { getMyTasks } from './my-tasks-service'
 
-function createMockClient(resolvedValue: { data: unknown; error: unknown }) {
-  const chain = {
-    select: vi.fn().mockReturnThis(),
-    eq: vi.fn().mockReturnThis(),
-    order: vi.fn().mockResolvedValue(resolvedValue),
-  }
+function createMockClient(opts: {
+  assigneeEntries?: { task_id: string }[]
+  assigneeError?: { code: string; message: string } | null
+  tasksData?: unknown[]
+  tasksError?: { code: string; message: string } | null
+}) {
+  const { assigneeEntries = [], assigneeError = null, tasksData = [], tasksError = null } = opts
+
   return {
-    from: vi.fn(() => chain),
-    _chain: chain,
+    from: vi.fn((table: string) => {
+      if (table === 'task_assignees') {
+        return {
+          select: vi.fn().mockReturnValue({
+            eq: vi.fn().mockResolvedValue({
+              data: assigneeEntries,
+              error: assigneeError,
+            }),
+          }),
+        }
+      }
+      // tasks: select() → order() → eq() or or()
+      const resolve = { data: tasksData, error: tasksError }
+      const eqFn = vi.fn().mockResolvedValue(resolve)
+      const orFn = vi.fn().mockResolvedValue(resolve)
+      const orderFn = vi.fn().mockReturnValue({ eq: eqFn, or: orFn })
+      return {
+        select: vi.fn().mockReturnValue({ order: orderFn }),
+      }
+    }),
   }
 }
 
@@ -18,7 +38,8 @@ describe('my-tasks-service', () => {
   describe('getMyTasks', () => {
     it('should return tasks with project and column names', async () => {
       const mock = createMockClient({
-        data: [
+        assigneeEntries: [],
+        tasksData: [
           {
             id: 'task-1',
             title: 'Test Task',
@@ -31,7 +52,6 @@ describe('my-tasks-service', () => {
             kanban_columns: { title: '진행 중' },
           },
         ],
-        error: null,
       })
 
       const result = await getMyTasks(mock as never, 'user-1')
@@ -43,13 +63,38 @@ describe('my-tasks-service', () => {
 
     it('should return error on failure', async () => {
       const mock = createMockClient({
-        data: null,
-        error: { code: 'ERR', message: 'DB error' },
+        assigneeEntries: [],
+        tasksData: null as unknown as unknown[],
+        tasksError: { code: 'ERR', message: 'DB error' },
       })
 
       const result = await getMyTasks(mock as never, 'user-1')
       expect(result.data).toBeNull()
       expect(result.error?.message).toBe('DB error')
+    })
+
+    it('should include tasks from task_assignees', async () => {
+      const mock = createMockClient({
+        assigneeEntries: [{ task_id: 'task-2' }],
+        tasksData: [
+          {
+            id: 'task-2',
+            title: 'Assigned Task',
+            project_id: 'proj-1',
+            column_id: 'col-1',
+            priority: 'high',
+            assignee_id: null,
+            due_date: null,
+            projects: { name: 'Project' },
+            kanban_columns: { title: 'To Do' },
+          },
+        ],
+      })
+
+      const result = await getMyTasks(mock as never, 'user-1')
+      expect(result.data).toHaveLength(1)
+      expect(result.data![0].title).toBe('Assigned Task')
+      expect(result.error).toBeNull()
     })
   })
 })
