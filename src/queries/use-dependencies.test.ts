@@ -16,7 +16,12 @@ vi.mock('@/services/dependency-service', () => ({
 
 import { getDependencies, createDependency, deleteDependency } from '@/services/dependency-service'
 import type { TaskDependency } from '@/types/dependency'
-import { useDependencies, useCreateDependency, useDeleteDependency, dependencyKeys } from './use-dependencies'
+import {
+  useDependencies,
+  useCreateDependency,
+  useDeleteDependency,
+  dependencyKeys,
+} from './use-dependencies'
 
 const MOCK_PROJECT_ID = 'project-aaa-111'
 const MOCK_DEP_ID = 'dep-aaa-111'

@@ -3,7 +3,12 @@ import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
 import { renderWithProviders } from '@/__tests__/helpers/render-with-providers'
-import { mockSubtasks, MOCK_TASK_ID_1, MOCK_PROJECT_ID, MOCK_USER_ID } from '@/__tests__/helpers/fixtures'
+import {
+  mockSubtasks,
+  MOCK_TASK_ID_1,
+  MOCK_PROJECT_ID,
+  MOCK_USER_ID,
+} from '@/__tests__/helpers/fixtures'
 
 // mock 함수들
 const mockMutate = vi.fn()

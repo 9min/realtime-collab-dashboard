@@ -62,7 +62,11 @@ export function ProjectList() {
         <div>
           <h1 className="text-2xl font-bold">프로젝트</h1>
           <p className="text-muted-foreground mt-1 text-sm">
-            참여 중인 프로젝트 <span className="font-semibold text-blue-600 dark:text-blue-400">{projects?.length ?? 0}</span>개
+            참여 중인 프로젝트{' '}
+            <span className="font-semibold text-blue-600 dark:text-blue-400">
+              {projects?.length ?? 0}
+            </span>
+            개
           </p>
         </div>
         {isAdmin && <CreateProjectDialog />}
@@ -100,7 +104,7 @@ export function ProjectList() {
           {messageLoading ? (
             <Loader2 className="text-muted-foreground h-5 w-5 animate-spin" />
           ) : myMessage ? (
-            <div className="flex items-center gap-2 rounded-lg bg-muted px-4 py-3 text-sm">
+            <div className="bg-muted flex items-center gap-2 rounded-lg px-4 py-3 text-sm">
               <CheckCircle2 className="h-4 w-4 shrink-0 text-green-500" />
               <span>메시지가 전송되었습니다. 관리자의 확인을 기다려주세요.</span>
             </div>

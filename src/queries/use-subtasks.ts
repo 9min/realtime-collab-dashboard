@@ -4,7 +4,12 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 
 import { useSupabase } from '@/components/providers/supabase-provider'
-import { getSubtasks, createSubtask, updateSubtask, deleteSubtask } from '@/services/subtask-service'
+import {
+  getSubtasks,
+  createSubtask,
+  updateSubtask,
+  deleteSubtask,
+} from '@/services/subtask-service'
 import { QUERY_CONFIG } from '@/lib/constants'
 import type { InsertTables, UpdateTables, Tables } from '@/types/database'
 
@@ -53,7 +58,13 @@ export function useUpdateSubtask(taskId: string) {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: async ({ subtaskId, input }: { subtaskId: string; input: UpdateTables<'subtasks'> }) => {
+    mutationFn: async ({
+      subtaskId,
+      input,
+    }: {
+      subtaskId: string
+      input: UpdateTables<'subtasks'>
+    }) => {
       const result = await updateSubtask(supabase, subtaskId, input)
       if (result.error) throw new Error(result.error.message)
       return result.data

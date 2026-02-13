@@ -20,7 +20,7 @@ const IDLE_DRIFT_SPEED = 0.0004 // 낮을수록 느리고 부드러움
 interface CardNode {
   x: number
   y: number
-  z: number       // 0.2~1.0 pseudo-depth
+  z: number // 0.2~1.0 pseudo-depth
   vx: number
   vy: number
   rotation: number // 미세 기울기 (라디안)
@@ -29,7 +29,7 @@ interface CardNode {
   lineWidths: number[] // 텍스트 라인 너비 비율 (0~1)
   hasCheckbox: boolean
   hasBadge: boolean
-  driftPhaseX: number  // idle drift 위상 오프셋
+  driftPhaseX: number // idle drift 위상 오프셋
   driftPhaseY: number
 }
 
@@ -61,7 +61,7 @@ function createCards(width: number, height: number): CardNode[] {
     colorIndex: Math.floor(Math.random() * ACCENT_COLORS_LIGHT.length),
     lineWidths: Array.from(
       { length: LINE_COUNT_OPTIONS[Math.floor(Math.random() * LINE_COUNT_OPTIONS.length)] },
-      (_, i) => i === 0 ? 0.75 : 0.4 + Math.random() * 0.35,
+      (_, i) => (i === 0 ? 0.75 : 0.4 + Math.random() * 0.35),
     ),
     hasCheckbox: Math.random() > 0.5,
     hasBadge: Math.random() > 0.6,
@@ -72,7 +72,11 @@ function createCards(width: number, height: number): CardNode[] {
 
 function roundRect(
   ctx: CanvasRenderingContext2D,
-  x: number, y: number, w: number, h: number, r: number,
+  x: number,
+  y: number,
+  w: number,
+  h: number,
+  r: number,
 ) {
   ctx.beginPath()
   ctx.moveTo(x + r, y)
@@ -216,7 +220,7 @@ export function NetworkCanvas() {
         // Card body
         roundRect(ctx, -cw / 2, -ch / 2, cw, ch, 4 * scale)
         ctx.fillStyle = isDark
-          ? `rgba(30, 41, 59, ${opacity})`   // slate-800
+          ? `rgba(30, 41, 59, ${opacity})` // slate-800
           : `rgba(255, 255, 255, ${opacity})`
         ctx.fill()
 
@@ -242,7 +246,8 @@ export function NetworkCanvas() {
         ctx.lineTo(-cw / 2, -ch / 2 + 4 * scale)
         ctx.quadraticCurveTo(-cw / 2, -ch / 2, -cw / 2 + 4 * scale, -ch / 2)
         ctx.closePath()
-        ctx.fillStyle = accent.replace(')', `, ${opacity})`)
+        ctx.fillStyle = accent
+          .replace(')', `, ${opacity})`)
           .replace('rgb', 'rgba')
           .replace('rgba(', 'rgba(')
         // simpler: just use hex with opacity

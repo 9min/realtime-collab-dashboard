@@ -25,10 +25,7 @@ const createProjectSchema = z.object({
     .string()
     .min(1, '프로젝트 이름을 입력해주세요')
     .max(50, '프로젝트 이름은 50자 이내로 입력해주세요'),
-  description: z
-    .string()
-    .max(200, '설명은 200자 이내로 입력해주세요')
-    .optional(),
+  description: z.string().max(200, '설명은 200자 이내로 입력해주세요').optional(),
 })
 
 type CreateProjectForm = z.infer<typeof createProjectSchema>
@@ -61,8 +58,7 @@ export function CreateProjectDialog() {
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button>
-          <Plus className="mr-2 h-4 w-4" />
-          새 프로젝트
+          <Plus className="mr-2 h-4 w-4" />새 프로젝트
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
@@ -84,9 +80,7 @@ export function CreateProjectDialog() {
                 {...register('name')}
                 aria-invalid={!!errors.name}
               />
-              {errors.name && (
-                <p className="text-destructive text-xs">{errors.name.message}</p>
-              )}
+              {errors.name && <p className="text-destructive text-xs">{errors.name.message}</p>}
             </div>
             <div className="space-y-2">
               <label htmlFor="project-desc" className="text-sm font-medium">

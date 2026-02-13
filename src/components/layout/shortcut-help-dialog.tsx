@@ -1,11 +1,6 @@
 'use client'
 
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog'
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { useShortcutHelpStore } from '@/stores/shortcut-help-store'
 import { SHORTCUT_DISPLAY } from '@/lib/keyboard-shortcuts'
 
@@ -27,16 +22,28 @@ export function ShortcutHelpDialog() {
             <h3 className="text-muted-foreground mb-2 text-xs font-semibold uppercase">전역</h3>
             <ul className="space-y-1">
               {globalShortcuts.map((s) => (
-                <ShortcutRow key={s.key} shortcutKey={s.key} modifier={s.modifier} label={s.label} />
+                <ShortcutRow
+                  key={s.key}
+                  shortcutKey={s.key}
+                  modifier={s.modifier}
+                  label={s.label}
+                />
               ))}
             </ul>
           </div>
 
           <div>
-            <h3 className="text-muted-foreground mb-2 text-xs font-semibold uppercase">프로젝트 내</h3>
+            <h3 className="text-muted-foreground mb-2 text-xs font-semibold uppercase">
+              프로젝트 내
+            </h3>
             <ul className="space-y-1">
               {projectShortcuts.map((s) => (
-                <ShortcutRow key={s.key} shortcutKey={s.key} modifier={s.modifier} label={s.label} />
+                <ShortcutRow
+                  key={s.key}
+                  shortcutKey={s.key}
+                  modifier={s.modifier}
+                  label={s.label}
+                />
               ))}
             </ul>
           </div>
@@ -46,7 +53,11 @@ export function ShortcutHelpDialog() {
   )
 }
 
-function ShortcutRow({ shortcutKey, modifier, label }: {
+function ShortcutRow({
+  shortcutKey,
+  modifier,
+  label,
+}: {
   shortcutKey: string
   modifier?: string
   label: string
@@ -54,7 +65,7 @@ function ShortcutRow({ shortcutKey, modifier, label }: {
   return (
     <li className="flex items-center justify-between py-1">
       <span className="text-sm">{label}</span>
-      <kbd className="bg-muted text-muted-foreground inline-flex items-center gap-1 rounded border px-1.5 py-0.5 text-xs font-mono">
+      <kbd className="bg-muted text-muted-foreground inline-flex items-center gap-1 rounded border px-1.5 py-0.5 font-mono text-xs">
         {modifier && <span>{modifier}+</span>}
         <span>{shortcutKey}</span>
       </kbd>

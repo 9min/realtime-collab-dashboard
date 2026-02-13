@@ -41,9 +41,7 @@ export async function sendMessage(
   return { data: data as UserMessage, error: null }
 }
 
-export async function getAllUserMessages(
-  supabase: Client,
-): Promise<ServiceResult<UserMessage[]>> {
+export async function getAllUserMessages(supabase: Client): Promise<ServiceResult<UserMessage[]>> {
   const { data, error } = await supabase
     .from('user_messages')
     .select('*')

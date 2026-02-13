@@ -61,7 +61,9 @@ export function useRealtimeSubscription(projectId: string) {
 
     async function setupChannel() {
       // 1. getUser()로 서버 검증된 세션 확보 (getSession은 로컬 캐시만 읽음)
-      const { data: { session } } = await supabase.auth.getSession()
+      const {
+        data: { session },
+      } = await supabase.auth.getSession()
       if (cancelled) return
 
       if (!session?.access_token) {
@@ -73,13 +75,13 @@ export function useRealtimeSubscription(projectId: string) {
       supabase.realtime.setAuth(session.access_token)
 
       // 3. 토큰 갱신 시 Realtime 재인증
-      const { data: { subscription } } = supabase.auth.onAuthStateChange(
-        (event, newSession) => {
-          if (event === 'TOKEN_REFRESHED' && newSession?.access_token) {
-            supabase.realtime.setAuth(newSession.access_token)
-          }
-        },
-      )
+      const {
+        data: { subscription },
+      } = supabase.auth.onAuthStateChange((event, newSession) => {
+        if (event === 'TOKEN_REFRESHED' && newSession?.access_token) {
+          supabase.realtime.setAuth(newSession.access_token)
+        }
+      })
       authUnsubscribe = () => subscription.unsubscribe()
 
       // 4. 채널 구독
@@ -103,7 +105,12 @@ export function useRealtimeSubscription(projectId: string) {
 
             const record = payload.new as Record<string, unknown> | undefined
             if (record && record['created_by'] !== userIdRef.current) {
-              const eventLabel = payload.eventType === 'INSERT' ? '추가' : payload.eventType === 'UPDATE' ? '수정' : '삭제'
+              const eventLabel =
+                payload.eventType === 'INSERT'
+                  ? '추가'
+                  : payload.eventType === 'UPDATE'
+                    ? '수정'
+                    : '삭제'
               toast.info(`다른 사용자가 태스크를 ${eventLabel}했습니다`, {
                 duration: 3000,
               })
@@ -203,7 +210,9 @@ export function useRealtimeSubscription(projectId: string) {
           (payload) => {
             const record = (payload.new ?? payload.old) as Record<string, unknown> | undefined
             if (record && typeof record['task_id'] === 'string') {
-              queryClient.invalidateQueries({ queryKey: subtaskKeys.list(record['task_id'] as string) })
+              queryClient.invalidateQueries({
+                queryKey: subtaskKeys.list(record['task_id'] as string),
+              })
             }
             queryClient.invalidateQueries({ queryKey: activityKeys.list(projectId) })
           },
@@ -220,7 +229,9 @@ export function useRealtimeSubscription(projectId: string) {
           (payload) => {
             const record = (payload.new ?? payload.old) as Record<string, unknown> | undefined
             if (record && typeof record['task_id'] === 'string') {
-              queryClient.invalidateQueries({ queryKey: commentKeys.list(record['task_id'] as string) })
+              queryClient.invalidateQueries({
+                queryKey: commentKeys.list(record['task_id'] as string),
+              })
             }
             queryClient.invalidateQueries({ queryKey: activityKeys.list(projectId) })
           },
@@ -238,7 +249,9 @@ export function useRealtimeSubscription(projectId: string) {
           (payload) => {
             const record = (payload.new ?? payload.old) as Record<string, unknown> | undefined
             if (record && typeof record['task_id'] === 'string') {
-              queryClient.invalidateQueries({ queryKey: ['attachments', record['task_id'] as string] })
+              queryClient.invalidateQueries({
+                queryKey: ['attachments', record['task_id'] as string],
+              })
             }
           },
         )
@@ -310,5 +323,14 @@ export function useRealtimeSubscription(projectId: string) {
       }
       setStatus(CONNECTION_STATUS.DISCONNECTED)
     }
-  }, [supabase, projectId, queryClient, user?.id, setStatus, setConnected, incrementRetry, resetRetry])
+  }, [
+    supabase,
+    projectId,
+    queryClient,
+    user?.id,
+    setStatus,
+    setConnected,
+    incrementRetry,
+    resetRetry,
+  ])
 }

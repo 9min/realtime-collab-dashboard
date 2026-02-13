@@ -12,7 +12,9 @@ export async function getKanbanFilterPreset(
   supabase: Client,
   projectId: string,
 ): Promise<ServiceResult<SavedFilterPreset | null>> {
-  const { data: { user } } = await supabase.auth.getUser()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
   if (!user) {
     return { data: null, error: { code: 'UNAUTHORIZED', message: '로그인이 필요합니다' } }
   }
@@ -42,7 +44,9 @@ export async function saveKanbanFilterPreset(
   projectId: string,
   filters: SavedFilterPreset,
 ): Promise<ServiceResult<FilterPresetRow>> {
-  const { data: { user } } = await supabase.auth.getUser()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
   if (!user) {
     return { data: null, error: { code: 'UNAUTHORIZED', message: '로그인이 필요합니다' } }
   }

@@ -57,25 +57,20 @@ export function NotificationList({
         <p className="text-muted-foreground py-8 text-center text-sm">알림이 없습니다</p>
       ) : (
         <div ref={parentRef} className="max-h-[400px] overflow-y-auto">
-          <div
-            className="relative w-full"
-            style={{ height: `${virtualizer.getTotalSize()}px` }}
-          >
+          <div className="relative w-full" style={{ height: `${virtualizer.getTotalSize()}px` }}>
             {virtualizer.getVirtualItems().map((virtualItem) => (
               <div
                 key={virtualItem.key}
                 ref={virtualizer.measureElement}
                 data-index={virtualItem.index}
-                className="absolute left-0 top-0 w-full"
+                className="absolute top-0 left-0 w-full"
                 style={{ transform: `translateY(${virtualItem.start}px)` }}
               >
                 <NotificationItem
                   notification={notifications[virtualItem.index]}
                   onClick={onItemClick}
                 />
-                {virtualItem.index < notifications.length - 1 && (
-                  <div className="bg-border h-px" />
-                )}
+                {virtualItem.index < notifications.length - 1 && <div className="bg-border h-px" />}
               </div>
             ))}
           </div>

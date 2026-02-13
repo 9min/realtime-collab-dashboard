@@ -1,14 +1,6 @@
 'use client'
 
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-} from 'recharts'
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
 
 import { useWeeklyProgressChart } from '@/queries/use-chart-data'
 
@@ -16,7 +8,15 @@ interface WeeklyProgressChartProps {
   projectId: string
 }
 
-function CustomTooltip({ active, payload, label }: { active?: boolean; payload?: Array<{ value: number; dataKey: string }>; label?: string }) {
+function CustomTooltip({
+  active,
+  payload,
+  label,
+}: {
+  active?: boolean
+  payload?: Array<{ value: number; dataKey: string }>
+  label?: string
+}) {
   if (!active || !payload?.length) return null
   return (
     <div className="bg-popover text-popover-foreground rounded-lg border px-3 py-2.5 shadow-lg">
@@ -54,7 +54,12 @@ export function WeeklyProgressChart({ projectId }: WeeklyProgressChartProps) {
     <div className="flex h-full flex-col">
       <div className="flex-1">
         <ResponsiveContainer width="100%" height="100%">
-          <BarChart data={data} margin={{ top: 8, right: 12, left: -12, bottom: 0 }} barGap={2} barCategoryGap="25%">
+          <BarChart
+            data={data}
+            margin={{ top: 8, right: 12, left: -12, bottom: 0 }}
+            barGap={2}
+            barCategoryGap="25%"
+          >
             <defs>
               <linearGradient id="createdGradient" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="0%" stopColor="#818cf8" stopOpacity={1} />
@@ -65,7 +70,12 @@ export function WeeklyProgressChart({ projectId }: WeeklyProgressChartProps) {
                 <stop offset="100%" stopColor="#10b981" stopOpacity={0.8} />
               </linearGradient>
             </defs>
-            <CartesianGrid vertical={false} strokeDasharray="3 3" stroke="hsl(var(--border))" strokeOpacity={0.5} />
+            <CartesianGrid
+              vertical={false}
+              strokeDasharray="3 3"
+              stroke="hsl(var(--border))"
+              strokeOpacity={0.5}
+            />
             <XAxis
               dataKey="date"
               fontSize={11}
@@ -80,9 +90,24 @@ export function WeeklyProgressChart({ projectId }: WeeklyProgressChartProps) {
               axisLine={false}
               tick={{ fill: 'hsl(var(--muted-foreground))' }}
             />
-            <Tooltip content={<CustomTooltip />} cursor={{ fill: 'hsl(var(--muted))', opacity: 0.4 }} />
-            <Bar dataKey="created" name="생성" fill="url(#createdGradient)" radius={[4, 4, 0, 0]} maxBarSize={32} />
-            <Bar dataKey="completed" name="완료" fill="url(#completedGradient)" radius={[4, 4, 0, 0]} maxBarSize={32} />
+            <Tooltip
+              content={<CustomTooltip />}
+              cursor={{ fill: 'hsl(var(--muted))', opacity: 0.4 }}
+            />
+            <Bar
+              dataKey="created"
+              name="생성"
+              fill="url(#createdGradient)"
+              radius={[4, 4, 0, 0]}
+              maxBarSize={32}
+            />
+            <Bar
+              dataKey="completed"
+              name="완료"
+              fill="url(#completedGradient)"
+              radius={[4, 4, 0, 0]}
+              maxBarSize={32}
+            />
           </BarChart>
         </ResponsiveContainer>
       </div>

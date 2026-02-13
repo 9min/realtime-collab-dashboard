@@ -72,10 +72,7 @@ export async function deleteSubtask(
   supabase: Client,
   subtaskId: string,
 ): Promise<ServiceResult<null>> {
-  const { error } = await supabase
-    .from('subtasks')
-    .delete()
-    .eq('id', subtaskId)
+  const { error } = await supabase.from('subtasks').delete().eq('id', subtaskId)
 
   if (error) {
     return { data: null, error: { code: error.code, message: error.message } }

@@ -9,11 +9,27 @@ function createQueryBuilder(response: { data: unknown; error: unknown }) {
   const builder: Record<string, unknown> = {}
 
   const chainMethods = [
-    'select', 'insert', 'update', 'delete', 'upsert',
-    'eq', 'neq', 'in', 'lt', 'lte', 'gt', 'gte',
-    'or', 'ilike', 'like',
-    'order', 'limit', 'range', 'returns',
-    'single', 'maybeSingle',
+    'select',
+    'insert',
+    'update',
+    'delete',
+    'upsert',
+    'eq',
+    'neq',
+    'in',
+    'lt',
+    'lte',
+    'gt',
+    'gte',
+    'or',
+    'ilike',
+    'like',
+    'order',
+    'limit',
+    'range',
+    'returns',
+    'single',
+    'maybeSingle',
   ]
 
   for (const method of chainMethods) {
@@ -21,10 +37,8 @@ function createQueryBuilder(response: { data: unknown; error: unknown }) {
   }
 
   // thenable — await 시 response 반환
-  builder.then = (
-    resolve: (value: unknown) => unknown,
-    reject?: (reason: unknown) => unknown,
-  ) => Promise.resolve(response).then(resolve, reject)
+  builder.then = (resolve: (value: unknown) => unknown, reject?: (reason: unknown) => unknown) =>
+    Promise.resolve(response).then(resolve, reject)
 
   return builder
 }
@@ -53,7 +67,13 @@ interface MockClientOptions {
  * DI 패턴으로 서비스에 주입하여 사용.
  */
 export function createMockSupabaseClient(options: MockClientOptions = {}) {
-  const { fromResponses = [], rpcResponse, authUser, updateUserResponse, storage: storageOptions } = options
+  const {
+    fromResponses = [],
+    rpcResponse,
+    authUser,
+    updateUserResponse,
+    storage: storageOptions,
+  } = options
 
   let fromCallIndex = 0
   const builders: ReturnType<typeof createQueryBuilder>[] = []
@@ -76,20 +96,26 @@ export function createMockSupabaseClient(options: MockClientOptions = {}) {
     signInWithOAuth: vi.fn().mockResolvedValue({ data: { url: '' }, error: null }),
     signOut: vi.fn().mockResolvedValue({ error: null }),
     exchangeCodeForSession: vi.fn().mockResolvedValue({ error: null }),
-    updateUser: vi.fn().mockResolvedValue(
-      updateUserResponse ?? { data: { user: authUser }, error: null },
-    ),
+    updateUser: vi
+      .fn()
+      .mockResolvedValue(updateUserResponse ?? { data: { user: authUser }, error: null }),
   }
 
   const storageBucket = {
-    upload: vi.fn().mockResolvedValue(
-      storageOptions?.uploadResponse ?? { data: { path: 'test/avatar.png' }, error: null },
-    ),
-    remove: vi.fn().mockResolvedValue(
-      storageOptions?.removeResponse ?? { data: null, error: null },
-    ),
+    upload: vi
+      .fn()
+      .mockResolvedValue(
+        storageOptions?.uploadResponse ?? { data: { path: 'test/avatar.png' }, error: null },
+      ),
+    remove: vi
+      .fn()
+      .mockResolvedValue(storageOptions?.removeResponse ?? { data: null, error: null }),
     getPublicUrl: vi.fn().mockReturnValue({
-      data: { publicUrl: storageOptions?.publicUrl ?? 'https://example.com/storage/v1/object/public/avatars/test/avatar.png' },
+      data: {
+        publicUrl:
+          storageOptions?.publicUrl ??
+          'https://example.com/storage/v1/object/public/avatars/test/avatar.png',
+      },
     }),
   }
 

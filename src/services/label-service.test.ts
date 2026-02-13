@@ -5,7 +5,14 @@ import type { Database } from '@/types/database'
 import { createMockSupabaseClient } from '@/__tests__/helpers/mock-supabase'
 import { MOCK_PROJECT_ID, MOCK_TASK_ID_1 } from '@/__tests__/helpers/fixtures'
 
-import { getLabels, createLabel, updateLabel, deleteLabel, addTaskLabel, removeTaskLabel } from './label-service'
+import {
+  getLabels,
+  createLabel,
+  updateLabel,
+  deleteLabel,
+  addTaskLabel,
+  removeTaskLabel,
+} from './label-service'
 
 type Client = SupabaseClient<Database>
 

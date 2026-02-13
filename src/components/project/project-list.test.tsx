@@ -136,7 +136,9 @@ describe('ProjectList', () => {
 
     renderWithProviders(<ProjectList />)
 
-    expect(screen.getByText('관리자에게 메시지를 보내 프로젝트 참여를 요청하세요')).toBeInTheDocument()
+    expect(
+      screen.getByText('관리자에게 메시지를 보내 프로젝트 참여를 요청하세요'),
+    ).toBeInTheDocument()
   })
 
   it('admin일 때 새 프로젝트 버튼을 표시한다', () => {

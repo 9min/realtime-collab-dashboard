@@ -20,7 +20,12 @@ interface AttachmentSectionProps {
   canDeleteAll: boolean
 }
 
-export function AttachmentSection({ taskId, projectId, canUpload, canDeleteAll }: AttachmentSectionProps) {
+export function AttachmentSection({
+  taskId,
+  projectId,
+  canUpload,
+  canDeleteAll,
+}: AttachmentSectionProps) {
   const { user } = useAuth()
   const supabase = useSupabase()
   const { data: attachments, isLoading } = useAttachments(taskId)
@@ -58,7 +63,9 @@ export function AttachmentSection({ taskId, projectId, canUpload, canDeleteAll }
         <span className="text-sm font-medium">
           첨부파일 {hasAttachments ? `(${attachments.length})` : ''}
         </span>
-        <ChevronDown className={cn('ml-auto h-4 w-4 transition-transform', isOpen && 'rotate-180')} />
+        <ChevronDown
+          className={cn('ml-auto h-4 w-4 transition-transform', isOpen && 'rotate-180')}
+        />
       </button>
 
       {isOpen && (

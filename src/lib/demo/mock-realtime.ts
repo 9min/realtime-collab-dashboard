@@ -30,7 +30,12 @@ export function createMockRealtimeChannel(channelName: string): MockChannel {
   const channel: MockChannel = {
     on(type: string, filter: unknown, callback?: RealtimeCallback) {
       // presence sync 이벤트 캡처
-      if (type === 'presence' && typeof filter === 'object' && filter !== null && (filter as Record<string, unknown>)['event'] === 'sync') {
+      if (
+        type === 'presence' &&
+        typeof filter === 'object' &&
+        filter !== null &&
+        (filter as Record<string, unknown>)['event'] === 'sync'
+      ) {
         syncCallback = callback ?? null
       }
       // postgres_changes 등은 no-op (데모에서는 realtime 이벤트 없음)

@@ -168,8 +168,18 @@ describe('dependency-service', () => {
     it('간접 순환이면 true를 반환한다', () => {
       // A → B, B → C 이미 존재, C → A 추가 시도
       const deps: TaskDependency[] = [
-        { ...mockDependency, id: 'dep-1', blocking_task_id: MOCK_TASK_ID_1, blocked_task_id: MOCK_TASK_ID_2 },
-        { ...mockDependency, id: 'dep-2', blocking_task_id: MOCK_TASK_ID_2, blocked_task_id: MOCK_TASK_ID_3 },
+        {
+          ...mockDependency,
+          id: 'dep-1',
+          blocking_task_id: MOCK_TASK_ID_1,
+          blocked_task_id: MOCK_TASK_ID_2,
+        },
+        {
+          ...mockDependency,
+          id: 'dep-2',
+          blocking_task_id: MOCK_TASK_ID_2,
+          blocked_task_id: MOCK_TASK_ID_3,
+        },
       ]
 
       const result = hasCyclicDependency(deps, MOCK_TASK_ID_3, MOCK_TASK_ID_1)

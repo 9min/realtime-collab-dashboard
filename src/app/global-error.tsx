@@ -22,7 +22,15 @@ export default function GlobalError({
   return (
     <html lang="ko">
       <body>
-        <div style={{ display: 'flex', minHeight: '100vh', alignItems: 'center', justifyContent: 'center', padding: '24px' }}>
+        <div
+          style={{
+            display: 'flex',
+            minHeight: '100vh',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '24px',
+          }}
+        >
           <div style={{ textAlign: 'center' }}>
             <h2 style={{ fontSize: '24px', fontWeight: 'bold', marginBottom: '16px' }}>
               심각한 오류가 발생했습니다

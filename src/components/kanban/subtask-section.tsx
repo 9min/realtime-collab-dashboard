@@ -9,7 +9,12 @@ import { Input } from '@/components/ui/input'
 import { Progress } from '@/components/ui/progress'
 import { cn } from '@/lib/utils'
 import { useAuth } from '@/hooks/use-auth'
-import { useSubtasks, useCreateSubtask, useUpdateSubtask, useDeleteSubtask } from '@/queries/use-subtasks'
+import {
+  useSubtasks,
+  useCreateSubtask,
+  useUpdateSubtask,
+  useDeleteSubtask,
+} from '@/queries/use-subtasks'
 
 interface SubtaskSectionProps {
   taskId: string
@@ -89,7 +94,12 @@ export function SubtaskSection({ taskId, projectId, canEdit }: SubtaskSectionPro
           </span>
         </div>
         {canEdit && !showInput && (
-          <Button variant="ghost" size="sm" className="h-7 gap-1 text-xs" onClick={() => setShowInput(true)}>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="h-7 gap-1 text-xs"
+            onClick={() => setShowInput(true)}
+          >
             <Plus className="h-3 w-3" />
             추가
           </Button>
@@ -97,9 +107,7 @@ export function SubtaskSection({ taskId, projectId, canEdit }: SubtaskSectionPro
       </div>
 
       {/* 진행률 바 */}
-      {totalCount > 0 && (
-        <Progress value={progressPercent} className="h-1.5" />
-      )}
+      {totalCount > 0 && <Progress value={progressPercent} className="h-1.5" />}
 
       {/* 서브태스크 목록 */}
       {subtasks && subtasks.length > 0 && (
@@ -107,7 +115,7 @@ export function SubtaskSection({ taskId, projectId, canEdit }: SubtaskSectionPro
           {subtasks.map((subtask) => (
             <li
               key={subtask.id}
-              className="group flex items-center gap-2 rounded-md px-1 py-1 hover:bg-accent/50"
+              className="group hover:bg-accent/50 flex items-center gap-2 rounded-md px-1 py-1"
             >
               <Checkbox
                 checked={subtask.completed}
@@ -151,7 +159,12 @@ export function SubtaskSection({ taskId, projectId, canEdit }: SubtaskSectionPro
             autoFocus
             maxLength={200}
           />
-          <Button size="sm" className="h-8" onClick={handleAdd} disabled={createMutation.isPending || !newTitle.trim()}>
+          <Button
+            size="sm"
+            className="h-8"
+            onClick={handleAdd}
+            disabled={createMutation.isPending || !newTitle.trim()}
+          >
             추가
           </Button>
           <Button

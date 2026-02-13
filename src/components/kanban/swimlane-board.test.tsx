@@ -22,7 +22,11 @@ vi.mock('./recurrence-badge', () => ({
 
 // @hello-pangea/dnd mock
 vi.mock('@hello-pangea/dnd', () => ({
-  Droppable: ({ children }: { children: (provided: unknown, snapshot: unknown) => React.ReactNode }) =>
+  Droppable: ({
+    children,
+  }: {
+    children: (provided: unknown, snapshot: unknown) => React.ReactNode
+  }) =>
     children(
       {
         innerRef: vi.fn(),
@@ -31,7 +35,11 @@ vi.mock('@hello-pangea/dnd', () => ({
       },
       { isDraggingOver: false },
     ),
-  Draggable: ({ children }: { children: (provided: unknown, snapshot: unknown) => React.ReactNode }) =>
+  Draggable: ({
+    children,
+  }: {
+    children: (provided: unknown, snapshot: unknown) => React.ReactNode
+  }) =>
     children(
       {
         innerRef: vi.fn(),
@@ -106,9 +114,7 @@ describe('SwimlaneBoard', () => {
   })
 
   it('그룹이 없으면 아무 것도 렌더링하지 않는다', () => {
-    const { container } = renderWithProviders(
-      <SwimlaneBoard {...defaultProps} groups={[]} />,
-    )
+    const { container } = renderWithProviders(<SwimlaneBoard {...defaultProps} groups={[]} />)
 
     // 그룹 헤더나 태스크가 없어야 함
     expect(screen.queryByText('높음')).not.toBeInTheDocument()
@@ -123,9 +129,7 @@ describe('SwimlaneBoard', () => {
       label: '긴급',
       tasks: [],
     }
-    renderWithProviders(
-      <SwimlaneBoard {...defaultProps} groups={[emptyGroup]} />,
-    )
+    renderWithProviders(<SwimlaneBoard {...defaultProps} groups={[emptyGroup]} />)
 
     expect(screen.getByText('긴급')).toBeInTheDocument()
     // 컬럼 서브헤더는 여전히 렌더링
@@ -143,9 +147,7 @@ describe('SwimlaneBoard', () => {
         { ...mockTasks[1], column_id: MOCK_COLUMN_ID_PROGRESS },
       ],
     }
-    renderWithProviders(
-      <SwimlaneBoard {...defaultProps} groups={[multiTaskGroup]} />,
-    )
+    renderWithProviders(<SwimlaneBoard {...defaultProps} groups={[multiTaskGroup]} />)
 
     expect(screen.getByText('다중 태스크')).toBeInTheDocument()
     // 그룹의 전체 태스크 수 = 2

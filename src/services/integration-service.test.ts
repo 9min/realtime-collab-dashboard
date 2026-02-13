@@ -3,7 +3,12 @@ import type { SupabaseClient } from '@supabase/supabase-js'
 
 import type { Database } from '@/types/database'
 
-import { getProjectIntegrations, upsertIntegration, deleteIntegration, toggleIntegration } from './integration-service'
+import {
+  getProjectIntegrations,
+  upsertIntegration,
+  deleteIntegration,
+  toggleIntegration,
+} from './integration-service'
 
 function createMockSupabase(overrides: Record<string, unknown> = {}) {
   const chain = {
@@ -74,12 +79,10 @@ describe('integration-service', () => {
         }),
       })
 
-      const result = await upsertIntegration(
-        supabase,
-        'proj-1',
-        'slack',
-        { webhookUrl: 'https://hooks.slack.com/test', events: ['task_created'] },
-      )
+      const result = await upsertIntegration(supabase, 'proj-1', 'slack', {
+        webhookUrl: 'https://hooks.slack.com/test',
+        events: ['task_created'],
+      })
 
       expect(result.error).toBeNull()
       expect(result.data?.id).toBe('int-1')
@@ -94,12 +97,10 @@ describe('integration-service', () => {
         }),
       })
 
-      const result = await upsertIntegration(
-        supabase,
-        'proj-1',
-        'slack',
-        { webhookUrl: 'https://hooks.slack.com/test', events: ['task_created'] },
-      )
+      const result = await upsertIntegration(supabase, 'proj-1', 'slack', {
+        webhookUrl: 'https://hooks.slack.com/test',
+        events: ['task_created'],
+      })
 
       expect(result.data).toBeNull()
       expect(result.error?.code).toBe('23505')

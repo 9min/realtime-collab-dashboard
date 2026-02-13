@@ -4,11 +4,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 
 import { useSupabase } from '@/components/providers/supabase-provider'
-import {
-  getAttachments,
-  uploadAttachment,
-  deleteAttachment,
-} from '@/services/attachment-service'
+import { getAttachments, uploadAttachment, deleteAttachment } from '@/services/attachment-service'
 
 export const attachmentKeys = {
   list: (taskId: string) => ['attachments', taskId] as const,

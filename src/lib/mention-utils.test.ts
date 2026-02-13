@@ -17,7 +17,10 @@ const makeProfile = (overrides: Partial<Tables<'profiles'>> = {}): Tables<'profi
 
 const members = [
   { user_id: 'user-1', profiles: makeProfile() },
-  { user_id: 'user-2', profiles: makeProfile({ id: 'user-2', email: 'bob@test.com', full_name: 'Bob Lee' }) },
+  {
+    user_id: 'user-2',
+    profiles: makeProfile({ id: 'user-2', email: 'bob@test.com', full_name: 'Bob Lee' }),
+  },
 ]
 
 describe('mention-utils', () => {
@@ -46,7 +49,10 @@ describe('mention-utils', () => {
     it('full_name이 null이면 email로 대체하여 매칭한다', () => {
       // full_name이 null이면 email을 이름으로 사용
       const noNameMembers = [
-        { user_id: 'user-3', profiles: makeProfile({ id: 'user-3', full_name: null, email: 'Charlie Test' }) },
+        {
+          user_id: 'user-3',
+          profiles: makeProfile({ id: 'user-3', full_name: null, email: 'Charlie Test' }),
+        },
       ]
       const result = parseMentions('Hey @Charlie Test please review', noNameMembers)
       expect(result).toEqual(['user-3'])

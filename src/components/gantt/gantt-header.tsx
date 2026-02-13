@@ -33,7 +33,10 @@ function WeekHeader({ columns, columnWidth }: { columns: DateColumn[]; columnWid
   const monthGroups = useMemo(() => getMonthGroups(columns), [columns])
 
   return (
-    <div className="border-border border-b" style={{ height: HEADER_HEIGHT, minWidth: columns.length * columnWidth }}>
+    <div
+      className="border-border border-b"
+      style={{ height: HEADER_HEIGHT, minWidth: columns.length * columnWidth }}
+    >
       {/* 상단: 월 그룹 */}
       <div className="flex">
         {monthGroups.map((group, i) => (
@@ -52,9 +55,12 @@ function WeekHeader({ columns, columnWidth }: { columns: DateColumn[]; columnWid
           <div
             key={i}
             className={cn(
-              'border-border shrink-0 border-r border-t bg-slate-50 px-1 py-1 text-center text-[10px] text-slate-500 dark:bg-slate-900/30 dark:text-slate-400',
-              col.isToday && 'bg-blue-100/80 font-bold text-blue-700 dark:bg-blue-900/60 dark:text-blue-200',
-              col.isWeekend && !col.isToday && 'bg-slate-100 text-slate-400 dark:bg-slate-800/40 dark:text-slate-400',
+              'border-border shrink-0 border-t border-r bg-slate-50 px-1 py-1 text-center text-[10px] text-slate-500 dark:bg-slate-900/30 dark:text-slate-400',
+              col.isToday &&
+                'bg-blue-100/80 font-bold text-blue-700 dark:bg-blue-900/60 dark:text-blue-200',
+              col.isWeekend &&
+                !col.isToday &&
+                'bg-slate-100 text-slate-400 dark:bg-slate-800/40 dark:text-slate-400',
             )}
             style={{ width: columnWidth }}
           >
@@ -66,7 +72,13 @@ function WeekHeader({ columns, columnWidth }: { columns: DateColumn[]; columnWid
   )
 }
 
-function MonthHeader({ monthViewColumns, dayWidth }: { monthViewColumns: MonthViewColumn[]; dayWidth: number }) {
+function MonthHeader({
+  monthViewColumns,
+  dayWidth,
+}: {
+  monthViewColumns: MonthViewColumn[]
+  dayWidth: number
+}) {
   const yearGroups = useMemo(() => getYearGroups(monthViewColumns), [monthViewColumns])
   const totalWidth = monthViewColumns.reduce((sum, col) => sum + col.days * dayWidth, 0)
 
@@ -90,8 +102,9 @@ function MonthHeader({ monthViewColumns, dayWidth }: { monthViewColumns: MonthVi
           <div
             key={i}
             className={cn(
-              'border-border shrink-0 border-r border-t bg-slate-50 px-1 py-1 text-center text-[10px] text-slate-500 dark:bg-slate-900/30 dark:text-slate-400',
-              col.isCurrentMonth && 'bg-blue-100/80 font-bold text-blue-700 dark:bg-blue-900/60 dark:text-blue-200',
+              'border-border shrink-0 border-t border-r bg-slate-50 px-1 py-1 text-center text-[10px] text-slate-500 dark:bg-slate-900/30 dark:text-slate-400',
+              col.isCurrentMonth &&
+                'bg-blue-100/80 font-bold text-blue-700 dark:bg-blue-900/60 dark:text-blue-200',
             )}
             style={{ width: col.days * dayWidth }}
           >

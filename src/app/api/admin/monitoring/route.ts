@@ -11,7 +11,10 @@ export async function GET(req: NextRequest) {
   const supabase = await createServerClient()
 
   // Auth check
-  const { data: { user }, error: authError } = await supabase.auth.getUser()
+  const {
+    data: { user },
+    error: authError,
+  } = await supabase.auth.getUser()
   if (authError || !user) {
     return NextResponse.json({ error: '인증이 필요합니다' }, { status: 401 })
   }

@@ -31,13 +31,10 @@ export function SupabaseProvider({ children }: SupabaseProviderProps) {
   // hydration 완료 전에는 mock 클라이언트로 대체하여
   // Supabase 환경변수 미설정 시에도 크래시 방지
   // (isReady=false이므로 이 클라이언트로 실제 쿼리가 실행되지 않음)
-  const supabase = useMemo(
-    () => {
-      if (!hydrated || isDemoMode) return createMockSupabaseClient()
-      return createBrowserClient()
-    },
-    [isDemoMode, hydrated],
-  )
+  const supabase = useMemo(() => {
+    if (!hydrated || isDemoMode) return createMockSupabaseClient()
+    return createBrowserClient()
+  }, [isDemoMode, hydrated])
   const [sessionReady, setSessionReady] = useState(false)
 
   // 브라우저 클라이언트 세션 초기화 보장

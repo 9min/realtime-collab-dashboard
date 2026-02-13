@@ -1,4 +1,5 @@
-const SLACK_WEBHOOK_PATTERN = /^https:\/\/hooks\.slack\.com\/services\/T[A-Z0-9]+\/B[A-Z0-9]+\/[A-Za-z0-9]+$/
+const SLACK_WEBHOOK_PATTERN =
+  /^https:\/\/hooks\.slack\.com\/services\/T[A-Z0-9]+\/B[A-Z0-9]+\/[A-Za-z0-9]+$/
 
 export function isValidSlackWebhookUrl(url: string): boolean {
   try {

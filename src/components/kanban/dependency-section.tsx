@@ -15,7 +15,11 @@ import {
 } from '@/components/ui/select'
 import { useAuth } from '@/hooks/use-auth'
 import { DEPENDENCY_DIRECTION } from '@/lib/constants'
-import { useDependencies, useCreateDependency, useDeleteDependency } from '@/queries/use-dependencies'
+import {
+  useDependencies,
+  useCreateDependency,
+  useDeleteDependency,
+} from '@/queries/use-dependencies'
 import { useTasks } from '@/queries/use-tasks'
 
 interface DependencySectionProps {
@@ -36,14 +40,16 @@ export function DependencySection({ taskId, projectId, canEdit }: DependencySect
   const [direction, setDirection] = useState<string>(DEPENDENCY_DIRECTION.BLOCKS)
 
   // 이 태스크가 차단하는 태스크 목록 (blocking_task_id === taskId)
-  const blockingDeps = useMemo(() =>
-    dependencies?.filter((d) => d.blocking_task_id === taskId) ?? [],
-  [dependencies, taskId])
+  const blockingDeps = useMemo(
+    () => dependencies?.filter((d) => d.blocking_task_id === taskId) ?? [],
+    [dependencies, taskId],
+  )
 
   // 이 태스크를 차단하는 태스크 목록 (blocked_task_id === taskId)
-  const blockedByDeps = useMemo(() =>
-    dependencies?.filter((d) => d.blocked_task_id === taskId) ?? [],
-  [dependencies, taskId])
+  const blockedByDeps = useMemo(
+    () => dependencies?.filter((d) => d.blocked_task_id === taskId) ?? [],
+    [dependencies, taskId],
+  )
 
   const totalCount = blockingDeps.length + blockedByDeps.length
 
@@ -58,9 +64,9 @@ export function DependencySection({ taskId, projectId, canEdit }: DependencySect
   // 검색 필터링된 선택 가능한 태스크
   const selectableTasks = useMemo(() => {
     if (!tasks) return []
-    return tasks.filter((t) =>
-      !connectedTaskIds.has(t.id) &&
-      t.title.toLowerCase().includes(searchText.toLowerCase()),
+    return tasks.filter(
+      (t) =>
+        !connectedTaskIds.has(t.id) && t.title.toLowerCase().includes(searchText.toLowerCase()),
     )
   }, [tasks, connectedTaskIds, searchText])
 
@@ -70,9 +76,20 @@ export function DependencySection({ taskId, projectId, canEdit }: DependencySect
   const handleAdd = (targetTaskId: string) => {
     if (!user) return
 
-    const input = direction === DEPENDENCY_DIRECTION.BLOCKS
-      ? { project_id: projectId, blocking_task_id: taskId, blocked_task_id: targetTaskId, created_by: user.id }
-      : { project_id: projectId, blocking_task_id: targetTaskId, blocked_task_id: taskId, created_by: user.id }
+    const input =
+      direction === DEPENDENCY_DIRECTION.BLOCKS
+        ? {
+            project_id: projectId,
+            blocking_task_id: taskId,
+            blocked_task_id: targetTaskId,
+            created_by: user.id,
+          }
+        : {
+            project_id: projectId,
+            blocking_task_id: targetTaskId,
+            blocked_task_id: taskId,
+            created_by: user.id,
+          }
 
     createMutation.mutate(input, {
       onSuccess: () => {
@@ -92,12 +109,15 @@ export function DependencySection({ taskId, projectId, canEdit }: DependencySect
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Link2 className="text-muted-foreground h-4 w-4" />
-          <span className="text-sm font-medium">
-            연결된 작업 ({totalCount})
-          </span>
+          <span className="text-sm font-medium">연결된 작업 ({totalCount})</span>
         </div>
         {canEdit && !showAdd && (
-          <Button variant="ghost" size="sm" className="h-7 gap-1 text-xs" onClick={() => setShowAdd(true)}>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="h-7 gap-1 text-xs"
+            onClick={() => setShowAdd(true)}
+          >
             <Plus className="h-3 w-3" />
             추가
           </Button>
@@ -109,7 +129,9 @@ export function DependencySection({ taskId, projectId, canEdit }: DependencySect
         <div className="space-y-1">
           <div>
             <span className="text-muted-foreground text-xs font-medium">후속 작업</span>
-            <p className="text-muted-foreground text-[11px]">이 작업이 끝나야 시작할 수 있는 작업</p>
+            <p className="text-muted-foreground text-[11px]">
+              이 작업이 끝나야 시작할 수 있는 작업
+            </p>
           </div>
           <ul className="space-y-1">
             {blockingDeps.map((dep) => (
@@ -154,14 +176,19 @@ export function DependencySection({ taskId, projectId, canEdit }: DependencySect
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value={DEPENDENCY_DIRECTION.BLOCKS}>이 작업 다음에 할 작업</SelectItem>
-                <SelectItem value={DEPENDENCY_DIRECTION.BLOCKED_BY}>이 작업 전에 할 작업</SelectItem>
+                <SelectItem value={DEPENDENCY_DIRECTION.BLOCKED_BY}>
+                  이 작업 전에 할 작업
+                </SelectItem>
               </SelectContent>
             </Select>
             <Button
               variant="ghost"
               size="icon"
               className="h-7 w-7"
-              onClick={() => { setShowAdd(false); setSearchText('') }}
+              onClick={() => {
+                setShowAdd(false)
+                setSearchText('')
+              }}
             >
               <X className="h-3 w-3" />
             </Button>
@@ -178,7 +205,7 @@ export function DependencySection({ taskId, projectId, canEdit }: DependencySect
               {selectableTasks.slice(0, 10).map((t) => (
                 <li key={t.id}>
                   <button
-                    className="flex w-full cursor-pointer items-center gap-2 rounded-sm px-2 py-1.5 text-left text-sm hover:bg-accent"
+                    className="hover:bg-accent flex w-full cursor-pointer items-center gap-2 rounded-sm px-2 py-1.5 text-left text-sm"
                     onClick={() => handleAdd(t.id)}
                     disabled={createMutation.isPending}
                   >
@@ -199,9 +226,17 @@ export function DependencySection({ taskId, projectId, canEdit }: DependencySect
   )
 }
 
-function DependencyItem({ label, direction, onDelete }: { label: string; direction?: 'next' | 'prev'; onDelete?: () => void }) {
+function DependencyItem({
+  label,
+  direction,
+  onDelete,
+}: {
+  label: string
+  direction?: 'next' | 'prev'
+  onDelete?: () => void
+}) {
   return (
-    <li className="group flex items-center gap-2 rounded-md px-1 py-1 hover:bg-accent/50">
+    <li className="group hover:bg-accent/50 flex items-center gap-2 rounded-md px-1 py-1">
       {direction === 'next' && <ArrowRight className="text-muted-foreground h-3 w-3 shrink-0" />}
       {direction === 'prev' && <ArrowLeft className="text-muted-foreground h-3 w-3 shrink-0" />}
       <Badge variant="outline" className="max-w-full truncate text-xs font-normal">

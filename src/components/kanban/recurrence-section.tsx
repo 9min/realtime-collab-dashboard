@@ -14,7 +14,12 @@ import {
 } from '@/components/ui/select'
 import { Switch } from '@/components/ui/switch'
 import { useAuth } from '@/hooks/use-auth'
-import { useRecurrence, useCreateRecurrence, useUpdateRecurrence, useDeleteRecurrence } from '@/queries/use-recurrences'
+import {
+  useRecurrence,
+  useCreateRecurrence,
+  useUpdateRecurrence,
+  useDeleteRecurrence,
+} from '@/queries/use-recurrences'
 import { RECURRENCE_FREQUENCY, FREQUENCY_LABELS, DAY_OF_WEEK_LABELS } from '@/types/recurrence'
 import type { RecurrenceFrequency } from '@/types/recurrence'
 
@@ -42,7 +47,7 @@ export function RecurrenceSection({ taskId, projectId, canEdit }: RecurrenceSect
     return (
       <div className="space-y-2">
         <span className="text-muted-foreground text-sm font-medium">반복 설정</span>
-        <div className="h-8 animate-pulse rounded bg-muted" />
+        <div className="bg-muted h-8 animate-pulse rounded" />
       </div>
     )
   }
@@ -80,22 +85,22 @@ export function RecurrenceSection({ taskId, projectId, canEdit }: RecurrenceSect
   return (
     <div className="space-y-2">
       <div className="flex items-center gap-2">
-        <Repeat className="h-4 w-4 text-muted-foreground" />
+        <Repeat className="text-muted-foreground h-4 w-4" />
         <span className="text-sm font-medium">반복 설정</span>
       </div>
 
       {recurrence ? (
-        <div className="space-y-2 rounded-lg border bg-muted/30 p-3">
+        <div className="bg-muted/30 space-y-2 rounded-lg border p-3">
           <div className="flex items-center justify-between">
             <span className="text-sm">
               {FREQUENCY_LABELS[recurrence.frequency]}
               {recurrence.interval_value > 1 && ` (${recurrence.interval_value}회 간격)`}
-              {recurrence.frequency === RECURRENCE_FREQUENCY.WEEKLY && recurrence.day_of_week !== null && (
-                <> · {DAY_OF_WEEK_LABELS[recurrence.day_of_week]}요일</>
-              )}
-              {recurrence.frequency === RECURRENCE_FREQUENCY.MONTHLY && recurrence.day_of_month !== null && (
-                <> · {recurrence.day_of_month}일</>
-              )}
+              {recurrence.frequency === RECURRENCE_FREQUENCY.WEEKLY &&
+                recurrence.day_of_week !== null && (
+                  <> · {DAY_OF_WEEK_LABELS[recurrence.day_of_week]}요일</>
+                )}
+              {recurrence.frequency === RECURRENCE_FREQUENCY.MONTHLY &&
+                recurrence.day_of_month !== null && <> · {recurrence.day_of_month}일</>}
             </span>
             {canEdit && (
               <div className="flex items-center gap-2">
@@ -107,7 +112,7 @@ export function RecurrenceSection({ taskId, projectId, canEdit }: RecurrenceSect
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="h-7 w-7 text-destructive"
+                  className="text-destructive h-7 w-7"
                   onClick={handleDelete}
                   aria-label="반복 삭제"
                 >
@@ -116,7 +121,7 @@ export function RecurrenceSection({ taskId, projectId, canEdit }: RecurrenceSect
               </div>
             )}
           </div>
-          <p className="text-xs text-muted-foreground">
+          <p className="text-muted-foreground text-xs">
             다음 마감: {new Date(recurrence.next_due_date).toLocaleDateString('ko-KR')}
             {!recurrence.is_active && ' (비활성)'}
           </p>
@@ -125,13 +130,18 @@ export function RecurrenceSection({ taskId, projectId, canEdit }: RecurrenceSect
         isAdding ? (
           <div className="space-y-3 rounded-lg border p-3">
             <div className="flex gap-2">
-              <Select value={frequency} onValueChange={(v) => setFrequency(v as RecurrenceFrequency)}>
+              <Select
+                value={frequency}
+                onValueChange={(v) => setFrequency(v as RecurrenceFrequency)}
+              >
                 <SelectTrigger className="w-32">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
                   {Object.entries(FREQUENCY_LABELS).map(([key, label]) => (
-                    <SelectItem key={key} value={key}>{label}</SelectItem>
+                    <SelectItem key={key} value={key}>
+                      {label}
+                    </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
@@ -153,7 +163,9 @@ export function RecurrenceSection({ taskId, projectId, canEdit }: RecurrenceSect
                 </SelectTrigger>
                 <SelectContent>
                   {DAY_OF_WEEK_LABELS.map((label, i) => (
-                    <SelectItem key={i} value={String(i)}>{label}요일</SelectItem>
+                    <SelectItem key={i} value={String(i)}>
+                      {label}요일
+                    </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
@@ -173,7 +185,7 @@ export function RecurrenceSection({ taskId, projectId, canEdit }: RecurrenceSect
             )}
 
             <div>
-              <label className="mb-1 block text-xs text-muted-foreground">다음 마감일</label>
+              <label className="text-muted-foreground mb-1 block text-xs">다음 마감일</label>
               <Input
                 type="date"
                 value={nextDueDate}
@@ -183,7 +195,11 @@ export function RecurrenceSection({ taskId, projectId, canEdit }: RecurrenceSect
             </div>
 
             <div className="flex gap-2">
-              <Button size="sm" onClick={handleCreate} disabled={!nextDueDate || createMutation.isPending}>
+              <Button
+                size="sm"
+                onClick={handleCreate}
+                disabled={!nextDueDate || createMutation.isPending}
+              >
                 저장
               </Button>
               <Button size="sm" variant="outline" onClick={() => setIsAdding(false)}>
@@ -192,18 +208,13 @@ export function RecurrenceSection({ taskId, projectId, canEdit }: RecurrenceSect
             </div>
           </div>
         ) : (
-          <Button
-            variant="outline"
-            size="sm"
-            className="w-full"
-            onClick={() => setIsAdding(true)}
-          >
+          <Button variant="outline" size="sm" className="w-full" onClick={() => setIsAdding(true)}>
             <Repeat className="mr-1 h-3.5 w-3.5" />
             반복 추가
           </Button>
         )
       ) : (
-        <p className="text-xs text-muted-foreground">반복 설정 없음</p>
+        <p className="text-muted-foreground text-xs">반복 설정 없음</p>
       )}
     </div>
   )

@@ -57,11 +57,7 @@ export function WipLimitDialog({
         <div className="space-y-4 py-2">
           <div className="flex items-center justify-between">
             <Label htmlFor="wip-toggle">WIP 제한 활성화</Label>
-            <Switch
-              id="wip-toggle"
-              checked={hasLimit}
-              onCheckedChange={setHasLimit}
-            />
+            <Switch id="wip-toggle" checked={hasLimit} onCheckedChange={setHasLimit} />
           </div>
           {hasLimit && (
             <div className="space-y-1.5">

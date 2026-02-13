@@ -1,7 +1,16 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { CalendarDays, Check, ChevronDown, Download, MoreHorizontal, Search, Trash2, X } from 'lucide-react'
+import {
+  CalendarDays,
+  Check,
+  ChevronDown,
+  Download,
+  MoreHorizontal,
+  Search,
+  Trash2,
+  X,
+} from 'lucide-react'
 
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -19,7 +28,10 @@ import { useExport } from '@/hooks/use-export'
 import { PRIORITY_LABELS, PRIORITY_DOT_COLORS, SWIMLANE_MODE, TASK_PRIORITY } from '@/lib/constants'
 import { UNASSIGNED_ID } from '@/lib/task-filter'
 import { cn } from '@/lib/utils'
-import { useKanbanFilterPreset, useSaveKanbanFilterPreset } from '@/queries/use-kanban-filter-preset'
+import {
+  useKanbanFilterPreset,
+  useSaveKanbanFilterPreset,
+} from '@/queries/use-kanban-filter-preset'
 import { useKanbanFilterStore } from '@/stores/kanban-filter-store'
 import type { Tables } from '@/types/database'
 import type { SwimlaneMode, TaskPriority } from '@/types/common'
@@ -43,7 +55,14 @@ interface TaskFilterBarProps {
 
 const FILTER_SAVE_DEBOUNCE_MS = 1000
 
-export function TaskFilterBar({ members, labels, projectId, projectName, canDeleteAll, tasks }: TaskFilterBarProps) {
+export function TaskFilterBar({
+  members,
+  labels,
+  projectId,
+  projectName,
+  canDeleteAll,
+  tasks,
+}: TaskFilterBarProps) {
   const {
     searchText,
     setSearchText,
@@ -127,8 +146,8 @@ export function TaskFilterBar({ members, labels, projectId, projectName, canDele
       {/* Row 1: 검색 + 필터 트리거 + 뷰 + 액션 */}
       <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
         {/* 검색 */}
-        <div className="relative w-full sm:flex-1 sm:max-w-sm">
-          <Search className="text-muted-foreground absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2" />
+        <div className="relative w-full sm:max-w-sm sm:flex-1">
+          <Search className="text-muted-foreground absolute top-1/2 left-2.5 h-4 w-4 -translate-y-1/2" />
           <Input
             placeholder="태스크 검색..."
             value={searchText}
@@ -166,8 +185,8 @@ export function TaskFilterBar({ members, labels, projectId, projectName, canDele
                     aria-checked={isActive}
                     onClick={() => togglePriority(priority)}
                     className={cn(
-                      'flex w-full cursor-pointer items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-none transition-colors',
-                      'hover:bg-accent hover:text-accent-foreground focus-visible:ring-2 focus-visible:ring-ring',
+                      'flex w-full cursor-pointer items-center gap-2 rounded-sm px-2 py-1.5 text-sm transition-colors outline-none',
+                      'hover:bg-accent hover:text-accent-foreground focus-visible:ring-ring focus-visible:ring-2',
                       isActive && 'bg-accent/50',
                     )}
                   >
@@ -175,7 +194,9 @@ export function TaskFilterBar({ members, labels, projectId, projectName, canDele
                       aria-hidden="true"
                       className={cn(
                         'flex h-4 w-4 shrink-0 items-center justify-center rounded-sm border',
-                        isActive ? 'border-primary bg-primary text-primary-foreground' : 'border-muted-foreground/30',
+                        isActive
+                          ? 'border-primary bg-primary text-primary-foreground'
+                          : 'border-muted-foreground/30',
                       )}
                     >
                       {isActive && <Check className="h-3 w-3" />}
@@ -213,8 +234,8 @@ export function TaskFilterBar({ members, labels, projectId, projectName, canDele
                     aria-checked={isActive}
                     onClick={() => toggleAssigneeId(option.id)}
                     className={cn(
-                      'flex w-full cursor-pointer items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-none transition-colors',
-                      'hover:bg-accent hover:text-accent-foreground focus-visible:ring-2 focus-visible:ring-ring',
+                      'flex w-full cursor-pointer items-center gap-2 rounded-sm px-2 py-1.5 text-sm transition-colors outline-none',
+                      'hover:bg-accent hover:text-accent-foreground focus-visible:ring-ring focus-visible:ring-2',
                       isActive && 'bg-accent/50',
                     )}
                   >
@@ -222,7 +243,9 @@ export function TaskFilterBar({ members, labels, projectId, projectName, canDele
                       aria-hidden="true"
                       className={cn(
                         'flex h-4 w-4 shrink-0 items-center justify-center rounded-sm border',
-                        isActive ? 'border-primary bg-primary text-primary-foreground' : 'border-muted-foreground/30',
+                        isActive
+                          ? 'border-primary bg-primary text-primary-foreground'
+                          : 'border-muted-foreground/30',
                       )}
                     >
                       {isActive && <Check className="h-3 w-3" />}
@@ -269,7 +292,9 @@ export function TaskFilterBar({ members, labels, projectId, projectName, canDele
                         aria-hidden="true"
                         className={cn(
                           'flex h-4 w-4 shrink-0 items-center justify-center rounded-sm border',
-                          isActive ? 'border-primary bg-primary text-primary-foreground' : 'border-muted-foreground/30',
+                          isActive
+                            ? 'border-primary bg-primary text-primary-foreground'
+                            : 'border-muted-foreground/30',
                         )}
                       >
                         {isActive && <Check className="h-3 w-3" />}
@@ -301,7 +326,9 @@ export function TaskFilterBar({ members, labels, projectId, projectName, canDele
             </PopoverTrigger>
             <PopoverContent align="start" className="w-64 space-y-3 p-3">
               <div className="space-y-2">
-                <label className="text-xs font-medium" htmlFor="due-date-from">시작일</label>
+                <label className="text-xs font-medium" htmlFor="due-date-from">
+                  시작일
+                </label>
                 <Input
                   id="due-date-from"
                   type="date"
@@ -312,7 +339,9 @@ export function TaskFilterBar({ members, labels, projectId, projectName, canDele
                 />
               </div>
               <div className="space-y-2">
-                <label className="text-xs font-medium" htmlFor="due-date-to">종료일</label>
+                <label className="text-xs font-medium" htmlFor="due-date-to">
+                  종료일
+                </label>
                 <Input
                   id="due-date-to"
                   type="date"
@@ -358,11 +387,13 @@ export function TaskFilterBar({ members, labels, projectId, projectName, canDele
               </Button>
             </PopoverTrigger>
             <PopoverContent align="start" className="w-40 p-1">
-              {([
-                { value: SWIMLANE_MODE.NONE, label: '기본' },
-                { value: SWIMLANE_MODE.ASSIGNEE, label: '담당자별' },
-                { value: SWIMLANE_MODE.PRIORITY, label: '우선순위별' },
-              ] as const).map((option) => {
+              {(
+                [
+                  { value: SWIMLANE_MODE.NONE, label: '기본' },
+                  { value: SWIMLANE_MODE.ASSIGNEE, label: '담당자별' },
+                  { value: SWIMLANE_MODE.PRIORITY, label: '우선순위별' },
+                ] as const
+              ).map((option) => {
                 const isActive = swimlaneMode === option.value
                 return (
                   <button
@@ -371,8 +402,8 @@ export function TaskFilterBar({ members, labels, projectId, projectName, canDele
                     aria-checked={isActive}
                     onClick={() => setSwimlaneMode(option.value as SwimlaneMode)}
                     className={cn(
-                      'flex w-full cursor-pointer items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-none transition-colors',
-                      'hover:bg-accent hover:text-accent-foreground focus-visible:ring-2 focus-visible:ring-ring',
+                      'flex w-full cursor-pointer items-center gap-2 rounded-sm px-2 py-1.5 text-sm transition-colors outline-none',
+                      'hover:bg-accent hover:text-accent-foreground focus-visible:ring-ring focus-visible:ring-2',
                       isActive && 'bg-accent/50',
                     )}
                   >
@@ -380,7 +411,9 @@ export function TaskFilterBar({ members, labels, projectId, projectName, canDele
                       aria-hidden="true"
                       className={cn(
                         'flex h-4 w-4 shrink-0 items-center justify-center rounded-full border',
-                        isActive ? 'border-primary bg-primary text-primary-foreground' : 'border-muted-foreground/30',
+                        isActive
+                          ? 'border-primary bg-primary text-primary-foreground'
+                          : 'border-muted-foreground/30',
                       )}
                     >
                       {isActive && <Check className="h-3 w-3" />}
@@ -435,12 +468,12 @@ export function TaskFilterBar({ members, labels, projectId, projectName, canDele
         <div className="flex flex-wrap items-center gap-1.5">
           {/* 우선순위 Badges */}
           {priorities.map((p) => (
-            <Badge key={p} variant="secondary" className="gap-1 pl-1.5 pr-1">
+            <Badge key={p} variant="secondary" className="gap-1 pr-1 pl-1.5">
               <span className={cn('h-2 w-2 rounded-full', PRIORITY_DOT_COLORS[p])} />
               {PRIORITY_LABELS[p]}
               <button
                 onClick={() => togglePriority(p)}
-                className="ml-0.5 cursor-pointer rounded-full p-0.5 hover:bg-muted"
+                className="hover:bg-muted ml-0.5 cursor-pointer rounded-full p-0.5"
                 aria-label={`${PRIORITY_LABELS[p]} 필터 제거`}
               >
                 <X className="h-3 w-3" />
@@ -456,7 +489,7 @@ export function TaskFilterBar({ members, labels, projectId, projectName, canDele
                 {name}
                 <button
                   onClick={() => toggleAssigneeId(id)}
-                  className="ml-0.5 cursor-pointer rounded-full p-0.5 hover:bg-muted"
+                  className="hover:bg-muted ml-0.5 cursor-pointer rounded-full p-0.5"
                   aria-label={`${name} 필터 제거`}
                 >
                   <X className="h-3 w-3" />
@@ -466,31 +499,32 @@ export function TaskFilterBar({ members, labels, projectId, projectName, canDele
           })}
 
           {/* 라벨 Badges */}
-          {labels && labelIds.map((id) => {
-            const label = labels.find((l) => l.id === id)
-            if (!label) return null
-            return (
-              <Badge
-                key={id}
-                variant="outline"
-                className="gap-1 pr-1"
-                style={{ borderColor: label.color }}
-              >
-                <span
-                  className="h-2 w-2 shrink-0 rounded-full"
-                  style={{ backgroundColor: label.color }}
-                />
-                {label.name}
-                <button
-                  onClick={() => toggleLabelId(id)}
-                  className="ml-0.5 cursor-pointer rounded-full p-0.5 hover:bg-muted"
-                  aria-label={`${label.name} 필터 제거`}
+          {labels &&
+            labelIds.map((id) => {
+              const label = labels.find((l) => l.id === id)
+              if (!label) return null
+              return (
+                <Badge
+                  key={id}
+                  variant="outline"
+                  className="gap-1 pr-1"
+                  style={{ borderColor: label.color }}
                 >
-                  <X className="h-3 w-3" />
-                </button>
-              </Badge>
-            )
-          })}
+                  <span
+                    className="h-2 w-2 shrink-0 rounded-full"
+                    style={{ backgroundColor: label.color }}
+                  />
+                  {label.name}
+                  <button
+                    onClick={() => toggleLabelId(id)}
+                    className="hover:bg-muted ml-0.5 cursor-pointer rounded-full p-0.5"
+                    aria-label={`${label.name} 필터 제거`}
+                  >
+                    <X className="h-3 w-3" />
+                  </button>
+                </Badge>
+              )
+            })}
 
           {/* 마감일 Badge */}
           {hasDueDateFilter && (
@@ -501,7 +535,7 @@ export function TaskFilterBar({ members, labels, projectId, projectName, canDele
               {dueDateRange.to ? formatDate(dueDateRange.to) : '...'}
               <button
                 onClick={clearDueDateRange}
-                className="ml-0.5 cursor-pointer rounded-full p-0.5 hover:bg-muted"
+                className="hover:bg-muted ml-0.5 cursor-pointer rounded-full p-0.5"
                 aria-label="마감일 필터 제거"
               >
                 <X className="h-3 w-3" />

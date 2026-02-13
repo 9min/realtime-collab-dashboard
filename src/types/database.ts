@@ -2,13 +2,7 @@
 // 초기 세팅 단계에서는 placeholder로 유지
 // 실제 타입은 `pnpm supabase:gen-types` 실행 후 교체
 
-export type Json =
-  | string
-  | number
-  | boolean
-  | null
-  | { [key: string]: Json | undefined }
-  | Json[]
+export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[]
 
 export interface Database {
   public: {

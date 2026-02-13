@@ -132,7 +132,8 @@ export function getMonthViewColumns(start: Date, months: number): MonthViewColum
       date,
       label: `${date.getMonth() + 1}월`,
       days: daysInMonth,
-      isCurrentMonth: date.getFullYear() === now.getFullYear() && date.getMonth() === now.getMonth(),
+      isCurrentMonth:
+        date.getFullYear() === now.getFullYear() && date.getMonth() === now.getMonth(),
     })
   }
   return columns
@@ -163,8 +164,8 @@ export function getYearGroups(columns: MonthViewColumn[]): YearGroup[] {
 }
 
 export interface TaskBarPosition {
-  left: number   // % from start
-  width: number  // % of total
+  left: number // % from start
+  width: number // % of total
 }
 
 const DEFAULT_TASK_DURATION_DAYS = 7
@@ -202,10 +203,7 @@ export function isSameDay(a: Date, b: Date): boolean {
 }
 
 export function isSameMonth(a: Date, b: Date): boolean {
-  return (
-    a.getFullYear() === b.getFullYear() &&
-    a.getMonth() === b.getMonth()
-  )
+  return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth()
 }
 
 export function getCalendarGrid(year: number, month: number): CalendarDay[] {

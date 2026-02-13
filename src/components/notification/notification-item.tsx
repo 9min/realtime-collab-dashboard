@@ -55,7 +55,10 @@ const ICON_CONFIG = {
   },
 } as const
 
-export const NotificationItem = memo(function NotificationItem({ notification, onClick }: NotificationItemProps) {
+export const NotificationItem = memo(function NotificationItem({
+  notification,
+  onClick,
+}: NotificationItemProps) {
   const config = ICON_CONFIG[notification.type as keyof typeof ICON_CONFIG] ?? {
     icon: Bell,
     className: 'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400',
@@ -70,7 +73,12 @@ export const NotificationItem = memo(function NotificationItem({ notification, o
         !notification.is_read && 'bg-blue-50/60 dark:bg-blue-950/20',
       )}
     >
-      <div className={cn('mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full', config.className)}>
+      <div
+        className={cn(
+          'mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full',
+          config.className,
+        )}
+      >
         <Icon className="h-4 w-4" />
       </div>
       <div className="min-w-0 flex-1">
@@ -85,9 +93,7 @@ export const NotificationItem = memo(function NotificationItem({ notification, o
           <span>{getRelativeTime(notification.created_at)}</span>
         </p>
       </div>
-      {!notification.is_read && (
-        <div className="mt-3 h-2 w-2 shrink-0 rounded-full bg-blue-500" />
-      )}
+      {!notification.is_read && <div className="mt-3 h-2 w-2 shrink-0 rounded-full bg-blue-500" />}
     </button>
   )
 })

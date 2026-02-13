@@ -105,8 +105,11 @@ export async function updateSession(request: NextRequest) {
   // 인증되지 않은 사용자가 보호된 경로 접근 시 리다이렉트
   const isAuthRoute = request.nextUrl.pathname.startsWith('/login')
   const isCallbackRoute = request.nextUrl.pathname.startsWith('/callback')
-  const isAssetRoute = request.nextUrl.pathname.startsWith('/opengraph-image') || request.nextUrl.pathname.startsWith('/icon')
-  const isPublicRoute = isAuthRoute || isCallbackRoute || isAssetRoute || request.nextUrl.pathname === '/'
+  const isAssetRoute =
+    request.nextUrl.pathname.startsWith('/opengraph-image') ||
+    request.nextUrl.pathname.startsWith('/icon')
+  const isPublicRoute =
+    isAuthRoute || isCallbackRoute || isAssetRoute || request.nextUrl.pathname === '/'
 
   if (!user && !isPublicRoute) {
     const url = request.nextUrl.clone()

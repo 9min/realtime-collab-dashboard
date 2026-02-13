@@ -28,8 +28,7 @@ export const useRealtimeStore = create<RealtimeState>((set) => ({
 
   setStatus: (status) => set({ status }),
 
-  incrementRetry: () =>
-    set((state) => ({ retryCount: state.retryCount + 1 })),
+  incrementRetry: () => set((state) => ({ retryCount: state.retryCount + 1 })),
 
   resetRetry: () => set({ retryCount: 0 }),
 

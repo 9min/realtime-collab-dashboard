@@ -24,7 +24,12 @@ const WIDGET_ICONS: Record<string, typeof PieChart> = {
   [WIDGET_TYPE.MY_FAVORITES]: Star,
 }
 
-export function AddWidgetDialog({ open, onOpenChange, onAdd, existingTypes }: AddWidgetDialogProps) {
+export function AddWidgetDialog({
+  open,
+  onOpenChange,
+  onAdd,
+  existingTypes,
+}: AddWidgetDialogProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-lg">
@@ -39,7 +44,11 @@ export function AddWidgetDialog({ open, onOpenChange, onAdd, existingTypes }: Ad
             return (
               <Card
                 key={widget.type}
-                className={isAdded ? 'cursor-not-allowed opacity-60' : 'cursor-pointer transition-colors hover:border-primary hover:bg-accent/30'}
+                className={
+                  isAdded
+                    ? 'cursor-not-allowed opacity-60'
+                    : 'hover:border-primary hover:bg-accent/30 cursor-pointer transition-colors'
+                }
               >
                 <CardHeader className="flex flex-row items-center gap-3 space-y-0 p-4">
                   <div className="bg-muted flex h-10 w-10 shrink-0 items-center justify-center rounded-lg">
@@ -47,9 +56,7 @@ export function AddWidgetDialog({ open, onOpenChange, onAdd, existingTypes }: Ad
                   </div>
                   <div className="min-w-0 flex-1">
                     <CardTitle className="text-sm">{widget.title}</CardTitle>
-                    <CardDescription className="text-xs">
-                      {widget.description}
-                    </CardDescription>
+                    <CardDescription className="text-xs">{widget.description}</CardDescription>
                   </div>
                   <Button
                     size="sm"

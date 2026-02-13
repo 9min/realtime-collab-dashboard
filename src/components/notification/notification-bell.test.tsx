@@ -38,7 +38,11 @@ vi.mock('@/queries/use-notifications', () => ({
 
 // NotificationList를 단순 mock하여 알림 내용 표시
 vi.mock('./notification-list', () => ({
-  NotificationList: ({ notifications, onMarkAllRead, hasUnread }: {
+  NotificationList: ({
+    notifications,
+    onMarkAllRead,
+    hasUnread,
+  }: {
     notifications: unknown[]
     onMarkAllRead: () => void
     hasUnread: boolean

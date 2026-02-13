@@ -164,7 +164,9 @@ export function MentionAutocomplete({
                 key={member.user_id}
                 className={cn(
                   'flex w-full items-center gap-2 rounded-sm px-2 py-1.5 text-sm transition-colors',
-                  index === selectedIndex ? 'bg-accent text-accent-foreground' : 'hover:bg-accent/50',
+                  index === selectedIndex
+                    ? 'bg-accent text-accent-foreground'
+                    : 'hover:bg-accent/50',
                 )}
                 onMouseDown={(e) => {
                   e.preventDefault()

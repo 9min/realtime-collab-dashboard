@@ -76,10 +76,7 @@ export async function deleteColumn(
   supabase: Client,
   columnId: string,
 ): Promise<ServiceResult<null>> {
-  const { error } = await supabase
-    .from('kanban_columns')
-    .delete()
-    .eq('id', columnId)
+  const { error } = await supabase.from('kanban_columns').delete().eq('id', columnId)
 
   if (error) {
     return { data: null, error: { code: error.code, message: error.message } }

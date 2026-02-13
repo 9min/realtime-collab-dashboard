@@ -9,13 +9,22 @@ interface TaskStatusChartProps {
   projectId: string
 }
 
-function CustomTooltip({ active, payload }: { active?: boolean; payload?: Array<{ name: string; value: number; payload: { color: string } }> }) {
+function CustomTooltip({
+  active,
+  payload,
+}: {
+  active?: boolean
+  payload?: Array<{ name: string; value: number; payload: { color: string } }>
+}) {
   if (!active || !payload?.length) return null
   const { name, value, payload: entry } = payload[0]
   return (
     <div className="bg-popover text-popover-foreground rounded-lg border px-3 py-2 shadow-lg">
       <div className="flex items-center gap-2">
-        <span className="inline-block h-2.5 w-2.5 rounded-full" style={{ backgroundColor: entry.color }} />
+        <span
+          className="inline-block h-2.5 w-2.5 rounded-full"
+          style={{ backgroundColor: entry.color }}
+        />
         <span className="text-sm font-medium">{name}</span>
       </div>
       <p className="text-muted-foreground mt-0.5 text-xs">{value}개 태스크</p>
@@ -83,7 +92,10 @@ export function TaskStatusChart({ projectId }: TaskStatusChartProps) {
       <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 pt-1">
         {chartData.map((entry) => (
           <div key={entry.name} className="flex items-center gap-1.5">
-            <span className="inline-block h-2.5 w-2.5 rounded-sm" style={{ backgroundColor: entry.color }} />
+            <span
+              className="inline-block h-2.5 w-2.5 rounded-sm"
+              style={{ backgroundColor: entry.color }}
+            />
             <span className="text-muted-foreground text-xs">{entry.name}</span>
             <span className="text-foreground text-xs font-medium">{entry.value}</span>
           </div>

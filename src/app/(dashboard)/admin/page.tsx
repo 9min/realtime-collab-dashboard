@@ -32,7 +32,13 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Skeleton } from '@/components/ui/skeleton'
-import { useMyProfile, useAllUsers, useAllProjectMemberships, useSetAdminStatus, useForceDeleteUser } from '@/queries/use-admin'
+import {
+  useMyProfile,
+  useAllUsers,
+  useAllProjectMemberships,
+  useSetAdminStatus,
+  useForceDeleteUser,
+} from '@/queries/use-admin'
 import { useAllUserMessages, useMarkMessageRead } from '@/queries/use-user-messages'
 import { useAuth } from '@/hooks/use-auth'
 import type { ProjectMembership } from '@/services/admin-service'
@@ -70,7 +76,7 @@ function StatCard({
           <Icon className="text-muted-foreground h-5 w-5" />
         </div>
         <div>
-          <p className="text-2xl font-bold leading-none">{value}</p>
+          <p className="text-2xl leading-none font-bold">{value}</p>
           <p className="text-muted-foreground mt-1 text-xs">{label}</p>
         </div>
       </CardContent>
@@ -129,7 +135,11 @@ export default function AdminPage() {
 
   const [expandedUsers, setExpandedUsers] = useState<Set<string>>(new Set())
   const [searchQuery, setSearchQuery] = useState('')
-  const [deleteTarget, setDeleteTarget] = useState<{ id: string; name: string; email: string } | null>(null)
+  const [deleteTarget, setDeleteTarget] = useState<{
+    id: string
+    name: string
+    email: string
+  } | null>(null)
   const [deleteStep, setDeleteStep] = useState<1 | 2>(1)
   const [confirmEmail, setConfirmEmail] = useState('')
 
@@ -166,9 +176,7 @@ export default function AdminPage() {
 
     const query = searchQuery.toLowerCase()
     return users.filter(
-      (u) =>
-        u.full_name?.toLowerCase().includes(query) ||
-        u.email.toLowerCase().includes(query),
+      (u) => u.full_name?.toLowerCase().includes(query) || u.email.toLowerCase().includes(query),
     )
   }, [users, searchQuery])
 
@@ -179,11 +187,18 @@ export default function AdminPage() {
     return { total: users.length, admins: adminCount, projects: uniqueProjects.size }
   }, [users, memberships])
 
-  const openDeleteDialog = useCallback((profile: { id: string; full_name: string | null; email: string }) => {
-    setDeleteTarget({ id: profile.id, name: profile.full_name ?? profile.email, email: profile.email })
-    setDeleteStep(1)
-    setConfirmEmail('')
-  }, [])
+  const openDeleteDialog = useCallback(
+    (profile: { id: string; full_name: string | null; email: string }) => {
+      setDeleteTarget({
+        id: profile.id,
+        name: profile.full_name ?? profile.email,
+        email: profile.email,
+      })
+      setDeleteStep(1)
+      setConfirmEmail('')
+    },
+    [],
+  )
 
   const closeDeleteDialog = useCallback(() => {
     setDeleteTarget(null)
@@ -209,7 +224,9 @@ export default function AdminPage() {
       <div className="mx-auto max-w-3xl space-y-6">
         <div>
           <h2 className="text-2xl font-bold">사용자 관리</h2>
-          <p className="text-muted-foreground mt-1">전체 사용자 및 프로젝트 참여 현황을 관리합니다</p>
+          <p className="text-muted-foreground mt-1">
+            전체 사용자 및 프로젝트 참여 현황을 관리합니다
+          </p>
         </div>
         <Card className="border-destructive/50">
           <CardContent>
@@ -275,14 +292,12 @@ export default function AdminPage() {
             <div>
               <CardTitle className="text-base">전체 사용자</CardTitle>
               <CardDescription>
-                {searchQuery
-                  ? `${filteredUsers.length}명 검색됨`
-                  : `${filteredUsers.length}명`}
+                {searchQuery ? `${filteredUsers.length}명 검색됨` : `${filteredUsers.length}명`}
               </CardDescription>
             </div>
           </div>
           <div className="relative mt-2">
-            <Search className="text-muted-foreground absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2" />
+            <Search className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
             <Input
               placeholder="이름 또는 이메일로 검색..."
               value={searchQuery}
@@ -315,7 +330,7 @@ export default function AdminPage() {
                   <div
                     role="button"
                     tabIndex={0}
-                    className="flex w-full cursor-pointer items-center justify-between p-3 text-left transition-colors hover:bg-muted/50"
+                    className="hover:bg-muted/50 flex w-full cursor-pointer items-center justify-between p-3 text-left transition-colors"
                     onClick={() => toggleExpand(profile.id)}
                     onKeyDown={(e) => {
                       if (e.key === 'Enter' || e.key === ' ') {
@@ -330,8 +345,11 @@ export default function AdminPage() {
                       <ChevronRight
                         className={`text-muted-foreground h-4 w-4 shrink-0 transition-transform duration-200 ${isExpanded ? 'rotate-90' : ''}`}
                       />
-                      <Avatar className="h-9 w-9 ring-2 ring-transparent transition-shadow group-hover:ring-primary/20">
-                        <AvatarImage src={profile.avatar_url ?? undefined} alt={profile.full_name ?? ''} />
+                      <Avatar className="group-hover:ring-primary/20 h-9 w-9 ring-2 ring-transparent transition-shadow">
+                        <AvatarImage
+                          src={profile.avatar_url ?? undefined}
+                          alt={profile.full_name ?? ''}
+                        />
                         <AvatarFallback className="text-xs">{initial}</AvatarFallback>
                       </Avatar>
                       <div className="min-w-0">
@@ -343,7 +361,7 @@ export default function AdminPage() {
                           {hasUnreadMessage && (
                             <span className="relative flex h-4 w-4 shrink-0 items-center justify-center">
                               <MessageSquare className="h-3.5 w-3.5 text-blue-500" />
-                              <span className="absolute -right-0.5 -top-0.5 h-1.5 w-1.5 rounded-full bg-blue-500" />
+                              <span className="absolute -top-0.5 -right-0.5 h-1.5 w-1.5 rounded-full bg-blue-500" />
                             </span>
                           )}
                         </p>
@@ -351,7 +369,10 @@ export default function AdminPage() {
                       </div>
                     </div>
 
-                    <div className="flex shrink-0 items-center gap-2" onClick={(e) => e.stopPropagation()}>
+                    <div
+                      className="flex shrink-0 items-center gap-2"
+                      onClick={(e) => e.stopPropagation()}
+                    >
                       <Badge
                         variant={profile.is_admin ? 'default' : 'outline'}
                         className="gap-1 text-xs"
@@ -381,7 +402,7 @@ export default function AdminPage() {
                           <Button
                             variant="ghost"
                             size="sm"
-                            className="h-8 cursor-pointer gap-1 text-xs text-destructive hover:text-destructive"
+                            className="text-destructive hover:text-destructive h-8 cursor-pointer gap-1 text-xs"
                             onClick={() => openDeleteDialog(profile)}
                           >
                             <UserX className="h-3.5 w-3.5" />
@@ -399,7 +420,7 @@ export default function AdminPage() {
                           {userMemberships.map((m) => (
                             <li
                               key={m.project_id}
-                              className="flex items-center justify-between rounded-md px-2 py-1.5 transition-colors hover:bg-muted/50"
+                              className="hover:bg-muted/50 flex items-center justify-between rounded-md px-2 py-1.5 transition-colors"
                             >
                               <div className="flex items-center gap-2">
                                 <FolderOpen className="text-muted-foreground h-3.5 w-3.5" />
@@ -422,8 +443,10 @@ export default function AdminPage() {
                           <div className="flex items-start gap-2">
                             <MessageSquare className="text-muted-foreground mt-0.5 h-3.5 w-3.5 shrink-0" />
                             <div className="min-w-0 flex-1">
-                              <div className="rounded-lg bg-muted px-3 py-2">
-                                <p className="text-sm whitespace-pre-wrap break-words">{userMessage.message}</p>
+                              <div className="bg-muted rounded-lg px-3 py-2">
+                                <p className="text-sm break-words whitespace-pre-wrap">
+                                  {userMessage.message}
+                                </p>
                               </div>
                               <p className="text-muted-foreground mt-1 text-xs">
                                 {new Date(userMessage.created_at).toLocaleDateString('ko-KR', {
@@ -469,7 +492,12 @@ export default function AdminPage() {
       </Card>
 
       {/* 1단계: 강제 탈퇴 경고 */}
-      <AlertDialog open={deleteTarget !== null && deleteStep === 1} onOpenChange={(open) => { if (!open) closeDeleteDialog() }}>
+      <AlertDialog
+        open={deleteTarget !== null && deleteStep === 1}
+        onOpenChange={(open) => {
+          if (!open) closeDeleteDialog()
+        }}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>강제 탈퇴</AlertDialogTitle>
@@ -489,7 +517,7 @@ export default function AdminPage() {
           <AlertDialogFooter>
             <AlertDialogCancel className="cursor-pointer">취소</AlertDialogCancel>
             <AlertDialogAction
-              className="cursor-pointer bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90 cursor-pointer"
               onClick={(e) => {
                 e.preventDefault()
                 setDeleteStep(2)
@@ -502,16 +530,19 @@ export default function AdminPage() {
       </AlertDialog>
 
       {/* 2단계: 이메일 확인 */}
-      <AlertDialog open={deleteTarget !== null && deleteStep === 2} onOpenChange={(open) => { if (!open) closeDeleteDialog() }}>
+      <AlertDialog
+        open={deleteTarget !== null && deleteStep === 2}
+        onOpenChange={(open) => {
+          if (!open) closeDeleteDialog()
+        }}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>최종 확인</AlertDialogTitle>
             <AlertDialogDescription asChild>
               <div className="space-y-3">
-                <p>
-                  확인을 위해 아래에 사용자의 이메일을 입력하세요.
-                </p>
-                <p className="font-mono text-sm font-medium text-foreground">
+                <p>확인을 위해 아래에 사용자의 이메일을 입력하세요.</p>
+                <p className="text-foreground font-mono text-sm font-medium">
                   {deleteTarget?.email}
                 </p>
                 <Input
@@ -524,9 +555,11 @@ export default function AdminPage() {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel className="cursor-pointer" onClick={() => setDeleteStep(1)}>뒤로</AlertDialogCancel>
+            <AlertDialogCancel className="cursor-pointer" onClick={() => setDeleteStep(1)}>
+              뒤로
+            </AlertDialogCancel>
             <AlertDialogAction
-              className="cursor-pointer bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90 cursor-pointer"
               disabled={confirmEmail !== deleteTarget?.email || forceDeleteUser.isPending}
               onClick={(e) => {
                 e.preventDefault()

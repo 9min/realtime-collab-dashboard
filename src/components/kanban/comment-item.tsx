@@ -46,7 +46,14 @@ function getRelativeTime(dateString: string): string {
   return new Date(dateString).toLocaleDateString('ko-KR')
 }
 
-export function CommentItem({ comment, currentUserId, canDelete, onUpdate, onDelete, members = [] }: CommentItemProps) {
+export function CommentItem({
+  comment,
+  currentUserId,
+  canDelete,
+  onUpdate,
+  onDelete,
+  members = [],
+}: CommentItemProps) {
   const [isEditing, setIsEditing] = useState(false)
   const [editContent, setEditContent] = useState('')
 
@@ -87,16 +94,12 @@ export function CommentItem({ comment, currentUserId, canDelete, onUpdate, onDel
         </AvatarFallback>
       </Avatar>
       <div className="min-w-0 flex-1">
-        <div className="flex items-center gap-2 min-w-0">
-          <span className="text-sm font-medium truncate">
-            {profile.full_name ?? profile.email}
-          </span>
-          <span className="text-muted-foreground text-xs shrink-0">
+        <div className="flex min-w-0 items-center gap-2">
+          <span className="truncate text-sm font-medium">{profile.full_name ?? profile.email}</span>
+          <span className="text-muted-foreground shrink-0 text-xs">
             {getRelativeTime(comment.created_at)}
           </span>
-          {isEdited && (
-            <span className="text-muted-foreground text-xs">(수정됨)</span>
-          )}
+          {isEdited && <span className="text-muted-foreground text-xs">(수정됨)</span>}
 
           {showActions && !isEditing && (
             <DropdownMenu>
@@ -117,10 +120,7 @@ export function CommentItem({ comment, currentUserId, canDelete, onUpdate, onDel
                     편집
                   </DropdownMenuItem>
                 )}
-                <DropdownMenuItem
-                  className="text-destructive"
-                  onClick={() => onDelete(comment.id)}
-                >
+                <DropdownMenuItem className="text-destructive" onClick={() => onDelete(comment.id)}>
                   <Trash2 className="mr-2 h-3 w-3" />
                   삭제
                 </DropdownMenuItem>
@@ -144,21 +144,20 @@ export function CommentItem({ comment, currentUserId, canDelete, onUpdate, onDel
               <Button size="sm" variant="outline" onClick={() => setIsEditing(false)}>
                 취소
               </Button>
-              <Button
-                size="sm"
-                onClick={handleSave}
-                disabled={editContent.trim().length === 0}
-              >
+              <Button size="sm" onClick={handleSave} disabled={editContent.trim().length === 0}>
                 저장
               </Button>
             </div>
           </div>
         ) : (
-          <p className="mt-0.5 whitespace-pre-wrap text-sm">
+          <p className="mt-0.5 text-sm whitespace-pre-wrap">
             {members.length > 0
               ? parseMentionSegments(comment.content, members).map((segment, i) =>
                   segment.type === 'mention' ? (
-                    <span key={i} className="rounded bg-primary/10 px-0.5 font-medium text-primary dark:bg-primary/20 dark:text-primary">
+                    <span
+                      key={i}
+                      className="bg-primary/10 text-primary dark:bg-primary/20 dark:text-primary rounded px-0.5 font-medium"
+                    >
                       {segment.content}
                     </span>
                   ) : (

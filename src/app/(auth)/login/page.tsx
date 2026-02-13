@@ -53,22 +53,23 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="flex flex-col items-center motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-4 motion-safe:duration-700">
+    <div className="motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-4 flex flex-col items-center motion-safe:duration-700">
       {/* 타이틀 영역 */}
       <div className="mb-8 text-center">
-        <h1 className="whitespace-nowrap text-4xl font-bold tracking-tight">
+        <h1 className="text-4xl font-bold tracking-tight whitespace-nowrap">
           <span className="bg-gradient-to-r from-blue-600 via-violet-600 to-emerald-500 bg-clip-text text-transparent dark:from-blue-400 dark:via-violet-400 dark:to-emerald-400">
             실시간 협업 일정관리 도구
           </span>
         </h1>
-        <p className="text-muted-foreground mt-2 text-sm">
-          소규모 팀을 위한 실시간 협업 대시보드
-        </p>
+        <p className="text-muted-foreground mt-2 text-sm">소규모 팀을 위한 실시간 협업 대시보드</p>
 
         {/* 핵심 기능 배지 */}
         <div className="mt-5 flex items-center justify-center gap-3">
           {FEATURES.map(({ icon: Icon, label, color }) => (
-            <div key={label} className="flex items-center gap-1.5 rounded-full border bg-white/60 px-3 py-1.5 text-xs font-medium backdrop-blur-sm dark:bg-slate-800/60">
+            <div
+              key={label}
+              className="flex items-center gap-1.5 rounded-full border bg-white/60 px-3 py-1.5 text-xs font-medium backdrop-blur-sm dark:bg-slate-800/60"
+            >
               <Icon className={`h-3.5 w-3.5 ${color}`} />
               <span className="text-foreground/80">{label}</span>
             </div>
@@ -82,9 +83,7 @@ export default function LoginPage() {
           {errorCode && (
             <div className="bg-destructive/10 text-destructive rounded-md p-3 text-center text-sm">
               <p>{ERROR_MESSAGES[errorCode] ?? '알 수 없는 에러가 발생했습니다.'}</p>
-              {errorDetail && (
-                <p className="mt-1 text-xs opacity-75">{errorDetail}</p>
-              )}
+              {errorDetail && <p className="mt-1 text-xs opacity-75">{errorDetail}</p>}
             </div>
           )}
 
@@ -132,7 +131,7 @@ export default function LoginPage() {
               <span className="w-full border-t" />
             </div>
             <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-white/70 px-2 text-muted-foreground dark:bg-slate-900/70">
+              <span className="text-muted-foreground bg-white/70 px-2 dark:bg-slate-900/70">
                 또는
               </span>
             </div>

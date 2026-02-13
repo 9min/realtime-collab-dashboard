@@ -14,7 +14,12 @@ interface AttachmentItemProps {
   onDelete: (attachmentId: string, filePath: string) => void
 }
 
-export function AttachmentItem({ attachment, publicUrl, canDelete, onDelete }: AttachmentItemProps) {
+export function AttachmentItem({
+  attachment,
+  publicUrl,
+  canDelete,
+  onDelete,
+}: AttachmentItemProps) {
   const isImage = isImageType(attachment.content_type)
 
   return (
@@ -44,13 +49,19 @@ export function AttachmentItem({ attachment, publicUrl, canDelete, onDelete }: A
       <div className="min-w-0 flex-1">
         <p className="truncate text-sm font-medium">{attachment.file_name}</p>
         <p className="text-muted-foreground text-xs">
-          {formatFileSize(attachment.file_size)} · {attachment.profiles.full_name ?? attachment.profiles.email}
+          {formatFileSize(attachment.file_size)} ·{' '}
+          {attachment.profiles.full_name ?? attachment.profiles.email}
         </p>
       </div>
 
       {/* 액션 */}
       <div className="flex shrink-0 items-center gap-1">
-        <a href={publicUrl} download={attachment.file_name} target="_blank" rel="noopener noreferrer">
+        <a
+          href={publicUrl}
+          download={attachment.file_name}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
           <Button variant="ghost" size="icon" className="h-7 w-7">
             <Download className="h-3.5 w-3.5" />
           </Button>

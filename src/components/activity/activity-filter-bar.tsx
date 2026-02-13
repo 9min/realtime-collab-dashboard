@@ -60,10 +60,10 @@ export function ActivityFilterBar({ members }: ActivityFilterBarProps) {
         : `${userIds.length}명 선택`
 
   return (
-    <div className="flex flex-wrap items-center gap-3 rounded-lg border bg-card p-3 shadow-sm">
+    <div className="bg-card flex flex-wrap items-center gap-3 rounded-lg border p-3 shadow-sm">
       {/* Search Input */}
       <div className="relative w-56">
-        <Search className="text-muted-foreground absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2" />
+        <Search className="text-muted-foreground absolute top-1/2 left-2.5 h-4 w-4 -translate-y-1/2" />
         <Input
           placeholder="활동 검색..."
           value={searchText}
@@ -75,7 +75,11 @@ export function ActivityFilterBar({ members }: ActivityFilterBarProps) {
       {/* Action Type */}
       <Popover>
         <PopoverTrigger asChild>
-          <Button variant="outline" size="sm" className="h-9 cursor-pointer gap-1.5 text-sm font-normal">
+          <Button
+            variant="outline"
+            size="sm"
+            className="h-9 cursor-pointer gap-1.5 text-sm font-normal"
+          >
             <span className="text-muted-foreground">액션:</span>
             <span>{actionLabel}</span>
             <ChevronDown className="text-muted-foreground h-3.5 w-3.5" />
@@ -98,7 +102,9 @@ export function ActivityFilterBar({ members }: ActivityFilterBarProps) {
                 <div
                   className={cn(
                     'flex h-4 w-4 shrink-0 items-center justify-center rounded-sm border',
-                    isActive ? 'border-primary bg-primary text-primary-foreground' : 'border-muted-foreground/30',
+                    isActive
+                      ? 'border-primary bg-primary text-primary-foreground'
+                      : 'border-muted-foreground/30',
                   )}
                 >
                   {isActive && <Check className="h-3 w-3" />}
@@ -114,7 +120,11 @@ export function ActivityFilterBar({ members }: ActivityFilterBarProps) {
       {/* Entity Type */}
       <Popover>
         <PopoverTrigger asChild>
-          <Button variant="outline" size="sm" className="h-9 cursor-pointer gap-1.5 text-sm font-normal">
+          <Button
+            variant="outline"
+            size="sm"
+            className="h-9 cursor-pointer gap-1.5 text-sm font-normal"
+          >
             <span className="text-muted-foreground">대상:</span>
             <span>{entityLabel}</span>
             <ChevronDown className="text-muted-foreground h-3.5 w-3.5" />
@@ -138,7 +148,9 @@ export function ActivityFilterBar({ members }: ActivityFilterBarProps) {
                 <div
                   className={cn(
                     'flex h-4 w-4 shrink-0 items-center justify-center rounded-sm border',
-                    isActive ? 'border-primary bg-primary text-primary-foreground' : 'border-muted-foreground/30',
+                    isActive
+                      ? 'border-primary bg-primary text-primary-foreground'
+                      : 'border-muted-foreground/30',
                   )}
                 >
                   {isActive && <Check className="h-3 w-3" />}
@@ -155,7 +167,11 @@ export function ActivityFilterBar({ members }: ActivityFilterBarProps) {
       {memberOptions.length > 0 && (
         <Popover>
           <PopoverTrigger asChild>
-            <Button variant="outline" size="sm" className="h-9 cursor-pointer gap-1.5 text-sm font-normal">
+            <Button
+              variant="outline"
+              size="sm"
+              className="h-9 cursor-pointer gap-1.5 text-sm font-normal"
+            >
               <span className="text-muted-foreground">사용자:</span>
               <span>{userLabel}</span>
               <ChevronDown className="text-muted-foreground h-3.5 w-3.5" />
@@ -177,7 +193,9 @@ export function ActivityFilterBar({ members }: ActivityFilterBarProps) {
                   <div
                     className={cn(
                       'flex h-4 w-4 shrink-0 items-center justify-center rounded-sm border',
-                      isActive ? 'border-primary bg-primary text-primary-foreground' : 'border-muted-foreground/30',
+                      isActive
+                        ? 'border-primary bg-primary text-primary-foreground'
+                        : 'border-muted-foreground/30',
                     )}
                   >
                     {isActive && <Check className="h-3 w-3" />}
@@ -192,7 +210,12 @@ export function ActivityFilterBar({ members }: ActivityFilterBarProps) {
 
       {/* Reset Filters */}
       {hasActiveFilters() && (
-        <Button variant="ghost" size="sm" onClick={resetFilters} className="h-8 cursor-pointer gap-1 text-xs">
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={resetFilters}
+          className="h-8 cursor-pointer gap-1 text-xs"
+        >
           <X className="h-3 w-3" />
           초기화
         </Button>

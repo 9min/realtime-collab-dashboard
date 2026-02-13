@@ -224,7 +224,9 @@ describe('project-service', () => {
 
       expect(result.error).toBeNull()
       // storage.from('task-attachments').remove() 호출 확인
-      const mockClient = client as unknown as { storage: { from: ReturnType<typeof vi.fn>; _bucket: { remove: ReturnType<typeof vi.fn> } } }
+      const mockClient = client as unknown as {
+        storage: { from: ReturnType<typeof vi.fn>; _bucket: { remove: ReturnType<typeof vi.fn> } }
+      }
       expect(mockClient.storage.from).toHaveBeenCalledWith('task-attachments')
       expect(mockClient.storage._bucket.remove).toHaveBeenCalledWith([
         `${MOCK_PROJECT_ID}/${MOCK_TASK_ID_1}/file1.pdf`,
@@ -245,14 +247,14 @@ describe('project-service', () => {
       const result = await deleteProject(client, MOCK_PROJECT_ID)
 
       expect(result.error).toBeNull()
-      const mockClient = client as unknown as { storage: { from: ReturnType<typeof vi.fn>; _bucket: { remove: ReturnType<typeof vi.fn> } } }
+      const mockClient = client as unknown as {
+        storage: { from: ReturnType<typeof vi.fn>; _bucket: { remove: ReturnType<typeof vi.fn> } }
+      }
       expect(mockClient.storage._bucket.remove).not.toHaveBeenCalled()
     })
 
     it('Storage 삭제 실패해도 프로젝트 삭제는 성공한다', async () => {
-      const attachments = [
-        { file_path: `${MOCK_PROJECT_ID}/${MOCK_TASK_ID_1}/file1.pdf` },
-      ]
+      const attachments = [{ file_path: `${MOCK_PROJECT_ID}/${MOCK_TASK_ID_1}/file1.pdf` }]
 
       const client = createMockSupabaseClient({
         fromResponses: [
@@ -323,9 +325,7 @@ describe('project-service', () => {
 
     it('존재하지 않는 이메일이면 USER_NOT_FOUND를 반환한다', async () => {
       const client = createMockSupabaseClient({
-        fromResponses: [
-          { data: null, error: { code: 'PGRST116', message: 'Not found' } },
-        ],
+        fromResponses: [{ data: null, error: { code: 'PGRST116', message: 'Not found' } }],
       }) as Client
 
       const result = await inviteMember(client, MOCK_PROJECT_ID, 'unknown@example.com', 'member')

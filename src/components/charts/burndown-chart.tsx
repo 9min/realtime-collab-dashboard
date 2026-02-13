@@ -17,7 +17,15 @@ interface BurndownChartProps {
   projectId: string
 }
 
-function CustomTooltip({ active, payload, label }: { active?: boolean; payload?: Array<{ value: number; dataKey: string; name?: string }>; label?: string }) {
+function CustomTooltip({
+  active,
+  payload,
+  label,
+}: {
+  active?: boolean
+  payload?: Array<{ value: number; dataKey: string; name?: string }>
+  label?: string
+}) {
   if (!active || !payload?.length) return null
   // Area("remaining-area")를 제외하고 Line 항목만 표시
   const items = payload.filter((entry) => entry.name !== 'remaining-area')
@@ -67,7 +75,12 @@ export function BurndownChart({ projectId }: BurndownChartProps) {
                 <stop offset="100%" stopColor="#f97316" stopOpacity={0.02} />
               </linearGradient>
             </defs>
-            <CartesianGrid vertical={false} strokeDasharray="3 3" stroke="hsl(var(--border))" strokeOpacity={0.5} />
+            <CartesianGrid
+              vertical={false}
+              strokeDasharray="3 3"
+              stroke="hsl(var(--border))"
+              strokeOpacity={0.5}
+            />
             <XAxis
               dataKey="date"
               fontSize={11}

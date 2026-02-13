@@ -12,7 +12,9 @@ export async function getDashboardLayout(
   supabase: Client,
   projectId: string,
 ): Promise<ServiceResult<WidgetLayoutItem[] | null>> {
-  const { data: { user } } = await supabase.auth.getUser()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
   if (!user) {
     return { data: null, error: { code: 'UNAUTHORIZED', message: '로그인이 필요합니다' } }
   }
@@ -43,7 +45,9 @@ export async function saveDashboardLayout(
   projectId: string,
   layout: WidgetLayoutItem[],
 ): Promise<ServiceResult<DashboardLayout>> {
-  const { data: { user } } = await supabase.auth.getUser()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
   if (!user) {
     return { data: null, error: { code: 'UNAUTHORIZED', message: '로그인이 필요합니다' } }
   }

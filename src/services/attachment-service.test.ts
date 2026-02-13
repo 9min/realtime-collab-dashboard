@@ -11,7 +11,12 @@ import {
   mockAttachment,
 } from '@/__tests__/helpers/fixtures'
 
-import { getAttachments, uploadAttachment, deleteAttachment, getPublicUrl } from './attachment-service'
+import {
+  getAttachments,
+  uploadAttachment,
+  deleteAttachment,
+  getPublicUrl,
+} from './attachment-service'
 
 type Client = SupabaseClient<Database>
 

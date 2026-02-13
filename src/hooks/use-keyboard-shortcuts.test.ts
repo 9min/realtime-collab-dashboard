@@ -30,9 +30,7 @@ describe('useKeyboardShortcuts', () => {
 
   it('키 매칭 시 action을 호출한다', () => {
     const action = vi.fn()
-    renderHook(() =>
-      useKeyboardShortcuts([{ key: '1', action }]),
-    )
+    renderHook(() => useKeyboardShortcuts([{ key: '1', action }]))
 
     fireKeydown({ key: '1' })
     expect(action).toHaveBeenCalledTimes(1)
@@ -40,9 +38,7 @@ describe('useKeyboardShortcuts', () => {
 
   it('shiftKey가 필요한 단축키를 지원한다', () => {
     const action = vi.fn()
-    renderHook(() =>
-      useKeyboardShortcuts([{ key: '?', shiftKey: true, action }]),
-    )
+    renderHook(() => useKeyboardShortcuts([{ key: '?', shiftKey: true, action }]))
 
     // shift 없이 누르면 호출 안됨
     fireKeydown({ key: '?' })
@@ -55,9 +51,7 @@ describe('useKeyboardShortcuts', () => {
 
   it('metaOrCtrlKey가 필요한 단축키를 지원한다', () => {
     const action = vi.fn()
-    renderHook(() =>
-      useKeyboardShortcuts([{ key: 'k', metaOrCtrlKey: true, action }]),
-    )
+    renderHook(() => useKeyboardShortcuts([{ key: 'k', metaOrCtrlKey: true, action }]))
 
     // meta 없이 누르면 호출 안됨
     fireKeydown({ key: 'k' })
@@ -72,9 +66,7 @@ describe('useKeyboardShortcuts', () => {
     mockedIsInputFocused.mockReturnValue(true)
     const action = vi.fn()
 
-    renderHook(() =>
-      useKeyboardShortcuts([{ key: '1', action }]),
-    )
+    renderHook(() => useKeyboardShortcuts([{ key: '1', action }]))
 
     fireKeydown({ key: '1' })
     expect(action).not.toHaveBeenCalled()
@@ -83,9 +75,7 @@ describe('useKeyboardShortcuts', () => {
   it('enabled=false이면 리스너를 등록하지 않는다', () => {
     const action = vi.fn()
 
-    renderHook(() =>
-      useKeyboardShortcuts([{ key: '1', action }], { enabled: false }),
-    )
+    renderHook(() => useKeyboardShortcuts([{ key: '1', action }], { enabled: false }))
 
     fireKeydown({ key: '1' })
     expect(action).not.toHaveBeenCalled()
@@ -94,9 +84,7 @@ describe('useKeyboardShortcuts', () => {
   it('매치되지 않는 키는 무시한다', () => {
     const action = vi.fn()
 
-    renderHook(() =>
-      useKeyboardShortcuts([{ key: '1', action }]),
-    )
+    renderHook(() => useKeyboardShortcuts([{ key: '1', action }]))
 
     fireKeydown({ key: '2' })
     expect(action).not.toHaveBeenCalled()

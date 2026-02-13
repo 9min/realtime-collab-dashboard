@@ -9,9 +9,7 @@ import { EmptyState } from './empty-state'
 
 describe('EmptyState', () => {
   it('아이콘을 렌더링한다', () => {
-    const { container } = renderWithProviders(
-      <EmptyState icon={FolderOpen} title="비어 있음" />,
-    )
+    const { container } = renderWithProviders(<EmptyState icon={FolderOpen} title="비어 있음" />)
 
     // lucide icons render as svg
     const svg = container.querySelector('svg')
@@ -19,9 +17,7 @@ describe('EmptyState', () => {
   })
 
   it('타이틀을 렌더링한다', () => {
-    renderWithProviders(
-      <EmptyState icon={FolderOpen} title="프로젝트가 없습니다" />,
-    )
+    renderWithProviders(<EmptyState icon={FolderOpen} title="프로젝트가 없습니다" />)
 
     expect(screen.getByText('프로젝트가 없습니다')).toBeInTheDocument()
   })
@@ -39,9 +35,7 @@ describe('EmptyState', () => {
   })
 
   it('설명이 없으면 설명 영역을 렌더링하지 않는다', () => {
-    renderWithProviders(
-      <EmptyState icon={FolderOpen} title="비어 있음" />,
-    )
+    renderWithProviders(<EmptyState icon={FolderOpen} title="비어 있음" />)
 
     // Only the title paragraph should exist, no description
     const paragraphs = screen.getAllByText(/.+/)
@@ -79,17 +73,13 @@ describe('EmptyState', () => {
   })
 
   it('action이 없으면 버튼을 렌더링하지 않는다', () => {
-    renderWithProviders(
-      <EmptyState icon={FolderOpen} title="비어 있음" />,
-    )
+    renderWithProviders(<EmptyState icon={FolderOpen} title="비어 있음" />)
 
     expect(screen.queryByRole('button')).not.toBeInTheDocument()
   })
 
   it('다른 아이콘을 전달할 수 있다', () => {
-    const { container } = renderWithProviders(
-      <EmptyState icon={Search} title="검색 결과 없음" />,
-    )
+    const { container } = renderWithProviders(<EmptyState icon={Search} title="검색 결과 없음" />)
 
     const svg = container.querySelector('svg')
     expect(svg).toBeInTheDocument()

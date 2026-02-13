@@ -31,7 +31,7 @@ export function WorkloadView({ projectId }: WorkloadViewProps) {
     return (
       <div className="space-y-4">
         {Array.from({ length: 4 }).map((_, i) => (
-          <div key={i} className="h-12 animate-pulse rounded-lg bg-muted" />
+          <div key={i} className="bg-muted h-12 animate-pulse rounded-lg" />
         ))}
       </div>
     )
@@ -39,7 +39,7 @@ export function WorkloadView({ projectId }: WorkloadViewProps) {
 
   if (!data || data.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center gap-3 py-16 text-muted-foreground">
+      <div className="text-muted-foreground flex flex-col items-center justify-center gap-3 py-16">
         <p className="text-sm">프로젝트 멤버가 없습니다</p>
       </div>
     )
@@ -48,7 +48,7 @@ export function WorkloadView({ projectId }: WorkloadViewProps) {
   return (
     <div className="space-y-6">
       {/* 차트 */}
-      <div className="rounded-lg border bg-card p-4">
+      <div className="bg-card rounded-lg border p-4">
         <h3 className="mb-4 text-sm font-medium">멤버별 태스크 분포</h3>
         <WorkloadChart data={data} projectId={projectId} />
       </div>
@@ -60,7 +60,7 @@ export function WorkloadView({ projectId }: WorkloadViewProps) {
           return (
             <div
               key={member.userId}
-              className="flex items-center gap-3 rounded-lg border bg-card px-4 py-3"
+              className="bg-card flex items-center gap-3 rounded-lg border px-4 py-3"
             >
               <Avatar className="h-8 w-8">
                 <AvatarImage src={member.avatarUrl ?? undefined} />
@@ -74,9 +74,7 @@ export function WorkloadView({ projectId }: WorkloadViewProps) {
               <Badge variant="secondary" className={cn('text-xs', ZONE_BADGE_STYLES[zone])}>
                 {ZONE_LABELS[zone]}
               </Badge>
-              <span className="text-sm font-medium tabular-nums">
-                {member.totalTasks}개
-              </span>
+              <span className="text-sm font-medium tabular-nums">{member.totalTasks}개</span>
             </div>
           )
         })}

@@ -32,8 +32,7 @@ export function useSaveDashboardLayout(projectId: string) {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: (layout: WidgetLayoutItem[]) =>
-      saveDashboardLayout(supabase, projectId, layout),
+    mutationFn: (layout: WidgetLayoutItem[]) => saveDashboardLayout(supabase, projectId, layout),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: dashboardLayoutKeys.layout(projectId) })
     },

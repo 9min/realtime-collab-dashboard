@@ -3,17 +3,9 @@ import type { SupabaseClient } from '@supabase/supabase-js'
 
 import type { Database } from '@/types/database'
 import { createMockSupabaseClient } from '@/__tests__/helpers/mock-supabase'
-import {
-  MOCK_PROJECT_ID,
-  mockColumns,
-  mockTasks,
-} from '@/__tests__/helpers/fixtures'
+import { MOCK_PROJECT_ID, mockColumns, mockTasks } from '@/__tests__/helpers/fixtures'
 
-import {
-  getTaskStatusData,
-  getWeeklyProgressData,
-  getBurndownData,
-} from './chart-service'
+import { getTaskStatusData, getWeeklyProgressData, getBurndownData } from './chart-service'
 
 type Client = SupabaseClient<Database>
 
@@ -38,12 +30,8 @@ describe('chart-service', () => {
       expect(result.data?.[0]).toEqual(
         expect.objectContaining({ name: '할 일', value: 1, color: expect.any(String) }),
       )
-      expect(result.data?.[1]).toEqual(
-        expect.objectContaining({ name: '진행 중', value: 1 }),
-      )
-      expect(result.data?.[2]).toEqual(
-        expect.objectContaining({ name: '완료', value: 1 }),
-      )
+      expect(result.data?.[1]).toEqual(expect.objectContaining({ name: '진행 중', value: 1 }))
+      expect(result.data?.[2]).toEqual(expect.objectContaining({ name: '완료', value: 1 }))
     })
 
     it('태스크가 없으면 value가 모두 0이다', async () => {
@@ -120,9 +108,7 @@ describe('chart-service', () => {
 
     it('태스크 조회 에러 시 error를 반환한다', async () => {
       const client = createMockSupabaseClient({
-        fromResponses: [
-          { data: null, error: { code: 'ERR', message: 'fetch error' } },
-        ],
+        fromResponses: [{ data: null, error: { code: 'ERR', message: 'fetch error' } }],
       }) as Client
 
       const result = await getWeeklyProgressData(client, MOCK_PROJECT_ID)
@@ -190,9 +176,7 @@ describe('chart-service', () => {
 
     it('태스크 조회 에러 시 error를 반환한다', async () => {
       const client = createMockSupabaseClient({
-        fromResponses: [
-          { data: null, error: { code: 'ERR', message: 'error' } },
-        ],
+        fromResponses: [{ data: null, error: { code: 'ERR', message: 'error' } }],
       }) as Client
 
       const result = await getBurndownData(client, MOCK_PROJECT_ID)

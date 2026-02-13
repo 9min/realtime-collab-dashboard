@@ -322,6 +322,56 @@ chore: Vitest 커버리지 임계값 설정
 - "커밋하고 푸시해줘"처럼 push가 명시된 경우에만 push 실행
 - 이전 요청에서 push를 허용했더라도 다음 커밋에 자동 적용하지 않음 (매번 명시 필요)
 
+---
+
+## Branch Strategy (GitHub Flow)
+
+### 기본 원칙
+- **master 브랜치에 직접 커밋 금지** — 모든 신규 기능/버그 수정은 feature 브랜치에서 작업
+- PR(Pull Request)을 통해서만 master에 머지
+- 단, 문서 수정(`docs`), 설정 변경(`chore`) 등 비코드 변경은 master 직접 커밋 허용
+
+### 워크플로우
+
+```
+1. 브랜치 생성    → git checkout -b <type>/<간단한-설명>
+2. 개발 & 커밋    → 기능 구현 후 커밋 (type-check + lint 통과)
+3. 푸시           → git push -u origin <브랜치명> (사용자 명시 요청 시)
+4. PR 생성        → gh pr create (사용자 확인 후)
+5. 코드 리뷰      → PR diff 분석 + 셀프 리뷰 제공
+6. 머지           → 사용자 승인 후 gh pr merge
+7. 정리           → 로컬/원격 브랜치 삭제 + master 최신화
+```
+
+### 브랜치 네이밍
+```
+feat/<기능명>        # 새 기능 (예: feat/maintenance-mode)
+fix/<버그-설명>      # 버그 수정 (예: fix/calendar-crash)
+refactor/<대상>      # 리팩토링 (예: refactor/auth-hooks)
+test/<대상>          # 테스트 추가 (예: test/task-service)
+perf/<대상>          # 성능 개선 (예: perf/virtualized-list)
+```
+
+### PR 생성 규칙
+- PR 생성 전 반드시 `pnpm type-check && pnpm lint && pnpm test` 통과
+- PR 제목: 커밋 메시지 형식과 동일 (`<type>: <subject>`)
+- PR 본문: Summary (변경 요약) + Test plan (검증 방법) 포함
+- PR 생성은 사용자가 변경 내용을 확인한 후에만 진행
+
+### 머지 후 정리
+```bash
+git checkout master
+git pull origin master
+git branch -d <브랜치명>              # 로컬 브랜치 삭제
+git push origin --delete <브랜치명>   # 원격 브랜치 삭제 (gh pr merge --delete-branch 사용 시 자동)
+```
+
+### AI 동작
+- 신규 기능 요청 시 → 자동으로 feature 브랜치 생성 제안
+- 커밋 완료 후 → "PR 생성할까요?" 확인
+- PR 생성 후 → 변경 사항 요약 + 셀프 코드 리뷰 제공
+- 머지 승인 후 → 브랜치 정리 + master 최신화
+
 
 <claude-mem-context>
 # Recent Activity

@@ -54,7 +54,9 @@ export function LabelPicker({ projectId, taskId, assignedLabelIds, canEdit }: La
               <div
                 className={cn(
                   'flex h-4 w-4 shrink-0 items-center justify-center rounded-sm border',
-                  isAssigned ? 'border-primary bg-primary text-primary-foreground' : 'border-muted-foreground/30',
+                  isAssigned
+                    ? 'border-primary bg-primary text-primary-foreground'
+                    : 'border-muted-foreground/30',
                 )}
               >
                 {isAssigned && <Check className="h-3 w-3" />}

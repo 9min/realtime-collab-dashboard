@@ -80,12 +80,12 @@ export function SearchCommand() {
           />
           <CommandList>
             {inputValue.length < 2 && (
-              <div className="py-6 text-center text-sm text-muted-foreground">
+              <div className="text-muted-foreground py-6 text-center text-sm">
                 2글자 이상 입력해주세요
               </div>
             )}
             {inputValue.length >= 2 && isLoading && (
-              <div className="flex items-center justify-center gap-2 py-6 text-sm text-muted-foreground">
+              <div className="text-muted-foreground flex items-center justify-center gap-2 py-6 text-sm">
                 <Loader2 className="h-4 w-4 animate-spin" />
                 검색 중...
               </div>
@@ -120,7 +120,11 @@ export function SearchCommand() {
                   <CommandItem
                     key={t.id}
                     value={`task-${t.id}`}
-                    onSelect={() => handleSelect(() => router.push(`/projects/${t.projectId}/board?taskId=${t.id}`))}
+                    onSelect={() =>
+                      handleSelect(() =>
+                        router.push(`/projects/${t.projectId}/board?taskId=${t.id}`),
+                      )
+                    }
                   >
                     {favoriteIds?.has(t.id) ? (
                       <Star className="mr-2 h-4 w-4 shrink-0 fill-amber-400 text-amber-400" />
@@ -142,7 +146,11 @@ export function SearchCommand() {
                   <CommandItem
                     key={c.id}
                     value={`comment-${c.id}`}
-                    onSelect={() => handleSelect(() => router.push(`/projects/${c.projectId}/board?taskId=${c.taskId}`))}
+                    onSelect={() =>
+                      handleSelect(() =>
+                        router.push(`/projects/${c.projectId}/board?taskId=${c.taskId}`),
+                      )
+                    }
                   >
                     <MessageSquare className="text-muted-foreground mr-2 h-4 w-4" />
                     <div className="min-w-0">

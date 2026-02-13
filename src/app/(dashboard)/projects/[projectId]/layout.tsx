@@ -3,7 +3,16 @@
 import { use, useCallback, useEffect, useMemo, type ReactNode } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
 import { useQueryClient } from '@tanstack/react-query'
-import { ArrowLeft, BarChart3 as BarChartIcon, LayoutDashboard, Columns3, Activity, GanttChart, Calendar, Settings } from 'lucide-react'
+import {
+  ArrowLeft,
+  BarChart3 as BarChartIcon,
+  LayoutDashboard,
+  Columns3,
+  Activity,
+  GanttChart,
+  Calendar,
+  Settings,
+} from 'lucide-react'
 
 import { OnlineUsers } from '@/components/presence/online-users'
 import {
@@ -116,7 +125,9 @@ export default function ProjectLayout({ children, params }: ProjectLayoutProps) 
   // 뷰어는 설정 탭 숨김
   const currentRole = members?.find((m) => m.user_id === user?.id)?.role
   const isViewer = currentRole === MEMBER_ROLE.VIEWER
-  const navItems = ALL_NAV_ITEMS.filter((item) => !('adminOnly' in item && item.adminOnly && isViewer))
+  const navItems = ALL_NAV_ITEMS.filter(
+    (item) => !('adminOnly' in item && item.adminOnly && isViewer),
+  )
 
   const activeTabRef = useCallback((node: HTMLButtonElement | null) => {
     if (node) {
@@ -132,14 +143,11 @@ export default function ProjectLayout({ children, params }: ProjectLayoutProps) 
           <AlertDialogHeader>
             <AlertDialogTitle>프로젝트가 삭제되었습니다</AlertDialogTitle>
             <AlertDialogDescription>
-              이 프로젝트가 삭제되어 더 이상 접근할 수 없습니다.
-              프로젝트 목록으로 이동합니다.
+              이 프로젝트가 삭제되어 더 이상 접근할 수 없습니다. 프로젝트 목록으로 이동합니다.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogAction onClick={() => router.replace('/projects')}>
-              확인
-            </AlertDialogAction>
+            <AlertDialogAction onClick={() => router.replace('/projects')}>확인</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
@@ -172,7 +180,11 @@ export default function ProjectLayout({ children, params }: ProjectLayoutProps) 
       </div>
 
       {/* 서브 네비게이션 */}
-      <nav className="bg-card flex gap-1 overflow-x-auto rounded-lg border p-1 shadow-sm scrollbar-none" role="tablist" aria-label="프로젝트 네비게이션">
+      <nav
+        className="bg-card scrollbar-none flex gap-1 overflow-x-auto rounded-lg border p-1 shadow-sm"
+        role="tablist"
+        aria-label="프로젝트 네비게이션"
+      >
         {navItems.map(({ label, href, icon: Icon }) => {
           const fullPath = `${basePath}${href}`
           const isActive = pathname === fullPath
@@ -185,7 +197,7 @@ export default function ProjectLayout({ children, params }: ProjectLayoutProps) 
               role="tab"
               aria-selected={isActive}
               className={cn(
-                'text-muted-foreground hover:text-foreground flex shrink-0 cursor-pointer items-center gap-2 rounded-md px-4 py-2 text-sm font-medium outline-none transition-all focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1',
+                'text-muted-foreground hover:text-foreground focus-visible:ring-ring flex shrink-0 cursor-pointer items-center gap-2 rounded-md px-4 py-2 text-sm font-medium transition-all outline-none focus-visible:ring-2 focus-visible:ring-offset-1',
                 isActive && 'bg-primary text-primary-foreground shadow-sm',
               )}
             >

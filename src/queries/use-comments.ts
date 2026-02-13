@@ -36,7 +36,12 @@ export function useCreateComment(taskId: string) {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: async (input: { projectId: string; userId: string; content: string; mentions?: string[] }) => {
+    mutationFn: async (input: {
+      projectId: string
+      userId: string
+      content: string
+      mentions?: string[]
+    }) => {
       const result = await createComment(supabase, { taskId, ...input })
       if (result.error) throw new Error(result.error.message)
       return result.data

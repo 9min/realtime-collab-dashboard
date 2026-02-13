@@ -9,7 +9,10 @@ interface RouteContext {
   params: Promise<{ projectId: string; integrationId: string }>
 }
 
-function maskTokenInConfig(config: GitHubConfig | SlackConfig, type: string): GitHubConfig | SlackConfig {
+function maskTokenInConfig(
+  config: GitHubConfig | SlackConfig,
+  type: string,
+): GitHubConfig | SlackConfig {
   if (type === 'github') {
     const ghConfig = config as GitHubConfig
     return { ...ghConfig, token: maskToken(ghConfig.token) }
@@ -17,8 +20,14 @@ function maskTokenInConfig(config: GitHubConfig | SlackConfig, type: string): Gi
   return config
 }
 
-async function checkOwnerOrAdmin(supabase: Awaited<ReturnType<typeof createServerClient>>, projectId: string) {
-  const { data: { user }, error: authError } = await supabase.auth.getUser()
+async function checkOwnerOrAdmin(
+  supabase: Awaited<ReturnType<typeof createServerClient>>,
+  projectId: string,
+) {
+  const {
+    data: { user },
+    error: authError,
+  } = await supabase.auth.getUser()
   if (authError || !user) {
     return { error: NextResponse.json({ error: '인증이 필요합니다' }, { status: 401 }), user: null }
   }
@@ -75,10 +84,7 @@ export async function DELETE(req: NextRequest, context: RouteContext) {
   const auth = await checkOwnerOrAdmin(supabase, projectId)
   if (auth.error) return auth.error
 
-  const { error } = await supabase
-    .from('project_integrations')
-    .delete()
-    .eq('id', integrationId)
+  const { error } = await supabase.from('project_integrations').delete().eq('id', integrationId)
 
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 })

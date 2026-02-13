@@ -77,7 +77,13 @@ export function useUpdateRecurrence(taskId: string, projectId: string) {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: async ({ recurrenceId, input }: { recurrenceId: string; input: UpdateRecurrenceInput }) => {
+    mutationFn: async ({
+      recurrenceId,
+      input,
+    }: {
+      recurrenceId: string
+      input: UpdateRecurrenceInput
+    }) => {
       const result = await updateRecurrence(supabase, recurrenceId, input)
       if (result.error) throw new Error(result.error.message)
       return result.data

@@ -613,7 +613,8 @@ export const DEMO_TASK_COMMENTS = [
     task_id: 'demo-task-001',
     project_id: DEMO_PROJECT_ID,
     user_id: DEMO_USER_ID,
-    content: '@김민지 디자인 시안 첨부했는데 색상 조합 쪽 한번 검토 부탁드려요. 특히 다크모드에서 카드 배경색이 좀 어두운 것 같아서 의견 주시면 반영하겠습니다.',
+    content:
+      '@김민지 디자인 시안 첨부했는데 색상 조합 쪽 한번 검토 부탁드려요. 특히 다크모드에서 카드 배경색이 좀 어두운 것 같아서 의견 주시면 반영하겠습니다.',
     mentions: [DEMO_MEMBER_IDS.ALICE],
     created_at: isoAgo(6),
     updated_at: isoAgo(6),
@@ -623,7 +624,8 @@ export const DEMO_TASK_COMMENTS = [
     task_id: 'demo-task-001',
     project_id: DEMO_PROJECT_ID,
     user_id: DEMO_MEMBER_IDS.ALICE,
-    content: '확인했습니다! 전체적으로 깔끔한데 색상 팔레트를 좀 더 밝게 하면 좋을 것 같아요. 아바타 업로드 영역도 드래그앤드롭 지원하면 UX가 좋아질 것 같습니다.',
+    content:
+      '확인했습니다! 전체적으로 깔끔한데 색상 팔레트를 좀 더 밝게 하면 좋을 것 같아요. 아바타 업로드 영역도 드래그앤드롭 지원하면 UX가 좋아질 것 같습니다.',
     mentions: null,
     created_at: isoAgo(5),
     updated_at: isoAgo(5),
@@ -633,7 +635,8 @@ export const DEMO_TASK_COMMENTS = [
     task_id: 'demo-task-001',
     project_id: DEMO_PROJECT_ID,
     user_id: DEMO_USER_ID,
-    content: '@김민지 피드백 감사합니다. 밝은 팔레트 버전 추가로 만들어서 비교해볼게요. @박서연 모바일 반응형 레이아웃 쪽도 한번 봐주실 수 있을까요?',
+    content:
+      '@김민지 피드백 감사합니다. 밝은 팔레트 버전 추가로 만들어서 비교해볼게요. @박서연 모바일 반응형 레이아웃 쪽도 한번 봐주실 수 있을까요?',
     mentions: [DEMO_MEMBER_IDS.ALICE, DEMO_MEMBER_IDS.CHARLIE],
     created_at: isoAgo(4),
     updated_at: isoAgo(4),
@@ -643,7 +646,8 @@ export const DEMO_TASK_COMMENTS = [
     task_id: 'demo-task-001',
     project_id: DEMO_PROJECT_ID,
     user_id: DEMO_MEMBER_IDS.CHARLIE,
-    content: '네, 모바일 레이아웃 확인해봤는데 768px 이하에서 아바타 섹션이 잘리는 이슈가 있어요. 단일 컬럼으로 전환되는 브레이크포인트를 조정하면 될 것 같습니다.',
+    content:
+      '네, 모바일 레이아웃 확인해봤는데 768px 이하에서 아바타 섹션이 잘리는 이슈가 있어요. 단일 컬럼으로 전환되는 브레이크포인트를 조정하면 될 것 같습니다.',
     mentions: null,
     created_at: isoAgo(3),
     updated_at: isoAgo(3),
@@ -654,7 +658,8 @@ export const DEMO_TASK_COMMENTS = [
     task_id: 'demo-task-005',
     project_id: DEMO_PROJECT_ID,
     user_id: DEMO_MEMBER_IDS.ALICE,
-    content: 'Supabase Realtime 채널 구독 설정하고 WebSocket 연결 테스트 완료했습니다. postgres_changes 이벤트 정상 수신 확인했어요.',
+    content:
+      'Supabase Realtime 채널 구독 설정하고 WebSocket 연결 테스트 완료했습니다. postgres_changes 이벤트 정상 수신 확인했어요.',
     mentions: null,
     created_at: isoAgo(4),
     updated_at: isoAgo(4),
@@ -664,7 +669,8 @@ export const DEMO_TASK_COMMENTS = [
     task_id: 'demo-task-005',
     project_id: DEMO_PROJECT_ID,
     user_id: DEMO_USER_ID,
-    content: '@김민지 좋습니다! 알림 드롭다운 UI는 shadcn/ui의 Popover 컴포넌트로 구현하면 될 것 같아요. 미읽은 수 뱃지도 같이 넣어주세요.',
+    content:
+      '@김민지 좋습니다! 알림 드롭다운 UI는 shadcn/ui의 Popover 컴포넌트로 구현하면 될 것 같아요. 미읽은 수 뱃지도 같이 넣어주세요.',
     mentions: [DEMO_MEMBER_IDS.ALICE],
     created_at: isoAgo(3),
     updated_at: isoAgo(3),
@@ -674,7 +680,8 @@ export const DEMO_TASK_COMMENTS = [
     task_id: 'demo-task-005',
     project_id: DEMO_PROJECT_ID,
     user_id: DEMO_MEMBER_IDS.ALICE,
-    content: '@이준호 알림 클릭 시 해당 태스크로 네비게이션하는 부분은 라우팅 쪽 코드를 참고해야 할 것 같은데, board 페이지 쪽 코드 공유해주실 수 있나요?',
+    content:
+      '@이준호 알림 클릭 시 해당 태스크로 네비게이션하는 부분은 라우팅 쪽 코드를 참고해야 할 것 같은데, board 페이지 쪽 코드 공유해주실 수 있나요?',
     mentions: [DEMO_MEMBER_IDS.BOB],
     created_at: isoAgo(2),
     updated_at: isoAgo(2),
@@ -684,7 +691,8 @@ export const DEMO_TASK_COMMENTS = [
     task_id: 'demo-task-005',
     project_id: DEMO_PROJECT_ID,
     user_id: DEMO_MEMBER_IDS.BOB,
-    content: '네, 칸반 보드에서 taskId searchParam으로 받아서 상세 다이얼로그 여는 방식이에요. `/board?taskId=xxx` 형태로 라우팅하면 됩니다.',
+    content:
+      '네, 칸반 보드에서 taskId searchParam으로 받아서 상세 다이얼로그 여는 방식이에요. `/board?taskId=xxx` 형태로 라우팅하면 됩니다.',
     mentions: null,
     created_at: isoAgo(1),
     updated_at: isoAgo(1),
@@ -695,7 +703,8 @@ export const DEMO_TASK_COMMENTS = [
     task_id: 'demo-task-006',
     project_id: DEMO_PROJECT_ID,
     user_id: DEMO_USER_ID,
-    content: '타임라인 렌더링 엔진 1차 구현 완료했습니다. 월 단위 컬럼 기반으로 실제 월의 일수에 맞게 너비를 계산하도록 했어요.',
+    content:
+      '타임라인 렌더링 엔진 1차 구현 완료했습니다. 월 단위 컬럼 기반으로 실제 월의 일수에 맞게 너비를 계산하도록 했어요.',
     mentions: null,
     created_at: isoAgo(3),
     updated_at: isoAgo(3),
@@ -705,7 +714,8 @@ export const DEMO_TASK_COMMENTS = [
     task_id: 'demo-task-006',
     project_id: DEMO_PROJECT_ID,
     user_id: DEMO_MEMBER_IDS.BOB,
-    content: '@데모 사용자 의존성 화살표 구현할 때 SVG 베지어 곡선 사용하려고 하는데, task_dependencies 테이블 구조 참고할게요. blocking/blocked 관계가 맞죠?',
+    content:
+      '@데모 사용자 의존성 화살표 구현할 때 SVG 베지어 곡선 사용하려고 하는데, task_dependencies 테이블 구조 참고할게요. blocking/blocked 관계가 맞죠?',
     mentions: [DEMO_USER_ID],
     created_at: isoAgo(2),
     updated_at: isoAgo(2),
@@ -715,7 +725,8 @@ export const DEMO_TASK_COMMENTS = [
     task_id: 'demo-task-006',
     project_id: DEMO_PROJECT_ID,
     user_id: DEMO_USER_ID,
-    content: '@이준호 맞아요. blocking_task_id → blocked_task_id 방향으로 화살표 그리면 됩니다. 순환 의존성은 DB CHECK constraint로 방지되고 있어요.',
+    content:
+      '@이준호 맞아요. blocking_task_id → blocked_task_id 방향으로 화살표 그리면 됩니다. 순환 의존성은 DB CHECK constraint로 방지되고 있어요.',
     mentions: [DEMO_MEMBER_IDS.BOB],
     created_at: isoAgo(1),
     updated_at: isoAgo(1),
@@ -726,7 +737,8 @@ export const DEMO_TASK_COMMENTS = [
     task_id: 'demo-task-004',
     project_id: DEMO_PROJECT_ID,
     user_id: DEMO_MEMBER_IDS.CHARLIE,
-    content: '다크 모드 색상 대비 검사해봤는데 칸반 카드 배경이 1.8:1 정도로 WCAG AA 기준 미달이에요. @데모 사용자 CSS 변수 방식으로 개선하는 게 어떨까요?',
+    content:
+      '다크 모드 색상 대비 검사해봤는데 칸반 카드 배경이 1.8:1 정도로 WCAG AA 기준 미달이에요. @데모 사용자 CSS 변수 방식으로 개선하는 게 어떨까요?',
     mentions: [DEMO_USER_ID],
     created_at: isoAgo(2),
     updated_at: isoAgo(2),
@@ -736,7 +748,8 @@ export const DEMO_TASK_COMMENTS = [
     task_id: 'demo-task-004',
     project_id: DEMO_PROJECT_ID,
     user_id: DEMO_USER_ID,
-    content: '@박서연 동의합니다. shadcn/ui 테마 변수를 오버라이드하는 방식으로 가시죠. @김민지 라벨 뱃지 색상도 같이 확인해주실 수 있나요?',
+    content:
+      '@박서연 동의합니다. shadcn/ui 테마 변수를 오버라이드하는 방식으로 가시죠. @김민지 라벨 뱃지 색상도 같이 확인해주실 수 있나요?',
     mentions: [DEMO_MEMBER_IDS.CHARLIE, DEMO_MEMBER_IDS.ALICE],
     created_at: isoAgo(1),
     updated_at: isoAgo(1),
@@ -747,7 +760,8 @@ export const DEMO_TASK_COMMENTS = [
     task_id: 'demo-task-007',
     project_id: DEMO_PROJECT_ID,
     user_id: DEMO_MEMBER_IDS.BOB,
-    content: 'shadcn/ui CommandDialog 기반으로 작업 중인데 디바운싱 300ms로 설정했습니다. @김민지 검색 결과에 댓글도 포함시킬 건지 확인 부탁드려요.',
+    content:
+      'shadcn/ui CommandDialog 기반으로 작업 중인데 디바운싱 300ms로 설정했습니다. @김민지 검색 결과에 댓글도 포함시킬 건지 확인 부탁드려요.',
     mentions: [DEMO_MEMBER_IDS.ALICE],
     created_at: isoAgo(2),
     updated_at: isoAgo(2),
@@ -757,7 +771,8 @@ export const DEMO_TASK_COMMENTS = [
     task_id: 'demo-task-007',
     project_id: DEMO_PROJECT_ID,
     user_id: DEMO_MEMBER_IDS.ALICE,
-    content: '네, 댓글도 포함시키는 게 좋을 것 같아요. 프로젝트 / 태스크 / 댓글 3개 카테고리로 그룹핑해서 보여주면 될 것 같습니다.',
+    content:
+      '네, 댓글도 포함시키는 게 좋을 것 같아요. 프로젝트 / 태스크 / 댓글 3개 카테고리로 그룹핑해서 보여주면 될 것 같습니다.',
     mentions: null,
     created_at: isoAgo(1),
     updated_at: isoAgo(1),
@@ -1026,11 +1041,17 @@ export function createInitialDemoData(): Map<string, Record<string, unknown>[]> 
   map.set('notifications', structuredClone(DEMO_NOTIFICATIONS) as Record<string, unknown>[])
   map.set('activity_logs', structuredClone(DEMO_ACTIVITY_LOGS) as Record<string, unknown>[])
   map.set('dashboard_layouts', structuredClone(DEMO_DASHBOARD_LAYOUTS) as Record<string, unknown>[])
-  map.set('project_integrations', structuredClone(DEMO_PROJECT_INTEGRATIONS) as Record<string, unknown>[])
+  map.set(
+    'project_integrations',
+    structuredClone(DEMO_PROJECT_INTEGRATIONS) as Record<string, unknown>[],
+  )
   map.set('user_messages', structuredClone(DEMO_USER_MESSAGES) as Record<string, unknown>[])
   map.set('task_favorites', structuredClone(DEMO_TASK_FAVORITES) as Record<string, unknown>[])
   map.set('task_recurrences', structuredClone(DEMO_TASK_RECURRENCES) as Record<string, unknown>[])
-  map.set('due_date_notifications_log', structuredClone(DEMO_DUE_DATE_NOTIFICATIONS_LOG) as Record<string, unknown>[])
+  map.set(
+    'due_date_notifications_log',
+    structuredClone(DEMO_DUE_DATE_NOTIFICATIONS_LOG) as Record<string, unknown>[],
+  )
   map.set('kanban_filter_presets', [] as Record<string, unknown>[])
 
   return map

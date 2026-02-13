@@ -37,7 +37,9 @@ describe('task-service', () => {
 
       expect(result.error).toBeNull()
       expect(result.data).toEqual(mockTasks)
-      expect((client as unknown as { from: ReturnType<typeof import('vitest')['vi']['fn']> }).from).toHaveBeenCalledWith('tasks')
+      expect(
+        (client as unknown as { from: ReturnType<(typeof import('vitest'))['vi']['fn']> }).from,
+      ).toHaveBeenCalledWith('tasks')
     })
 
     it('에러 시 error를 반환한다', async () => {
@@ -255,7 +257,9 @@ describe('task-service', () => {
       const result = await deleteTask(client, MOCK_TASK_ID_1)
 
       expect(result.error).toBeNull()
-      const mockClient = client as unknown as { storage: { from: ReturnType<typeof vi.fn>; _bucket: { remove: ReturnType<typeof vi.fn> } } }
+      const mockClient = client as unknown as {
+        storage: { from: ReturnType<typeof vi.fn>; _bucket: { remove: ReturnType<typeof vi.fn> } }
+      }
       expect(mockClient.storage.from).toHaveBeenCalledWith('task-attachments')
       expect(mockClient.storage._bucket.remove).toHaveBeenCalledWith([
         `${MOCK_PROJECT_ID}/${MOCK_TASK_ID_1}/file1.pdf`,
@@ -276,14 +280,14 @@ describe('task-service', () => {
       const result = await deleteTask(client, MOCK_TASK_ID_1)
 
       expect(result.error).toBeNull()
-      const mockClient = client as unknown as { storage: { from: ReturnType<typeof vi.fn>; _bucket: { remove: ReturnType<typeof vi.fn> } } }
+      const mockClient = client as unknown as {
+        storage: { from: ReturnType<typeof vi.fn>; _bucket: { remove: ReturnType<typeof vi.fn> } }
+      }
       expect(mockClient.storage._bucket.remove).not.toHaveBeenCalled()
     })
 
     it('Storage 삭제 실패해도 태스크 삭제는 성공한다', async () => {
-      const attachments = [
-        { file_path: `${MOCK_PROJECT_ID}/${MOCK_TASK_ID_1}/file1.pdf` },
-      ]
+      const attachments = [{ file_path: `${MOCK_PROJECT_ID}/${MOCK_TASK_ID_1}/file1.pdf` }]
 
       const client = createMockSupabaseClient({
         fromResponses: [

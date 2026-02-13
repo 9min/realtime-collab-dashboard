@@ -276,11 +276,7 @@ describe('TaskFilterBar', () => {
 
   it('오버플로우 메뉴가 projectId 전달 시 렌더링된다', () => {
     renderWithProviders(
-      <TaskFilterBar
-        members={mockMembers}
-        projectId={MOCK_PROJECT_ID}
-        tasks={mockTasks}
-      />,
+      <TaskFilterBar members={mockMembers} projectId={MOCK_PROJECT_ID} tasks={mockTasks} />,
     )
 
     expect(screen.getByRole('button', { name: '더보기' })).toBeInTheDocument()
@@ -289,11 +285,7 @@ describe('TaskFilterBar', () => {
   it('오버플로우 메뉴를 열면 내보내기 옵션이 표시된다', async () => {
     const user = userEvent.setup()
     renderWithProviders(
-      <TaskFilterBar
-        members={mockMembers}
-        projectId={MOCK_PROJECT_ID}
-        tasks={mockTasks}
-      />,
+      <TaskFilterBar members={mockMembers} projectId={MOCK_PROJECT_ID} tasks={mockTasks} />,
     )
 
     const moreButton = screen.getByRole('button', { name: '더보기' })

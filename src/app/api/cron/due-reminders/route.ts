@@ -52,17 +52,15 @@ export async function GET(request: Request) {
       // UNIQUE 제약 위반 = 이미 전송됨 → skip
       if (logError) continue
 
-      await supabase
-        .from('notifications')
-        .insert({
-          user_id: task.assignee_id!,
-          type: 'due_soon',
-          title: '마감 임박',
-          message: `"${task.title}" 태스크가 내일 마감입니다`,
-          entity_type: 'task',
-          entity_id: task.id,
-          project_id: task.project_id,
-        })
+      await supabase.from('notifications').insert({
+        user_id: task.assignee_id!,
+        type: 'due_soon',
+        title: '마감 임박',
+        message: `"${task.title}" 태스크가 내일 마감입니다`,
+        entity_type: 'task',
+        entity_id: task.id,
+        project_id: task.project_id,
+      })
 
       dueTomorrowCount++
     }
@@ -88,17 +86,15 @@ export async function GET(request: Request) {
 
       if (logError) continue
 
-      await supabase
-        .from('notifications')
-        .insert({
-          user_id: task.assignee_id!,
-          type: 'due_soon',
-          title: '기한 초과',
-          message: `"${task.title}" 태스크의 마감 기한이 지났습니다`,
-          entity_type: 'task',
-          entity_id: task.id,
-          project_id: task.project_id,
-        })
+      await supabase.from('notifications').insert({
+        user_id: task.assignee_id!,
+        type: 'due_soon',
+        title: '기한 초과',
+        message: `"${task.title}" 태스크의 마감 기한이 지났습니다`,
+        entity_type: 'task',
+        entity_id: task.id,
+        project_id: task.project_id,
+      })
 
       overdueCount++
     }

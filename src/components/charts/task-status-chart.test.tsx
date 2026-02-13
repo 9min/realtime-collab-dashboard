@@ -11,7 +11,9 @@ vi.mock('@/queries/use-chart-data', () => ({
 
 vi.mock('recharts', () => ({
   ResponsiveContainer: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
-  PieChart: ({ children }: { children: React.ReactNode }) => <div data-testid="pie-chart">{children}</div>,
+  PieChart: ({ children }: { children: React.ReactNode }) => (
+    <div data-testid="pie-chart">{children}</div>
+  ),
   Pie: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
   Cell: () => null,
   Tooltip: () => null,
@@ -30,9 +32,7 @@ describe('TaskStatusChart', () => {
       isLoading: true,
     })
 
-    const { container } = renderWithProviders(
-      <TaskStatusChart projectId="project-1" />,
-    )
+    const { container } = renderWithProviders(<TaskStatusChart projectId="project-1" />)
 
     // ChartSkeleton renders a pulsing circle
     const skeleton = container.querySelector('.animate-pulse')
@@ -49,9 +49,7 @@ describe('TaskStatusChart', () => {
       isLoading: false,
     })
 
-    renderWithProviders(
-      <TaskStatusChart projectId="project-1" />,
-    )
+    renderWithProviders(<TaskStatusChart projectId="project-1" />)
 
     expect(screen.getByTestId('pie-chart')).toBeInTheDocument()
     // Custom legend items
@@ -70,9 +68,7 @@ describe('TaskStatusChart', () => {
       isLoading: false,
     })
 
-    renderWithProviders(
-      <TaskStatusChart projectId="project-1" />,
-    )
+    renderWithProviders(<TaskStatusChart projectId="project-1" />)
 
     expect(screen.getByText('태스크가 없습니다')).toBeInTheDocument()
   })
@@ -86,9 +82,7 @@ describe('TaskStatusChart', () => {
       isLoading: false,
     })
 
-    renderWithProviders(
-      <TaskStatusChart projectId="project-1" />,
-    )
+    renderWithProviders(<TaskStatusChart projectId="project-1" />)
 
     expect(screen.getByText('태스크가 없습니다')).toBeInTheDocument()
   })
@@ -99,9 +93,7 @@ describe('TaskStatusChart', () => {
       isLoading: false,
     })
 
-    renderWithProviders(
-      <TaskStatusChart projectId="project-1" />,
-    )
+    renderWithProviders(<TaskStatusChart projectId="project-1" />)
 
     expect(screen.getByText('태스크가 없습니다')).toBeInTheDocument()
   })

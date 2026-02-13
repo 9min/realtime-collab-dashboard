@@ -14,9 +14,7 @@ export interface ProjectMembership {
   joined_at: string
 }
 
-export async function getAllUsers(
-  supabase: Client,
-): Promise<ServiceResult<Profile[]>> {
+export async function getAllUsers(supabase: Client): Promise<ServiceResult<Profile[]>> {
   const { data, error } = await supabase
     .from('profiles')
     .select('*')
@@ -47,13 +45,17 @@ export async function setAdminStatus(
   return { data: null, error: null }
 }
 
-export async function getMyProfile(
-  supabase: Client,
-): Promise<ServiceResult<Profile>> {
-  const { data: { user }, error: authError } = await supabase.auth.getUser()
+export async function getMyProfile(supabase: Client): Promise<ServiceResult<Profile>> {
+  const {
+    data: { user },
+    error: authError,
+  } = await supabase.auth.getUser()
 
   if (authError || !user) {
-    return { data: null, error: { code: 'AUTH_ERROR', message: authError?.message ?? 'Not authenticated' } }
+    return {
+      data: null,
+      error: { code: 'AUTH_ERROR', message: authError?.message ?? 'Not authenticated' },
+    }
   }
 
   const { data, error } = await supabase

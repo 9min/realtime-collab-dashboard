@@ -5,7 +5,12 @@ import { toast } from 'sonner'
 
 import { useSupabase } from '@/components/providers/supabase-provider'
 import { QUERY_CONFIG } from '@/lib/constants'
-import { getDependencies, createDependency, deleteDependency, hasCyclicDependency } from '@/services/dependency-service'
+import {
+  getDependencies,
+  createDependency,
+  deleteDependency,
+  hasCyclicDependency,
+} from '@/services/dependency-service'
 import type { InsertTables } from '@/types/database'
 import type { TaskDependency } from '@/types/dependency'
 
@@ -36,7 +41,10 @@ export function useCreateDependency(projectId: string) {
     mutationFn: async (input: InsertTables<'task_dependencies'>) => {
       // 클라이언트 측 순환 감지
       const existing = queryClient.getQueryData<TaskDependency[]>(dependencyKeys.list(projectId))
-      if (existing && hasCyclicDependency(existing, input.blocking_task_id, input.blocked_task_id)) {
+      if (
+        existing &&
+        hasCyclicDependency(existing, input.blocking_task_id, input.blocked_task_id)
+      ) {
         throw new Error('순환 연결이 감지되었습니다 (A→B→A 불가)')
       }
 

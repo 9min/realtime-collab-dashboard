@@ -4,7 +4,15 @@ import { useQuery, useInfiniteQuery, useMutation, useQueryClient } from '@tansta
 import { toast } from 'sonner'
 
 import { useSupabase } from '@/components/providers/supabase-provider'
-import { getTasksByProject, getTasksByProjectPaginated, createTask, updateTask, deleteTask, deleteTasksBefore, moveTask } from '@/services/task-service'
+import {
+  getTasksByProject,
+  getTasksByProjectPaginated,
+  createTask,
+  updateTask,
+  deleteTask,
+  deleteTasksBefore,
+  moveTask,
+} from '@/services/task-service'
 import { chartKeys } from '@/queries/use-chart-data'
 import { QUERY_CONFIG } from '@/lib/constants'
 import { DEMO_COOKIE_NAME } from '@/lib/demo/constants'

@@ -8,7 +8,11 @@ const noop = () => () => {}
 
 export function Toaster() {
   const { theme = 'system' } = useTheme()
-  const mounted = useSyncExternalStore(noop, () => true, () => false)
+  const mounted = useSyncExternalStore(
+    noop,
+    () => true,
+    () => false,
+  )
 
   if (!mounted) return null
 

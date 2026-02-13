@@ -30,13 +30,9 @@ export function useKeyboardShortcuts(
       for (const shortcut of shortcuts) {
         const keyMatch = e.key === shortcut.key
 
-        const metaMatch = shortcut.metaOrCtrlKey
-          ? (e.metaKey || e.ctrlKey)
-          : (!e.metaKey && !e.ctrlKey)
+        const metaMatch = shortcut.metaOrCtrlKey ? e.metaKey || e.ctrlKey : !e.metaKey && !e.ctrlKey
 
-        const shiftMatch = shortcut.shiftKey
-          ? e.shiftKey
-          : !e.shiftKey
+        const shiftMatch = shortcut.shiftKey ? e.shiftKey : !e.shiftKey
 
         if (keyMatch && metaMatch && shiftMatch) {
           e.preventDefault()

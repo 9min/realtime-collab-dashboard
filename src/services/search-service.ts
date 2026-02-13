@@ -34,13 +34,22 @@ export async function globalSearch(
   ])
 
   if (projectsResult.error) {
-    return { data: null, error: { code: projectsResult.error.code, message: projectsResult.error.message } }
+    return {
+      data: null,
+      error: { code: projectsResult.error.code, message: projectsResult.error.message },
+    }
   }
   if (tasksResult.error) {
-    return { data: null, error: { code: tasksResult.error.code, message: tasksResult.error.message } }
+    return {
+      data: null,
+      error: { code: tasksResult.error.code, message: tasksResult.error.message },
+    }
   }
   if (commentsResult.error) {
-    return { data: null, error: { code: commentsResult.error.code, message: commentsResult.error.message } }
+    return {
+      data: null,
+      error: { code: commentsResult.error.code, message: commentsResult.error.message },
+    }
   }
 
   const projects = (projectsResult.data ?? []).map((p) => ({

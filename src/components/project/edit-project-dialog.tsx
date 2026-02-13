@@ -24,10 +24,7 @@ const editProjectSchema = z.object({
     .string()
     .min(1, '프로젝트 이름을 입력해주세요')
     .max(50, '프로젝트 이름은 50자 이내로 입력해주세요'),
-  description: z
-    .string()
-    .max(200, '설명은 200자 이내로 입력해주세요')
-    .optional(),
+  description: z.string().max(200, '설명은 200자 이내로 입력해주세요').optional(),
 })
 
 type EditProjectForm = z.infer<typeof editProjectSchema>
@@ -83,14 +80,8 @@ export function EditProjectDialog({ project, open, onOpenChange }: EditProjectDi
               <label htmlFor="edit-project-name" className="text-sm font-medium">
                 프로젝트 이름 <span className="text-destructive">*</span>
               </label>
-              <Input
-                id="edit-project-name"
-                {...register('name')}
-                aria-invalid={!!errors.name}
-              />
-              {errors.name && (
-                <p className="text-destructive text-xs">{errors.name.message}</p>
-              )}
+              <Input id="edit-project-name" {...register('name')} aria-invalid={!!errors.name} />
+              {errors.name && <p className="text-destructive text-xs">{errors.name.message}</p>}
             </div>
             <div className="space-y-2">
               <label htmlFor="edit-project-desc" className="text-sm font-medium">
