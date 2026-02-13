@@ -33,3 +33,41 @@ export const DEMO_LABEL_IDS = {
 export const DEMO_RECURRENCE_IDS = {
   WEEKLY_REVIEW: 'demo-rec-0000-000000000001',
 } as const
+
+// 태스크 담당자 ID
+export const DEMO_TASK_ASSIGNEE_IDS = {
+  TA_001: 'demo-ta-0000-000000000001',
+  TA_002: 'demo-ta-0000-000000000002',
+  TA_003: 'demo-ta-0000-000000000003',
+  TA_004: 'demo-ta-0000-000000000004',
+  TA_005: 'demo-ta-0000-000000000005',
+} as const
+
+// 태스크 템플릿 ID
+export const DEMO_TEMPLATE_IDS = {
+  BUG_REPORT: 'demo-tmpl-0000-000000000001',
+  FEATURE_REQUEST: 'demo-tmpl-0000-000000000002',
+  IMPROVEMENT: 'demo-tmpl-0000-000000000003',
+} as const
+
+// 시간 추적 ID
+export const DEMO_TIME_ENTRY_IDS = {
+  TE_001: 'demo-te-0000-000000000001',
+  TE_002: 'demo-te-0000-000000000002',
+  TE_003: 'demo-te-0000-000000000003',
+  TE_004: 'demo-te-0000-000000000004',
+  TE_005: 'demo-te-0000-000000000005',
+  TE_006: 'demo-te-0000-000000000006',
+} as const
+
+// 커스텀 필드 ID
+export const DEMO_CUSTOM_FIELD_IDS = {
+  STORY_POINTS: 'demo-cf-0000-000000000001',
+  ENVIRONMENT: 'demo-cf-0000-000000000002',
+} as const
+
+// 스프린트 ID
+export const DEMO_SPRINT_IDS = {
+  SPRINT_1: 'demo-sprint-0000-000000000001',
+  SPRINT_2: 'demo-sprint-0000-000000000002',
+} as const

@@ -19,6 +19,8 @@ import {
 import { useAuth } from '@/hooks/use-auth'
 import { useProjectMembers } from '@/queries/use-projects'
 import { useCreateTask, useTasks } from '@/queries/use-tasks'
+import { TemplatePicker } from '@/components/kanban/template-picker'
+import type { TaskTemplate } from '@/types/task-template'
 
 // 폼 스키마
 const UNASSIGNED_VALUE = '__none__'
@@ -51,6 +53,7 @@ export function CreateTaskForm({ projectId, columnId, open, onOpenChange }: Crea
     handleSubmit,
     reset,
     control,
+    setValue,
     formState: { errors },
   } = useForm<CreateTaskFormData>({
     resolver: zodResolver(createTaskSchema),
@@ -62,6 +65,14 @@ export function CreateTaskForm({ projectId, columnId, open, onOpenChange }: Crea
       due_date: '',
     },
   })
+
+  const handleTemplateSelect = (template: TaskTemplate) => {
+    setValue('title', template.name)
+    if (template.description_template) {
+      setValue('description', template.description_template)
+    }
+    setValue('priority', template.priority)
+  }
 
   const onSubmit = (data: CreateTaskFormData) => {
     if (!columnId || !user) return
@@ -98,6 +109,11 @@ export function CreateTaskForm({ projectId, columnId, open, onOpenChange }: Crea
           <DialogTitle>새 태스크 생성</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
+          {/* 템플릿에서 생성 */}
+          <div className="space-y-1.5">
+            <TemplatePicker projectId={projectId} onSelect={handleTemplateSelect} />
+          </div>
+
           {/* 제목 */}
           <div className="space-y-1.5">
             <Label htmlFor="task-title">제목</Label>

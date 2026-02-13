@@ -11,6 +11,7 @@ import {
   Activity,
   GanttChart,
   Calendar,
+  ListTodo,
   Settings,
 } from 'lucide-react'
 
@@ -44,6 +45,7 @@ const PROJECT_POLL_INTERVAL = 15_000 // 15초마다 프로젝트 존재 여부 �
 const ALL_NAV_ITEMS = [
   { label: '대시보드', href: '', icon: LayoutDashboard },
   { label: '칸반 보드', href: '/board', icon: Columns3 },
+  { label: '백로그', href: '/backlog', icon: ListTodo, featureFlag: 'feature_sprints' as const },
   { label: '간트 차트', href: '/gantt', icon: GanttChart },
   { label: '캘린더', href: '/calendar', icon: Calendar },
   { label: '워크로드', href: '/workload', icon: BarChartIcon },
@@ -122,12 +124,17 @@ export default function ProjectLayout({ children, params }: ProjectLayoutProps) 
     }
   }, [showDeletedDialog, queryClient])
 
-  // 뷰어는 설정 탭 숨김
+  // 뷰어는 설정 탭 숨김, 피처 플래그 비활성 탭 숨김
   const currentRole = members?.find((m) => m.user_id === user?.id)?.role
   const isViewer = currentRole === MEMBER_ROLE.VIEWER
-  const navItems = ALL_NAV_ITEMS.filter(
-    (item) => !('adminOnly' in item && item.adminOnly && isViewer),
-  )
+  const navItems = ALL_NAV_ITEMS.filter((item) => {
+    if ('adminOnly' in item && item.adminOnly && isViewer) return false
+    if ('featureFlag' in item && item.featureFlag) {
+      const flagValue = (project as unknown as Record<string, unknown>)?.[item.featureFlag]
+      if (!flagValue) return false
+    }
+    return true
+  })
 
   const activeTabRef = useCallback((node: HTMLButtonElement | null) => {
     if (node) {

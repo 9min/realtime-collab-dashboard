@@ -48,8 +48,8 @@ describe('constants', () => {
   })
 
   describe('WIDGET_TYPE', () => {
-    it('5가지 위젯 타입', () => {
-      expect(Object.values(WIDGET_TYPE)).toHaveLength(5)
+    it('6가지 위젯 타입', () => {
+      expect(Object.values(WIDGET_TYPE)).toHaveLength(6)
     })
   })
 
