@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button'
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -49,11 +50,11 @@ export function WipLimitDialog({
       <DialogContent className="sm:max-w-sm">
         <DialogHeader>
           <DialogTitle>WIP 제한 설정</DialogTitle>
+          <DialogDescription>
+            &quot;{columnTitle}&quot; 컬럼의 최대 태스크 수를 설정합니다.
+          </DialogDescription>
         </DialogHeader>
         <div className="space-y-4 py-2">
-          <p className="text-muted-foreground text-sm">
-            &quot;{columnTitle}&quot; 컬럼의 최대 태스크 수를 설정합니다.
-          </p>
           <div className="flex items-center justify-between">
             <Label htmlFor="wip-toggle">WIP 제한 활성화</Label>
             <Switch

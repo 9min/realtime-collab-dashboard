@@ -85,6 +85,7 @@ export function usePresence(projectId: string) {
       channel.untrack()
       supabase.removeChannel(channel)
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- user_metadata는 fallback 용도이며 채널 재생성을 유발하면 안 됨
   }, [supabase, projectId, user?.id])
 
   // 프로필 변경 시 채널 재생성 없이 presence 정보만 업데이트
@@ -97,6 +98,7 @@ export function usePresence(projectId: string) {
       avatar_url: profile.avatar_url ?? null,
       online_at: new Date().toISOString(),
     })
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- user_metadata는 fallback 용도이며 불필요한 re-track 방지
   }, [profile, user?.id])
 
   return { onlineUsers }

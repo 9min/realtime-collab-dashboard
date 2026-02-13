@@ -1,4 +1,5 @@
 'use client'
+'use no memo'
 
 import { useMemo, useRef } from 'react'
 import { useVirtualizer } from '@tanstack/react-virtual'
@@ -81,6 +82,7 @@ export function ActivityFeed({ projectId }: ActivityFeedProps) {
     return items
   }, [activities, searchText, actionTypes, entityTypes, userIds])
 
+  // eslint-disable-next-line react-hooks/incompatible-library -- 'use no memo'로 Compiler 스킵 처리됨
   const virtualizer = useVirtualizer({
     count: flatItems.length,
     getScrollElement: () => parentRef.current,
