@@ -21,6 +21,12 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: '실시간 협업 일정관리 도구',
   description: '소규모 팀을 위한 실시간 협업 대시보드',
+  openGraph: {
+    title: '실시간 협업 일정관리 도구',
+    description: '칸반 보드 · 실시간 동기화 · 팀 협업',
+    siteName: 'mini-flow',
+    type: 'website',
+  },
 }
 
 // Next.js App Router 규약: layout/page는 default export 필수
