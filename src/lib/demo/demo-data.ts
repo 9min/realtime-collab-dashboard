@@ -10,6 +10,8 @@ import {
   DEMO_TIME_ENTRY_IDS,
   DEMO_CUSTOM_FIELD_IDS,
   DEMO_SPRINT_IDS,
+  DEMO_AUTOMATION_RULE_IDS,
+  DEMO_AUTOMATION_EXECUTION_IDS,
 } from './constants'
 
 // ── 날짜 헬퍼 ──
@@ -86,8 +88,8 @@ export const DEMO_PROJECTS = [
     feature_templates: true,
     feature_time_tracking: true,
     feature_custom_fields: true,
-    feature_sprints: false,
-    feature_automations: false,
+    feature_sprints: true,
+    feature_automations: true,
     created_at: isoAgo(14),
     updated_at: NOW,
   },
@@ -179,6 +181,8 @@ export const DEMO_TASKS = [
     id: 'demo-task-001',
     project_id: DEMO_PROJECT_ID,
     column_id: DEMO_COLUMN_IDS.TODO,
+    sprint_id: DEMO_SPRINT_IDS.SPRINT_2,
+    estimated_minutes: 120,
     title: '사용자 프로필 페이지 디자인',
     description: `## 목표
 사용자가 자신의 프로필 정보를 직관적으로 확인하고 수정할 수 있는 페이지를 디자인합니다.
@@ -206,6 +210,8 @@ export const DEMO_TASKS = [
     id: 'demo-task-002',
     project_id: DEMO_PROJECT_ID,
     column_id: DEMO_COLUMN_IDS.TODO,
+    sprint_id: DEMO_SPRINT_IDS.SPRINT_2,
+    estimated_minutes: 180,
     title: 'API 문서 작성',
     description: `## 목표
 프론트엔드 및 외부 개발자가 참조할 수 있는 REST API 명세서를 작성합니다.
@@ -237,6 +243,8 @@ OpenAPI 3.0 스펙 기반으로 작성하고, Swagger UI로 인터랙티브 테�
     id: 'demo-task-003',
     project_id: DEMO_PROJECT_ID,
     column_id: DEMO_COLUMN_IDS.TODO,
+    sprint_id: null,
+    estimated_minutes: 480,
     title: '이메일 알림 시스템 구현',
     description: `## 목표
 사용자에게 중요한 이벤트 발생 시 이메일로 알림을 발송하는 시스템을 구현합니다.
@@ -270,6 +278,8 @@ OpenAPI 3.0 스펙 기반으로 작성하고, Swagger UI로 인터랙티브 테�
     id: 'demo-task-004',
     project_id: DEMO_PROJECT_ID,
     column_id: DEMO_COLUMN_IDS.DISCUSSION,
+    sprint_id: DEMO_SPRINT_IDS.SPRINT_2,
+    estimated_minutes: null,
     title: '다크 모드 색상 체계 개선',
     description: `## 문제
 현재 다크 모드에서 일부 요소의 색상 대비가 WCAG 2.1 AA 기준(4.5:1)을 충족하지 못하고 있습니다.
@@ -302,6 +312,8 @@ OpenAPI 3.0 스펙 기반으로 작성하고, Swagger UI로 인터랙티브 테�
     id: 'demo-task-005',
     project_id: DEMO_PROJECT_ID,
     column_id: DEMO_COLUMN_IDS.IN_PROGRESS,
+    sprint_id: DEMO_SPRINT_IDS.SPRINT_2,
+    estimated_minutes: 300,
     title: '실시간 알림 기능 구현',
     description: `## 목표
 사용자에게 태스크 변경, 멘션, 할당 등의 이벤트를 실시간으로 전달하는 알림 시스템을 구축합니다.
@@ -338,6 +350,8 @@ OpenAPI 3.0 스펙 기반으로 작성하고, Swagger UI로 인터랙티브 테�
     id: 'demo-task-006',
     project_id: DEMO_PROJECT_ID,
     column_id: DEMO_COLUMN_IDS.IN_PROGRESS,
+    sprint_id: DEMO_SPRINT_IDS.SPRINT_2,
+    estimated_minutes: 360,
     title: '간트 차트 뷰 개발',
     description: `## 목표
 프로젝트의 태스크들을 타임라인 형태로 시각화하여 일정 관리와 의존성 파악을 용이하게 합니다.
@@ -379,6 +393,8 @@ OpenAPI 3.0 스펙 기반으로 작성하고, Swagger UI로 인터랙티브 테�
     id: 'demo-task-007',
     project_id: DEMO_PROJECT_ID,
     column_id: DEMO_COLUMN_IDS.IN_PROGRESS,
+    sprint_id: DEMO_SPRINT_IDS.SPRINT_2,
+    estimated_minutes: 240,
     title: '검색 기능 고도화',
     description: `## 목표
 \`Cmd+K\` / \`Ctrl+K\`로 열리는 글로벌 검색 다이얼로그를 구현하여 프로젝트, 태스크, 댓글을 통합 검색합니다.
@@ -414,6 +430,8 @@ OpenAPI 3.0 스펙 기반으로 작성하고, Swagger UI로 인터랙티브 테�
     id: 'demo-task-008',
     project_id: DEMO_PROJECT_ID,
     column_id: DEMO_COLUMN_IDS.DONE,
+    sprint_id: DEMO_SPRINT_IDS.SPRINT_1,
+    estimated_minutes: 240,
     title: '프로젝트 초기 설정',
     description: `## 완료 내용
 프로젝트의 기반 기술 스택 구성과 개발 환경 셋업을 완료했습니다.
@@ -442,6 +460,8 @@ OpenAPI 3.0 스펙 기반으로 작성하고, Swagger UI로 인터랙티브 테�
     id: 'demo-task-009',
     project_id: DEMO_PROJECT_ID,
     column_id: DEMO_COLUMN_IDS.DONE,
+    sprint_id: DEMO_SPRINT_IDS.SPRINT_1,
+    estimated_minutes: 360,
     title: 'OAuth 로그인 구현',
     description: `## 완료 내용
 Google 및 Kakao OAuth 소셜 로그인을 Supabase Auth로 구현 완료했습니다.
@@ -477,6 +497,8 @@ Google 및 Kakao OAuth 소셜 로그인을 Supabase Auth로 구현 완료했습�
     id: 'demo-task-010',
     project_id: DEMO_PROJECT_ID,
     column_id: DEMO_COLUMN_IDS.DONE,
+    sprint_id: DEMO_SPRINT_IDS.SPRINT_1,
+    estimated_minutes: 300,
     title: '데이터베이스 스키마 설계',
     description: `## 완료 내용
 서비스 전체 데이터 모델을 설계하고 Supabase 마이그레이션으로 반영 완료했습니다.
@@ -980,6 +1002,7 @@ export const DEMO_DASHBOARD_LAYOUTS = [
       { widget_id: 'default-burndown', type: 'burndown', x: 8, y: 0, w: 4, h: 3 },
       { widget_id: 'default-member-list', type: 'member-list', x: 0, y: 3, w: 4, h: 3 },
       { widget_id: 'default-my-favorites', type: 'my-favorites', x: 4, y: 3, w: 4, h: 3 },
+      { widget_id: 'default-time-report', type: 'time-report', x: 8, y: 3, w: 4, h: 3 },
     ],
     created_at: isoAgo(14),
     updated_at: NOW,
@@ -1070,6 +1093,41 @@ export const DEMO_TASK_ASSIGNEES = [
     user_id: DEMO_USER_ID,
     role: 'assignee',
     created_at: isoAgo(8),
+  },
+  {
+    id: 'demo-ta-0000-000000000006',
+    task_id: 'demo-task-006',
+    user_id: DEMO_MEMBER_IDS.BOB,
+    role: 'assignee',
+    created_at: isoAgo(7),
+  },
+  {
+    id: 'demo-ta-0000-000000000007',
+    task_id: 'demo-task-007',
+    user_id: DEMO_MEMBER_IDS.BOB,
+    role: 'assignee',
+    created_at: isoAgo(9),
+  },
+  {
+    id: 'demo-ta-0000-000000000008',
+    task_id: 'demo-task-007',
+    user_id: DEMO_MEMBER_IDS.ALICE,
+    role: 'watcher',
+    created_at: isoAgo(8),
+  },
+  {
+    id: 'demo-ta-0000-000000000009',
+    task_id: 'demo-task-004',
+    user_id: DEMO_MEMBER_IDS.CHARLIE,
+    role: 'assignee',
+    created_at: isoAgo(3),
+  },
+  {
+    id: 'demo-ta-0000-000000000010',
+    task_id: 'demo-task-004',
+    user_id: DEMO_USER_ID,
+    role: 'watcher',
+    created_at: isoAgo(3),
   },
 ]
 
@@ -1259,6 +1317,70 @@ export const DEMO_CUSTOM_FIELD_VALUES = [
     created_at: isoAgo(3),
     updated_at: isoAgo(3),
   },
+  {
+    id: 'demo-cfv-003',
+    task_id: 'demo-task-005',
+    field_id: DEMO_CUSTOM_FIELD_IDS.STORY_POINTS,
+    value: '8',
+    created_at: isoAgo(10),
+    updated_at: isoAgo(10),
+  },
+  {
+    id: 'demo-cfv-004',
+    task_id: 'demo-task-005',
+    field_id: DEMO_CUSTOM_FIELD_IDS.ENVIRONMENT,
+    value: '개발',
+    created_at: isoAgo(10),
+    updated_at: isoAgo(10),
+  },
+  {
+    id: 'demo-cfv-005',
+    task_id: 'demo-task-006',
+    field_id: DEMO_CUSTOM_FIELD_IDS.STORY_POINTS,
+    value: '13',
+    created_at: isoAgo(8),
+    updated_at: isoAgo(8),
+  },
+  {
+    id: 'demo-cfv-006',
+    task_id: 'demo-task-007',
+    field_id: DEMO_CUSTOM_FIELD_IDS.STORY_POINTS,
+    value: '8',
+    created_at: isoAgo(9),
+    updated_at: isoAgo(9),
+  },
+  {
+    id: 'demo-cfv-007',
+    task_id: 'demo-task-003',
+    field_id: DEMO_CUSTOM_FIELD_IDS.ENVIRONMENT,
+    value: '스테이징',
+    created_at: isoAgo(5),
+    updated_at: isoAgo(5),
+  },
+  {
+    id: 'demo-cfv-008',
+    task_id: 'demo-task-008',
+    field_id: DEMO_CUSTOM_FIELD_IDS.STORY_POINTS,
+    value: '3',
+    created_at: isoAgo(14),
+    updated_at: isoAgo(14),
+  },
+  {
+    id: 'demo-cfv-009',
+    task_id: 'demo-task-009',
+    field_id: DEMO_CUSTOM_FIELD_IDS.STORY_POINTS,
+    value: '8',
+    created_at: isoAgo(13),
+    updated_at: isoAgo(13),
+  },
+  {
+    id: 'demo-cfv-010',
+    task_id: 'demo-task-010',
+    field_id: DEMO_CUSTOM_FIELD_IDS.STORY_POINTS,
+    value: '5',
+    created_at: isoAgo(12),
+    updated_at: isoAgo(12),
+  },
 ]
 
 // ── Sprints ──
@@ -1290,15 +1412,119 @@ export const DEMO_SPRINTS = [
     created_at: isoAgo(1),
     updated_at: isoAgo(1),
   },
+  {
+    id: DEMO_SPRINT_IDS.SPRINT_3,
+    project_id: DEMO_PROJECT_ID,
+    name: '스프린트 3',
+    goal: '이메일 알림, 프로필 페이지, 성능 최적화',
+    start_date: daysFromNow(14),
+    end_date: daysFromNow(27),
+    status: 'planned',
+    created_by: DEMO_USER_ID,
+    completed_at: null,
+    created_at: isoAgo(0),
+    updated_at: isoAgo(0),
+  },
 ]
 
 // ── Automation Rules ──
 
-export const DEMO_AUTOMATION_RULES: Record<string, unknown>[] = []
+export const DEMO_AUTOMATION_RULES = [
+  {
+    id: DEMO_AUTOMATION_RULE_IDS.RULE_1,
+    project_id: DEMO_PROJECT_ID,
+    name: '완료 시 우선순위 낮춤',
+    trigger_type: 'task_moved_to_column',
+    trigger_config: { column_id: DEMO_COLUMN_IDS.DONE },
+    action_type: 'set_priority',
+    action_config: { priority: 'low' },
+    is_active: true,
+    execution_count: 3,
+    last_executed_at: isoAgo(1),
+    created_by: DEMO_USER_ID,
+    created_at: isoAgo(10),
+    updated_at: isoAgo(1),
+  },
+  {
+    id: DEMO_AUTOMATION_RULE_IDS.RULE_2,
+    project_id: DEMO_PROJECT_ID,
+    name: '긴급 태스크 생성 시 알림',
+    trigger_type: 'task_created',
+    trigger_config: {},
+    action_type: 'send_notification',
+    action_config: { message: '새 태스크가 생성되었습니다' },
+    is_active: true,
+    execution_count: 5,
+    last_executed_at: isoAgo(0),
+    created_by: DEMO_USER_ID,
+    created_at: isoAgo(8),
+    updated_at: isoAgo(0),
+  },
+  {
+    id: DEMO_AUTOMATION_RULE_IDS.RULE_3,
+    project_id: DEMO_PROJECT_ID,
+    name: '우선순위 변경 시 논의 필요로 이동',
+    trigger_type: 'priority_changed',
+    trigger_config: { priority: 'urgent' },
+    action_type: 'move_to_column',
+    action_config: { column_id: DEMO_COLUMN_IDS.DISCUSSION },
+    is_active: false,
+    execution_count: 1,
+    last_executed_at: isoAgo(5),
+    created_by: DEMO_MEMBER_IDS.ALICE,
+    created_at: isoAgo(7),
+    updated_at: isoAgo(5),
+  },
+]
 
 // ── Automation Executions ──
 
-export const DEMO_AUTOMATION_EXECUTIONS: Record<string, unknown>[] = []
+export const DEMO_AUTOMATION_EXECUTIONS = [
+  {
+    id: DEMO_AUTOMATION_EXECUTION_IDS.EXEC_1,
+    rule_id: DEMO_AUTOMATION_RULE_IDS.RULE_1,
+    project_id: DEMO_PROJECT_ID,
+    trigger_entity_id: 'demo-task-008',
+    trigger_data: { task_title: '프로젝트 초기 설정', column: '완료' },
+    action_result: { previous_priority: 'high', new_priority: 'low' },
+    status: 'success',
+    error_message: null,
+    executed_at: isoAgo(12),
+  },
+  {
+    id: DEMO_AUTOMATION_EXECUTION_IDS.EXEC_2,
+    rule_id: DEMO_AUTOMATION_RULE_IDS.RULE_1,
+    project_id: DEMO_PROJECT_ID,
+    trigger_entity_id: 'demo-task-009',
+    trigger_data: { task_title: 'OAuth 로그인 구현', column: '완료' },
+    action_result: { previous_priority: 'urgent', new_priority: 'low' },
+    status: 'success',
+    error_message: null,
+    executed_at: isoAgo(8),
+  },
+  {
+    id: DEMO_AUTOMATION_EXECUTION_IDS.EXEC_3,
+    rule_id: DEMO_AUTOMATION_RULE_IDS.RULE_2,
+    project_id: DEMO_PROJECT_ID,
+    trigger_entity_id: 'demo-task-004',
+    trigger_data: { task_title: '다크 모드 색상 체계 개선' },
+    action_result: { notification_sent: true },
+    status: 'success',
+    error_message: null,
+    executed_at: isoAgo(3),
+  },
+  {
+    id: DEMO_AUTOMATION_EXECUTION_IDS.EXEC_4,
+    rule_id: DEMO_AUTOMATION_RULE_IDS.RULE_3,
+    project_id: DEMO_PROJECT_ID,
+    trigger_entity_id: 'demo-task-004',
+    trigger_data: { task_title: '다크 모드 색상 체계 개선', new_priority: 'urgent' },
+    action_result: { moved_to_column: '논의 필요' },
+    status: 'success',
+    error_message: null,
+    executed_at: isoAgo(5),
+  },
+]
 
 // ── 전체 데이터 맵 (테이블명 → 데이터 배열) ──
 

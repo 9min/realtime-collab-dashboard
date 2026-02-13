@@ -37,12 +37,18 @@ const FavoritesWidget = dynamic(
   { loading: () => <WidgetSkeleton /> },
 )
 
+const WeeklyTimeChart = dynamic(
+  () => import('../time/weekly-time-chart').then((mod) => ({ default: mod.WeeklyTimeChart })),
+  { loading: () => <WidgetSkeleton /> },
+)
+
 const WIDGET_ACCENT: Record<string, string> = {
   [WIDGET_TYPE.TASK_STATUS]: 'border-t-blue-500',
   [WIDGET_TYPE.WEEKLY_PROGRESS]: 'border-t-emerald-500',
   [WIDGET_TYPE.BURNDOWN]: 'border-t-orange-500',
   [WIDGET_TYPE.MEMBER_LIST]: 'border-t-violet-500',
   [WIDGET_TYPE.MY_FAVORITES]: 'border-t-amber-500',
+  [WIDGET_TYPE.TIME_REPORT]: 'border-t-cyan-500',
 }
 
 interface WidgetCardProps {
@@ -100,6 +106,8 @@ function WidgetContent({ type, projectId }: { type: WidgetType; projectId: strin
       return <MemberListWidget projectId={projectId} />
     case WIDGET_TYPE.MY_FAVORITES:
       return <FavoritesWidget />
+    case WIDGET_TYPE.TIME_REPORT:
+      return <WeeklyTimeChart projectId={projectId} />
     default:
       return (
         <div className="text-muted-foreground flex h-full items-center justify-center text-sm">

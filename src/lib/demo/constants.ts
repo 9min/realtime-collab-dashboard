@@ -70,4 +70,20 @@ export const DEMO_CUSTOM_FIELD_IDS = {
 export const DEMO_SPRINT_IDS = {
   SPRINT_1: 'demo-sprint-0000-000000000001',
   SPRINT_2: 'demo-sprint-0000-000000000002',
+  SPRINT_3: 'demo-sprint-0000-000000000003',
+} as const
+
+// 자동화 규칙 ID
+export const DEMO_AUTOMATION_RULE_IDS = {
+  RULE_1: 'demo-auto-0000-000000000001',
+  RULE_2: 'demo-auto-0000-000000000002',
+  RULE_3: 'demo-auto-0000-000000000003',
+} as const
+
+// 자동화 실행 ID
+export const DEMO_AUTOMATION_EXECUTION_IDS = {
+  EXEC_1: 'demo-exec-0000-000000000001',
+  EXEC_2: 'demo-exec-0000-000000000002',
+  EXEC_3: 'demo-exec-0000-000000000003',
+  EXEC_4: 'demo-exec-0000-000000000004',
 } as const
