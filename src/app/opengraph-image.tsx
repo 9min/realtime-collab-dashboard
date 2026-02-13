@@ -14,7 +14,7 @@ export default function OgImage() {
           height: '100%',
           display: 'flex',
           flexDirection: 'column',
-          background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%)',
+          background: 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 50%, #f1f5f9 100%)',
           padding: '60px 80px',
           fontFamily: 'sans-serif',
         }}
@@ -24,7 +24,7 @@ export default function OgImage() {
           style={{
             display: 'flex',
             width: '100%',
-            height: '4px',
+            height: '5px',
             background: 'linear-gradient(90deg, #3b82f6, #8b5cf6, #ec4899)',
             borderRadius: '2px',
             position: 'absolute',
@@ -34,23 +34,23 @@ export default function OgImage() {
         />
 
         {/* 칸반 카드들 (배경 장식) */}
-        <div style={{ display: 'flex', gap: '24px', position: 'absolute', top: '60px', right: '80px', opacity: 0.15 }}>
+        <div style={{ display: 'flex', gap: '24px', position: 'absolute', top: '60px', right: '80px', opacity: 0.12 }}>
           {/* 칼럼 1 */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', width: '140px' }}>
-            <div style={{ background: '#3b82f6', borderRadius: '8px', height: '80px', width: '100%' }} />
-            <div style={{ background: '#3b82f6', borderRadius: '8px', height: '60px', width: '100%' }} />
-            <div style={{ background: '#3b82f6', borderRadius: '8px', height: '100px', width: '100%' }} />
+            <div style={{ background: '#3b82f6', borderRadius: '10px', height: '80px', width: '100%' }} />
+            <div style={{ background: '#3b82f6', borderRadius: '10px', height: '60px', width: '100%' }} />
+            <div style={{ background: '#3b82f6', borderRadius: '10px', height: '100px', width: '100%' }} />
           </div>
           {/* 칼럼 2 */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', width: '140px' }}>
-            <div style={{ background: '#8b5cf6', borderRadius: '8px', height: '100px', width: '100%' }} />
-            <div style={{ background: '#8b5cf6', borderRadius: '8px', height: '70px', width: '100%' }} />
+            <div style={{ background: '#8b5cf6', borderRadius: '10px', height: '100px', width: '100%' }} />
+            <div style={{ background: '#8b5cf6', borderRadius: '10px', height: '70px', width: '100%' }} />
           </div>
           {/* 칼럼 3 */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', width: '140px' }}>
-            <div style={{ background: '#10b981', borderRadius: '8px', height: '60px', width: '100%' }} />
-            <div style={{ background: '#10b981', borderRadius: '8px', height: '90px', width: '100%' }} />
-            <div style={{ background: '#10b981', borderRadius: '8px', height: '70px', width: '100%' }} />
+            <div style={{ background: '#10b981', borderRadius: '10px', height: '60px', width: '100%' }} />
+            <div style={{ background: '#10b981', borderRadius: '10px', height: '90px', width: '100%' }} />
+            <div style={{ background: '#10b981', borderRadius: '10px', height: '70px', width: '100%' }} />
           </div>
         </div>
 
@@ -83,7 +83,7 @@ export default function OgImage() {
                 <rect x="14" y="14" width="7" height="7" rx="1" />
               </svg>
             </div>
-            <span style={{ fontSize: '24px', color: '#94a3b8', fontWeight: 600, letterSpacing: '0.05em' }}>
+            <span style={{ fontSize: '24px', color: '#475569', fontWeight: 600, letterSpacing: '0.05em' }}>
               mini-flow
             </span>
           </div>
@@ -93,7 +93,7 @@ export default function OgImage() {
             style={{
               fontSize: '52px',
               fontWeight: 800,
-              color: '#f8fafc',
+              color: '#0f172a',
               lineHeight: 1.2,
               margin: 0,
               letterSpacing: '-0.02em',
@@ -108,7 +108,7 @@ export default function OgImage() {
           <p
             style={{
               fontSize: '22px',
-              color: '#94a3b8',
+              color: '#64748b',
               marginTop: '20px',
               lineHeight: 1.5,
             }}
@@ -125,9 +125,9 @@ export default function OgImage() {
                   display: 'flex',
                   padding: '8px 18px',
                   borderRadius: '20px',
-                  background: 'rgba(59, 130, 246, 0.15)',
-                  border: '1px solid rgba(59, 130, 246, 0.3)',
-                  color: '#60a5fa',
+                  background: 'rgba(59, 130, 246, 0.1)',
+                  border: '1px solid rgba(59, 130, 246, 0.25)',
+                  color: '#3b82f6',
                   fontSize: '15px',
                   fontWeight: 500,
                 }}
