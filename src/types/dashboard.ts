@@ -58,6 +58,13 @@ export const WIDGET_REGISTRY: WidgetConfig[] = [
     defaultSize: { w: 4, h: 3 },
     minSize: { w: 3, h: 2 },
   },
+  {
+    type: WIDGET_TYPE.TIME_REPORT,
+    title: '주간 시간 리포트',
+    description: '이번 주 기록된 작업 시간 차트',
+    defaultSize: { w: 4, h: 3 },
+    minSize: { w: 3, h: 2 },
+  },
 ]
 
 // 차트 데이터 타입

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import {
   ChevronDown,
   Play,
@@ -77,6 +77,13 @@ export function SprintHeader({ projectId, canManage }: SprintHeaderProps) {
     () => sprints?.find((s) => s.status === SPRINT_STATUS.ACTIVE) ?? null,
     [sprints],
   )
+
+  // 스프린트 미선택 시 활성 스프린트 자동 선택
+  useEffect(() => {
+    if (!selectedSprintId && activeSprint) {
+      setSelectedSprintId(activeSprint.id)
+    }
+  }, [selectedSprintId, activeSprint, setSelectedSprintId])
 
   const unfinishedCount = useMemo(() => {
     if (!selectedSprint) return 0
