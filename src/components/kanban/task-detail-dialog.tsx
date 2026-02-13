@@ -1,7 +1,9 @@
 'use client'
 
 import { useState } from 'react'
-import { Calendar, Trash2, User } from 'lucide-react'
+import Link from 'next/link'
+import { usePathname } from 'next/navigation'
+import { Calendar, Columns3, Trash2, User } from 'lucide-react'
 
 import {
   AlertDialog,
@@ -81,9 +83,11 @@ interface TaskDetailDialogProps {
 
 export function TaskDetailDialog({ projectId, task, open, onOpenChange, canEdit = true, canDeleteAll = false, labels, taskLabelIds, projectFeatures }: TaskDetailDialogProps) {
   const { user } = useAuth()
+  const pathname = usePathname()
   const updateTaskMutation = useUpdateTask(projectId)
   const deleteTaskMutation = useDeleteTask(projectId)
   const { data: members } = useProjectMembers(projectId)
+  const isOnBoardPage = pathname.includes(`/projects/${projectId}/board`)
 
   // 담당자 기반 권한: 담당자 없으면 모든 멤버 가능, 있으면 owner/admin/담당자만
   const canInteract = canDeleteAll || (canEdit && (task?.assignee_id === null || task?.assignee_id === user?.id))
@@ -160,6 +164,18 @@ export function TaskDetailDialog({ projectId, task, open, onOpenChange, canEdit 
         </DialogHeader>
 
         <div className="flex min-h-0 flex-col gap-4 overflow-y-auto pr-2">
+          {/* 칸반 보드 이동 링크 */}
+          {!isOnBoardPage && (
+            <Link
+              href={`/projects/${projectId}/board?taskId=${task.id}`}
+              className="inline-flex w-fit items-center gap-1.5 rounded-full border border-blue-200 bg-blue-50 px-2.5 py-1 text-xs font-medium text-blue-600 transition-colors hover:bg-blue-100 dark:border-blue-800 dark:bg-blue-950/50 dark:text-blue-400 dark:hover:bg-blue-900/50"
+              onClick={() => onOpenChange(false)}
+            >
+              <Columns3 className="h-3 w-3" />
+              칸반 보드에서 보기
+            </Link>
+          )}
+
           {/* 우선순위 */}
           <div className="flex items-center gap-2">
             <span className="text-muted-foreground w-16 text-sm">우선순위</span>
