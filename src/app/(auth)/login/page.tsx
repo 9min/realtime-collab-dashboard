@@ -7,6 +7,7 @@ import { KanbanSquare, LayoutDashboard, Loader2, Play, Users } from 'lucide-reac
 
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
+import { DEMO_PROJECT_ID } from '@/lib/demo/constants'
 import { createBrowserClient } from '@/lib/supabase/client'
 import { useDemoModeStore } from '@/stores/demo-mode-store'
 
@@ -48,7 +49,7 @@ export default function LoginPage() {
   const handleDemoMode = () => {
     setIsDemoLoading(true)
     enterDemoMode()
-    router.push('/projects')
+    router.push(`/projects/${DEMO_PROJECT_ID}`)
   }
 
   return (
