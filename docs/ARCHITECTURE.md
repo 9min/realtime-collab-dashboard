@@ -16,7 +16,7 @@
           │                 │                    │
           ▼                 ▼                    ▼
 ┌─────────────────────────────────────────────────────────────┐
-│                    Next.js 15 (Vercel)                        │
+│                    Next.js 16 (Vercel)                        │
 │  ┌──────────────┐  ┌──────────────┐  ┌───────────────────┐  │
 │  │ App Router    │  │ API Routes   │  │ Middleware         │  │
 │  │ (SSR/SSG)     │  │ (Server      │  │ (Auth Check)       │  │
@@ -86,6 +86,8 @@ src/
 │   │   │       │   └── page.tsx      # 캘린더 뷰
 │   │   │       ├── gantt/
 │   │   │       │   └── page.tsx      # 간트 차트
+│   │   │       ├── backlog/
+│   │   │       │   └── page.tsx      # 백로그 (스프린트 미할당 태스크)
 │   │   │       ├── workload/
 │   │   │       │   └── page.tsx      # 워크로드 차트
 │   │   │       └── settings/
@@ -135,6 +137,8 @@ src/
 │   ├── gantt/                        # 간트 차트
 │   ├── workload/                     # 워크로드 차트
 │   ├── activity/                     # 활동 로그 피드
+│   ├── automation/                   # 자동화 규칙 관리, 실행 로그
+│   ├── custom-fields/                # 커스텀 필드 정의/값 관리
 │   ├── my-tasks/                     # 내 태스크 목록
 │   ├── notification/                 # 알림 벨, 알림 목록
 │   ├── presence/                     # 온라인 유저 목록, 아바타
@@ -142,6 +146,8 @@ src/
 │   ├── project/                      # 프로젝트 CRUD, 멤버 관리
 │   ├── realtime/                     # Realtime 연결 상태 표시
 │   ├── search/                       # 글로벌 검색 (Cmd+K)
+│   ├── sprint/                       # 스프린트 관리, 벨로시티 차트
+│   ├── time/                         # 시간 추적, 타이머 위젯
 │   └── providers/                    # Query, Theme, Supabase Provider
 │
 ├── hooks/
@@ -176,7 +182,15 @@ src/
 │   ├── maintenance.ts                # 점검 모드 설정 로드
 │   ├── task-filter.ts                # 태스크 필터링 로직
 │   ├── mention-utils.ts              # @멘션 파싱/감지
-│   └── gantt-utils.ts                # 간트 차트 계산
+│   ├── gantt-utils.ts                # 간트 차트 계산
+│   ├── activity-constants.ts         # 활동 로그 상수
+│   ├── activity-filter.ts            # 활동 필터링 로직
+│   ├── api-middleware.ts             # API 미들웨어 유틸
+│   ├── crypto.ts                     # 암호화 유틸
+│   ├── env.ts                        # 환경변수 검증
+│   ├── keyboard-shortcuts.ts         # 단축키 정의
+│   ├── my-tasks-utils.ts             # 내 태스크 유틸
+│   └── url-validator.ts              # URL 검증
 │
 ├── stores/
 │   ├── ui-store.ts                   # 사이드바 열림/닫힘, 모달 상태
@@ -189,6 +203,8 @@ src/
 │   ├── realtime-store.ts             # Realtime 연결 상태
 │   ├── search-store.ts               # 글로벌 검색 상태
 │   ├── shortcut-help-store.ts        # 단축키 도움말 다이얼로그
+│   ├── sprint-store.ts               # 스프린트 뷰 상태
+│   ├── timer-store.ts                # 타이머 위젯 상태
 │   └── demo-mode-store.ts            # 데모 모드 상태
 │
 ├── services/
@@ -216,7 +232,13 @@ src/
 │   ├── recurrence-service.ts         # 반복 태스크
 │   ├── workload-service.ts           # 워크로드 데이터 집계
 │   ├── my-tasks-service.ts           # 내 태스크 조회
-│   └── kanban-filter-service.ts      # 칸반 필터 프리셋 저장/조회
+│   ├── kanban-filter-service.ts      # 칸반 필터 프리셋 저장/조회
+│   ├── task-assignee-service.ts      # 다중 담당자 관리
+│   ├── task-template-service.ts      # 태스크 템플릿
+│   ├── time-entry-service.ts         # 시간 기록 CRUD
+│   ├── custom-field-service.ts       # 커스텀 필드 정의/값 관리
+│   ├── sprint-service.ts             # 스프린트 CRUD
+│   └── automation-service.ts         # 자동화 규칙/실행 관리
 │
 ├── queries/
 │   ├── use-projects.ts               # 프로젝트 목록/상세 쿼리
@@ -241,7 +263,13 @@ src/
 │   ├── use-recurrences.ts            # 반복 태스크 쿼리 + mutations
 │   ├── use-workload.ts               # 워크로드 쿼리
 │   ├── use-my-tasks.ts               # 내 태스크 쿼리
-│   └── use-kanban-filter-preset.ts   # 칸반 필터 프리셋 쿼리 + mutations
+│   ├── use-kanban-filter-preset.ts   # 칸반 필터 프리셋 쿼리 + mutations
+│   ├── use-task-assignees.ts         # 다중 담당자 쿼리 + mutations
+│   ├── use-task-templates.ts         # 태스크 템플릿 쿼리 + mutations
+│   ├── use-time-entries.ts           # 시간 기록 쿼리 + mutations
+│   ├── use-custom-fields.ts          # 커스텀 필드 쿼리 + mutations
+│   ├── use-sprints.ts                # 스프린트 쿼리 + mutations
+│   └── use-automations.ts            # 자동화 규칙 쿼리 + mutations
 │
 ├── types/
 │   ├── database.ts                   # Supabase 생성 타입 (auto-generated)
@@ -260,7 +288,13 @@ src/
 │   ├── recurrence.ts                 # 반복 태스크 타입
 │   ├── search.ts                     # 검색 결과 타입
 │   ├── user-message.ts               # 사용자 메시지 타입
-│   └── workload.ts                   # 워크로드 타입
+│   ├── workload.ts                   # 워크로드 타입
+│   ├── task-assignee.ts              # 다중 담당자 타입
+│   ├── task-template.ts              # 태스크 템플릿 타입
+│   ├── time-tracking.ts              # 시간 추적 타입
+│   ├── custom-field.ts               # 커스텀 필드 타입
+│   ├── sprint.ts                     # 스프린트 타입
+│   └── automation.ts                 # 자동화 규칙 타입
 │
 └── middleware.ts                      # Next.js Middleware (Auth guard)
 ```
@@ -491,6 +525,26 @@ CREATE TABLE task_recurrences (id, task_id, project_id, frequency, interval_valu
 
 -- 칸반 필터 프리셋
 CREATE TABLE kanban_filter_presets (id, project_id, user_id, filters JSONB, created_at, updated_at, UNIQUE(project_id, user_id));
+
+-- 다중 담당자 (Phase 13)
+CREATE TABLE task_assignees (id, task_id, user_id, role task_assignee_role, created_at, UNIQUE(task_id, user_id));
+
+-- 태스크 템플릿
+CREATE TABLE task_templates (id, project_id, created_by, name, description_template, priority, subtasks_template JSONB, labels_template JSONB, is_personal, position, created_at, updated_at);
+
+-- 시간 기록
+CREATE TABLE time_entries (id, task_id, project_id, user_id, duration_minutes, description, started_at, ended_at, created_at, updated_at);
+
+-- 커스텀 필드
+CREATE TABLE custom_field_definitions (id, project_id, name, field_type custom_field_type, options JSONB, is_required, position, created_at, updated_at, UNIQUE(project_id, name));
+CREATE TABLE task_custom_field_values (id, task_id, field_id, value, created_at, updated_at, UNIQUE(task_id, field_id));
+
+-- 스프린트
+CREATE TABLE sprints (id, project_id, name, goal, start_date, end_date, status sprint_status, created_by, completed_at, created_at, updated_at);
+
+-- 자동화 규칙
+CREATE TABLE automation_rules (id, project_id, name, trigger_type, trigger_config JSONB, action_type, action_config JSONB, is_active, execution_count, last_executed_at, created_by, created_at, updated_at);
+CREATE TABLE automation_executions (id, rule_id, project_id, trigger_entity_id, trigger_data JSONB, action_result JSONB, status, error_message, executed_at);
 ```
 
 ### updated_at 자동 갱신

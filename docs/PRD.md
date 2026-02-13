@@ -26,7 +26,7 @@
 | Time to Interactive (TTI) | < 3s | Web Vitals |
 | Realtime Latency | < 500ms | Supabase Realtime 측정 |
 | Test Coverage | 80%+ | Vitest coverage report |
-| Total Tests | 700+ | Vitest (단위 703개) + Playwright (E2E 28개) |
+| Total Tests | 800+ | Vitest (단위) + Playwright (E2E) |
 | Accessibility | WCAG 2.1 AA | axe-core 자동 검사 |
 | API Rate Limit | 60 req/min | Sliding Window 측정 |
 | Cache Hit Rate | 70%+ | Redis hit/miss 카운터 |
@@ -662,10 +662,10 @@ Then 폴링 폴백으로 전환되어 데이터 동기화가 유지된다
 
 #### F34. Project Feature Flags ✅
 - **프로젝트별 기능 토글**: Owner/Admin이 설정 페이지에서 On/Off
-- **토글 가능 기능**: 라벨, 서브태스크, 의존성, 첨부파일, 댓글
-- **기본값**: 모든 기능 TRUE (활성화)
+- **토글 가능 기능**: 라벨, 서브태스크, 의존성, 첨부파일, 댓글, 다중 담당자, 템플릿, 시간 추적, 커스텀 필드, 스프린트, 자동화
+- **기본값**: Phase 1~12 기능 TRUE, Phase 13 고급 기능(시간 추적, 커스텀 필드, 스프린트, 자동화)은 FALSE
 - **UI 반영**: 비활성화된 기능은 태스크 상세에서 숨김
-- **DB**: `projects` 테이블에 `feature_*` boolean 컬럼 (마이그레이션 028, 030)
+- **DB**: `projects` 테이블에 `feature_*` boolean 컬럼 (마이그레이션 028, 030, 041~046)
 - **Acceptance Criteria**:
   - [x] 설정 페이지 기능 토글 UI (Switch)
   - [x] 라벨 토글 시 인라인 라벨 매니저 표시/숨김
@@ -830,10 +830,103 @@ Then 폴링 폴백으로 전환되어 데이터 동기화가 유지된다
 
 ---
 
+### Phase 13: Advanced Project Management — ✅ 구현 완료
+
+#### F50. Multi-Assignees & Watchers (다중 담당자) ✅
+- **다중 담당자**: 태스크에 여러 명의 담당자/워처 할당
+- **역할 구분**: assignee(담당자) / watcher(관찰자)
+- **기존 데이터 마이그레이션**: `assignee_id` → `task_assignees` 자동 이전
+- **활동 로그 연동**: 담당자 추가/제거 시 자동 기록
+- **알림 연동**: 담당자/워처 할당 시 알림 자동 생성
+- **Feature Flag**: `feature_multi_assignees` (기본 TRUE)
+- **DB**: `task_assignees` 테이블 (마이그레이션 041)
+- **Acceptance Criteria**:
+  - [x] 다중 담당자 할당/제거
+  - [x] 워처 추가/제거
+  - [x] 활동 로그 자동 기록
+  - [x] 할당 알림 자동 생성
+
+#### F51. Task Templates (태스크 템플릿) ✅
+- **템플릿 관리**: 프로젝트별 태스크 템플릿 CRUD
+- **템플릿 속성**: 이름, 설명 템플릿, 우선순위, 서브태스크 템플릿, 라벨 템플릿
+- **개인/공유**: `is_personal` 플래그로 개인 템플릿/공유 템플릿 구분
+- **권한**: 생성자 또는 admin/owner만 수정/삭제
+- **Feature Flag**: `feature_templates` (기본 TRUE)
+- **DB**: `task_templates` 테이블 (마이그레이션 042)
+- **Acceptance Criteria**:
+  - [x] 템플릿 CRUD
+  - [x] 개인/공유 템플릿 구분
+  - [x] 템플릿 기반 태스크 생성
+
+#### F52. Time Tracking (시간 추적) ✅
+- **시간 기록**: 태스크별 작업 시간 기록 (수동 입력 + 타이머)
+- **타이머 위젯**: 실시간 타이머로 작업 시간 측정
+- **예상 시간**: 태스크에 `estimated_minutes` 설정
+- **시간 요약**: 태스크별/사용자별 시간 집계
+- **주간 차트**: 주간 작업 시간 시각화
+- **Feature Flag**: `feature_time_tracking` (기본 FALSE)
+- **DB**: `time_entries` 테이블 (마이그레이션 043)
+- **Acceptance Criteria**:
+  - [x] 시간 기록 CRUD
+  - [x] 타이머 위젯 (시작/중지/기록)
+  - [x] 예상 시간 설정
+  - [x] 시간 요약 및 주간 차트
+
+#### F53. Custom Fields (커스텀 필드) ✅
+- **필드 정의**: 프로젝트별 커스텀 필드 최대 20개
+- **필드 타입**: text, number, select, date, checkbox
+- **필수 여부**: `is_required` 플래그
+- **Select 타입**: 옵션 목록 (JSONB)
+- **태스크 값**: 태스크별 커스텀 필드 값 저장
+- **권한**: admin/owner만 필드 정의 관리
+- **Feature Flag**: `feature_custom_fields` (기본 FALSE)
+- **DB**: `custom_field_definitions`, `task_custom_field_values` 테이블 (마이그레이션 044)
+- **Acceptance Criteria**:
+  - [x] 커스텀 필드 정의 CRUD
+  - [x] 5종 필드 타입 지원
+  - [x] 태스크별 커스텀 필드 값 입력
+  - [x] 프로젝트별 최대 20개 제한
+
+#### F54. Sprints (스프린트 관리) ✅
+- **스프린트 CRUD**: 생성/수정/삭제, 목표 설정
+- **스프린트 상태**: planned → active → completed
+- **활성 스프린트 제한**: 프로젝트당 최대 1개 활성 스프린트
+- **태스크 연결**: 태스크에 `sprint_id` 할당
+- **스프린트 완료**: 미완료 태스크 처리 (백로그로 이동)
+- **벨로시티 차트**: 스프린트별 완료 태스크 수 시각화
+- **백로그 뷰**: 스프린트 미할당 태스크 관리
+- **권한**: admin/owner만 스프린트 생성/관리
+- **Feature Flag**: `feature_sprints` (기본 FALSE)
+- **DB**: `sprints` 테이블 (마이그레이션 045)
+- **경로**: `/projects/[projectId]/backlog`
+- **Acceptance Criteria**:
+  - [x] 스프린트 CRUD + 목표 설정
+  - [x] 스프린트 활성화/완료
+  - [x] 태스크-스프린트 연결
+  - [x] 벨로시티 차트
+  - [x] 백로그 뷰
+
+#### F55. Automation Rules (워크플로우 자동화) ✅
+- **자동화 규칙**: 프로젝트별 최대 20개 자동화 규칙
+- **트리거**: task_created, task_moved_to_column, priority_changed, assignee_changed
+- **액션**: set_priority, move_to_column, send_notification
+- **실행 엔진**: DB 트리거 기반 자동 실행 (재귀 방지)
+- **실행 로그**: 성공/실패 기록 (`automation_executions`)
+- **활성/비활성 토글**: `is_active` 플래그
+- **권한**: admin/owner만 규칙 생성/관리
+- **Feature Flag**: `feature_automations` (기본 FALSE)
+- **DB**: `automation_rules`, `automation_executions` 테이블 (마이그레이션 046, 048)
+- **Acceptance Criteria**:
+  - [x] 자동화 규칙 CRUD
+  - [x] 4종 트리거 타입
+  - [x] 3종 액션 타입
+  - [x] DB 트리거 기반 자동 실행
+  - [x] 실행 로그 기록 및 조회
+  - [x] 활성/비활성 토글
+
+---
+
 ## Future Features (Next)
-- **템플릿**: 프로젝트 템플릿으로 빠른 프로젝트 생성
-- **시간 추적**: 태스크별 소요 시간 기록
-- **워크플로우 자동화**: 상태 변경 시 자동 액션 (예: Done 이동 시 알림)
 - **모바일 앱**: React Native 또는 PWA
 - **외부 연동 확장**: Google Calendar 연동
 - **보고서**: 주간/월간 자동 보고서 생성
@@ -915,7 +1008,7 @@ Then 폴링 폴백으로 전환되어 데이터 동기화가 유지된다
 
 ## Database Schema
 
-### Tables (20개)
+### Tables (28개)
 | 테이블 | 용도 |
 |--------|------|
 | `profiles` | 사용자 프로필 (extends auth.users) |
@@ -938,14 +1031,22 @@ Then 폴링 폴백으로 전환되어 데이터 동기화가 유지된다
 | `task_favorites` | 태스크 즐겨찾기 (N:N) |
 | `task_recurrences` | 반복 태스크 설정 |
 | `kanban_filter_presets` | 칸반 필터 프리셋 저장 |
+| `task_assignees` | 다중 담당자/워처 (N:N) |
+| `task_templates` | 태스크 템플릿 |
+| `time_entries` | 시간 기록 |
+| `custom_field_definitions` | 커스텀 필드 정의 |
+| `task_custom_field_values` | 태스크 커스텀 필드 값 |
+| `sprints` | 스프린트 관리 |
+| `automation_rules` | 자동화 규칙 |
+| `automation_executions` | 자동화 실행 로그 |
 
 ### RLS Policies
 - 모든 테이블에 RLS 활성화
 - 프로젝트 스코프 기반 정책
 - 헬퍼 함수: `is_project_member()`, `has_project_role()`, `is_admin()`
 
-### Migrations (40개)
-001~040 순차 마이그레이션으로 스키마 관리
+### Migrations (48개)
+001~048 순차 마이그레이션으로 스키마 관리
 
 ---
 
