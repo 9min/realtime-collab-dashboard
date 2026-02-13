@@ -135,6 +135,7 @@ export const WIDGET_TYPE = {
   BURNDOWN: 'burndown',
   MEMBER_LIST: 'member-list',
   MY_FAVORITES: 'my-favorites',
+  TIME_REPORT: 'time-report',
 } as const
 
 // 위젯 그리드 설정

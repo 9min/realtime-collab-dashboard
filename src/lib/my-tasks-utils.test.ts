@@ -17,6 +17,8 @@ function createTask(overrides: Partial<MyTaskWithProject> = {}): MyTaskWithProje
     created_by: 'user-1',
     created_at: '2025-01-01T00:00:00Z',
     updated_at: '2025-01-01T00:00:00Z',
+    sprint_id: null,
+    estimated_minutes: null,
     project_name: 'Project',
     column_title: 'Column',
     ...overrides,

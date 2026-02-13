@@ -13,10 +13,20 @@ interface FilterCriteria {
   }
   labelIds?: string[]
   taskLabelMap?: Map<string, string[]>
+  /** task_id → user_id[] 맵 (다중 담당자 모드) */
+  taskAssigneeUserIds?: Map<string, string[]>
 }
 
 export function filterTasks(tasks: Task[], criteria: FilterCriteria): Task[] {
-  const { searchText, priorities, assigneeIds, dueDateRange, labelIds, taskLabelMap } = criteria
+  const {
+    searchText,
+    priorities,
+    assigneeIds,
+    dueDateRange,
+    labelIds,
+    taskLabelMap,
+    taskAssigneeUserIds,
+  } = criteria
 
   return tasks.filter((task) => {
     // 검색: title + description 대소문자 무시
@@ -32,12 +42,21 @@ export function filterTasks(tasks: Task[], criteria: FilterCriteria): Task[] {
       return false
     }
 
-    // 담당자 필터
+    // 담당자 필터 (다중 담당자 지원)
     if (assigneeIds.length > 0) {
       const hasUnassigned = assigneeIds.includes(UNASSIGNED_ID)
-      const matchesAssignee = task.assignee_id !== null && assigneeIds.includes(task.assignee_id)
-      const matchesUnassigned = hasUnassigned && task.assignee_id === null
-      if (!matchesAssignee && !matchesUnassigned) return false
+      const multiAssigneeIds = taskAssigneeUserIds?.get(task.id)
+
+      if (multiAssigneeIds && multiAssigneeIds.length > 0) {
+        // 다중 담당자 모드: task_assignees에서 매칭
+        const matchesMulti = multiAssigneeIds.some((uid) => assigneeIds.includes(uid))
+        if (!matchesMulti) return false
+      } else {
+        // 레거시 단일 담당자 모드
+        const matchesAssignee = task.assignee_id !== null && assigneeIds.includes(task.assignee_id)
+        const matchesUnassigned = hasUnassigned && task.assignee_id === null
+        if (!matchesAssignee && !matchesUnassigned) return false
+      }
     }
 
     // 라벨 필터

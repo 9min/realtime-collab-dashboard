@@ -137,7 +137,7 @@ BEGIN
     NEW.priority,
     NEW.assignee_id,
     0,
-    new_due::TEXT,
+    new_due,
     NEW.created_by
   )
   RETURNING id INTO new_task_id;

@@ -8,13 +8,18 @@ import type { RealtimeChannel } from '@supabase/supabase-js'
 import { useSupabase } from '@/components/providers/supabase-provider'
 import { CHANNEL_PREFIX } from '@/lib/constants'
 import { activityKeys } from '@/queries/use-activity-logs'
+import { automationKeys } from '@/queries/use-automations'
 import { chartKeys } from '@/queries/use-chart-data'
 import { columnKeys } from '@/queries/use-columns'
 import { commentKeys } from '@/queries/use-comments'
+import { customFieldKeys } from '@/queries/use-custom-fields'
 import { dependencyKeys } from '@/queries/use-dependencies'
 import { labelKeys } from '@/queries/use-labels'
+import { sprintKeys } from '@/queries/use-sprints'
 import { subtaskKeys } from '@/queries/use-subtasks'
+import { taskAssigneeKeys } from '@/queries/use-task-assignees'
 import { taskKeys } from '@/queries/use-tasks'
+import { timeEntryKeys } from '@/queries/use-time-entries'
 import { useAuth } from '@/hooks/use-auth'
 import { CONNECTION_STATUS, useRealtimeStore } from '@/stores/realtime-store'
 
@@ -266,6 +271,98 @@ export function useRealtimeSubscription(projectId: string) {
           },
           () => {
             queryClient.invalidateQueries({ queryKey: dependencyKeys.list(projectId) })
+          },
+        )
+        // task_assignees 변경 감지
+        .on(
+          'postgres_changes',
+          {
+            event: '*',
+            schema: 'public',
+            table: 'task_assignees',
+          },
+          (payload) => {
+            const record = (payload.new ?? payload.old) as Record<string, unknown> | undefined
+            if (record && typeof record['task_id'] === 'string') {
+              queryClient.invalidateQueries({
+                queryKey: taskAssigneeKeys.list(record['task_id'] as string),
+              })
+            }
+            queryClient.invalidateQueries({ queryKey: taskAssigneeKeys.project(projectId) })
+          },
+        )
+        // time_entries 변경 감지
+        .on(
+          'postgres_changes',
+          {
+            event: '*',
+            schema: 'public',
+            table: 'time_entries',
+            filter: `project_id=eq.${projectId}`,
+          },
+          (payload) => {
+            const record = (payload.new ?? payload.old) as Record<string, unknown> | undefined
+            if (record && typeof record['task_id'] === 'string') {
+              queryClient.invalidateQueries({
+                queryKey: timeEntryKeys.byTask(record['task_id'] as string),
+              })
+              queryClient.invalidateQueries({
+                queryKey: timeEntryKeys.taskSummary(record['task_id'] as string),
+              })
+            }
+            queryClient.invalidateQueries({ queryKey: timeEntryKeys.byProject(projectId) })
+          },
+        )
+        // custom_field_definitions 변경 감지
+        .on(
+          'postgres_changes',
+          {
+            event: '*',
+            schema: 'public',
+            table: 'custom_field_definitions',
+            filter: `project_id=eq.${projectId}`,
+          },
+          () => {
+            queryClient.invalidateQueries({ queryKey: customFieldKeys.definitions(projectId) })
+          },
+        )
+        // task_custom_field_values 변경 감지
+        .on(
+          'postgres_changes',
+          {
+            event: '*',
+            schema: 'public',
+            table: 'task_custom_field_values',
+          },
+          () => {
+            queryClient.invalidateQueries({ queryKey: customFieldKeys.values(projectId) })
+          },
+        )
+        // sprints 변경 감지
+        .on(
+          'postgres_changes',
+          {
+            event: '*',
+            schema: 'public',
+            table: 'sprints',
+            filter: `project_id=eq.${projectId}`,
+          },
+          () => {
+            queryClient.invalidateQueries({ queryKey: sprintKeys.all(projectId) })
+            queryClient.invalidateQueries({ queryKey: sprintKeys.velocity(projectId) })
+          },
+        )
+        // automation_rules 변경 감지
+        .on(
+          'postgres_changes',
+          {
+            event: '*',
+            schema: 'public',
+            table: 'automation_rules',
+            filter: `project_id=eq.${projectId}`,
+          },
+          () => {
+            queryClient.invalidateQueries({ queryKey: automationKeys.rules(projectId) })
           },
         )
         .subscribe((status, _err) => {
