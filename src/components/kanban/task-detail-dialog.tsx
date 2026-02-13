@@ -144,7 +144,7 @@ export function TaskDetailDialog({ projectId, task, open, onOpenChange, canEdit 
 
   return (
     <Dialog open={open} onOpenChange={(v) => { if (!v) setIsEditing(false); onOpenChange(v) }}>
-      <DialogContent className="flex max-h-[85vh] flex-col sm:max-w-xl" onOpenAutoFocus={(e) => e.preventDefault()}>
+      <DialogContent className="flex max-h-[85vh] flex-col sm:max-w-xl" onOpenAutoFocus={(e) => { e.preventDefault(); (e.currentTarget as HTMLElement).focus() }}>
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 pr-8">
             {isEditing ? (
