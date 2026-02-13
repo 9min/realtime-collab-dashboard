@@ -11,10 +11,7 @@ async function handler(_req: NextRequest) {
   const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY
 
   if (!supabaseUrl || !serviceRoleKey) {
-    return NextResponse.json(
-      { error: '서버 환경 변수가 설정되지 않았습니다' },
-      { status: 500 },
-    )
+    return NextResponse.json({ error: '서버 환경 변수가 설정되지 않았습니다' }, { status: 500 })
   }
 
   const supabase = await createServerClient()
@@ -40,15 +37,9 @@ async function handler(_req: NextRequest) {
     const projectIds = projects?.map((p) => p.id) ?? []
 
     if (projectIds.length > 0) {
-      await supabaseAdmin
-        .from('activity_logs')
-        .delete()
-        .in('project_id', projectIds)
+      await supabaseAdmin.from('activity_logs').delete().in('project_id', projectIds)
 
-      await supabaseAdmin
-        .from('projects')
-        .delete()
-        .in('id', projectIds)
+      await supabaseAdmin.from('projects').delete().in('id', projectIds)
     }
 
     // 2. 다른 프로젝트에 남아있는 유저 참조 정리
@@ -61,16 +52,10 @@ async function handler(_req: NextRequest) {
     await supabaseAdmin.from('project_members').delete().eq('user_id', userId)
 
     // 3. tasks.created_by → NULL 처리
-    await supabaseAdmin
-      .from('tasks')
-      .update({ created_by: null })
-      .eq('created_by', userId)
+    await supabaseAdmin.from('tasks').update({ created_by: null }).eq('created_by', userId)
 
     // 4. profiles 직접 삭제 (모든 FK 참조 정리 완료 후)
-    const { error: profileError } = await supabaseAdmin
-      .from('profiles')
-      .delete()
-      .eq('id', userId)
+    const { error: profileError } = await supabaseAdmin.from('profiles').delete().eq('id', userId)
 
     if (profileError) {
       console.error('[delete-account] Profile delete error:', profileError)

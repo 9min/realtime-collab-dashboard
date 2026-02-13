@@ -48,7 +48,10 @@ export function SwimlaneBoard({
           {/* 스윔레인 헤더 */}
           <div className="flex items-center gap-2 border-b bg-gradient-to-r from-blue-50 to-indigo-50 px-4 py-2 dark:from-blue-900/40 dark:to-indigo-900/40">
             <span className="text-sm font-semibold">{group.label}</span>
-            <Badge variant="secondary" className="bg-blue-100 text-xs text-blue-700 dark:bg-blue-900/60 dark:text-blue-200">
+            <Badge
+              variant="secondary"
+              className="bg-blue-100 text-xs text-blue-700 dark:bg-blue-900/60 dark:text-blue-200"
+            >
               {group.tasks.length}
             </Badge>
           </div>
@@ -64,7 +67,7 @@ export function SwimlaneBoard({
               return (
                 <div key={column.id} className="w-60 shrink-0 border-r last:border-r-0">
                   {/* 컬럼 서브헤더 */}
-                  <div className="border-b bg-slate-50/80 px-2 py-1 text-center text-xs font-medium text-muted-foreground dark:bg-slate-900/40">
+                  <div className="text-muted-foreground border-b bg-slate-50/80 px-2 py-1 text-center text-xs font-medium dark:bg-slate-900/40">
                     {column.title}
                   </div>
 
@@ -82,9 +85,10 @@ export function SwimlaneBoard({
                         >
                           {cellTasks.map((task, index) => {
                             const taskLabelIds = taskLabelMap?.get(task.id)
-                            const taskLabelsForCard = taskLabelIds && labels
-                              ? labels.filter((l) => taskLabelIds.includes(l.id))
-                              : undefined
+                            const taskLabelsForCard =
+                              taskLabelIds && labels
+                                ? labels.filter((l) => taskLabelIds.includes(l.id))
+                                : undefined
                             return (
                               <TaskCard
                                 key={task.id}
@@ -92,7 +96,11 @@ export function SwimlaneBoard({
                                 index={index}
                                 onClick={onTaskClick}
                                 members={members}
-                                isDragDisabled={!canMoveAll && task.assignee_id !== null && task.assignee_id !== currentUserId}
+                                isDragDisabled={
+                                  !canMoveAll &&
+                                  task.assignee_id !== null &&
+                                  task.assignee_id !== currentUserId
+                                }
                                 taskLabels={taskLabelsForCard}
                                 isBlocked={blockedTaskIds?.has(task.id)}
                                 isRecurring={recurringTaskIds?.has(task.id)}

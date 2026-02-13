@@ -10,8 +10,10 @@ import { PRIORITY_DOT_COLORS, PRIORITY_LABELS } from '@/lib/constants'
 import { cn } from '@/lib/utils'
 import type { FavoriteTaskWithProject } from '@/types/favorite'
 
-const TaskDetailDialog = dynamic(
-  () => import('@/components/kanban/task-detail-dialog').then((mod) => ({ default: mod.TaskDetailDialog })),
+const TaskDetailDialog = dynamic(() =>
+  import('@/components/kanban/task-detail-dialog').then((mod) => ({
+    default: mod.TaskDetailDialog,
+  })),
 )
 
 export function FavoritesWidget() {
@@ -29,7 +31,7 @@ export function FavoritesWidget() {
 
   if (!tasks || tasks.length === 0) {
     return (
-      <div className="flex h-full flex-col items-center justify-center gap-2 text-muted-foreground">
+      <div className="text-muted-foreground flex h-full flex-col items-center justify-center gap-2">
         <Star className="h-8 w-8 opacity-30" />
         <p className="text-sm">즐겨찾기한 태스크가 없습니다</p>
       </div>
@@ -41,16 +43,18 @@ export function FavoritesWidget() {
       {tasks.map((task) => (
         <button
           key={task.id}
-          className="flex cursor-pointer items-center gap-2 rounded-md px-2 py-1.5 text-left transition-colors hover:bg-muted/60"
+          className="hover:bg-muted/60 flex cursor-pointer items-center gap-2 rounded-md px-2 py-1.5 text-left transition-colors"
           onClick={() => setSelectedTask(task)}
         >
           <Star className="h-3.5 w-3.5 shrink-0 fill-amber-400 text-amber-400" />
           <div className="min-w-0 flex-1">
             <p className="truncate text-sm">{task.title}</p>
-            <p className="truncate text-xs text-muted-foreground">{task.project_name}</p>
+            <p className="text-muted-foreground truncate text-xs">{task.project_name}</p>
           </div>
-          <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
-            <span className={cn('h-2 w-2 rounded-full shrink-0', PRIORITY_DOT_COLORS[task.priority])} />
+          <span className="text-muted-foreground inline-flex items-center gap-1 text-xs">
+            <span
+              className={cn('h-2 w-2 shrink-0 rounded-full', PRIORITY_DOT_COLORS[task.priority])}
+            />
             {PRIORITY_LABELS[task.priority]}
           </span>
         </button>
@@ -61,7 +65,9 @@ export function FavoritesWidget() {
           projectId={selectedTask.project_id}
           task={selectedTask}
           open={!!selectedTask}
-          onOpenChange={(open) => { if (!open) setSelectedTask(null) }}
+          onOpenChange={(open) => {
+            if (!open) setSelectedTask(null)
+          }}
           canEdit
         />
       )}

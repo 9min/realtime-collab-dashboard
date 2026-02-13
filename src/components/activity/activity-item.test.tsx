@@ -2,7 +2,12 @@ import { describe, it, expect } from 'vitest'
 import { screen } from '@testing-library/react'
 
 import { renderWithProviders } from '@/__tests__/helpers/render-with-providers'
-import { mockProfile, MOCK_PROJECT_ID, MOCK_USER_ID, MOCK_TASK_ID_1 } from '@/__tests__/helpers/fixtures'
+import {
+  mockProfile,
+  MOCK_PROJECT_ID,
+  MOCK_USER_ID,
+  MOCK_TASK_ID_1,
+} from '@/__tests__/helpers/fixtures'
 import type { ActivityLogWithUser } from '@/types/activity'
 
 import { ActivityItem } from './activity-item'
@@ -59,7 +64,9 @@ describe('ActivityItem', () => {
     })
     renderWithProviders(<ActivityItem activity={activity} />)
 
-    expect(screen.getByText("Test User님이 태스크 'New Feature'을(를) 생성했습니다")).toBeInTheDocument()
+    expect(
+      screen.getByText("Test User님이 태스크 'New Feature'을(를) 생성했습니다"),
+    ).toBeInTheDocument()
   })
 
   it('update 액션: 수정 뱃지를 표시한다', () => {

@@ -3,9 +3,20 @@ import type { SupabaseClient } from '@supabase/supabase-js'
 
 import type { Database } from '@/types/database'
 import { createMockSupabaseClient } from '@/__tests__/helpers/mock-supabase'
-import { mockProfile, mockProfile2, mockProjectMemberships, MOCK_USER_ID, MOCK_USER_ID_2 } from '@/__tests__/helpers/fixtures'
+import {
+  mockProfile,
+  mockProfile2,
+  mockProjectMemberships,
+  MOCK_USER_ID,
+  MOCK_USER_ID_2,
+} from '@/__tests__/helpers/fixtures'
 
-import { getAllUsers, setAdminStatus, getMyProfile, getAllProjectMemberships } from './admin-service'
+import {
+  getAllUsers,
+  setAdminStatus,
+  getMyProfile,
+  getAllProjectMemberships,
+} from './admin-service'
 
 type Client = SupabaseClient<Database>
 
@@ -63,7 +74,10 @@ describe('admin-service', () => {
 
     it('자기 자신의 admin 해제 시 에러를 반환한다', async () => {
       const client = createMockSupabaseClient({
-        rpcResponse: { data: null, error: { code: 'P0001', message: 'Cannot remove own admin status' } },
+        rpcResponse: {
+          data: null,
+          error: { code: 'P0001', message: 'Cannot remove own admin status' },
+        },
       }) as Client
 
       const result = await setAdminStatus(client, MOCK_USER_ID, false)

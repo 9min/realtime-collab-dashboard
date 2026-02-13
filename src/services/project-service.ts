@@ -35,7 +35,9 @@ export async function getMyProjects(
     return { data: [], error: null }
   }
 
-  const { data: { user } } = await supabase.auth.getUser()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
 
   const { data: memberData } = await supabase
     .from('project_members')
@@ -88,15 +90,18 @@ export async function createProject(
   input: Pick<InsertTables<'projects'>, 'name' | 'description'>,
 ): Promise<ServiceResult<Project>> {
   // RPC 호출: create_project_with_defaults → UUID 반환
-  const { data: projectId, error: rpcError } = await supabase.rpc(
-    'create_project_with_defaults',
-    { p_name: input.name, p_description: input.description ?? null },
-  )
+  const { data: projectId, error: rpcError } = await supabase.rpc('create_project_with_defaults', {
+    p_name: input.name,
+    p_description: input.description ?? null,
+  })
 
   if (rpcError || !projectId) {
     return {
       data: null,
-      error: { code: rpcError?.code ?? 'UNKNOWN', message: rpcError?.message ?? '프로젝트 생성 실패' },
+      error: {
+        code: rpcError?.code ?? 'UNKNOWN',
+        message: rpcError?.message ?? '프로젝트 생성 실패',
+      },
     }
   }
 
@@ -112,7 +117,10 @@ export async function createProject(
   if (fetchError || !project) {
     return {
       data: null,
-      error: { code: fetchError?.code ?? 'UNKNOWN', message: fetchError?.message ?? '프로젝트 조회 실패' },
+      error: {
+        code: fetchError?.code ?? 'UNKNOWN',
+        message: fetchError?.message ?? '프로젝트 조회 실패',
+      },
     }
   }
 
@@ -162,18 +170,13 @@ export async function deleteProject(
     const BATCH_SIZE = 100
     for (let i = 0; i < filePaths.length; i += BATCH_SIZE) {
       const batch = filePaths.slice(i, i + BATCH_SIZE)
-      await supabase.storage
-        .from('task-attachments')
-        .remove(batch)
+      await supabase.storage.from('task-attachments').remove(batch)
       // Storage 삭제 실패는 프로젝트 삭제를 막지 않음 (best-effort)
     }
   }
 
   // 3. 프로젝트 삭제 (CASCADE로 관련 레코드 정리)
-  const { error } = await supabase
-    .from('projects')
-    .delete()
-    .eq('id', projectId)
+  const { error } = await supabase.from('projects').delete().eq('id', projectId)
 
   if (error) {
     return { data: null, error: { code: error.code, message: error.message } }
@@ -297,7 +300,8 @@ export async function searchProfiles(
     builder = builder.not('id', 'in', `(${excludeUserIds.join(',')})`)
   }
 
-  const { data, error } = await builder.returns<Pick<Profile, 'id' | 'email' | 'full_name' | 'avatar_url'>[]>()
+  const { data, error } =
+    await builder.returns<Pick<Profile, 'id' | 'email' | 'full_name' | 'avatar_url'>[]>()
 
   if (error) {
     return { data: null, error: { code: error.code, message: error.message } }
@@ -352,10 +356,7 @@ export async function removeMember(
   supabase: Client,
   memberId: string,
 ): Promise<ServiceResult<null>> {
-  const { error } = await supabase
-    .from('project_members')
-    .delete()
-    .eq('id', memberId)
+  const { error } = await supabase.from('project_members').delete().eq('id', memberId)
 
   if (error) {
     return { data: null, error: { code: error.code, message: error.message } }

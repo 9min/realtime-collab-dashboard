@@ -94,10 +94,7 @@ export async function deleteComment(
   supabase: Client,
   commentId: string,
 ): Promise<ServiceResult<null>> {
-  const { error } = await supabase
-    .from('task_comments')
-    .delete()
-    .eq('id', commentId)
+  const { error } = await supabase.from('task_comments').delete().eq('id', commentId)
 
   if (error) {
     return { data: null, error: { code: error.code, message: error.message } }

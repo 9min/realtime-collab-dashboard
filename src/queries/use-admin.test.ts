@@ -19,10 +19,26 @@ vi.mock('sonner', () => ({
 }))
 
 import { toast } from 'sonner'
-import { getAllUsers, setAdminStatus, getMyProfile, getAllProjectMemberships } from '@/services/admin-service'
-import { mockProfile, mockProfile2, mockProjectMemberships, MOCK_USER_ID_2 } from '@/__tests__/helpers/fixtures'
+import {
+  getAllUsers,
+  setAdminStatus,
+  getMyProfile,
+  getAllProjectMemberships,
+} from '@/services/admin-service'
+import {
+  mockProfile,
+  mockProfile2,
+  mockProjectMemberships,
+  MOCK_USER_ID_2,
+} from '@/__tests__/helpers/fixtures'
 
-import { useMyProfile, useAllUsers, useAllProjectMemberships, useSetAdminStatus, adminKeys } from './use-admin'
+import {
+  useMyProfile,
+  useAllUsers,
+  useAllProjectMemberships,
+  useSetAdminStatus,
+  adminKeys,
+} from './use-admin'
 
 describe('use-admin', () => {
   let queryClient: QueryClient
@@ -104,7 +120,10 @@ describe('use-admin', () => {
   // ── useAllProjectMemberships ──
   describe('useAllProjectMemberships', () => {
     it('전체 프로젝트 멤버십을 조회한다', async () => {
-      vi.mocked(getAllProjectMemberships).mockResolvedValue({ data: mockProjectMemberships, error: null })
+      vi.mocked(getAllProjectMemberships).mockResolvedValue({
+        data: mockProjectMemberships,
+        error: null,
+      })
 
       const { result } = renderHook(() => useAllProjectMemberships(), { wrapper })
 

@@ -5,7 +5,12 @@ import { toast } from 'sonner'
 
 import { useSupabase } from '@/components/providers/supabase-provider'
 import { useAuth } from '@/hooks/use-auth'
-import { getMyMessage, sendMessage, getAllUserMessages, markMessageAsRead } from '@/services/user-message-service'
+import {
+  getMyMessage,
+  sendMessage,
+  getAllUserMessages,
+  markMessageAsRead,
+} from '@/services/user-message-service'
 
 export const userMessageKeys = {
   mine: ['user-messages', 'mine'] as const,

@@ -12,8 +12,24 @@ describe('search-service', () => {
   describe('globalSearch', () => {
     it('검색 결과를 그룹별로 반환한다', async () => {
       const projectData = [{ id: 'p1', name: 'Test Project', description: null }]
-      const taskData = [{ id: 't1', title: 'Test Task', project_id: 'p1', column_id: 'c1', projects: { name: 'Test Project' } }]
-      const commentData = [{ id: 'cm1', content: 'Test comment', task_id: 't1', project_id: 'p1', tasks: { title: 'Test Task' } }]
+      const taskData = [
+        {
+          id: 't1',
+          title: 'Test Task',
+          project_id: 'p1',
+          column_id: 'c1',
+          projects: { name: 'Test Project' },
+        },
+      ]
+      const commentData = [
+        {
+          id: 'cm1',
+          content: 'Test comment',
+          task_id: 't1',
+          project_id: 'p1',
+          tasks: { title: 'Test Task' },
+        },
+      ]
 
       const client = createMockSupabaseClient({
         fromResponses: [
@@ -72,7 +88,18 @@ describe('search-service', () => {
         fromResponses: [
           { data: [], error: null },
           { data: [], error: null },
-          { data: [{ id: 'cm1', content: longContent, task_id: 't1', project_id: 'p1', tasks: { title: 'Task' } }], error: null },
+          {
+            data: [
+              {
+                id: 'cm1',
+                content: longContent,
+                task_id: 't1',
+                project_id: 'p1',
+                tasks: { title: 'Task' },
+              },
+            ],
+            error: null,
+          },
         ],
       }) as Client
 

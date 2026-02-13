@@ -3,7 +3,12 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 
-import type { ProjectIntegration, IntegrationType, SlackConfig, GitHubConfig } from '@/types/integration'
+import type {
+  ProjectIntegration,
+  IntegrationType,
+  SlackConfig,
+  GitHubConfig,
+} from '@/types/integration'
 
 export const integrationKeys = {
   list: (projectId: string) => ['integrations', projectId] as const,
@@ -27,7 +32,13 @@ export function useUpsertIntegration(projectId: string) {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: async ({ type, config }: { type: IntegrationType; config: SlackConfig | GitHubConfig }) => {
+    mutationFn: async ({
+      type,
+      config,
+    }: {
+      type: IntegrationType
+      config: SlackConfig | GitHubConfig
+    }) => {
       const res = await fetch(`/api/projects/${projectId}/integrations`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -76,7 +87,13 @@ export function useToggleIntegration(projectId: string) {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: async ({ integrationId, isActive }: { integrationId: string; isActive: boolean }) => {
+    mutationFn: async ({
+      integrationId,
+      isActive,
+    }: {
+      integrationId: string
+      isActive: boolean
+    }) => {
       const res = await fetch(`/api/projects/${projectId}/integrations/${integrationId}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },

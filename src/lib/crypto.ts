@@ -7,13 +7,17 @@ const AUTH_TAG_LENGTH = 16
 function getEncryptionKey(): Buffer | null {
   const keyHex = process.env.INTEGRATION_ENCRYPTION_KEY
   if (!keyHex) {
-    console.warn('[crypto] INTEGRATION_ENCRYPTION_KEY is not set — tokens will be stored in plaintext')
+    console.warn(
+      '[crypto] INTEGRATION_ENCRYPTION_KEY is not set — tokens will be stored in plaintext',
+    )
     return null
   }
 
   const key = Buffer.from(keyHex, 'hex')
   if (key.length !== 32) {
-    console.warn('[crypto] INTEGRATION_ENCRYPTION_KEY must be 64 hex chars (32 bytes) — falling back to plaintext')
+    console.warn(
+      '[crypto] INTEGRATION_ENCRYPTION_KEY must be 64 hex chars (32 bytes) — falling back to plaintext',
+    )
     return null
   }
 

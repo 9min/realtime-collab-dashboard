@@ -2,7 +2,17 @@
 
 import { use, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Trash2, UserPlus, Shield, Crown, Tag, ListChecks, Link2, Paperclip, MessageSquare } from 'lucide-react'
+import {
+  Trash2,
+  UserPlus,
+  Shield,
+  Crown,
+  Tag,
+  ListChecks,
+  Link2,
+  Paperclip,
+  MessageSquare,
+} from 'lucide-react'
 
 import {
   AlertDialog,
@@ -20,10 +30,24 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { Switch } from '@/components/ui/switch'
 import { useAuth } from '@/hooks/use-auth'
-import { useProject, useProjectMembers, useInviteMemberById, useUpdateMemberRole, useRemoveMember, useUpdateProject, useDeleteProject } from '@/queries/use-projects'
+import {
+  useProject,
+  useProjectMembers,
+  useInviteMemberById,
+  useUpdateMemberRole,
+  useRemoveMember,
+  useUpdateProject,
+  useDeleteProject,
+} from '@/queries/use-projects'
 import { LabelManager } from '@/components/kanban/label-manager'
 import { MemberInviteCombobox } from '@/components/project/member-invite-combobox'
 import { IntegrationSettings } from '@/components/project/integration-settings'
@@ -55,7 +79,11 @@ export default function ProjectSettingsPage({ params }: ProjectSettingsPageProps
   const router = useRouter()
   const { user } = useAuth()
   const { data: project, isLoading: projectLoading, isError: projectError } = useProject(projectId)
-  const { data: members, isLoading: membersLoading, isError: membersError } = useProjectMembers(projectId)
+  const {
+    data: members,
+    isLoading: membersLoading,
+    isError: membersError,
+  } = useProjectMembers(projectId)
   const inviteMutation = useInviteMemberById(projectId)
   const updateRoleMutation = useUpdateMemberRole(projectId)
   const removeMutation = useRemoveMember(projectId)
@@ -103,16 +131,16 @@ export default function ProjectSettingsPage({ params }: ProjectSettingsPageProps
   // 로딩 중
   if (projectLoading || membersLoading) {
     return (
-      <div className="space-y-8 max-w-2xl">
+      <div className="max-w-2xl space-y-8">
         <div>
           <h2 className="text-2xl font-bold">프로젝트 설정</h2>
           <p className="text-muted-foreground mt-1">프로젝트 정보 수정 및 멤버 관리</p>
         </div>
-        <div className="rounded-xl border p-6 space-y-3">
+        <div className="space-y-3 rounded-xl border p-6">
           <div className="bg-muted h-6 w-32 animate-pulse rounded" />
           <div className="bg-muted h-10 w-full animate-pulse rounded" />
         </div>
-        <div className="rounded-xl border p-6 space-y-3">
+        <div className="space-y-3 rounded-xl border p-6">
           <div className="bg-muted h-6 w-24 animate-pulse rounded" />
           {Array.from({ length: 3 }).map((_, i) => (
             <div key={i} className="bg-muted h-14 animate-pulse rounded" />
@@ -125,27 +153,49 @@ export default function ProjectSettingsPage({ params }: ProjectSettingsPageProps
   // 에러
   if (projectError || membersError) {
     return (
-      <div className="space-y-8 max-w-2xl">
+      <div className="max-w-2xl space-y-8">
         <div>
           <h2 className="text-2xl font-bold">프로젝트 설정</h2>
           <p className="text-muted-foreground mt-1">프로젝트 정보 수정 및 멤버 관리</p>
         </div>
-        <div className="rounded-xl border bg-destructive/10 p-6">
-          <p className="text-destructive">프로젝트 설정을 불러오는데 실패했습니다. 페이지를 새로고침해주세요.</p>
+        <div className="bg-destructive/10 rounded-xl border p-6">
+          <p className="text-destructive">
+            프로젝트 설정을 불러오는데 실패했습니다. 페이지를 새로고침해주세요.
+          </p>
         </div>
       </div>
     )
   }
 
   const FEATURE_ITEMS = [
-    { key: 'feature_subtasks', label: '서브태스크', description: '태스크를 세부 항목으로 나누어 관리합니다', icon: ListChecks },
-    { key: 'feature_dependencies', label: '연결된 작업', description: '태스크 간 선행/후행 관계를 설정합니다', icon: Link2 },
-    { key: 'feature_attachments', label: '첨부파일', description: '태스크에 파일을 첨부합니다', icon: Paperclip },
-    { key: 'feature_comments', label: '댓글', description: '태스크에 댓글을 남깁니다', icon: MessageSquare },
+    {
+      key: 'feature_subtasks',
+      label: '서브태스크',
+      description: '태스크를 세부 항목으로 나누어 관리합니다',
+      icon: ListChecks,
+    },
+    {
+      key: 'feature_dependencies',
+      label: '연결된 작업',
+      description: '태스크 간 선행/후행 관계를 설정합니다',
+      icon: Link2,
+    },
+    {
+      key: 'feature_attachments',
+      label: '첨부파일',
+      description: '태스크에 파일을 첨부합니다',
+      icon: Paperclip,
+    },
+    {
+      key: 'feature_comments',
+      label: '댓글',
+      description: '태스크에 댓글을 남깁니다',
+      icon: MessageSquare,
+    },
   ] as const
 
   return (
-    <div className="space-y-10 max-w-2xl pb-8">
+    <div className="max-w-2xl space-y-10 pb-8">
       <div>
         <h2 className="text-2xl font-bold">프로젝트 설정</h2>
         <p className="text-muted-foreground mt-1">프로젝트 정보와 기능을 관리합니다</p>
@@ -153,10 +203,12 @@ export default function ProjectSettingsPage({ params }: ProjectSettingsPageProps
 
       {/* ── 일반 ── */}
       <section className="space-y-4">
-        <h3 className="text-sm font-semibold tracking-wide text-muted-foreground uppercase">일반</h3>
+        <h3 className="text-muted-foreground text-sm font-semibold tracking-wide uppercase">
+          일반
+        </h3>
 
         {/* 프로젝트 정보 */}
-        <Card className="p-5 space-y-4">
+        <Card className="space-y-4 p-5">
           <h4 className="text-base font-semibold">프로젝트 정보</h4>
           {isEditing ? (
             <div className="space-y-3">
@@ -183,7 +235,9 @@ export default function ProjectSettingsPage({ params }: ProjectSettingsPageProps
             <div className="flex items-center justify-between">
               <div>
                 <p className="font-medium">{project?.name}</p>
-                <p className="text-muted-foreground text-sm">{project?.description || '설명 없음'}</p>
+                <p className="text-muted-foreground text-sm">
+                  {project?.description || '설명 없음'}
+                </p>
               </div>
               {isOwnerOrAdmin && (
                 <Button variant="outline" size="sm" onClick={handleEditProject}>
@@ -195,10 +249,8 @@ export default function ProjectSettingsPage({ params }: ProjectSettingsPageProps
         </Card>
 
         {/* 멤버 관리 */}
-        <Card className="p-5 space-y-4">
-          <h4 className="text-base font-semibold">
-            멤버 ({members?.length ?? 0})
-          </h4>
+        <Card className="space-y-4 p-5">
+          <h4 className="text-base font-semibold">멤버 ({members?.length ?? 0})</h4>
 
           {isOwnerOrAdmin && (
             <div className="flex gap-2">
@@ -209,10 +261,7 @@ export default function ProjectSettingsPage({ params }: ProjectSettingsPageProps
                   onSelect={setSelectedUser}
                 />
               </div>
-              <Select
-                value={inviteRole}
-                onValueChange={setInviteRole}
-              >
+              <Select value={inviteRole} onValueChange={setInviteRole}>
                 <SelectTrigger className="w-28">
                   <SelectValue />
                 </SelectTrigger>
@@ -222,10 +271,7 @@ export default function ProjectSettingsPage({ params }: ProjectSettingsPageProps
                   <SelectItem value={MEMBER_ROLE.VIEWER}>뷰어</SelectItem>
                 </SelectContent>
               </Select>
-              <Button
-                onClick={handleInvite}
-                disabled={!selectedUser || inviteMutation.isPending}
-              >
+              <Button onClick={handleInvite} disabled={!selectedUser || inviteMutation.isPending}>
                 <UserPlus className="mr-2 h-4 w-4" />
                 초대
               </Button>
@@ -259,9 +305,7 @@ export default function ProjectSettingsPage({ params }: ProjectSettingsPageProps
                     <div className="min-w-0 flex-1">
                       <p className="text-sm font-medium">
                         {profile?.full_name ?? '사용자'}
-                        {isCurrentUser && (
-                          <span className="text-muted-foreground ml-1">(나)</span>
-                        )}
+                        {isCurrentUser && <span className="text-muted-foreground ml-1">(나)</span>}
                       </p>
                       <p className="text-muted-foreground text-xs">{profile?.email}</p>
                     </div>
@@ -276,7 +320,7 @@ export default function ProjectSettingsPage({ params }: ProjectSettingsPageProps
                         }
                         disabled={updateRoleMutation.isPending}
                       >
-                        <SelectTrigger className="w-28 h-8 text-xs">
+                        <SelectTrigger className="h-8 w-28 text-xs">
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
@@ -307,14 +351,14 @@ export default function ProjectSettingsPage({ params }: ProjectSettingsPageProps
                           <AlertDialogHeader>
                             <AlertDialogTitle>멤버를 제거하시겠습니까?</AlertDialogTitle>
                             <AlertDialogDescription>
-                              {profile?.full_name ?? '사용자'}님을 프로젝트에서 제거합니다.
-                              제거된 멤버는 더 이상 이 프로젝트에 접근할 수 없습니다.
+                              {profile?.full_name ?? '사용자'}님을 프로젝트에서 제거합니다. 제거된
+                              멤버는 더 이상 이 프로젝트에 접근할 수 없습니다.
                             </AlertDialogDescription>
                           </AlertDialogHeader>
                           <AlertDialogFooter>
                             <AlertDialogCancel className="cursor-pointer">취소</AlertDialogCancel>
                             <AlertDialogAction
-                              className="cursor-pointer bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                              className="bg-destructive text-destructive-foreground hover:bg-destructive/90 cursor-pointer"
                               onClick={() => removeMutation.mutate(member.id)}
                             >
                               제거
@@ -335,13 +379,15 @@ export default function ProjectSettingsPage({ params }: ProjectSettingsPageProps
       {isOwnerOrAdmin && project && (
         <section className="space-y-4">
           <div>
-            <h3 className="text-sm font-semibold tracking-wide text-muted-foreground uppercase">기능 설정</h3>
-            <p className="text-muted-foreground text-xs mt-1">
+            <h3 className="text-muted-foreground text-sm font-semibold tracking-wide uppercase">
+              기능 설정
+            </h3>
+            <p className="text-muted-foreground mt-1 text-xs">
               비활성화된 기능은 태스크 상세에서 숨겨집니다
             </p>
           </div>
 
-          <Card className="divide-y gap-0 p-0 overflow-hidden">
+          <Card className="gap-0 divide-y overflow-hidden p-0">
             {/* 라벨 — 토글 + 인라인 라벨 관리 */}
             <div>
               <div className="flex items-center justify-between px-4 py-3">
@@ -349,7 +395,9 @@ export default function ProjectSettingsPage({ params }: ProjectSettingsPageProps
                   <Tag className="text-muted-foreground h-4 w-4" />
                   <div>
                     <p className="text-sm font-medium">라벨</p>
-                    <p className="text-muted-foreground text-xs">태스크에 라벨을 할당하여 분류합니다</p>
+                    <p className="text-muted-foreground text-xs">
+                      태스크에 라벨을 할당하여 분류합니다
+                    </p>
                   </div>
                 </div>
                 <Switch
@@ -360,8 +408,8 @@ export default function ProjectSettingsPage({ params }: ProjectSettingsPageProps
                 />
               </div>
               {project.feature_labels && (
-                <div className="border-t bg-muted/30 px-4 py-4">
-                  <p className="text-muted-foreground text-xs font-medium mb-3">라벨 관리</p>
+                <div className="bg-muted/30 border-t px-4 py-4">
+                  <p className="text-muted-foreground mb-3 text-xs font-medium">라벨 관리</p>
                   <LabelManager projectId={projectId} />
                 </div>
               )}
@@ -393,8 +441,10 @@ export default function ProjectSettingsPage({ params }: ProjectSettingsPageProps
       {isOwnerOrAdmin && (
         <section className="space-y-4">
           <div>
-            <h3 className="text-sm font-semibold tracking-wide text-muted-foreground uppercase">외부 연동</h3>
-            <p className="text-muted-foreground text-xs mt-1">
+            <h3 className="text-muted-foreground text-sm font-semibold tracking-wide uppercase">
+              외부 연동
+            </h3>
+            <p className="text-muted-foreground mt-1 text-xs">
               Slack, GitHub 등 외부 서비스와 연동합니다
             </p>
           </div>
@@ -408,12 +458,14 @@ export default function ProjectSettingsPage({ params }: ProjectSettingsPageProps
       {/* ── 위험 영역 ── owner만 */}
       {currentMember?.role === MEMBER_ROLE.OWNER && (
         <section className="space-y-4">
-          <h3 className="text-sm font-semibold tracking-wide text-destructive/70 uppercase">위험 영역</h3>
+          <h3 className="text-destructive/70 text-sm font-semibold tracking-wide uppercase">
+            위험 영역
+          </h3>
 
-          <Card className="border-destructive/30 p-5 space-y-4">
+          <Card className="border-destructive/30 space-y-4 p-5">
             <div>
               <h4 className="text-base font-semibold">프로젝트 삭제</h4>
-              <p className="text-muted-foreground text-sm mt-1">
+              <p className="text-muted-foreground mt-1 text-sm">
                 프로젝트를 삭제하면 모든 데이터(태스크, 컬럼, 멤버)가 영구 삭제됩니다.
               </p>
             </div>
@@ -427,7 +479,8 @@ export default function ProjectSettingsPage({ params }: ProjectSettingsPageProps
                 <AlertDialogHeader>
                   <AlertDialogTitle>프로젝트를 삭제하시겠습니까?</AlertDialogTitle>
                   <AlertDialogDescription>
-                    &quot;{project?.name}&quot; 프로젝트와 모든 데이터(태스크, 컬럼, 멤버)가 영구 삭제됩니다.
+                    &quot;{project?.name}&quot; 프로젝트와 모든 데이터(태스크, 컬럼, 멤버)가 영구
+                    삭제됩니다.
                     <br />이 작업은 되돌릴 수 없습니다.
                   </AlertDialogDescription>
                 </AlertDialogHeader>
@@ -435,9 +488,11 @@ export default function ProjectSettingsPage({ params }: ProjectSettingsPageProps
                   <AlertDialogCancel>취소</AlertDialogCancel>
                   <AlertDialogAction
                     className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                    onClick={() => deleteMutation.mutate(projectId, {
-                      onSuccess: () => router.push('/projects'),
-                    })}
+                    onClick={() =>
+                      deleteMutation.mutate(projectId, {
+                        onSuccess: () => router.push('/projects'),
+                      })
+                    }
                   >
                     삭제
                   </AlertDialogAction>

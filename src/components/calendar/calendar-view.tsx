@@ -13,8 +13,10 @@ import type { Task } from '@/types/kanban'
 import { CalendarHeader } from './calendar-header'
 import { CalendarGrid } from './calendar-grid'
 
-const TaskDetailDialog = dynamic(
-  () => import('@/components/kanban/task-detail-dialog').then((mod) => ({ default: mod.TaskDetailDialog })),
+const TaskDetailDialog = dynamic(() =>
+  import('@/components/kanban/task-detail-dialog').then((mod) => ({
+    default: mod.TaskDetailDialog,
+  })),
 )
 
 interface CalendarViewProps {
@@ -44,10 +46,7 @@ export function CalendarView({ projectId }: CalendarViewProps) {
   const canEdit = !isViewer
   const canDeleteAll = currentRole === MEMBER_ROLE.OWNER || currentRole === MEMBER_ROLE.ADMIN
 
-  const tasksByDate = useMemo(
-    () => groupTasksByDate(tasks ?? []),
-    [tasks],
-  )
+  const tasksByDate = useMemo(() => groupTasksByDate(tasks ?? []), [tasks])
 
   if (isLoading) {
     return (
@@ -69,7 +68,9 @@ export function CalendarView({ projectId }: CalendarViewProps) {
         projectId={projectId}
         task={selectedTask}
         open={!!selectedTask}
-        onOpenChange={(open) => { if (!open) setSelectedTask(null) }}
+        onOpenChange={(open) => {
+          if (!open) setSelectedTask(null)
+        }}
         canEdit={canEdit}
         canDeleteAll={canDeleteAll}
       />

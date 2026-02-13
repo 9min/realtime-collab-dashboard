@@ -6,8 +6,14 @@ describe('workload-service', () => {
   describe('getWorkload', () => {
     it('should aggregate tasks by member and priority', async () => {
       const members = [
-        { user_id: 'user-1', profiles: { full_name: 'Alice', email: 'alice@test.com', avatar_url: null } },
-        { user_id: 'user-2', profiles: { full_name: 'Bob', email: 'bob@test.com', avatar_url: null } },
+        {
+          user_id: 'user-1',
+          profiles: { full_name: 'Alice', email: 'alice@test.com', avatar_url: null },
+        },
+        {
+          user_id: 'user-2',
+          profiles: { full_name: 'Bob', email: 'bob@test.com', avatar_url: null },
+        },
       ]
 
       const tasks = [

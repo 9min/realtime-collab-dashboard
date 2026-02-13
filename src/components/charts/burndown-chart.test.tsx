@@ -11,7 +11,9 @@ vi.mock('@/queries/use-chart-data', () => ({
 
 vi.mock('recharts', () => ({
   ResponsiveContainer: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
-  ComposedChart: ({ children }: { children: React.ReactNode }) => <div data-testid="composed-chart">{children}</div>,
+  ComposedChart: ({ children }: { children: React.ReactNode }) => (
+    <div data-testid="composed-chart">{children}</div>
+  ),
   Area: () => null,
   Line: () => null,
   XAxis: () => null,
@@ -33,9 +35,7 @@ describe('BurndownChart', () => {
       isLoading: true,
     })
 
-    const { container } = renderWithProviders(
-      <BurndownChart projectId="project-1" />,
-    )
+    const { container } = renderWithProviders(<BurndownChart projectId="project-1" />)
 
     const skeleton = container.querySelector('.animate-pulse')
     expect(skeleton).toBeInTheDocument()
@@ -52,9 +52,7 @@ describe('BurndownChart', () => {
       isLoading: false,
     })
 
-    renderWithProviders(
-      <BurndownChart projectId="project-1" />,
-    )
+    renderWithProviders(<BurndownChart projectId="project-1" />)
 
     expect(screen.getByTestId('composed-chart')).toBeInTheDocument()
     // Custom legend labels
@@ -68,9 +66,7 @@ describe('BurndownChart', () => {
       isLoading: false,
     })
 
-    renderWithProviders(
-      <BurndownChart projectId="project-1" />,
-    )
+    renderWithProviders(<BurndownChart projectId="project-1" />)
 
     expect(screen.getByText('태스크가 없습니다')).toBeInTheDocument()
   })
@@ -81,9 +77,7 @@ describe('BurndownChart', () => {
       isLoading: false,
     })
 
-    renderWithProviders(
-      <BurndownChart projectId="project-1" />,
-    )
+    renderWithProviders(<BurndownChart projectId="project-1" />)
 
     expect(screen.getByText('태스크가 없습니다')).toBeInTheDocument()
   })

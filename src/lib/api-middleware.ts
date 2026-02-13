@@ -12,10 +12,7 @@ export function isDemoRequest(req: NextRequest): boolean {
 }
 
 export function demoModeResponse(): NextResponse {
-  return NextResponse.json(
-    { error: '데모 모드에서는 지원되지 않는 기능입니다' },
-    { status: 403 },
-  )
+  return NextResponse.json({ error: '데모 모드에서는 지원되지 않는 기능입니다' }, { status: 403 })
 }
 
 interface RateLimitOptions {
@@ -24,9 +21,11 @@ interface RateLimitOptions {
 }
 
 function getClientIp(req: NextRequest): string {
-  return req.headers.get('x-forwarded-for')?.split(',')[0]?.trim()
-    ?? req.headers.get('x-real-ip')
-    ?? 'anonymous'
+  return (
+    req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ??
+    req.headers.get('x-real-ip') ??
+    'anonymous'
+  )
 }
 
 export function withRateLimit(handler: RouteHandler, options?: RateLimitOptions): RouteHandler {

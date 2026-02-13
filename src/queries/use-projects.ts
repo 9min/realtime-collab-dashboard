@@ -166,7 +166,13 @@ export function useUpdateMemberRole(projectId: string) {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: async ({ memberId, role }: { memberId: string; role: 'admin' | 'member' | 'viewer' }) => {
+    mutationFn: async ({
+      memberId,
+      role,
+    }: {
+      memberId: string
+      role: 'admin' | 'member' | 'viewer'
+    }) => {
       const result = await updateMemberRole(supabase, memberId, role)
       if (result.error) throw new Error(result.error.message)
       return result.data

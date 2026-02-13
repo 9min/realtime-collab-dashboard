@@ -10,9 +10,20 @@ import { toast } from 'sonner'
 
 import { Button } from '@/components/ui/button'
 import { useAuth } from '@/hooks/use-auth'
-import { DEFAULT_COLUMNS, MEMBER_ROLE, PRIORITY_LABELS, SWIMLANE_MODE, TASK_PRIORITY } from '@/lib/constants'
+import {
+  DEFAULT_COLUMNS,
+  MEMBER_ROLE,
+  PRIORITY_LABELS,
+  SWIMLANE_MODE,
+  TASK_PRIORITY,
+} from '@/lib/constants'
 import { filterTasks } from '@/lib/task-filter'
-import { useColumns, useCreateColumn, useUpdateColumn, useDeleteColumn } from '@/queries/use-columns'
+import {
+  useColumns,
+  useCreateColumn,
+  useUpdateColumn,
+  useDeleteColumn,
+} from '@/queries/use-columns'
 import { useDependencies } from '@/queries/use-dependencies'
 import { useLabels, useTaskLabels } from '@/queries/use-labels'
 import { useProject, useProjectMembers } from '@/queries/use-projects'
@@ -29,8 +40,8 @@ import { SwimlaneBoard } from './swimlane-board'
 import { TaskFilterBar } from './task-filter-bar'
 import { WipLimitDialog } from './wip-limit-dialog'
 
-const TaskDetailDialog = dynamic(
-  () => import('./task-detail-dialog').then((mod) => ({ default: mod.TaskDetailDialog })),
+const TaskDetailDialog = dynamic(() =>
+  import('./task-detail-dialog').then((mod) => ({ default: mod.TaskDetailDialog })),
 )
 
 interface KanbanBoardProps {
@@ -56,13 +67,16 @@ export function KanbanBoard({ projectId }: KanbanBoardProps) {
   const canDeleteAll = currentRole === MEMBER_ROLE.OWNER || currentRole === MEMBER_ROLE.ADMIN
 
   // 프로젝트 기능 설정
-  const projectFeatures = useMemo(() => ({
-    feature_labels: project?.feature_labels ?? false,
-    feature_subtasks: project?.feature_subtasks ?? false,
-    feature_dependencies: project?.feature_dependencies ?? false,
-    feature_attachments: project?.feature_attachments ?? false,
-    feature_comments: project?.feature_comments ?? false,
-  }), [project])
+  const projectFeatures = useMemo(
+    () => ({
+      feature_labels: project?.feature_labels ?? false,
+      feature_subtasks: project?.feature_subtasks ?? false,
+      feature_dependencies: project?.feature_dependencies ?? false,
+      feature_attachments: project?.feature_attachments ?? false,
+      feature_comments: project?.feature_comments ?? false,
+    }),
+    [project],
+  )
 
   // 라벨 데이터
   const { data: labels } = useLabels(projectId)
@@ -125,7 +139,15 @@ export function KanbanBoard({ projectId }: KanbanBoardProps) {
   }, [dependencies, taskColumnMap, doneColumnIds])
 
   // 필터 상태
-  const { searchText, priorities, assigneeIds, dueDateRange, labelIds, swimlaneMode, setAssigneeIds } = useKanbanFilterStore()
+  const {
+    searchText,
+    priorities,
+    assigneeIds,
+    dueDateRange,
+    labelIds,
+    swimlaneMode,
+    setAssigneeIds,
+  } = useKanbanFilterStore()
 
   // URL ?assignee= 파라미터로 담당자 필터 적용 (워크로드 차트에서 이동 시)
   const assigneeParam = searchParams.get('assignee')
@@ -170,7 +192,14 @@ export function KanbanBoard({ projectId }: KanbanBoardProps) {
   // 컬럼별 태스크 그룹핑 + 필터 적용
   const columnsWithTasks: KanbanColumnWithTasks[] = useMemo(() => {
     if (!columns || !tasks) return []
-    const filtered = filterTasks(tasks, { searchText, priorities, assigneeIds, dueDateRange, labelIds, taskLabelMap })
+    const filtered = filterTasks(tasks, {
+      searchText,
+      priorities,
+      assigneeIds,
+      dueDateRange,
+      labelIds,
+      taskLabelMap,
+    })
     return columns.map((column) => ({
       ...column,
       tasks: filtered
@@ -183,7 +212,14 @@ export function KanbanBoard({ projectId }: KanbanBoardProps) {
   const swimlaneGroups = useMemo(() => {
     if (swimlaneMode === SWIMLANE_MODE.NONE || !tasks || !columns) return null
 
-    const filtered = filterTasks(tasks, { searchText, priorities: priorities as TaskPriority[], assigneeIds, dueDateRange, labelIds, taskLabelMap })
+    const filtered = filterTasks(tasks, {
+      searchText,
+      priorities: priorities as TaskPriority[],
+      assigneeIds,
+      dueDateRange,
+      labelIds,
+      taskLabelMap,
+    })
 
     if (swimlaneMode === SWIMLANE_MODE.ASSIGNEE) {
       const groups = new Map<string, { label: string; tasks: Tables<'tasks'>[] }>()
@@ -212,7 +248,12 @@ export function KanbanBoard({ projectId }: KanbanBoardProps) {
     }
 
     // priority 모드
-    const priorityOrder = [TASK_PRIORITY.URGENT, TASK_PRIORITY.HIGH, TASK_PRIORITY.MEDIUM, TASK_PRIORITY.LOW] as const
+    const priorityOrder = [
+      TASK_PRIORITY.URGENT,
+      TASK_PRIORITY.HIGH,
+      TASK_PRIORITY.MEDIUM,
+      TASK_PRIORITY.LOW,
+    ] as const
 
     return priorityOrder
       .map((p) => ({
@@ -221,7 +262,18 @@ export function KanbanBoard({ projectId }: KanbanBoardProps) {
         tasks: filtered.filter((t) => t.priority === p),
       }))
       .filter((g) => g.tasks.length > 0)
-  }, [swimlaneMode, tasks, columns, members, searchText, priorities, assigneeIds, dueDateRange, labelIds, taskLabelMap])
+  }, [
+    swimlaneMode,
+    tasks,
+    columns,
+    members,
+    searchText,
+    priorities,
+    assigneeIds,
+    dueDateRange,
+    labelIds,
+    taskLabelMap,
+  ])
 
   // DnD 완료 핸들러 — 뷰어는 무시, 일반 멤버는 본인 태스크만
   const handleDragEnd = useCallback(
@@ -230,7 +282,8 @@ export function KanbanBoard({ projectId }: KanbanBoardProps) {
       const { draggableId, source, destination } = result
       if (!destination) return
       // 같은 위치에 드롭하면 무시
-      if (source.droppableId === destination.droppableId && source.index === destination.index) return
+      if (source.droppableId === destination.droppableId && source.index === destination.index)
+        return
 
       // 스윔레인 모드에서 droppableId에서 실제 columnId 추출
       const extractColumnId = (droppableId: string) => {
@@ -260,7 +313,8 @@ export function KanbanBoard({ projectId }: KanbanBoardProps) {
       // 일반 멤버: 담당자 없는 태스크 또는 본인 담당 태스크만 이동 가능
       if (!canDeleteAll && tasks) {
         const draggedTask = tasks.find((t) => t.id === draggableId)
-        if (draggedTask && draggedTask.assignee_id !== null && draggedTask.assignee_id !== user?.id) return
+        if (draggedTask && draggedTask.assignee_id !== null && draggedTask.assignee_id !== user?.id)
+          return
       }
 
       moveTaskMutation.mutate({
@@ -310,16 +364,16 @@ export function KanbanBoard({ projectId }: KanbanBoardProps) {
         {Array.from({ length: 3 }).map((_, colIdx) => (
           <div key={colIdx} className="w-72 shrink-0 rounded-lg border">
             <div className="border-b px-3 py-2">
-              <div className="h-5 w-24 animate-pulse rounded bg-muted" />
+              <div className="bg-muted h-5 w-24 animate-pulse rounded" />
             </div>
             <div className="space-y-2 p-2">
               {Array.from({ length: 3 }).map((_, cardIdx) => (
                 <div key={cardIdx} className="space-y-2 rounded-lg border p-3">
-                  <div className="h-4 w-full animate-pulse rounded bg-muted" />
-                  <div className="h-4 w-2/3 animate-pulse rounded bg-muted" />
+                  <div className="bg-muted h-4 w-full animate-pulse rounded" />
+                  <div className="bg-muted h-4 w-2/3 animate-pulse rounded" />
                   <div className="flex items-center gap-2">
-                    <div className="h-5 w-12 animate-pulse rounded-full bg-muted" />
-                    <div className="ml-auto h-6 w-6 animate-pulse rounded-full bg-muted" />
+                    <div className="bg-muted h-5 w-12 animate-pulse rounded-full" />
+                    <div className="bg-muted ml-auto h-6 w-6 animate-pulse rounded-full" />
                   </div>
                 </div>
               ))}
@@ -422,31 +476,38 @@ export function KanbanBoard({ projectId }: KanbanBoardProps) {
         canEdit={canEdit}
         canDeleteAll={canDeleteAll}
         labels={projectFeatures.feature_labels ? labels : undefined}
-        taskLabelIds={displayedTask && projectFeatures.feature_labels ? taskLabelMap.get(displayedTask.id) : undefined}
+        taskLabelIds={
+          displayedTask && projectFeatures.feature_labels
+            ? taskLabelMap.get(displayedTask.id)
+            : undefined
+        }
         projectFeatures={projectFeatures}
       />
 
       {/* WIP 제한 설정 다이얼로그 */}
-      {wipLimitColumnId && (() => {
-        const col = columns?.find((c) => c.id === wipLimitColumnId)
-        if (!col) return null
-        const currentWipLimit = col.wip_limit ?? null
-        return (
-          <WipLimitDialog
-            open
-            onOpenChange={(open) => { if (!open) setWipLimitColumnId(null) }}
-            columnTitle={col.title}
-            currentLimit={currentWipLimit}
-            onSave={(limit) => {
-              updateColumnMutation.mutate(
-                { columnId: wipLimitColumnId, input: { wip_limit: limit } },
-                { onSuccess: () => setWipLimitColumnId(null) },
-              )
-            }}
-            isPending={updateColumnMutation.isPending}
-          />
-        )
-      })()}
+      {wipLimitColumnId &&
+        (() => {
+          const col = columns?.find((c) => c.id === wipLimitColumnId)
+          if (!col) return null
+          const currentWipLimit = col.wip_limit ?? null
+          return (
+            <WipLimitDialog
+              open
+              onOpenChange={(open) => {
+                if (!open) setWipLimitColumnId(null)
+              }}
+              columnTitle={col.title}
+              currentLimit={currentWipLimit}
+              onSave={(limit) => {
+                updateColumnMutation.mutate(
+                  { columnId: wipLimitColumnId, input: { wip_limit: limit } },
+                  { onSuccess: () => setWipLimitColumnId(null) },
+                )
+              }}
+              isPending={updateColumnMutation.isPending}
+            />
+          )
+        })()}
     </>
   )
 }

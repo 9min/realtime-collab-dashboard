@@ -113,9 +113,7 @@ export async function uploadAvatar(
     return { data: null, error: { code: 'UPLOAD_ERROR', message: uploadError.message } }
   }
 
-  const { data: urlData } = supabase.storage
-    .from(AVATAR.BUCKET_NAME)
-    .getPublicUrl(filePath)
+  const { data: urlData } = supabase.storage.from(AVATAR.BUCKET_NAME).getPublicUrl(filePath)
 
   return { data: urlData.publicUrl, error: null }
 }
@@ -132,9 +130,7 @@ export async function deleteAvatar(
   }
   const filePath = avatarUrl.slice(idx + bucketPrefix.length)
 
-  const { error } = await supabase.storage
-    .from(AVATAR.BUCKET_NAME)
-    .remove([filePath])
+  const { error } = await supabase.storage.from(AVATAR.BUCKET_NAME).remove([filePath])
 
   if (error) {
     return { data: null, error: { code: 'DELETE_ERROR', message: error.message } }

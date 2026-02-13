@@ -2,7 +2,11 @@ import type { SupabaseClient } from '@supabase/supabase-js'
 
 import type { ServiceResult } from '@/types/common'
 import type { Database } from '@/types/database'
-import type { TaskRecurrence, CreateRecurrenceInput, UpdateRecurrenceInput } from '@/types/recurrence'
+import type {
+  TaskRecurrence,
+  CreateRecurrenceInput,
+  UpdateRecurrenceInput,
+} from '@/types/recurrence'
 
 type Client = SupabaseClient<Database>
 

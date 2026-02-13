@@ -12,16 +12,25 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
 import { Badge } from '@/components/ui/badge'
-import { useUpsertIntegration, useDeleteIntegration, useToggleIntegration } from '@/queries/use-integrations'
+import {
+  useUpsertIntegration,
+  useDeleteIntegration,
+  useToggleIntegration,
+} from '@/queries/use-integrations'
 import { INTEGRATION_EVENT } from '@/types/integration'
 import type { ProjectIntegration, SlackConfig, IntegrationEvent } from '@/types/integration'
 
-const SLACK_WEBHOOK_REGEX = /^https:\/\/hooks\.slack\.com\/services\/T[A-Z0-9]+\/B[A-Z0-9]+\/[A-Za-z0-9]+$/
+const SLACK_WEBHOOK_REGEX =
+  /^https:\/\/hooks\.slack\.com\/services\/T[A-Z0-9]+\/B[A-Z0-9]+\/[A-Za-z0-9]+$/
 
 const slackSchema = z.object({
-  webhookUrl: z.string()
+  webhookUrl: z
+    .string()
     .url('유효한 URL을 입력해주세요')
-    .regex(SLACK_WEBHOOK_REGEX, 'Slack Webhook URL 형식이 아닙니다 (https://hooks.slack.com/services/...)'),
+    .regex(
+      SLACK_WEBHOOK_REGEX,
+      'Slack Webhook URL 형식이 아닙니다 (https://hooks.slack.com/services/...)',
+    ),
   channel: z.string().optional(),
 })
 
@@ -39,7 +48,11 @@ const EVENT_LABELS: Record<IntegrationEvent, string> = {
   task_deleted: '태스크 삭제',
 } as const
 
-export function SlackIntegrationForm({ projectId, integration, isOwnerOrAdmin }: SlackIntegrationFormProps) {
+export function SlackIntegrationForm({
+  projectId,
+  integration,
+  isOwnerOrAdmin,
+}: SlackIntegrationFormProps) {
   const config = integration?.config as SlackConfig | undefined
   const [selectedEvents, setSelectedEvents] = useState<IntegrationEvent[]>(
     config?.events ?? [INTEGRATION_EVENT.TASK_CREATED, INTEGRATION_EVENT.TASK_UPDATED],
@@ -156,11 +169,7 @@ export function SlackIntegrationForm({ projectId, integration, isOwnerOrAdmin }:
 
       <div className="space-y-2">
         <Label htmlFor="slack-channel">채널 (선택)</Label>
-        <Input
-          id="slack-channel"
-          {...register('channel')}
-          placeholder="#project-updates"
-        />
+        <Input id="slack-channel" {...register('channel')} placeholder="#project-updates" />
       </div>
 
       <div className="space-y-2">
@@ -175,7 +184,7 @@ export function SlackIntegrationForm({ projectId, integration, isOwnerOrAdmin }:
                 aria-checked={isActive}
                 tabIndex={0}
                 variant={isActive ? 'default' : 'outline'}
-                className="cursor-pointer select-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1"
+                className="focus-visible:ring-ring cursor-pointer select-none focus-visible:ring-2 focus-visible:ring-offset-1"
                 onClick={() => toggleEvent(value)}
                 onKeyDown={(e: React.KeyboardEvent) => {
                   if (e.key === 'Enter' || e.key === ' ') {

@@ -55,15 +55,14 @@ export function Header() {
   // 아바타: profiles 테이블 데이터만 사용 (OAuth 프로필 사진 자동 노출 방지)
   const avatarUrl = profile?.avatar_url ?? null
   const displayName = profile?.full_name ?? user?.user_metadata?.full_name ?? '사용자'
-  const fallbackInitial =
-    profile?.full_name?.[0] ?? user?.email?.[0]?.toUpperCase() ?? '?'
+  const fallbackInitial = profile?.full_name?.[0] ?? user?.email?.[0]?.toUpperCase() ?? '?'
 
   return (
-    <header className="sticky top-0 z-50 flex h-14 items-center justify-between bg-primary px-3 shadow-md sm:px-6 dark:bg-primary">
+    <header className="bg-primary dark:bg-primary sticky top-0 z-50 flex h-14 items-center justify-between px-3 shadow-md sm:px-6">
       <nav className="flex min-w-0 items-center gap-2 sm:gap-3">
         <Link
           href="/projects"
-          className="shrink-0 text-base font-semibold text-primary-foreground transition-opacity hover:opacity-80 sm:text-lg"
+          className="text-primary-foreground shrink-0 text-base font-semibold transition-opacity hover:opacity-80 sm:text-lg"
         >
           <span className="sm:hidden">협업 도구</span>
           <span className="hidden sm:inline">실시간 협업 일정관리 도구</span>
@@ -71,24 +70,27 @@ export function Header() {
         {(isAuthenticated || isDemoMode) && (
           <Link
             href="/my-tasks"
-            className="flex shrink-0 items-center gap-1.5 rounded-md bg-primary-foreground/15 px-3 py-1.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary-foreground/25"
+            className="bg-primary-foreground/15 text-primary-foreground hover:bg-primary-foreground/25 flex shrink-0 items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium transition-colors"
           >
             <ListTodo className="h-4 w-4" />
             <span className="hidden sm:inline">내 할 일</span>
           </Link>
         )}
         {isDemoMode && (
-          <Badge variant="secondary" className="bg-amber-100 text-amber-800 hover:bg-amber-100 dark:bg-amber-900/50 dark:text-amber-200">
+          <Badge
+            variant="secondary"
+            className="bg-amber-100 text-amber-800 hover:bg-amber-100 dark:bg-amber-900/50 dark:text-amber-200"
+          >
             데모 모드
           </Badge>
         )}
       </nav>
-      <div className="flex items-center gap-2 text-primary-foreground">
+      <div className="text-primary-foreground flex items-center gap-2">
         <SearchTrigger />
         <Button
           variant="ghost"
           size="icon"
-          className="h-9 w-9 hover:bg-primary-foreground/10"
+          className="hover:bg-primary-foreground/10 h-9 w-9"
           onClick={toggleShortcutHelp}
           title="키보드 단축키 (Shift+?)"
           aria-label="키보드 단축키"
@@ -104,12 +106,12 @@ export function Header() {
           <>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="relative h-9 w-9 rounded-full hover:bg-primary-foreground/10">
+                <Button
+                  variant="ghost"
+                  className="hover:bg-primary-foreground/10 relative h-9 w-9 rounded-full"
+                >
                   <Avatar className="h-9 w-9">
-                    <AvatarImage
-                      src={avatarUrl ?? undefined}
-                      alt={displayName}
-                    />
+                    <AvatarImage src={avatarUrl ?? undefined} alt={displayName} />
                     <AvatarFallback>{fallbackInitial}</AvatarFallback>
                   </Avatar>
                 </Button>
@@ -117,7 +119,9 @@ export function Header() {
               <DropdownMenuContent align="end" className="w-48">
                 <div className="px-2 py-1.5">
                   <p className="text-sm font-medium">{displayName}</p>
-                  <p className="text-muted-foreground text-xs">{user?.email ?? 'demo@example.com'}</p>
+                  <p className="text-muted-foreground text-xs">
+                    {user?.email ?? 'demo@example.com'}
+                  </p>
                 </div>
                 <DropdownMenuSeparator />
                 {!isDemoMode && (
@@ -145,9 +149,7 @@ export function Header() {
               </DropdownMenuContent>
             </DropdownMenu>
 
-            {!isDemoMode && (
-              <ProfileEditDialog open={profileOpen} onOpenChange={setProfileOpen} />
-            )}
+            {!isDemoMode && <ProfileEditDialog open={profileOpen} onOpenChange={setProfileOpen} />}
           </>
         )}
       </div>

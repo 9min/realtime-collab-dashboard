@@ -63,7 +63,11 @@ class DemoDataStore {
   upsertRows(table: string, rowsToUpsert: Row[], conflictColumns: string[] = ['id']): Row[] {
     const result: Row[] = []
     for (const row of rowsToUpsert) {
-      const filters: [string, string, unknown][] = conflictColumns.map((col) => [col, 'eq', row[col]])
+      const filters: [string, string, unknown][] = conflictColumns.map((col) => [
+        col,
+        'eq',
+        row[col],
+      ])
       const existing = this.getTable(table).filter((r) => this.matchesFilters(r, filters))
 
       if (existing.length > 0) {
@@ -97,29 +101,54 @@ class DemoDataStore {
     return filters.every(([col, op, val]) => {
       const rowVal = row[col]
       switch (op) {
-        case 'eq': return rowVal === val
-        case 'neq': return rowVal !== val
-        case 'lt': return typeof rowVal === 'string' && typeof val === 'string' ? rowVal < val : Number(rowVal) < Number(val)
-        case 'gt': return typeof rowVal === 'string' && typeof val === 'string' ? rowVal > val : Number(rowVal) > Number(val)
-        case 'lte': return typeof rowVal === 'string' && typeof val === 'string' ? rowVal <= val : Number(rowVal) <= Number(val)
-        case 'gte': return typeof rowVal === 'string' && typeof val === 'string' ? rowVal >= val : Number(rowVal) >= Number(val)
-        case 'in': return Array.isArray(val) && val.includes(rowVal)
+        case 'eq':
+          return rowVal === val
+        case 'neq':
+          return rowVal !== val
+        case 'lt':
+          return typeof rowVal === 'string' && typeof val === 'string'
+            ? rowVal < val
+            : Number(rowVal) < Number(val)
+        case 'gt':
+          return typeof rowVal === 'string' && typeof val === 'string'
+            ? rowVal > val
+            : Number(rowVal) > Number(val)
+        case 'lte':
+          return typeof rowVal === 'string' && typeof val === 'string'
+            ? rowVal <= val
+            : Number(rowVal) <= Number(val)
+        case 'gte':
+          return typeof rowVal === 'string' && typeof val === 'string'
+            ? rowVal >= val
+            : Number(rowVal) >= Number(val)
+        case 'in':
+          return Array.isArray(val) && val.includes(rowVal)
         case 'ilike': {
           if (typeof rowVal !== 'string' || typeof val !== 'string') return false
           const pattern = val.replace(/%/g, '.*').replace(/_/g, '.')
           return new RegExp(pattern, 'i').test(rowVal)
         }
-        case 'not.in': return Array.isArray(val) && !val.includes(rowVal)
-        case 'not.is': return rowVal !== val
-        case 'is': return rowVal === val
-        default: return true
+        case 'not.in':
+          return Array.isArray(val) && !val.includes(rowVal)
+        case 'not.is':
+          return rowVal !== val
+        case 'is':
+          return rowVal === val
+        default:
+          return true
       }
     })
   }
 
   // FK 관계 기반 조인 매핑
-  getRelationConfig(table: string, relationName: string): { table: string; fkColumn: string; type: 'object' | 'array' } | null {
-    const relations: Record<string, Record<string, { table: string; fkColumn: string; type: 'object' | 'array' }>> = {
+  getRelationConfig(
+    table: string,
+    relationName: string,
+  ): { table: string; fkColumn: string; type: 'object' | 'array' } | null {
+    const relations: Record<
+      string,
+      Record<string, { table: string; fkColumn: string; type: 'object' | 'array' }>
+    > = {
       project_members: {
         profiles: { table: 'profiles', fkColumn: 'user_id', type: 'object' },
       },
@@ -171,7 +200,18 @@ class DemoDataStore {
   }
 
   private getSchemaFields(table: string): Record<string, boolean> {
-    const tablesWithUpdatedAt = ['profiles', 'projects', 'kanban_columns', 'tasks', 'subtasks', 'task_comments', 'dashboard_layouts', 'project_integrations', 'task_recurrences', 'kanban_filter_presets']
+    const tablesWithUpdatedAt = [
+      'profiles',
+      'projects',
+      'kanban_columns',
+      'tasks',
+      'subtasks',
+      'task_comments',
+      'dashboard_layouts',
+      'project_integrations',
+      'task_recurrences',
+      'kanban_filter_presets',
+    ]
     if (tablesWithUpdatedAt.includes(table)) {
       return { updated_at: true }
     }

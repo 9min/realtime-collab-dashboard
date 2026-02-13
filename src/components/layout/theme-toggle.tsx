@@ -24,15 +24,24 @@ export function ThemeToggle() {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        <DropdownMenuItem onClick={() => setTheme('light')} className={theme === 'light' ? 'font-semibold' : ''}>
+        <DropdownMenuItem
+          onClick={() => setTheme('light')}
+          className={theme === 'light' ? 'font-semibold' : ''}
+        >
           <Sun className="mr-2 h-4 w-4" />
           라이트
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setTheme('dark')} className={theme === 'dark' ? 'font-semibold' : ''}>
+        <DropdownMenuItem
+          onClick={() => setTheme('dark')}
+          className={theme === 'dark' ? 'font-semibold' : ''}
+        >
           <Moon className="mr-2 h-4 w-4" />
           다크
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setTheme('system')} className={theme === 'system' ? 'font-semibold' : ''}>
+        <DropdownMenuItem
+          onClick={() => setTheme('system')}
+          className={theme === 'system' ? 'font-semibold' : ''}
+        >
           <Monitor className="mr-2 h-4 w-4" />
           시스템
         </DropdownMenuItem>

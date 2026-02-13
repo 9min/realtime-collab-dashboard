@@ -84,16 +84,12 @@ export function ProjectCard({ project, onEdit, onDelete }: ProjectCardProps) {
       className={cn(
         'group cursor-pointer border-l-4 transition-all',
         PROJECT_BORDER_COLORS[nameHash % PROJECT_BORDER_COLORS.length],
-        isDeleting
-          ? 'pointer-events-none opacity-50'
-          : 'hover:border-primary/50 hover:shadow-md',
+        isDeleting ? 'pointer-events-none opacity-50' : 'hover:border-primary/50 hover:shadow-md',
       )}
       onClick={handleClick}
     >
       <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-2">
-        <CardTitle className="line-clamp-1 text-base font-semibold">
-          {project.name}
-        </CardTitle>
+        <CardTitle className="line-clamp-1 text-base font-semibold">{project.name}</CardTitle>
         {isOwnerOrAdmin && (
           <AlertDialog>
             <DropdownMenu>
@@ -101,7 +97,7 @@ export function ProjectCard({ project, onEdit, onDelete }: ProjectCardProps) {
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="h-8 w-8 md:opacity-0 md:group-hover:opacity-100 md:group-focus-within:opacity-100"
+                  className="h-8 w-8 md:opacity-0 md:group-focus-within:opacity-100 md:group-hover:opacity-100"
                   onClick={(e) => e.stopPropagation()}
                   aria-label="프로젝트 메뉴"
                 >
@@ -134,7 +130,8 @@ export function ProjectCard({ project, onEdit, onDelete }: ProjectCardProps) {
               <AlertDialogHeader>
                 <AlertDialogTitle>프로젝트를 삭제하시겠습니까?</AlertDialogTitle>
                 <AlertDialogDescription>
-                  &quot;{project.name}&quot; 프로젝트와 모든 데이터(태스크, 컬럼, 멤버)가 영구 삭제됩니다.
+                  &quot;{project.name}&quot; 프로젝트와 모든 데이터(태스크, 컬럼, 멤버)가 영구
+                  삭제됩니다.
                   <br />이 작업은 되돌릴 수 없습니다.
                 </AlertDialogDescription>
               </AlertDialogHeader>

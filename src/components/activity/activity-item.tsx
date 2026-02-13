@@ -22,7 +22,10 @@ function formatMessage(activity: ActivityLogWithUser): string {
   const meta = activity.metadata as Record<string, unknown>
   const title = typeof meta.title === 'string' ? meta.title : ''
 
-  if (activity.action_type === ACTIVITY_ACTION.MOVED && activity.entity_type === ACTIVITY_ENTITY.TASK) {
+  if (
+    activity.action_type === ACTIVITY_ACTION.MOVED &&
+    activity.entity_type === ACTIVITY_ENTITY.TASK
+  ) {
     return `${userName}님이 태스크 '${title}'를 이동했습니다`
   }
 
@@ -98,7 +101,9 @@ export const ActivityItem = memo(function ActivityItem({ activity }: ActivityIte
         )}
       >
         {ActionIcon && (
-          <ActionIcon className={cn('h-4 w-4', actionConfig?.textColor ?? 'text-muted-foreground')} />
+          <ActionIcon
+            className={cn('h-4 w-4', actionConfig?.textColor ?? 'text-muted-foreground')}
+          />
         )}
       </div>
 

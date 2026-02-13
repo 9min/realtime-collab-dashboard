@@ -4,7 +4,12 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 
 import { useSupabase } from '@/components/providers/supabase-provider'
-import { getMyFavoriteIds, addFavorite, removeFavorite, getFavoriteTasks } from '@/services/favorite-service'
+import {
+  getMyFavoriteIds,
+  addFavorite,
+  removeFavorite,
+  getFavoriteTasks,
+} from '@/services/favorite-service'
 import { QUERY_CONFIG } from '@/lib/constants'
 
 export const favoriteKeys = {

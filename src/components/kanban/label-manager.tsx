@@ -89,10 +89,20 @@ export function LabelManager({ projectId }: LabelManagerProps) {
                       if (e.key === 'Escape') setEditingId(null)
                     }}
                   />
-                  <Button size="sm" className="h-8" onClick={handleSaveEdit} disabled={updateMutation.isPending}>
+                  <Button
+                    size="sm"
+                    className="h-8"
+                    onClick={handleSaveEdit}
+                    disabled={updateMutation.isPending}
+                  >
                     저장
                   </Button>
-                  <Button variant="ghost" size="sm" className="h-8" onClick={() => setEditingId(null)}>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-8"
+                    onClick={() => setEditingId(null)}
+                  >
                     취소
                   </Button>
                 </>
@@ -103,7 +113,13 @@ export function LabelManager({ projectId }: LabelManagerProps) {
                     style={{ backgroundColor: label.color }}
                   />
                   <span className="flex-1 text-sm">{label.name}</span>
-                  <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => handleStartEdit(label)} aria-label="라벨 편집">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8"
+                    onClick={() => handleStartEdit(label)}
+                    aria-label="라벨 편집"
+                  >
                     <Pencil className="h-3 w-3" />
                   </Button>
                   <Button
@@ -139,7 +155,12 @@ export function LabelManager({ projectId }: LabelManagerProps) {
               if (e.key === 'Escape') setShowCreate(false)
             }}
           />
-          <Button size="sm" className="h-8" onClick={handleCreate} disabled={createMutation.isPending || !newName.trim()}>
+          <Button
+            size="sm"
+            className="h-8"
+            onClick={handleCreate}
+            disabled={createMutation.isPending || !newName.trim()}
+          >
             추가
           </Button>
           <Button variant="ghost" size="sm" className="h-8" onClick={() => setShowCreate(false)}>
@@ -147,7 +168,12 @@ export function LabelManager({ projectId }: LabelManagerProps) {
           </Button>
         </div>
       ) : (
-        <Button variant="outline" size="sm" className="h-8 gap-1" onClick={() => setShowCreate(true)}>
+        <Button
+          variant="outline"
+          size="sm"
+          className="h-8 gap-1"
+          onClick={() => setShowCreate(true)}
+        >
           <Plus className="h-3 w-3" />
           라벨 추가
         </Button>
@@ -163,7 +189,7 @@ function ColorSelect({ value, onChange }: { value: string; onChange: (color: str
         <button
           key={c.value}
           className={cn(
-            'h-5 w-5 cursor-pointer rounded-full border-2 transition-all focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1',
+            'focus-visible:ring-ring h-5 w-5 cursor-pointer rounded-full border-2 transition-all focus-visible:ring-2 focus-visible:ring-offset-1',
             value === c.value ? 'border-foreground scale-110' : 'border-transparent',
           )}
           style={{ backgroundColor: c.value }}

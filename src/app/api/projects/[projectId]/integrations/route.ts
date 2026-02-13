@@ -10,7 +10,10 @@ interface RouteContext {
   params: Promise<{ projectId: string }>
 }
 
-function maskTokenInConfig(config: GitHubConfig | SlackConfig, type: string): GitHubConfig | SlackConfig {
+function maskTokenInConfig(
+  config: GitHubConfig | SlackConfig,
+  type: string,
+): GitHubConfig | SlackConfig {
   if (type === 'github') {
     const ghConfig = config as GitHubConfig
     return { ...ghConfig, token: maskToken(ghConfig.token) }
@@ -24,7 +27,10 @@ export async function GET(req: NextRequest, context: RouteContext) {
   const { projectId } = await context.params
   const supabase = await createServerClient()
 
-  const { data: { user }, error: authError } = await supabase.auth.getUser()
+  const {
+    data: { user },
+    error: authError,
+  } = await supabase.auth.getUser()
   if (authError || !user) {
     return NextResponse.json({ error: '인증이 필요합니다' }, { status: 401 })
   }
@@ -66,7 +72,10 @@ export async function POST(req: NextRequest, context: RouteContext) {
   const { projectId } = await context.params
   const supabase = await createServerClient()
 
-  const { data: { user }, error: authError } = await supabase.auth.getUser()
+  const {
+    data: { user },
+    error: authError,
+  } = await supabase.auth.getUser()
   if (authError || !user) {
     return NextResponse.json({ error: '인증이 필요합니다' }, { status: 401 })
   }

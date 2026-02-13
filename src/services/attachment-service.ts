@@ -44,12 +44,10 @@ export async function uploadAttachment(
   const filePath = `${projectId}/${taskId}/${uniqueId}.${fileExt}`
 
   // 1. Storage 업로드
-  const { error: uploadError } = await supabase.storage
-    .from(BUCKET_NAME)
-    .upload(filePath, file, {
-      contentType: file.type,
-      upsert: false,
-    })
+  const { error: uploadError } = await supabase.storage.from(BUCKET_NAME).upload(filePath, file, {
+    contentType: file.type,
+    upsert: false,
+  })
 
   if (uploadError) {
     return {
@@ -78,7 +76,10 @@ export async function uploadAttachment(
     await supabase.storage.from(BUCKET_NAME).remove([filePath])
     return {
       data: null,
-      error: { code: dbError?.code ?? 'UNKNOWN', message: dbError?.message ?? '첨부파일 등록 실패' },
+      error: {
+        code: dbError?.code ?? 'UNKNOWN',
+        message: dbError?.message ?? '첨부파일 등록 실패',
+      },
     }
   }
 
@@ -91,10 +92,7 @@ export async function deleteAttachment(
   filePath: string,
 ): Promise<ServiceResult<null>> {
   // 1. DB 레코드 삭제
-  const { error: dbError } = await supabase
-    .from('task_attachments')
-    .delete()
-    .eq('id', attachmentId)
+  const { error: dbError } = await supabase.from('task_attachments').delete().eq('id', attachmentId)
 
   if (dbError) {
     return { data: null, error: { code: dbError.code, message: dbError.message } }

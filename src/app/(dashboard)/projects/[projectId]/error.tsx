@@ -22,7 +22,7 @@ export default function ProjectError({
 
   return (
     <div className="flex flex-1 items-center justify-center p-6">
-      <div className="text-center space-y-4">
+      <div className="space-y-4 text-center">
         <h2 className="text-xl font-bold">프로젝트를 불러올 수 없습니다</h2>
         <p className="text-muted-foreground max-w-md">
           {error.message || '프로젝트 데이터를 가져오는 중 오류가 발생했습니다.'}

@@ -3,11 +3,7 @@ import type { SupabaseClient } from '@supabase/supabase-js'
 
 import type { Database } from '@/types/database'
 import { createMockSupabaseClient } from '@/__tests__/helpers/mock-supabase'
-import {
-  MOCK_USER_ID,
-  MOCK_NOTIFICATION_ID,
-  mockNotification,
-} from '@/__tests__/helpers/fixtures'
+import { MOCK_USER_ID, MOCK_NOTIFICATION_ID, mockNotification } from '@/__tests__/helpers/fixtures'
 
 import { getNotifications, getUnreadCount, markAsRead, markAllAsRead } from './notification-service'
 

@@ -7,7 +7,12 @@ import { cn } from '@/lib/utils'
 
 import { Separator } from '@/components/ui/separator'
 import { useAuth } from '@/hooks/use-auth'
-import { useComments, useCreateComment, useUpdateComment, useDeleteComment } from '@/queries/use-comments'
+import {
+  useComments,
+  useCreateComment,
+  useUpdateComment,
+  useDeleteComment,
+} from '@/queries/use-comments'
 import { useProjectMembers } from '@/queries/use-projects'
 
 import { CommentForm } from './comment-form'
@@ -20,7 +25,12 @@ interface CommentSectionProps {
   canDeleteAll: boolean
 }
 
-export function CommentSection({ taskId, projectId, canComment, canDeleteAll }: CommentSectionProps) {
+export function CommentSection({
+  taskId,
+  projectId,
+  canComment,
+  canDeleteAll,
+}: CommentSectionProps) {
   const { user } = useAuth()
   const { data: comments, isLoading } = useComments(taskId)
   const { data: members } = useProjectMembers(projectId)
@@ -67,7 +77,9 @@ export function CommentSection({ taskId, projectId, canComment, canDeleteAll }: 
         <span className="text-sm font-medium">
           댓글 {hasComments ? `(${comments.length})` : ''}
         </span>
-        <ChevronDown className={cn('ml-auto h-4 w-4 transition-transform', isOpen && 'rotate-180')} />
+        <ChevronDown
+          className={cn('ml-auto h-4 w-4 transition-transform', isOpen && 'rotate-180')}
+        />
       </button>
 
       {isOpen && (
@@ -96,7 +108,11 @@ export function CommentSection({ taskId, projectId, canComment, canDeleteAll }: 
 
           {canComment && (
             <div className="mt-3">
-              <CommentForm onSubmit={handleCreate} isPending={createMutation.isPending} members={memberList} />
+              <CommentForm
+                onSubmit={handleCreate}
+                isPending={createMutation.isPending}
+                members={memberList}
+              />
             </div>
           )}
         </div>

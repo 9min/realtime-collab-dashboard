@@ -14,16 +14,22 @@ interface CalendarDayCellProps {
   onTaskClick: (task: Task) => void
 }
 
-export function CalendarDayCell({ date, isCurrentMonth, isToday, tasks, onTaskClick }: CalendarDayCellProps) {
+export function CalendarDayCell({
+  date,
+  isCurrentMonth,
+  isToday,
+  tasks,
+  onTaskClick,
+}: CalendarDayCellProps) {
   const visibleTasks = tasks.slice(0, MAX_VISIBLE_TASKS)
   const remainingCount = tasks.length - MAX_VISIBLE_TASKS
 
   return (
     <div
       className={cn(
-        'border-border min-h-[100px] border-b border-r p-1.5',
+        'border-border min-h-[100px] border-r border-b p-1.5',
         !isCurrentMonth && 'bg-muted/30',
-        isToday && 'ring-primary ring-1 ring-inset bg-blue-50/60 dark:bg-blue-950/20',
+        isToday && 'ring-primary bg-blue-50/60 ring-1 ring-inset dark:bg-blue-950/20',
       )}
     >
       <span

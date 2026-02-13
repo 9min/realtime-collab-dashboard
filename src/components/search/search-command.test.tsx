@@ -28,12 +28,8 @@ vi.mock('@/stores/search-store', () => ({
 }))
 
 const mockSearchResults = {
-  projects: [
-    { id: 'p1', name: 'My Project Alpha', description: 'A project' },
-  ],
-  tasks: [
-    { id: 't1', title: 'Fix critical bug', projectId: 'p1', projectName: 'Beta Project' },
-  ],
+  projects: [{ id: 'p1', name: 'My Project Alpha', description: 'A project' }],
+  tasks: [{ id: 't1', title: 'Fix critical bug', projectId: 'p1', projectName: 'Beta Project' }],
   comments: [
     { id: 'c1', content: 'Nice work here', taskId: 't1', taskTitle: 'Some task', projectId: 'p1' },
   ],

@@ -31,7 +31,13 @@ import {
 } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { useProfile, useUpdateProfile, useUploadAvatar, useDeleteAvatar, useDeleteAccount } from '@/queries/use-profile'
+import {
+  useProfile,
+  useUpdateProfile,
+  useUploadAvatar,
+  useDeleteAvatar,
+  useDeleteAccount,
+} from '@/queries/use-profile'
 
 import { useAuth } from '@/hooks/use-auth'
 
@@ -77,8 +83,7 @@ export function ProfileEditDialog({ open, onOpenChange }: ProfileEditDialogProps
 
   // profiles 테이블 데이터만 사용 (OAuth 프로필 사진 자동 노출 방지)
   const currentAvatarUrl = profile?.avatar_url ?? null
-  const fallbackInitial =
-    profile?.full_name?.[0] ?? user?.email?.[0]?.toUpperCase() ?? '?'
+  const fallbackInitial = profile?.full_name?.[0] ?? user?.email?.[0]?.toUpperCase() ?? '?'
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -90,7 +95,7 @@ export function ProfileEditDialog({ open, onOpenChange }: ProfileEditDialogProps
         return
       }
 
-      if (!AVATAR.ALLOWED_TYPES.includes(file.type as typeof AVATAR.ALLOWED_TYPES[number])) {
+      if (!AVATAR.ALLOWED_TYPES.includes(file.type as (typeof AVATAR.ALLOWED_TYPES)[number])) {
         toast.error('JPG, PNG, GIF, WebP 파일만 업로드 가능합니다')
         return
       }
@@ -153,7 +158,8 @@ export function ProfileEditDialog({ open, onOpenChange }: ProfileEditDialogProps
     deleteAccountMutation.mutate()
   }
 
-  const isAvatarLoading = uploadAvatar.isPending || deleteAvatar.isPending || updateProfile.isPending
+  const isAvatarLoading =
+    uploadAvatar.isPending || deleteAvatar.isPending || updateProfile.isPending
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -213,11 +219,7 @@ export function ProfileEditDialog({ open, onOpenChange }: ProfileEditDialogProps
           {/* 이름 */}
           <div className="space-y-2">
             <Label htmlFor="full_name">이름</Label>
-            <Input
-              id="full_name"
-              placeholder="이름을 입력하세요"
-              {...register('full_name')}
-            />
+            <Input id="full_name" placeholder="이름을 입력하세요" {...register('full_name')} />
             {errors.full_name && (
               <p className="text-destructive text-sm">{errors.full_name.message}</p>
             )}
@@ -226,12 +228,7 @@ export function ProfileEditDialog({ open, onOpenChange }: ProfileEditDialogProps
           {/* 이메일 (읽기 전용) */}
           <div className="space-y-2">
             <Label htmlFor="email">이메일</Label>
-            <Input
-              id="email"
-              value={user?.email ?? ''}
-              disabled
-              className="bg-muted"
-            />
+            <Input id="email" value={user?.email ?? ''} disabled className="bg-muted" />
           </div>
 
           {/* 위험 영역 */}
@@ -264,17 +261,10 @@ export function ProfileEditDialog({ open, onOpenChange }: ProfileEditDialogProps
           </div>
 
           <DialogFooter>
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => onOpenChange(false)}
-            >
+            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
               취소
             </Button>
-            <Button
-              type="submit"
-              disabled={!isDirty || updateProfile.isPending}
-            >
+            <Button type="submit" disabled={!isDirty || updateProfile.isPending}>
               {updateProfile.isPending ? (
                 <>
                   <Loader2 className="mr-1.5 h-4 w-4 animate-spin" />

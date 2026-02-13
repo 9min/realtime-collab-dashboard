@@ -60,7 +60,12 @@ export function NotificationBell() {
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button variant="ghost" size="icon" className="relative h-9 w-9 hover:bg-white/10" aria-label={`알림${displayCount > 0 ? ` ${displayCount}개 읽지 않음` : ''}`}>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="relative h-9 w-9 hover:bg-white/10"
+          aria-label={`알림${displayCount > 0 ? ` ${displayCount}개 읽지 않음` : ''}`}
+        >
           <Bell className="h-5 w-5" />
           {displayCount > 0 && (
             <span

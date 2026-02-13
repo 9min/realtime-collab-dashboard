@@ -24,7 +24,14 @@ interface GanttBarProps {
   onClick: () => void
 }
 
-export const GanttBar = memo(function GanttBar({ title, priority, assigneeName, dueDate, position, onClick }: GanttBarProps) {
+export const GanttBar = memo(function GanttBar({
+  title,
+  priority,
+  assigneeName,
+  dueDate,
+  position,
+  onClick,
+}: GanttBarProps) {
   return (
     <div
       className="absolute top-1 bottom-1 cursor-pointer"
@@ -39,29 +46,27 @@ export const GanttBar = memo(function GanttBar({ title, priority, assigneeName, 
             onClick={onClick}
             className={cn(
               'relative flex h-full w-full items-center gap-1 overflow-hidden rounded-md px-2 text-xs font-medium text-white shadow-sm outline-none',
-              'transition-all hover:shadow-md hover:ring-1 hover:ring-white/30 hover:brightness-110 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1',
+              'focus-visible:ring-ring transition-all hover:shadow-md hover:ring-1 hover:ring-white/30 hover:brightness-110 focus-visible:ring-2 focus-visible:ring-offset-1',
               PRIORITY_BAR_COLORS[priority],
             )}
           >
             {/* 우선순위 좌측 스트라이프 */}
-            <span className="absolute left-0 top-0 bottom-0 w-[3px] rounded-l-md bg-white/30" />
+            <span className="absolute top-0 bottom-0 left-0 w-[3px] rounded-l-md bg-white/30" />
             <span className="truncate pl-1">{title}</span>
           </button>
         </TooltipTrigger>
         <TooltipContent side="top" sideOffset={6} className="max-w-[240px] space-y-1.5 p-3">
-          <p className="text-sm font-semibold leading-tight">{title}</p>
+          <p className="text-sm leading-tight font-semibold">{title}</p>
           <div className="flex items-center gap-1.5">
-            <span className={cn('inline-block h-2 w-2 rounded-full', PRIORITY_DOT_COLORS[priority])} />
-            <Badge variant="secondary" className="text-[10px] px-1.5 py-0">
+            <span
+              className={cn('inline-block h-2 w-2 rounded-full', PRIORITY_DOT_COLORS[priority])}
+            />
+            <Badge variant="secondary" className="px-1.5 py-0 text-[10px]">
               {PRIORITY_LABELS[priority]}
             </Badge>
           </div>
-          {assigneeName && (
-            <p className="text-[11px] opacity-80">담당: {assigneeName}</p>
-          )}
-          {dueDate && (
-            <p className="text-[11px] opacity-80">마감: {dueDate}</p>
-          )}
+          {assigneeName && <p className="text-[11px] opacity-80">담당: {assigneeName}</p>}
+          {dueDate && <p className="text-[11px] opacity-80">마감: {dueDate}</p>}
         </TooltipContent>
       </Tooltip>
     </div>

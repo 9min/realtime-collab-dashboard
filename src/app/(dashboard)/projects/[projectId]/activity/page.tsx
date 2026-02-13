@@ -2,12 +2,7 @@
 
 import { useMemo } from 'react'
 import { useParams } from 'next/navigation'
-import {
-  ArrowRightLeft,
-  Pencil,
-  Plus,
-  Trash2,
-} from 'lucide-react'
+import { ArrowRightLeft, Pencil, Plus, Trash2 } from 'lucide-react'
 
 import { Card, CardContent } from '@/components/ui/card'
 import { ActivityFeed } from '@/components/activity/activity-feed'
@@ -35,7 +30,7 @@ function StatCard({
           <Icon className="text-muted-foreground h-5 w-5" />
         </div>
         <div>
-          <p className="text-2xl font-bold leading-none">{value}</p>
+          <p className="text-2xl leading-none font-bold">{value}</p>
           <p className="text-muted-foreground mt-1 text-xs">{label}</p>
         </div>
       </CardContent>

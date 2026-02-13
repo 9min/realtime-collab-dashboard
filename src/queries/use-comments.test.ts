@@ -20,9 +20,20 @@ vi.mock('@/queries/use-activity-logs', () => ({
   },
 }))
 
-import { getComments, createComment, updateComment, deleteComment } from '@/services/comment-service'
+import {
+  getComments,
+  createComment,
+  updateComment,
+  deleteComment,
+} from '@/services/comment-service'
 import { mockComment } from '@/__tests__/helpers/fixtures'
-import { useComments, useCreateComment, useUpdateComment, useDeleteComment, commentKeys } from './use-comments'
+import {
+  useComments,
+  useCreateComment,
+  useUpdateComment,
+  useDeleteComment,
+  commentKeys,
+} from './use-comments'
 
 describe('use-comments', () => {
   let queryClient: QueryClient

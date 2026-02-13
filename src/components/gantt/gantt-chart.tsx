@@ -11,8 +11,10 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { TooltipProvider } from '@/components/ui/tooltip'
 
-const TaskDetailDialog = dynamic(
-  () => import('@/components/kanban/task-detail-dialog').then((mod) => ({ default: mod.TaskDetailDialog })),
+const TaskDetailDialog = dynamic(() =>
+  import('@/components/kanban/task-detail-dialog').then((mod) => ({
+    default: mod.TaskDetailDialog,
+  })),
 )
 import { useAuth } from '@/hooks/use-auth'
 import { useMediaQuery } from '@/hooks/use-media-query'
@@ -72,7 +74,14 @@ export function GanttChart({ projectId }: GanttChartProps) {
 
   const now = new Date()
 
-  const { timelineColumns, timelineStart, totalDays, columnWidth, monthViewColumns, timelineTotalWidth } = useMemo(() => {
+  const {
+    timelineColumns,
+    timelineStart,
+    totalDays,
+    columnWidth,
+    monthViewColumns,
+    timelineTotalWidth,
+  } = useMemo(() => {
     // 태스크 날짜 범위 계산
     let taskMin: Date | null = null
     let taskMax: Date | null = null
@@ -110,7 +119,11 @@ export function GanttChart({ projectId }: GanttChartProps) {
 
     // 월 단위: 전월부터 시작, 태스크 범위에 맞게 확장
     let monthStart = new Date(now.getFullYear(), now.getMonth() - 1, 1)
-    let monthEnd = new Date(monthStart.getFullYear(), monthStart.getMonth() + MIN_MONTH_VIEW_MONTHS, 1)
+    let monthEnd = new Date(
+      monthStart.getFullYear(),
+      monthStart.getMonth() + MIN_MONTH_VIEW_MONTHS,
+      1,
+    )
 
     if (taskMin) {
       const taskMinMonth = new Date(taskMin.getFullYear(), taskMin.getMonth(), 1)
@@ -122,7 +135,9 @@ export function GanttChart({ projectId }: GanttChartProps) {
 
     const monthCount = Math.max(
       MIN_MONTH_VIEW_MONTHS,
-      (monthEnd.getFullYear() - monthStart.getFullYear()) * 12 + monthEnd.getMonth() - monthStart.getMonth(),
+      (monthEnd.getFullYear() - monthStart.getFullYear()) * 12 +
+        monthEnd.getMonth() -
+        monthStart.getMonth(),
     )
     const monthCols = getMonthViewColumns(monthStart, monthCount)
     const actualEnd = new Date(monthStart.getFullYear(), monthStart.getMonth() + monthCount, 1)
@@ -145,9 +160,7 @@ export function GanttChart({ projectId }: GanttChartProps) {
     const sortedColumns = [...columns].sort((a, b) => a.position - b.position)
     return sortedColumns.map((col) => ({
       column: col,
-      tasks: tasks
-        .filter((t) => t.column_id === col.id)
-        .sort((a, b) => a.position - b.position),
+      tasks: tasks.filter((t) => t.column_id === col.id).sort((a, b) => a.position - b.position),
     }))
   }, [tasks, columns])
 
@@ -161,9 +174,7 @@ export function GanttChart({ projectId }: GanttChartProps) {
   // 주말 컬럼 인덱스 (주 단위 뷰에서만)
   const weekendColumns = useMemo(() => {
     if (viewMode !== 'week') return []
-    return timelineColumns
-      .map((col, idx) => (col.isWeekend ? idx : -1))
-      .filter((idx) => idx >= 0)
+    return timelineColumns.map((col, idx) => (col.isWeekend ? idx : -1)).filter((idx) => idx >= 0)
   }, [timelineColumns, viewMode])
 
   const getMemberName = (assigneeId: string | null) => {
@@ -185,11 +196,11 @@ export function GanttChart({ projectId }: GanttChartProps) {
       <div className="space-y-4">
         {/* 스켈레톤: 뷰 토글 + 레전드 */}
         <div className="flex items-center gap-3">
-          <div className="flex gap-0.5 rounded-lg border bg-muted p-0.5">
+          <div className="bg-muted flex gap-0.5 rounded-lg border p-0.5">
             <Skeleton className="h-8 w-16" />
             <Skeleton className="h-8 w-16" />
           </div>
-          <div className="hidden md:flex items-center gap-3">
+          <div className="hidden items-center gap-3 md:flex">
             {Array.from({ length: 4 }).map((_, i) => (
               <div key={i} className="flex items-center gap-1.5">
                 <Skeleton className="h-2.5 w-2.5 rounded-full" />
@@ -199,17 +210,27 @@ export function GanttChart({ projectId }: GanttChartProps) {
           </div>
         </div>
         {/* 스켈레톤: 차트 */}
-        <div className="overflow-hidden rounded-lg border bg-card">
+        <div className="bg-card overflow-hidden rounded-lg border">
           <div className="flex">
-            <div className="shrink-0 border-r bg-card" style={{ width: isDesktop ? LABEL_WIDTH_DESKTOP : LABEL_WIDTH_MOBILE }}>
+            <div
+              className="bg-card shrink-0 border-r"
+              style={{ width: isDesktop ? LABEL_WIDTH_DESKTOP : LABEL_WIDTH_MOBILE }}
+            >
               {/* 헤더 스페이서 (2행) */}
               <div style={{ height: HEADER_HEIGHT }} className="border-b" />
               {/* 컬럼 헤더 스켈레톤 */}
-              <div className="bg-slate-100/80 dark:bg-slate-800/50 border-b px-3 py-1" style={{ height: COLUMN_HEADER_ROW_HEIGHT }}>
+              <div
+                className="border-b bg-slate-100/80 px-3 py-1 dark:bg-slate-800/50"
+                style={{ height: COLUMN_HEADER_ROW_HEIGHT }}
+              >
                 <Skeleton className="h-3 w-16" />
               </div>
               {Array.from({ length: 5 }).map((_, i) => (
-                <div key={i} className="flex items-center border-b px-3 gap-2" style={{ height: ROW_HEIGHT }}>
+                <div
+                  key={i}
+                  className="flex items-center gap-2 border-b px-3"
+                  style={{ height: ROW_HEIGHT }}
+                >
                   <Skeleton className="h-2.5 w-2.5 shrink-0 rounded-full" />
                   <Skeleton className="h-3 flex-1" />
                 </div>
@@ -217,12 +238,15 @@ export function GanttChart({ projectId }: GanttChartProps) {
             </div>
             <div className="flex-1">
               {/* 2행 헤더 스켈레톤 */}
-              <Skeleton className="border-b rounded-none" style={{ height: HEADER_HEIGHT }} />
+              <Skeleton className="rounded-none border-b" style={{ height: HEADER_HEIGHT }} />
               <div style={{ height: COLUMN_HEADER_ROW_HEIGHT }} className="border-b" />
               {[45, 60, 35, 55, 40].map((width, i) => (
                 <div
                   key={i}
-                  className={cn('flex items-center px-4 border-b', i % 2 === 1 && 'bg-blue-50/70 dark:bg-blue-950/20')}
+                  className={cn(
+                    'flex items-center border-b px-4',
+                    i % 2 === 1 && 'bg-blue-50/70 dark:bg-blue-950/20',
+                  )}
                   style={{ height: ROW_HEIGHT }}
                 >
                   <Skeleton
@@ -259,21 +283,21 @@ export function GanttChart({ projectId }: GanttChartProps) {
         <Tabs value={viewMode} onValueChange={(v) => setViewMode(v as 'week' | 'month')}>
           <TabsList>
             <TabsTrigger value="week">
-              <CalendarDays className="h-3.5 w-3.5" />
-              주 단위
+              <CalendarDays className="h-3.5 w-3.5" />주 단위
             </TabsTrigger>
             <TabsTrigger value="month">
-              <CalendarRange className="h-3.5 w-3.5" />
-              월 단위
+              <CalendarRange className="h-3.5 w-3.5" />월 단위
             </TabsTrigger>
           </TabsList>
         </Tabs>
 
         {/* 우선순위 레전드 */}
-        <div className="hidden md:flex items-center gap-3 text-xs text-muted-foreground">
+        <div className="text-muted-foreground hidden items-center gap-3 text-xs md:flex">
           {PRIORITY_ORDER.map((p) => (
             <div key={p} className="flex items-center gap-1.5">
-              <span className={cn('inline-block h-2.5 w-2.5 rounded-full', PRIORITY_DOT_COLORS[p])} />
+              <span
+                className={cn('inline-block h-2.5 w-2.5 rounded-full', PRIORITY_DOT_COLORS[p])}
+              />
               <span>{PRIORITY_LABELS[p]}</span>
             </div>
           ))}
@@ -281,25 +305,31 @@ export function GanttChart({ projectId }: GanttChartProps) {
       </div>
 
       {/* 간트 차트 */}
-      <div className="border-border overflow-hidden rounded-lg border bg-card">
+      <div className="border-border bg-card overflow-hidden rounded-lg border">
         <TooltipProvider delayDuration={300}>
           <ScrollArea className="w-full">
             <div className="flex">
               {/* 왼쪽: 태스크 레이블 */}
-              <div className="border-border shrink-0 border-r bg-card" style={{ width: labelWidth }}>
+              <div
+                className="border-border bg-card shrink-0 border-r"
+                style={{ width: labelWidth }}
+              >
                 {/* 헤더 스페이서 (2행 헤더 높이 매칭) */}
-                <div className="border-border border-b bg-blue-50 dark:bg-blue-950/30" style={{ height: HEADER_HEIGHT }} />
+                <div
+                  className="border-border border-b bg-blue-50 dark:bg-blue-950/30"
+                  style={{ height: HEADER_HEIGHT }}
+                />
                 {groupedTasks.map((group) => {
                   const columnRowIdx = globalRowIndex
                   return (
                     <div key={group.column.id}>
                       {/* 컬럼 헤더 */}
                       <div
-                        className="bg-slate-100/80 border-border flex items-center gap-2 border-b px-3 text-xs font-semibold dark:bg-slate-800/50"
+                        className="border-border flex items-center gap-2 border-b bg-slate-100/80 px-3 text-xs font-semibold dark:bg-slate-800/50"
                         style={{ height: COLUMN_HEADER_ROW_HEIGHT }}
                       >
                         <span>{group.column.title}</span>
-                        <Badge variant="secondary" className="text-[10px] px-1.5 py-0 h-4">
+                        <Badge variant="secondary" className="h-4 px-1.5 py-0 text-[10px]">
                           {group.tasks.length}
                         </Badge>
                       </div>
@@ -314,8 +344,13 @@ export function GanttChart({ projectId }: GanttChartProps) {
                             )}
                             style={{ height: ROW_HEIGHT }}
                           >
-                            <span className={cn('inline-block h-2 w-2 shrink-0 rounded-full', PRIORITY_DOT_COLORS[task.priority as TaskPriority])} />
-                            <span className="truncate flex-1">{task.title}</span>
+                            <span
+                              className={cn(
+                                'inline-block h-2 w-2 shrink-0 rounded-full',
+                                PRIORITY_DOT_COLORS[task.priority as TaskPriority],
+                              )}
+                            />
+                            <span className="flex-1 truncate">{task.title}</span>
                             {isDesktop && getMemberInitials(task.assignee_id) && (
                               <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-blue-100 text-[9px] font-medium text-blue-700 dark:bg-blue-900/50 dark:text-blue-300">
                                 {getMemberInitials(task.assignee_id)}
@@ -325,7 +360,9 @@ export function GanttChart({ projectId }: GanttChartProps) {
                         )
                       })}
                       {/* globalRowIndex를 다음 그룹으로 진행시키기 위해 부수효과 없이 숨김 처리 */}
-                      <span className="hidden">{(globalRowIndex += 1 + group.tasks.length) && ''}</span>
+                      <span className="hidden">
+                        {(globalRowIndex += 1 + group.tasks.length) && ''}
+                      </span>
                     </div>
                   )
                 })}
@@ -334,25 +371,33 @@ export function GanttChart({ projectId }: GanttChartProps) {
               {/* 오른쪽: 타임라인 */}
               <div className="min-w-0 flex-1">
                 {viewMode === 'week' ? (
-                  <GanttHeader viewMode="week" columns={timelineColumns} columnWidth={columnWidth} />
+                  <GanttHeader
+                    viewMode="week"
+                    columns={timelineColumns}
+                    columnWidth={columnWidth}
+                  />
                 ) : (
-                  monthViewColumns && <GanttHeader viewMode="month" monthViewColumns={monthViewColumns} dayWidth={DAY_WIDTH_MONTH} />
-                )}
-                <div
-                  className="relative"
-                  style={{ minWidth: timelineTotalWidth }}
-                >
-                  {/* 주말 음영 (주 단위만) */}
-                  {viewMode === 'week' && weekendColumns.map((colIdx) => (
-                    <div
-                      key={`weekend-${colIdx}`}
-                      className="pointer-events-none absolute top-0 bottom-0 bg-slate-200/50 dark:bg-slate-700/25"
-                      style={{
-                        left: colIdx * columnWidth,
-                        width: columnWidth,
-                      }}
+                  monthViewColumns && (
+                    <GanttHeader
+                      viewMode="month"
+                      monthViewColumns={monthViewColumns}
+                      dayWidth={DAY_WIDTH_MONTH}
                     />
-                  ))}
+                  )
+                )}
+                <div className="relative" style={{ minWidth: timelineTotalWidth }}>
+                  {/* 주말 음영 (주 단위만) */}
+                  {viewMode === 'week' &&
+                    weekendColumns.map((colIdx) => (
+                      <div
+                        key={`weekend-${colIdx}`}
+                        className="pointer-events-none absolute top-0 bottom-0 bg-slate-200/50 dark:bg-slate-700/25"
+                        style={{
+                          left: colIdx * columnWidth,
+                          width: columnWidth,
+                        }}
+                      />
+                    ))}
 
                   {/* 수직 그리드 라인 */}
                   {viewMode === 'week' ? (
@@ -364,7 +409,8 @@ export function GanttChart({ projectId }: GanttChartProps) {
                       }}
                     />
                   ) : (
-                    monthViewColumns && (() => {
+                    monthViewColumns &&
+                    (() => {
                       let offset = 0
                       return monthViewColumns.map((col, i) => {
                         offset += col.days * DAY_WIDTH_MONTH
@@ -412,7 +458,10 @@ export function GanttChart({ projectId }: GanttChartProps) {
                     return groupedTasks.map((group) => (
                       <div key={group.column.id}>
                         {/* 컬럼 헤더 스페이서 */}
-                        <div className="border-border border-b" style={{ height: COLUMN_HEADER_ROW_HEIGHT }} />
+                        <div
+                          className="border-border border-b"
+                          style={{ height: COLUMN_HEADER_ROW_HEIGHT }}
+                        />
                         {group.tasks.map((task) => {
                           const currentRowIdx = ++rowIdx
                           return (
@@ -440,7 +489,10 @@ export function GanttChart({ projectId }: GanttChartProps) {
                             </div>
                           )
                         })}
-                        {(() => { rowIdx++; return null })()}
+                        {(() => {
+                          rowIdx++
+                          return null
+                        })()}
                       </div>
                     ))
                   })()}
@@ -471,7 +523,9 @@ export function GanttChart({ projectId }: GanttChartProps) {
         projectId={projectId}
         task={selectedTask}
         open={!!selectedTask}
-        onOpenChange={(open) => { if (!open) setSelectedTask(null) }}
+        onOpenChange={(open) => {
+          if (!open) setSelectedTask(null)
+        }}
         canEdit={canEdit}
         canDeleteAll={canDeleteAll}
       />

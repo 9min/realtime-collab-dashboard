@@ -2,7 +2,12 @@ import type { SupabaseClient } from '@supabase/supabase-js'
 
 import type { ServiceResult } from '@/types/common'
 import type { Database, Json } from '@/types/database'
-import type { ProjectIntegration, IntegrationType, SlackConfig, GitHubConfig } from '@/types/integration'
+import type {
+  ProjectIntegration,
+  IntegrationType,
+  SlackConfig,
+  GitHubConfig,
+} from '@/types/integration'
 
 type Client = SupabaseClient<Database>
 
@@ -49,10 +54,7 @@ export async function deleteIntegration(
   supabase: Client,
   integrationId: string,
 ): Promise<ServiceResult<null>> {
-  const { error } = await supabase
-    .from('project_integrations')
-    .delete()
-    .eq('id', integrationId)
+  const { error } = await supabase.from('project_integrations').delete().eq('id', integrationId)
 
   if (error) {
     return { data: null, error: { code: error.code, message: error.message } }

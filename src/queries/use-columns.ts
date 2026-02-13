@@ -3,7 +3,13 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 
 import { useSupabase } from '@/components/providers/supabase-provider'
-import { getColumns, createColumn, updateColumn, deleteColumn, reorderColumns } from '@/services/column-service'
+import {
+  getColumns,
+  createColumn,
+  updateColumn,
+  deleteColumn,
+  reorderColumns,
+} from '@/services/column-service'
 import { QUERY_CONFIG } from '@/lib/constants'
 import type { InsertTables, UpdateTables } from '@/types/database'
 
@@ -44,8 +50,13 @@ export function useUpdateColumn(projectId: string) {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: ({ columnId, input }: { columnId: string; input: UpdateTables<'kanban_columns'> }) =>
-      updateColumn(supabase, columnId, input),
+    mutationFn: ({
+      columnId,
+      input,
+    }: {
+      columnId: string
+      input: UpdateTables<'kanban_columns'>
+    }) => updateColumn(supabase, columnId, input),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: columnKeys.list(projectId) })
     },

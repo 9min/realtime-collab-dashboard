@@ -18,7 +18,13 @@ import {
 } from '@/components/ui/alert-dialog'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { MarkdownRenderer } from '@/components/ui/markdown-renderer'
 import { Textarea } from '@/components/ui/textarea'
@@ -81,7 +87,17 @@ interface TaskDetailDialogProps {
   projectFeatures?: ProjectFeatures
 }
 
-export function TaskDetailDialog({ projectId, task, open, onOpenChange, canEdit = true, canDeleteAll = false, labels, taskLabelIds, projectFeatures }: TaskDetailDialogProps) {
+export function TaskDetailDialog({
+  projectId,
+  task,
+  open,
+  onOpenChange,
+  canEdit = true,
+  canDeleteAll = false,
+  labels,
+  taskLabelIds,
+  projectFeatures,
+}: TaskDetailDialogProps) {
   const { user } = useAuth()
   const pathname = usePathname()
   const updateTaskMutation = useUpdateTask(projectId)
@@ -90,7 +106,8 @@ export function TaskDetailDialog({ projectId, task, open, onOpenChange, canEdit 
   const isOnBoardPage = pathname.includes(`/projects/${projectId}/board`)
 
   // 담당자 기반 권한: 담당자 없으면 모든 멤버 가능, 있으면 owner/admin/담당자만
-  const canInteract = canDeleteAll || (canEdit && (task?.assignee_id === null || task?.assignee_id === user?.id))
+  const canInteract =
+    canDeleteAll || (canEdit && (task?.assignee_id === null || task?.assignee_id === user?.id))
 
   // 편집 모드 상태
   const [isEditing, setIsEditing] = useState(false)
@@ -143,8 +160,20 @@ export function TaskDetailDialog({ projectId, task, open, onOpenChange, canEdit 
   }
 
   return (
-    <Dialog open={open} onOpenChange={(v) => { if (!v) setIsEditing(false); onOpenChange(v) }}>
-      <DialogContent className="flex max-h-[85vh] flex-col sm:max-w-xl" onOpenAutoFocus={(e) => { e.preventDefault(); (e.currentTarget as HTMLElement).focus() }}>
+    <Dialog
+      open={open}
+      onOpenChange={(v) => {
+        if (!v) setIsEditing(false)
+        onOpenChange(v)
+      }}
+    >
+      <DialogContent
+        className="flex max-h-[85vh] flex-col sm:max-w-xl"
+        onOpenAutoFocus={(e) => {
+          e.preventDefault()
+          ;(e.currentTarget as HTMLElement).focus()
+        }}
+      >
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 pr-8">
             {isEditing ? (
@@ -181,7 +210,10 @@ export function TaskDetailDialog({ projectId, task, open, onOpenChange, canEdit 
           <div className="flex items-center gap-2">
             <span className="text-muted-foreground w-16 text-sm">우선순위</span>
             {isEditing ? (
-              <Select value={editPriority} onValueChange={(v) => setEditPriority(v as Tables<'tasks'>['priority'])}>
+              <Select
+                value={editPriority}
+                onValueChange={(v) => setEditPriority(v as Tables<'tasks'>['priority'])}
+              >
                 <SelectTrigger className="w-32">
                   <SelectValue />
                 </SelectTrigger>
@@ -296,11 +328,7 @@ export function TaskDetailDialog({ projectId, task, open, onOpenChange, canEdit 
           {/* 서브태스크 섹션 */}
           {projectFeatures?.feature_subtasks !== false && (
             <>
-              <SubtaskSection
-                taskId={task.id}
-                projectId={projectId}
-                canEdit={canInteract}
-              />
+              <SubtaskSection taskId={task.id} projectId={projectId} canEdit={canInteract} />
               <Separator />
             </>
           )}
@@ -308,21 +336,13 @@ export function TaskDetailDialog({ projectId, task, open, onOpenChange, canEdit 
           {/* 의존성 섹션 */}
           {projectFeatures?.feature_dependencies !== false && (
             <>
-              <DependencySection
-                taskId={task.id}
-                projectId={projectId}
-                canEdit={canInteract}
-              />
+              <DependencySection taskId={task.id} projectId={projectId} canEdit={canInteract} />
               <Separator />
             </>
           )}
 
           {/* 반복 설정 */}
-          <RecurrenceSection
-            taskId={task.id}
-            projectId={projectId}
-            canEdit={canInteract}
-          />
+          <RecurrenceSection taskId={task.id} projectId={projectId} canEdit={canInteract} />
           <Separator />
 
           {/* 첨부파일 섹션 */}
@@ -353,12 +373,8 @@ export function TaskDetailDialog({ projectId, task, open, onOpenChange, canEdit 
 
           {/* 메타 정보 */}
           <div className="text-muted-foreground flex justify-between text-xs">
-            <span>
-              생성: {new Date(task.created_at).toLocaleDateString('ko-KR')}
-            </span>
-            <span>
-              수정: {new Date(task.updated_at).toLocaleDateString('ko-KR')}
-            </span>
+            <span>생성: {new Date(task.created_at).toLocaleDateString('ko-KR')}</span>
+            <span>수정: {new Date(task.updated_at).toLocaleDateString('ko-KR')}</span>
           </div>
 
           {/* 액션 버튼 — 권한 있는 유저에게만 노출 */}
@@ -375,7 +391,8 @@ export function TaskDetailDialog({ projectId, task, open, onOpenChange, canEdit 
                   <AlertDialogHeader>
                     <AlertDialogTitle>태스크를 삭제하시겠습니까?</AlertDialogTitle>
                     <AlertDialogDescription>
-                      &quot;{task.title}&quot; 태스크가 삭제됩니다.<br />이 작업은 되돌릴 수 없습니다.
+                      &quot;{task.title}&quot; 태스크가 삭제됩니다.
+                      <br />이 작업은 되돌릴 수 없습니다.
                     </AlertDialogDescription>
                   </AlertDialogHeader>
                   <AlertDialogFooter>

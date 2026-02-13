@@ -21,9 +21,24 @@ vi.mock('sonner', () => ({
 }))
 
 import { toast } from 'sonner'
-import { getTasksByProject, createTask, updateTask, deleteTask, deleteTasksBefore, moveTask } from '@/services/task-service'
+import {
+  getTasksByProject,
+  createTask,
+  updateTask,
+  deleteTask,
+  deleteTasksBefore,
+  moveTask,
+} from '@/services/task-service'
 import { mockTasks } from '@/__tests__/helpers/fixtures'
-import { useTasks, useCreateTask, useUpdateTask, useDeleteTask, useBulkDeleteTasks, useMoveTask, taskKeys } from './use-tasks'
+import {
+  useTasks,
+  useCreateTask,
+  useUpdateTask,
+  useDeleteTask,
+  useBulkDeleteTasks,
+  useMoveTask,
+  taskKeys,
+} from './use-tasks'
 
 describe('use-tasks', () => {
   let queryClient: QueryClient

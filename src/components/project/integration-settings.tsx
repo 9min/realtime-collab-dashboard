@@ -28,12 +28,8 @@ export function IntegrationSettings({ projectId, isOwnerOrAdmin }: IntegrationSe
     )
   }
 
-  const slackIntegration = integrations?.find(
-    (i: ProjectIntegration) => i.type === 'slack',
-  )
-  const githubIntegration = integrations?.find(
-    (i: ProjectIntegration) => i.type === 'github',
-  )
+  const slackIntegration = integrations?.find((i: ProjectIntegration) => i.type === 'slack')
+  const githubIntegration = integrations?.find((i: ProjectIntegration) => i.type === 'github')
 
   return (
     <Tabs value={activeTab} onValueChange={setActiveTab}>

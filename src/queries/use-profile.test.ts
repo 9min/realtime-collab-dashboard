@@ -9,7 +9,10 @@ vi.mock('@/components/providers/supabase-provider', () => ({
 
 const mockSignOut = vi.fn()
 vi.mock('@/hooks/use-auth', () => ({
-  useAuth: () => ({ user: { id: 'user-aaa-111', email: 'test@example.com' }, signOut: mockSignOut }),
+  useAuth: () => ({
+    user: { id: 'user-aaa-111', email: 'test@example.com' },
+    signOut: mockSignOut,
+  }),
 }))
 
 vi.mock('@/services/auth-service', () => ({
@@ -25,9 +28,22 @@ vi.mock('sonner', () => ({
 }))
 
 import { toast } from 'sonner'
-import { getProfile, updateProfileWithAuth, uploadAvatar, deleteAvatar, deleteAccount } from '@/services/auth-service'
+import {
+  getProfile,
+  updateProfileWithAuth,
+  uploadAvatar,
+  deleteAvatar,
+  deleteAccount,
+} from '@/services/auth-service'
 import { mockProfile } from '@/__tests__/helpers/fixtures'
-import { useProfile, useUpdateProfile, useUploadAvatar, useDeleteAvatar, useDeleteAccount, profileKeys } from './use-profile'
+import {
+  useProfile,
+  useUpdateProfile,
+  useUploadAvatar,
+  useDeleteAvatar,
+  useDeleteAccount,
+  profileKeys,
+} from './use-profile'
 
 describe('use-profile', () => {
   let queryClient: QueryClient

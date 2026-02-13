@@ -7,13 +7,23 @@ import { CalendarGrid } from './calendar-grid'
 
 // CalendarDayCell을 mock하여 전달된 props를 검증
 vi.mock('./calendar-day-cell', () => ({
-  CalendarDayCell: ({ date, isCurrentMonth, isToday, tasks }: {
+  CalendarDayCell: ({
+    date,
+    isCurrentMonth,
+    isToday,
+    tasks,
+  }: {
     date: Date
     isCurrentMonth: boolean
     isToday: boolean
     tasks: Task[]
   }) => (
-    <div data-testid="calendar-day-cell" data-date={date.toISOString()} data-current-month={isCurrentMonth} data-is-today={isToday}>
+    <div
+      data-testid="calendar-day-cell"
+      data-date={date.toISOString()}
+      data-current-month={isCurrentMonth}
+      data-is-today={isToday}
+    >
       <span>{date.getDate()}</span>
       <span data-testid="task-count">{tasks.length}</span>
     </div>

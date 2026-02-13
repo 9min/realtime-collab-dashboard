@@ -11,7 +11,9 @@ vi.mock('@/queries/use-chart-data', () => ({
 
 vi.mock('recharts', () => ({
   ResponsiveContainer: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
-  BarChart: ({ children }: { children: React.ReactNode }) => <div data-testid="bar-chart">{children}</div>,
+  BarChart: ({ children }: { children: React.ReactNode }) => (
+    <div data-testid="bar-chart">{children}</div>
+  ),
   Bar: () => null,
   XAxis: () => null,
   YAxis: () => null,
@@ -32,9 +34,7 @@ describe('WeeklyProgressChart', () => {
       isLoading: true,
     })
 
-    const { container } = renderWithProviders(
-      <WeeklyProgressChart projectId="project-1" />,
-    )
+    const { container } = renderWithProviders(<WeeklyProgressChart projectId="project-1" />)
 
     const skeleton = container.querySelector('.animate-pulse')
     expect(skeleton).toBeInTheDocument()
@@ -50,9 +50,7 @@ describe('WeeklyProgressChart', () => {
       isLoading: false,
     })
 
-    renderWithProviders(
-      <WeeklyProgressChart projectId="project-1" />,
-    )
+    renderWithProviders(<WeeklyProgressChart projectId="project-1" />)
 
     expect(screen.getByTestId('bar-chart')).toBeInTheDocument()
     // Custom legend labels
@@ -66,9 +64,7 @@ describe('WeeklyProgressChart', () => {
       isLoading: false,
     })
 
-    renderWithProviders(
-      <WeeklyProgressChart projectId="project-1" />,
-    )
+    renderWithProviders(<WeeklyProgressChart projectId="project-1" />)
 
     expect(screen.getByText('데이터가 없습니다')).toBeInTheDocument()
   })
@@ -79,9 +75,7 @@ describe('WeeklyProgressChart', () => {
       isLoading: false,
     })
 
-    renderWithProviders(
-      <WeeklyProgressChart projectId="project-1" />,
-    )
+    renderWithProviders(<WeeklyProgressChart projectId="project-1" />)
 
     expect(screen.getByText('데이터가 없습니다')).toBeInTheDocument()
   })

@@ -56,7 +56,7 @@ export const COLUMN_COLORS: Record<string, { gradient: string; badge: string }> 
     gradient: 'from-amber-50 to-yellow-50 dark:from-amber-900/40 dark:to-yellow-900/40',
     badge: 'bg-amber-100 text-amber-700 dark:bg-amber-900/50 dark:text-amber-300',
   },
-  '완료': {
+  완료: {
     gradient: 'from-green-50 to-emerald-50 dark:from-green-900/40 dark:to-emerald-900/40',
     badge: 'bg-green-100 text-green-700 dark:bg-green-900/50 dark:text-green-300',
   },
@@ -144,7 +144,14 @@ export const GRID_ROW_HEIGHT = 80 as const
 // 기본 대시보드 레이아웃 (신규 유저용)
 export const DEFAULT_DASHBOARD_LAYOUT = [
   { widget_id: 'default-task-status', type: WIDGET_TYPE.TASK_STATUS, x: 0, y: 0, w: 4, h: 3 },
-  { widget_id: 'default-weekly-progress', type: WIDGET_TYPE.WEEKLY_PROGRESS, x: 4, y: 0, w: 4, h: 3 },
+  {
+    widget_id: 'default-weekly-progress',
+    type: WIDGET_TYPE.WEEKLY_PROGRESS,
+    x: 4,
+    y: 0,
+    w: 4,
+    h: 3,
+  },
   { widget_id: 'default-burndown', type: WIDGET_TYPE.BURNDOWN, x: 8, y: 0, w: 4, h: 3 },
   { widget_id: 'default-member-list', type: WIDGET_TYPE.MEMBER_LIST, x: 0, y: 3, w: 4, h: 3 },
 ] as const

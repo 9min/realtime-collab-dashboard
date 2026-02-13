@@ -4,7 +4,12 @@ import { isDemoRequest, demoModeResponse } from '@/lib/api-middleware'
 import { decrypt } from '@/lib/crypto'
 import { createServerClient } from '@/lib/supabase/server'
 import { dispatchToSlack, dispatchToGitHub } from '@/services/webhook-dispatcher'
-import type { ProjectIntegration, SlackConfig, GitHubConfig, WebhookPayload } from '@/types/integration'
+import type {
+  ProjectIntegration,
+  SlackConfig,
+  GitHubConfig,
+  WebhookPayload,
+} from '@/types/integration'
 
 export async function POST(req: NextRequest) {
   if (isDemoRequest(req)) return demoModeResponse()
@@ -19,7 +24,9 @@ export async function POST(req: NextRequest) {
 
   if (!authenticated) {
     const supabase = await createServerClient()
-    const { data: { user } } = await supabase.auth.getUser()
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
     if (user) {
       authenticated = true
     }

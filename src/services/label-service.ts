@@ -69,14 +69,8 @@ export async function updateLabel(
   return { data, error: null }
 }
 
-export async function deleteLabel(
-  supabase: Client,
-  labelId: string,
-): Promise<ServiceResult<null>> {
-  const { error } = await supabase
-    .from('labels')
-    .delete()
-    .eq('id', labelId)
+export async function deleteLabel(supabase: Client, labelId: string): Promise<ServiceResult<null>> {
+  const { error } = await supabase.from('labels').delete().eq('id', labelId)
 
   if (error) {
     return { data: null, error: { code: error.code, message: error.message } }

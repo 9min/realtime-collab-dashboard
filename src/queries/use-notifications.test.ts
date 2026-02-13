@@ -14,7 +14,12 @@ vi.mock('@/services/notification-service', () => ({
   markAllAsRead: vi.fn(),
 }))
 
-import { getNotifications, getUnreadCount, markAsRead, markAllAsRead } from '@/services/notification-service'
+import {
+  getNotifications,
+  getUnreadCount,
+  markAsRead,
+  markAllAsRead,
+} from '@/services/notification-service'
 import { mockNotification } from '@/__tests__/helpers/fixtures'
 import {
   useNotifications,

@@ -47,8 +47,8 @@ export function createMockAuth() {
         Object.assign(DEMO_USER.user_metadata, attributes.data)
         // 프로필도 동기화
         demoDataStore.updateRows('profiles', [['id', 'eq', DEMO_USER_ID]], {
-          full_name: attributes.data['full_name'] as string ?? DEMO_USER.user_metadata.full_name,
-          avatar_url: attributes.data['avatar_url'] as string ?? null,
+          full_name: (attributes.data['full_name'] as string) ?? DEMO_USER.user_metadata.full_name,
+          avatar_url: (attributes.data['avatar_url'] as string) ?? null,
           updated_at: new Date().toISOString(),
         })
       }

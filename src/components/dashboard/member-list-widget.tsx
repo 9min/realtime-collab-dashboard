@@ -85,11 +85,7 @@ export function MemberListWidget({ projectId }: MemberListWidgetProps) {
 
   return (
     <div className="relative flex h-full flex-col">
-      <div
-        ref={scrollRef}
-        onScroll={checkScroll}
-        className="min-h-0 flex-1 overflow-y-auto p-1"
-      >
+      <div ref={scrollRef} onScroll={checkScroll} className="min-h-0 flex-1 overflow-y-auto p-1">
         <div className="space-y-1">
           {members.map((member) => {
             const initials = (member.profiles.full_name ?? member.profiles.email)
@@ -107,7 +103,10 @@ export function MemberListWidget({ projectId }: MemberListWidgetProps) {
                     {member.profiles.full_name ?? member.profiles.email}
                   </p>
                 </div>
-                <Badge variant={ROLE_VARIANTS[member.role] ?? 'outline'} className="shrink-0 text-xs">
+                <Badge
+                  variant={ROLE_VARIANTS[member.role] ?? 'outline'}
+                  className="shrink-0 text-xs"
+                >
                   {ROLE_LABELS[member.role] ?? member.role}
                 </Badge>
               </div>
@@ -117,7 +116,7 @@ export function MemberListWidget({ projectId }: MemberListWidgetProps) {
       </div>
       {showOverlay && (
         <div className="pointer-events-none absolute inset-x-0 bottom-0">
-          <div className="from-transparent to-card h-6 bg-gradient-to-b" />
+          <div className="to-card h-6 bg-gradient-to-b from-transparent" />
           <div className="bg-card flex items-center gap-2 px-3 pb-2">
             <div className="flex -space-x-2">
               {hiddenMembers.slice(0, MAX_PREVIEW_AVATARS).map((member) => {
@@ -125,10 +124,7 @@ export function MemberListWidget({ projectId }: MemberListWidgetProps) {
                   .slice(0, 2)
                   .toUpperCase()
                 return (
-                  <Avatar
-                    key={member.id}
-                    className="border-card h-6 w-6 border-2"
-                  >
+                  <Avatar key={member.id} className="border-card h-6 w-6 border-2">
                     <AvatarImage src={member.profiles.avatar_url ?? undefined} />
                     <AvatarFallback className="text-[10px]">{initials}</AvatarFallback>
                   </Avatar>

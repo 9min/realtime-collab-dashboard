@@ -77,8 +77,7 @@ export const useKanbanFilterStore = create<KanbanFilterState>((set, get) => ({
   setDueDateFrom: (date) =>
     set((state) => ({ dueDateRange: { ...state.dueDateRange, from: date } })),
 
-  setDueDateTo: (date) =>
-    set((state) => ({ dueDateRange: { ...state.dueDateRange, to: date } })),
+  setDueDateTo: (date) => set((state) => ({ dueDateRange: { ...state.dueDateRange, to: date } })),
 
   clearDueDateRange: () => set({ dueDateRange: { from: null, to: null } }),
 

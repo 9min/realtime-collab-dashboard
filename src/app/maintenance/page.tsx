@@ -16,7 +16,13 @@ function CautionStripe() {
     <div className="h-3 w-full" aria-hidden="true">
       <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
         <defs>
-          <pattern id="caution" width="24" height="12" patternUnits="userSpaceOnUse" patternTransform="rotate(-45)">
+          <pattern
+            id="caution"
+            width="24"
+            height="12"
+            patternUnits="userSpaceOnUse"
+            patternTransform="rotate(-45)"
+          >
             <rect width="12" height="12" fill="#EAB308" />
             <rect x="12" width="12" height="12" fill="#1e293b" className="dark:fill-black" />
           </pattern>
@@ -31,12 +37,10 @@ function CautionStripe() {
 export default function MaintenancePage() {
   const { message, until } = getMaintenanceConfig()
 
-  const formattedUntil = until
-    ? formatMaintenanceUntil(until) ?? until
-    : null
+  const formattedUntil = until ? (formatMaintenanceUntil(until) ?? until) : null
 
   return (
-    <div className="flex min-h-screen flex-col bg-background">
+    <div className="bg-background flex min-h-screen flex-col">
       {/* 상단 경고 테이프 */}
       <CautionStripe />
 
@@ -63,11 +67,11 @@ export default function MaintenancePage() {
           </div>
 
           {/* 텍스트 영역 */}
-          <h1 className="mt-8 text-3xl font-bold tracking-tight text-foreground">
+          <h1 className="text-foreground mt-8 text-3xl font-bold tracking-tight">
             시스템 점검 중입니다
           </h1>
 
-          <p className="mx-auto mt-4 max-w-sm text-base leading-relaxed text-muted-foreground whitespace-pre-line">
+          <p className="text-muted-foreground mx-auto mt-4 max-w-sm text-base leading-relaxed whitespace-pre-line">
             {message}
           </p>
 
@@ -77,14 +81,12 @@ export default function MaintenancePage() {
               <p className="text-xs font-medium tracking-wide text-yellow-700 uppercase dark:text-yellow-400">
                 예상 복구 시간
               </p>
-              <p className="mt-1 text-lg font-semibold text-foreground">
-                {formattedUntil}
-              </p>
+              <p className="text-foreground mt-1 text-lg font-semibold">{formattedUntil}</p>
             </div>
           )}
 
           {/* 상태 표시 */}
-          <div className="mt-10 flex items-center justify-center gap-2 text-sm text-muted-foreground">
+          <div className="text-muted-foreground mt-10 flex items-center justify-center gap-2 text-sm">
             <span className="relative flex h-2.5 w-2.5">
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-yellow-500/60" />
               <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-yellow-500" />

@@ -102,15 +102,18 @@ export function CreateTaskForm({ projectId, columnId, open, onOpenChange }: Crea
           <div className="space-y-1.5">
             <Label htmlFor="task-title">제목</Label>
             <Input id="task-title" placeholder="태스크 제목" {...register('title')} autoFocus />
-            {errors.title && (
-              <p className="text-destructive text-xs">{errors.title.message}</p>
-            )}
+            {errors.title && <p className="text-destructive text-xs">{errors.title.message}</p>}
           </div>
 
           {/* 설명 */}
           <div className="space-y-1.5">
             <Label htmlFor="task-description">설명</Label>
-            <Textarea id="task-description" placeholder="설명 (선택)" rows={3} {...register('description')} />
+            <Textarea
+              id="task-description"
+              placeholder="설명 (선택)"
+              rows={3}
+              {...register('description')}
+            />
             {errors.description && (
               <p className="text-destructive text-xs">{errors.description.message}</p>
             )}

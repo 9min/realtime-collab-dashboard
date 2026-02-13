@@ -1,6 +1,11 @@
 import { describe, it, expect, vi } from 'vitest'
 
-import { getRecurrence, getProjectRecurrenceTaskIds, createRecurrence, deleteRecurrence } from './recurrence-service'
+import {
+  getRecurrence,
+  getProjectRecurrenceTaskIds,
+  createRecurrence,
+  deleteRecurrence,
+} from './recurrence-service'
 
 describe('recurrence-service', () => {
   describe('getRecurrence', () => {

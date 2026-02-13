@@ -3,11 +3,7 @@ import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
 import { renderWithProviders } from '@/__tests__/helpers/render-with-providers'
-import {
-  mockColumns,
-  mockTasks,
-  MOCK_COLUMN_ID_TODO,
-} from '@/__tests__/helpers/fixtures'
+import { mockColumns, mockTasks, MOCK_COLUMN_ID_TODO } from '@/__tests__/helpers/fixtures'
 import type { Tables } from '@/types/database'
 
 import { KanbanColumn } from './kanban-column'
@@ -23,7 +19,11 @@ vi.mock('./recurrence-badge', () => ({
 
 // @hello-pangea/dnd mock
 vi.mock('@hello-pangea/dnd', () => ({
-  Droppable: ({ children }: { children: (provided: unknown, snapshot: unknown) => React.ReactNode }) =>
+  Droppable: ({
+    children,
+  }: {
+    children: (provided: unknown, snapshot: unknown) => React.ReactNode
+  }) =>
     children(
       {
         innerRef: vi.fn(),
@@ -32,7 +32,11 @@ vi.mock('@hello-pangea/dnd', () => ({
       },
       { isDraggingOver: false },
     ),
-  Draggable: ({ children }: { children: (provided: unknown, snapshot: unknown) => React.ReactNode }) =>
+  Draggable: ({
+    children,
+  }: {
+    children: (provided: unknown, snapshot: unknown) => React.ReactNode
+  }) =>
     children(
       {
         innerRef: vi.fn(),
@@ -74,9 +78,7 @@ describe('KanbanColumn', () => {
       ...mockColumns[0],
       wip_limit: 3,
     }
-    renderWithProviders(
-      <KanbanColumn {...defaultProps} column={columnWithWip} />,
-    )
+    renderWithProviders(<KanbanColumn {...defaultProps} column={columnWithWip} />)
 
     expect(screen.getByText('1/3')).toBeInTheDocument()
   })
@@ -89,9 +91,7 @@ describe('KanbanColumn', () => {
 
   it('여러 태스크를 렌더링한다', () => {
     const multipleTasks = [mockTasks[0], mockTasks[1]]
-    renderWithProviders(
-      <KanbanColumn {...defaultProps} tasks={multipleTasks} />,
-    )
+    renderWithProviders(<KanbanColumn {...defaultProps} tasks={multipleTasks} />)
 
     expect(screen.getByText('Task 1')).toBeInTheDocument()
     expect(screen.getByText('Task 2')).toBeInTheDocument()
@@ -113,9 +113,7 @@ describe('KanbanColumn', () => {
     const user = userEvent.setup()
     const onAddTask = vi.fn()
 
-    renderWithProviders(
-      <KanbanColumn {...defaultProps} onAddTask={onAddTask} />,
-    )
+    renderWithProviders(<KanbanColumn {...defaultProps} onAddTask={onAddTask} />)
 
     await user.click(screen.getByRole('button', { name: '태스크 추가' }))
     expect(onAddTask).toHaveBeenCalledWith(MOCK_COLUMN_ID_TODO)
@@ -149,33 +147,25 @@ describe('KanbanColumn', () => {
   })
 
   it('태스크가 없으면 빈 상태 메시지를 표시한다 (canEdit=true)', () => {
-    renderWithProviders(
-      <KanbanColumn {...defaultProps} tasks={[]} canEdit={true} />,
-    )
+    renderWithProviders(<KanbanColumn {...defaultProps} tasks={[]} canEdit={true} />)
 
     expect(screen.getByText('태스크를 추가하거나 여기로 드래그하세요')).toBeInTheDocument()
   })
 
   it('태스크가 없고 canEdit이 false면 다른 빈 상태 메시지를 표시한다', () => {
-    renderWithProviders(
-      <KanbanColumn {...defaultProps} tasks={[]} canEdit={false} />,
-    )
+    renderWithProviders(<KanbanColumn {...defaultProps} tasks={[]} canEdit={false} />)
 
     expect(screen.getByText('태스크가 없습니다')).toBeInTheDocument()
   })
 
   it('canEdit이 false일 때 컬럼 메뉴 버튼을 표시하지 않는다', () => {
-    renderWithProviders(
-      <KanbanColumn {...defaultProps} canEdit={false} />,
-    )
+    renderWithProviders(<KanbanColumn {...defaultProps} canEdit={false} />)
 
     expect(screen.queryByRole('button', { name: '컬럼 메뉴' })).not.toBeInTheDocument()
   })
 
   it('canDeleteColumn이 false일 때 컬럼 메뉴 버튼을 표시하지 않는다', () => {
-    renderWithProviders(
-      <KanbanColumn {...defaultProps} canDeleteColumn={false} />,
-    )
+    renderWithProviders(<KanbanColumn {...defaultProps} canDeleteColumn={false} />)
 
     expect(screen.queryByRole('button', { name: '컬럼 메뉴' })).not.toBeInTheDocument()
   })

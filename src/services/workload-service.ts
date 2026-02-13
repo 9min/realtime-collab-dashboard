@@ -51,9 +51,13 @@ export async function getWorkload(
   // 3. 멤버별 태스크 집계
   const workloadMap = new Map<string, MemberWorkload>()
 
-  for (const member of (members ?? [])) {
+  for (const member of members ?? []) {
     const raw = member as Record<string, unknown>
-    const profiles = raw.profiles as { full_name: string | null; email: string; avatar_url: string | null } | null
+    const profiles = raw.profiles as {
+      full_name: string | null
+      email: string
+      avatar_url: string | null
+    } | null
 
     workloadMap.set(member.user_id, {
       userId: member.user_id,
@@ -64,7 +68,7 @@ export async function getWorkload(
     })
   }
 
-  for (const task of (tasks ?? [])) {
+  for (const task of tasks ?? []) {
     const assigneeId = task.assignee_id as string
     const entry = workloadMap.get(assigneeId)
     if (entry) {

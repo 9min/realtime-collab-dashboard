@@ -19,7 +19,9 @@ export interface MaintenanceConfig {
 export function getMaintenanceConfig(): MaintenanceConfig {
   return {
     enabled: config.enabled ?? false,
-    message: config.message || '더 나은 서비스 제공을 위해 시스템 점검을 진행하고 있습니다.\n잠시 후 다시 접속해 주세요.',
+    message:
+      config.message ||
+      '더 나은 서비스 제공을 위해 시스템 점검을 진행하고 있습니다.\n잠시 후 다시 접속해 주세요.',
     until: config.until || '',
   }
 }

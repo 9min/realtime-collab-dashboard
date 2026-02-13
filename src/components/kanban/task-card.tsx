@@ -31,7 +31,16 @@ interface TaskCardProps {
   isRecurring?: boolean
 }
 
-export function TaskCard({ task, index, onClick, members, isDragDisabled = false, taskLabels, isBlocked = false, isRecurring = false }: TaskCardProps) {
+export function TaskCard({
+  task,
+  index,
+  onClick,
+  members,
+  isDragDisabled = false,
+  taskLabels,
+  isBlocked = false,
+  isRecurring = false,
+}: TaskCardProps) {
   const assignee = task.assignee_id
     ? members?.find((m) => m.user_id === task.assignee_id)?.profiles
     : null
@@ -47,9 +56,9 @@ export function TaskCard({ task, index, onClick, members, isDragDisabled = false
         >
           <Card
             className={cn(
-              'group gap-0 py-0 bg-card shadow-sm transition-shadow hover:shadow-md focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 outline-none',
+              'group bg-card focus-visible:ring-ring gap-0 py-0 shadow-sm transition-shadow outline-none hover:shadow-md focus-visible:ring-2 focus-visible:ring-offset-1',
               isDragDisabled ? 'cursor-default' : 'cursor-grab active:cursor-grabbing',
-              snapshot.isDragging && 'shadow-lg ring-2 ring-primary/20',
+              snapshot.isDragging && 'ring-primary/20 shadow-lg ring-2',
               isBlocked && 'border-amber-400 dark:border-amber-600',
             )}
             role="button"
@@ -70,7 +79,7 @@ export function TaskCard({ task, index, onClick, members, isDragDisabled = false
                   ))}
                 </div>
               )}
-              <span className="flex items-center gap-1 text-sm font-medium leading-snug min-w-0">
+              <span className="flex min-w-0 items-center gap-1 text-sm leading-snug font-medium">
                 {isBlocked && (
                   <TooltipProvider>
                     <Tooltip>
@@ -90,10 +99,19 @@ export function TaskCard({ task, index, onClick, members, isDragDisabled = false
                 <span className="break-words">{task.title}</span>
               </span>
             </CardHeader>
-            <CardContent className="flex items-center gap-2 px-2.5 pb-2 pt-0.5">
-              <FavoriteButton taskId={task.id} size="sm" className="opacity-0 group-hover:opacity-100 transition-opacity" />
-              <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
-                <span className={cn('h-2 w-2 rounded-full shrink-0', PRIORITY_DOT_COLORS[task.priority])} />
+            <CardContent className="flex items-center gap-2 px-2.5 pt-0.5 pb-2">
+              <FavoriteButton
+                taskId={task.id}
+                size="sm"
+                className="opacity-0 transition-opacity group-hover:opacity-100"
+              />
+              <span className="text-muted-foreground inline-flex items-center gap-1 text-xs">
+                <span
+                  className={cn(
+                    'h-2 w-2 shrink-0 rounded-full',
+                    PRIORITY_DOT_COLORS[task.priority],
+                  )}
+                />
                 {PRIORITY_LABELS[task.priority]}
               </span>
               {task.due_date && (

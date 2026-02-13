@@ -50,10 +50,7 @@ export async function deleteDependency(
   supabase: Client,
   dependencyId: string,
 ): Promise<ServiceResult<null>> {
-  const { error } = await supabase
-    .from('task_dependencies')
-    .delete()
-    .eq('id', dependencyId)
+  const { error } = await supabase.from('task_dependencies').delete().eq('id', dependencyId)
 
   if (error) {
     return { data: null, error: { code: error.code, message: error.message } }

@@ -37,7 +37,10 @@ function createMockStorage() {
   }
 }
 
-function handleRpc(fnName: string, params: Record<string, unknown>): { data: unknown; error: null } {
+function handleRpc(
+  fnName: string,
+  params: Record<string, unknown>,
+): { data: unknown; error: null } {
   switch (fnName) {
     case 'create_project_with_defaults': {
       const projectId = `demo-proj-${Date.now()}`

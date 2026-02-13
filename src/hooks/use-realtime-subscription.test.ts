@@ -11,12 +11,14 @@ const mockRemoveChannel = vi.fn()
 let postgresCallbacks: Array<(payload: Record<string, unknown>) => void> = []
 
 const mockChannel: Record<string, unknown> = {
-  on: vi.fn().mockImplementation(
-    (_type: string, _opts: unknown, cb: (payload: Record<string, unknown>) => void) => {
-      postgresCallbacks.push(cb)
-      return mockChannel
-    },
-  ),
+  on: vi
+    .fn()
+    .mockImplementation(
+      (_type: string, _opts: unknown, cb: (payload: Record<string, unknown>) => void) => {
+        postgresCallbacks.push(cb)
+        return mockChannel
+      },
+    ),
 }
 // subscribe는 mockChannel 자체를 반환해야 hook 내 channel 변수에 값이 할당됨
 mockChannel.subscribe = mockSubscribe.mockReturnValue(mockChannel)
@@ -138,10 +140,7 @@ describe('useRealtimeSubscription', () => {
   })
 
   it('unmount 시 채널을 해제한다', async () => {
-    const { unmount } = renderHook(
-      () => useRealtimeSubscription('project-1'),
-      { wrapper },
-    )
+    const { unmount } = renderHook(() => useRealtimeSubscription('project-1'), { wrapper })
 
     await waitFor(() => {
       expect(mockSubscribe).toHaveBeenCalled()

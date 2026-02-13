@@ -14,7 +14,11 @@ vi.mock('@/services/dashboard-service', () => ({
 
 import { getDashboardLayout, saveDashboardLayout } from '@/services/dashboard-service'
 import { mockLayoutItems, mockDashboardLayout } from '@/__tests__/helpers/fixtures'
-import { useDashboardLayout, useSaveDashboardLayout, dashboardLayoutKeys } from './use-dashboard-layout'
+import {
+  useDashboardLayout,
+  useSaveDashboardLayout,
+  dashboardLayoutKeys,
+} from './use-dashboard-layout'
 
 describe('use-dashboard-layout', () => {
   let queryClient: QueryClient

@@ -38,7 +38,7 @@ export function CalendarGrid({ tasksByDate, onTaskClick }: CalendarGridProps) {
           <div
             key={label}
             className={cn(
-              'border-border border-b border-r py-2 text-center text-xs font-medium',
+              'border-border border-r border-b py-2 text-center text-xs font-medium',
               index === 0 || index === 6
                 ? 'text-rose-400 dark:text-rose-500'
                 : 'text-muted-foreground',

@@ -3,7 +3,11 @@ import { NextRequest, NextResponse } from 'next/server'
 
 import { getClientIp, withRateLimit } from '@/lib/api-middleware'
 
-function createMockRequest(options?: { ip?: string; xForwardedFor?: string; xRealIp?: string }): NextRequest {
+function createMockRequest(options?: {
+  ip?: string
+  xForwardedFor?: string
+  xRealIp?: string
+}): NextRequest {
   const headers = new Headers()
   if (options?.xForwardedFor) {
     headers.set('x-forwarded-for', options.xForwardedFor)

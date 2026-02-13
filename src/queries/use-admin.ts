@@ -4,7 +4,12 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 
 import { useSupabase } from '@/components/providers/supabase-provider'
-import { getAllUsers, setAdminStatus, getMyProfile, getAllProjectMemberships } from '@/services/admin-service'
+import {
+  getAllUsers,
+  setAdminStatus,
+  getMyProfile,
+  getAllProjectMemberships,
+} from '@/services/admin-service'
 
 export const adminKeys = {
   myProfile: ['admin', 'my-profile'] as const,
@@ -65,7 +70,7 @@ export function useForceDeleteUser() {
         body: JSON.stringify({ userId }),
       })
       if (!res.ok) {
-        const data = await res.json() as { error?: string }
+        const data = (await res.json()) as { error?: string }
         throw new Error(data.error ?? '사용자 삭제에 실패했습니다')
       }
       return res.json() as Promise<{ success: boolean }>

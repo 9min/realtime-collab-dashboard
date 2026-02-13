@@ -34,7 +34,7 @@ const COLS = { lg: 12, md: 12, sm: 1 }
  * DB에 저장된 레이아웃이 다른 breakpoint 기준으로 저장되었을 경우 복구용
  */
 function reflowLayout(items: WidgetLayoutItem[], cols: number): WidgetLayoutItem[] {
-  const sorted = [...items].sort((a, b) => a.y !== b.y ? a.y - b.y : a.x - b.x)
+  const sorted = [...items].sort((a, b) => (a.y !== b.y ? a.y - b.y : a.x - b.x))
   let currentX = 0
   let currentY = 0
   let rowMaxH = 0
@@ -67,10 +67,7 @@ function widgetLayoutToRGL(widgets: WidgetLayoutItem[]): LayoutItem[] {
   })
 }
 
-function rglToWidgetLayout(
-  rglLayout: Layout,
-  widgets: WidgetLayoutItem[],
-): WidgetLayoutItem[] {
+function rglToWidgetLayout(rglLayout: Layout, widgets: WidgetLayoutItem[]): WidgetLayoutItem[] {
   return rglLayout.map((item) => {
     const original = widgets.find((w) => w.widget_id === item.i)
     return {
@@ -158,84 +155,86 @@ export function WidgetGrid({ projectId }: WidgetGridProps) {
     [layout, persistLayout],
   )
 
-  const existingTypes = useMemo<WidgetType[]>(
-    () => layout.map((w) => w.type),
-    [layout],
-  )
+  const existingTypes = useMemo<WidgetType[]>(() => layout.map((w) => w.type), [layout])
 
   return (
     <div ref={containerRef} className="flex flex-col gap-4 overflow-hidden">
       {isLoading ? (
-        <div role="status" aria-busy="true" aria-label="대시보드 로딩 중" className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <div
+          role="status"
+          aria-busy="true"
+          aria-label="대시보드 로딩 중"
+          className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3"
+        >
           {Array.from({ length: 4 }).map((_, i) => (
             <Skeleton key={i} className="h-64 rounded-lg" />
           ))}
         </div>
       ) : (
         <>
-      {canEdit && (
-        <div className="flex items-center justify-end gap-2">
-          {isEditMode && (
-            <Button variant="outline" size="sm" onClick={() => setAddWidgetOpen(true)}>
-              <Plus className="h-4 w-4" />
-              위젯 추가
-            </Button>
-          )}
-          <Button
-            variant={isEditMode ? 'default' : 'outline'}
-            size="sm"
-            onClick={toggleEditMode}
-          >
-            {isEditMode ? (
-              <>
-                <Check className="h-4 w-4" />
-                완료
-              </>
-            ) : (
-              <>
-                <Pencil className="h-4 w-4" />
-                편집
-              </>
-            )}
-          </Button>
-        </div>
-      )}
-
-      {layout.length === 0 ? (
-        <EmptyDashboard onAddWidget={() => setAddWidgetOpen(true)} />
-      ) : mounted ? (
-        <ResponsiveGridLayout
-          width={width}
-          layouts={{ lg: rglLayout, md: rglLayout }}
-          breakpoints={BREAKPOINTS}
-          cols={COLS}
-          rowHeight={GRID_ROW_HEIGHT}
-          dragConfig={{ enabled: isEditMode, handle: '.drag-handle' }}
-          resizeConfig={{ enabled: isEditMode, handles: ['se'] }}
-          onLayoutChange={handleLayoutChange}
-          containerPadding={[0, 0]}
-          margin={[16, 16]}
-        >
-          {layout.map((widget) => (
-            <div key={widget.widget_id}>
-              <WidgetCard
-                widgetId={widget.widget_id}
-                type={widget.type}
-                projectId={projectId}
-                isEditMode={isEditMode}
-                onRemove={handleRemoveWidget}
-              />
+          {canEdit && (
+            <div className="flex items-center justify-end gap-2">
+              {isEditMode && (
+                <Button variant="outline" size="sm" onClick={() => setAddWidgetOpen(true)}>
+                  <Plus className="h-4 w-4" />
+                  위젯 추가
+                </Button>
+              )}
+              <Button
+                variant={isEditMode ? 'default' : 'outline'}
+                size="sm"
+                onClick={toggleEditMode}
+              >
+                {isEditMode ? (
+                  <>
+                    <Check className="h-4 w-4" />
+                    완료
+                  </>
+                ) : (
+                  <>
+                    <Pencil className="h-4 w-4" />
+                    편집
+                  </>
+                )}
+              </Button>
             </div>
-          ))}
-        </ResponsiveGridLayout>
-      ) : null}
+          )}
 
-      <AddWidgetDialog
-        open={isAddWidgetOpen}
-        onOpenChange={setAddWidgetOpen}
-        onAdd={handleAddWidget}
-        existingTypes={existingTypes}
-      />
+          {layout.length === 0 ? (
+            <EmptyDashboard onAddWidget={() => setAddWidgetOpen(true)} />
+          ) : mounted ? (
+            <ResponsiveGridLayout
+              width={width}
+              layouts={{ lg: rglLayout, md: rglLayout }}
+              breakpoints={BREAKPOINTS}
+              cols={COLS}
+              rowHeight={GRID_ROW_HEIGHT}
+              dragConfig={{ enabled: isEditMode, handle: '.drag-handle' }}
+              resizeConfig={{ enabled: isEditMode, handles: ['se'] }}
+              onLayoutChange={handleLayoutChange}
+              containerPadding={[0, 0]}
+              margin={[16, 16]}
+            >
+              {layout.map((widget) => (
+                <div key={widget.widget_id}>
+                  <WidgetCard
+                    widgetId={widget.widget_id}
+                    type={widget.type}
+                    projectId={projectId}
+                    isEditMode={isEditMode}
+                    onRemove={handleRemoveWidget}
+                  />
+                </div>
+              ))}
+            </ResponsiveGridLayout>
+          ) : null}
+
+          <AddWidgetDialog
+            open={isAddWidgetOpen}
+            onOpenChange={setAddWidgetOpen}
+            onAdd={handleAddWidget}
+            existingTypes={existingTypes}
+          />
         </>
       )}
     </div>

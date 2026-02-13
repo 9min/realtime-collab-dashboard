@@ -64,7 +64,11 @@ export function groupActivitiesByDate(
 
   for (const activity of activities) {
     const activityDate = new Date(activity.created_at)
-    const activityDay = new Date(activityDate.getFullYear(), activityDate.getMonth(), activityDate.getDate())
+    const activityDay = new Date(
+      activityDate.getFullYear(),
+      activityDate.getMonth(),
+      activityDate.getDate(),
+    )
 
     if (activityDay.getTime() === today.getTime()) {
       groups['오늘'].push(activity)
@@ -78,7 +82,8 @@ export function groupActivitiesByDate(
   }
 
   const ORDER = ['오늘', '어제', '이번 주', '이전'] as const
-  return ORDER
-    .filter((label) => groups[label].length > 0)
-    .map((label) => ({ label, activities: groups[label] }))
+  return ORDER.filter((label) => groups[label].length > 0).map((label) => ({
+    label,
+    activities: groups[label],
+  }))
 }

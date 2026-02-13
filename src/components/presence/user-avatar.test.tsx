@@ -20,18 +20,14 @@ describe('UserAvatar', () => {
   })
 
   it('이미지가 없을 때 이니셜 폴백을 표시한다', () => {
-    renderWithProviders(
-      <UserAvatar name="John Doe" avatarUrl={null} showTooltip={false} />,
-    )
+    renderWithProviders(<UserAvatar name="John Doe" avatarUrl={null} showTooltip={false} />)
 
     // getInitials returns first 2 chars uppercased: "JO"
     expect(screen.getByText('JO')).toBeInTheDocument()
   })
 
   it('name이 null이면 ? 폴백을 표시한다', () => {
-    renderWithProviders(
-      <UserAvatar name={null} avatarUrl={null} showTooltip={false} />,
-    )
+    renderWithProviders(<UserAvatar name={null} avatarUrl={null} showTooltip={false} />)
 
     expect(screen.getByText('?')).toBeInTheDocument()
   })

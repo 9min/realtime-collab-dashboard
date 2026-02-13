@@ -25,8 +25,9 @@ describe('auth-service', () => {
     it('GitHub OAuth URL을 반환한다', async () => {
       const authUrl = 'https://supabase.auth/github'
       const client = createMockSupabaseClient({}) as Client
-      ;(client as unknown as { auth: { signInWithOAuth: ReturnType<typeof vi.fn> } }).auth.signInWithOAuth =
-        vi.fn().mockResolvedValue({ data: { url: authUrl }, error: null })
+      ;(
+        client as unknown as { auth: { signInWithOAuth: ReturnType<typeof vi.fn> } }
+      ).auth.signInWithOAuth = vi.fn().mockResolvedValue({ data: { url: authUrl }, error: null })
 
       const result = await signInWithOAuth(client, 'github', 'http://localhost:3000/callback')
 
@@ -37,8 +38,9 @@ describe('auth-service', () => {
     it('Google OAuth URL을 반환한다', async () => {
       const authUrl = 'https://supabase.auth/google'
       const client = createMockSupabaseClient({}) as Client
-      ;(client as unknown as { auth: { signInWithOAuth: ReturnType<typeof vi.fn> } }).auth.signInWithOAuth =
-        vi.fn().mockResolvedValue({ data: { url: authUrl }, error: null })
+      ;(
+        client as unknown as { auth: { signInWithOAuth: ReturnType<typeof vi.fn> } }
+      ).auth.signInWithOAuth = vi.fn().mockResolvedValue({ data: { url: authUrl }, error: null })
 
       const result = await signInWithOAuth(client, 'google', 'http://localhost:3000/callback')
 
@@ -49,8 +51,9 @@ describe('auth-service', () => {
     it('Kakao OAuth URL을 반환한다', async () => {
       const authUrl = 'https://supabase.auth/kakao'
       const client = createMockSupabaseClient({}) as Client
-      ;(client as unknown as { auth: { signInWithOAuth: ReturnType<typeof vi.fn> } }).auth.signInWithOAuth =
-        vi.fn().mockResolvedValue({ data: { url: authUrl }, error: null })
+      ;(
+        client as unknown as { auth: { signInWithOAuth: ReturnType<typeof vi.fn> } }
+      ).auth.signInWithOAuth = vi.fn().mockResolvedValue({ data: { url: authUrl }, error: null })
 
       const result = await signInWithOAuth(client, 'kakao', 'http://localhost:3000/callback')
 
@@ -60,8 +63,11 @@ describe('auth-service', () => {
 
     it('에러 시 AUTH_ERROR를 반환한다', async () => {
       const client = createMockSupabaseClient({}) as Client
-      ;(client as unknown as { auth: { signInWithOAuth: ReturnType<typeof vi.fn> } }).auth.signInWithOAuth =
-        vi.fn().mockResolvedValue({ data: null, error: { message: 'Provider error' } })
+      ;(
+        client as unknown as { auth: { signInWithOAuth: ReturnType<typeof vi.fn> } }
+      ).auth.signInWithOAuth = vi
+        .fn()
+        .mockResolvedValue({ data: null, error: { message: 'Provider error' } })
 
       const result = await signInWithOAuth(client, 'github', 'http://localhost:3000/callback')
 
@@ -82,8 +88,11 @@ describe('auth-service', () => {
 
     it('에러 시 AUTH_CALLBACK_ERROR를 반환한다', async () => {
       const client = createMockSupabaseClient({}) as Client
-      ;(client as unknown as { auth: { exchangeCodeForSession: ReturnType<typeof vi.fn> } }).auth.exchangeCodeForSession =
-        vi.fn().mockResolvedValue({ error: { message: 'Invalid code' } })
+      ;(
+        client as unknown as { auth: { exchangeCodeForSession: ReturnType<typeof vi.fn> } }
+      ).auth.exchangeCodeForSession = vi
+        .fn()
+        .mockResolvedValue({ error: { message: 'Invalid code' } })
 
       const result = await exchangeCodeForSession(client, 'invalid-code')
 
@@ -104,8 +113,9 @@ describe('auth-service', () => {
 
     it('에러 시 SIGNOUT_ERROR를 반환한다', async () => {
       const client = createMockSupabaseClient({}) as Client
-      ;(client as unknown as { auth: { signOut: ReturnType<typeof vi.fn> } }).auth.signOut =
-        vi.fn().mockResolvedValue({ error: { message: 'Session expired' } })
+      ;(client as unknown as { auth: { signOut: ReturnType<typeof vi.fn> } }).auth.signOut = vi
+        .fn()
+        .mockResolvedValue({ error: { message: 'Session expired' } })
 
       const result = await signOut(client)
 
@@ -246,10 +256,13 @@ describe('auth-service', () => {
   // ── deleteAccount ──
   describe('deleteAccount', () => {
     it('성공 시 data: null, error: null을 반환한다', async () => {
-      vi.stubGlobal('fetch', vi.fn().mockResolvedValue({
-        ok: true,
-        json: () => Promise.resolve({ success: true }),
-      }))
+      vi.stubGlobal(
+        'fetch',
+        vi.fn().mockResolvedValue({
+          ok: true,
+          json: () => Promise.resolve({ success: true }),
+        }),
+      )
 
       const result = await deleteAccount()
 
@@ -260,10 +273,13 @@ describe('auth-service', () => {
     })
 
     it('실패 시 DELETE_ACCOUNT_ERROR를 반환한다', async () => {
-      vi.stubGlobal('fetch', vi.fn().mockResolvedValue({
-        ok: false,
-        json: () => Promise.resolve({ error: '서버 오류' }),
-      }))
+      vi.stubGlobal(
+        'fetch',
+        vi.fn().mockResolvedValue({
+          ok: false,
+          json: () => Promise.resolve({ error: '서버 오류' }),
+        }),
+      )
 
       const result = await deleteAccount()
 

@@ -27,9 +27,7 @@ export function OnlineUsers({ users }: OnlineUsersProps) {
   return (
     <TooltipProvider>
       <div className="flex items-center gap-2">
-        <span className="text-muted-foreground text-xs">
-          {users.length}명 접속 중
-        </span>
+        <span className="text-muted-foreground text-xs">{users.length}명 접속 중</span>
         <AvatarGroup>
           {visible.map((user) => {
             const initials = getInitials(user.full_name, user.user_id)
@@ -42,15 +40,11 @@ export function OnlineUsers({ users }: OnlineUsersProps) {
                     <AvatarBadge className="bg-emerald-500" />
                   </Avatar>
                 </TooltipTrigger>
-                <TooltipContent>
-                  {user.full_name ?? '사용자'}
-                </TooltipContent>
+                <TooltipContent>{user.full_name ?? '사용자'}</TooltipContent>
               </Tooltip>
             )
           })}
-          {remaining > 0 && (
-            <AvatarGroupCount>+{remaining}</AvatarGroupCount>
-          )}
+          {remaining > 0 && <AvatarGroupCount>+{remaining}</AvatarGroupCount>}
         </AvatarGroup>
       </div>
     </TooltipProvider>

@@ -31,7 +31,7 @@ function StatCard({ icon, value, label, borderColor }: StatCardProps) {
           {icon}
         </div>
         <div>
-          <p className="text-2xl font-bold leading-none">{value}</p>
+          <p className="text-2xl leading-none font-bold">{value}</p>
           <p className="text-muted-foreground mt-1 text-xs">{label}</p>
         </div>
       </CardContent>
@@ -48,13 +48,13 @@ function StorageCard({ usedBytes, limitBytes }: StorageCardProps) {
   const percent = limitBytes > 0 ? Math.min((usedBytes / limitBytes) * 100, 100) : 0
 
   return (
-    <Card className="border-t-2 border-t-rose-500 gap-0 py-4">
+    <Card className="gap-0 border-t-2 border-t-rose-500 py-4">
       <CardContent className="flex items-center gap-3">
         <div className="bg-muted flex h-10 w-10 shrink-0 items-center justify-center rounded-lg">
           <HardDrive className="h-5 w-5 text-rose-500" />
         </div>
         <div className="min-w-0 flex-1">
-          <p className="text-2xl font-bold leading-none">
+          <p className="text-2xl leading-none font-bold">
             {formatBytes(usedBytes)}
             <span className="text-muted-foreground ml-1 text-sm font-normal">
               / {formatBytes(limitBytes)}
@@ -62,7 +62,7 @@ function StorageCard({ usedBytes, limitBytes }: StorageCardProps) {
           </p>
           <div className="bg-muted mt-2 h-1.5 w-full overflow-hidden rounded-full">
             <div
-              className="bg-rose-500 h-full rounded-full transition-all"
+              className="h-full rounded-full bg-rose-500 transition-all"
               style={{ width: `${percent}%` }}
             />
           </div>
@@ -149,10 +149,7 @@ export default function MonitoringPage() {
           label="태스크"
           borderColor="border-t-amber-500"
         />
-        <StorageCard
-          usedBytes={stats.storageUsedBytes}
-          limitBytes={stats.storageLimitBytes}
-        />
+        <StorageCard usedBytes={stats.storageUsedBytes} limitBytes={stats.storageLimitBytes} />
       </div>
     </div>
   )

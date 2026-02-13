@@ -104,12 +104,20 @@ export function KanbanColumn({
   const columnColor = COLUMN_COLORS[column.title] ?? COLUMN_DEFAULT_COLORS
 
   return (
-    <div className={cn(
-      'flex w-72 shrink-0 flex-col overflow-hidden rounded-lg border bg-muted/60 shadow-sm dark:bg-muted/30',
-      isOverWipLimit && 'border-red-400 dark:border-red-600',
-    )} style={{ height: 'calc(100vh - 220px)', minHeight: 300 }}>
+    <div
+      className={cn(
+        'bg-muted/60 dark:bg-muted/30 flex w-72 shrink-0 flex-col overflow-hidden rounded-lg border shadow-sm',
+        isOverWipLimit && 'border-red-400 dark:border-red-600',
+      )}
+      style={{ height: 'calc(100vh - 220px)', minHeight: 300 }}
+    >
       {/* 컬럼 헤더 */}
-      <div className={cn('flex items-center justify-between border-b bg-gradient-to-r px-3 py-2', columnColor.gradient)}>
+      <div
+        className={cn(
+          'flex items-center justify-between border-b bg-gradient-to-r px-3 py-2',
+          columnColor.gradient,
+        )}
+      >
         <div className="flex min-w-0 items-center gap-2">
           {isEditing ? (
             <Input
@@ -125,14 +133,19 @@ export function KanbanColumn({
             <>
               <h3 className="truncate text-sm font-semibold">{column.title}</h3>
               {column.is_done_column && (
-                <CheckCircle2 className="h-4 w-4 shrink-0 text-green-600 dark:text-green-400" aria-label="완료 컬럼" />
+                <CheckCircle2
+                  className="h-4 w-4 shrink-0 text-green-600 dark:text-green-400"
+                  aria-label="완료 컬럼"
+                />
               )}
-              <span className={cn(
-                'shrink-0 rounded-full px-2 py-0.5 text-xs font-medium',
-                isOverWipLimit
-                  ? 'bg-red-100 text-red-700 dark:bg-red-900/50 dark:text-red-300'
-                  : columnColor.badge,
-              )}>
+              <span
+                className={cn(
+                  'shrink-0 rounded-full px-2 py-0.5 text-xs font-medium',
+                  isOverWipLimit
+                    ? 'bg-red-100 text-red-700 dark:bg-red-900/50 dark:text-red-300'
+                    : columnColor.badge,
+                )}
+              >
                 {wipLimit !== null ? `${tasks.length}/${wipLimit}` : tasks.length}
               </span>
             </>
@@ -140,7 +153,13 @@ export function KanbanColumn({
         </div>
         {canEdit && !isEditing && (
           <div className="flex shrink-0 items-center gap-1">
-            <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => onAddTask(column.id)} aria-label="태스크 추가">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8"
+              onClick={() => onAddTask(column.id)}
+              aria-label="태스크 추가"
+            >
               <Plus className="h-4 w-4" />
             </Button>
             {canDeleteColumn && (
@@ -163,10 +182,21 @@ export function KanbanColumn({
                       </DropdownMenuItem>
                     )}
                     {onToggleDone && (
-                      <DropdownMenuItem onClick={() => onToggleDone(column.id, !column.is_done_column)}>
-                        <CheckCircle2 className={cn('mr-2 h-4 w-4', column.is_done_column && 'text-green-600 dark:text-green-400')} />
+                      <DropdownMenuItem
+                        onClick={() => onToggleDone(column.id, !column.is_done_column)}
+                      >
+                        <CheckCircle2
+                          className={cn(
+                            'mr-2 h-4 w-4',
+                            column.is_done_column && 'text-green-600 dark:text-green-400',
+                          )}
+                        />
                         완료 컬럼으로 지정
-                        {column.is_done_column && <span className="ml-auto text-xs text-green-600 dark:text-green-400">&#10003;</span>}
+                        {column.is_done_column && (
+                          <span className="ml-auto text-xs text-green-600 dark:text-green-400">
+                            &#10003;
+                          </span>
+                        )}
                       </DropdownMenuItem>
                     )}
                     <DropdownMenuSeparator />
@@ -185,8 +215,9 @@ export function KanbanColumn({
                   <AlertDialogHeader>
                     <AlertDialogTitle>컬럼을 삭제하시겠습니까?</AlertDialogTitle>
                     <AlertDialogDescription>
-                      &quot;{column.title}&quot; 컬럼과 포함된 태스크 {tasks.length}개가 모두 삭제됩니다.<br />
-                      이 작업은 되돌릴 수 없습니다.
+                      &quot;{column.title}&quot; 컬럼과 포함된 태스크 {tasks.length}개가 모두
+                      삭제됩니다.
+                      <br />이 작업은 되돌릴 수 없습니다.
                     </AlertDialogDescription>
                   </AlertDialogHeader>
                   <AlertDialogFooter>
@@ -224,9 +255,10 @@ export function KanbanColumn({
               )}
               {tasks.map((task, index) => {
                 const taskLabelIds = taskLabelMap?.get(task.id)
-                const taskLabelsForCard = taskLabelIds && labels
-                  ? labels.filter((l) => taskLabelIds.includes(l.id))
-                  : undefined
+                const taskLabelsForCard =
+                  taskLabelIds && labels
+                    ? labels.filter((l) => taskLabelIds.includes(l.id))
+                    : undefined
                 return (
                   <TaskCard
                     key={task.id}
@@ -234,7 +266,9 @@ export function KanbanColumn({
                     index={index}
                     onClick={onTaskClick}
                     members={members}
-                    isDragDisabled={!canMoveAll && task.assignee_id !== null && task.assignee_id !== currentUserId}
+                    isDragDisabled={
+                      !canMoveAll && task.assignee_id !== null && task.assignee_id !== currentUserId
+                    }
                     taskLabels={taskLabelsForCard}
                     isBlocked={blockedTaskIds?.has(task.id)}
                     isRecurring={recurringTaskIds?.has(task.id)}

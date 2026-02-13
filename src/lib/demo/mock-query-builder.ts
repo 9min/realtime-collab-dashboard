@@ -1,7 +1,9 @@
 import { demoDataStore } from './demo-store'
 
 type Row = Record<string, unknown>
-type PostgrestResponse<T> = { data: T; error: null } | { data: null; error: { code: string; message: string; details: string; hint: string } }
+type PostgrestResponse<T> =
+  | { data: T; error: null }
+  | { data: null; error: { code: string; message: string; details: string; hint: string } }
 
 /**
  * PostgREST 쿼리 빌더 Mock
@@ -33,7 +35,13 @@ export class MockQueryBuilder {
   }
 
   select(columns?: string, options?: { count?: 'exact'; head?: boolean }): this {
-    if (this.operation !== 'select' && (this.operation === 'insert' || this.operation === 'update' || this.operation === 'delete' || this.operation === 'upsert')) {
+    if (
+      this.operation !== 'select' &&
+      (this.operation === 'insert' ||
+        this.operation === 'update' ||
+        this.operation === 'delete' ||
+        this.operation === 'upsert')
+    ) {
       // mutation 후 .select() 호출: mutation 결과에서 컬럼 선택
       this.mutationSelectColumns = columns ?? '*'
       this.selectColumns = columns ?? '*'
@@ -114,9 +122,7 @@ export class MockQueryBuilder {
 
   not(column: string, operator: string, value: unknown): this {
     if (operator === 'in') {
-      const parsed = typeof value === 'string'
-        ? value.replace(/^\(|\)$/g, '').split(',')
-        : value
+      const parsed = typeof value === 'string' ? value.replace(/^\(|\)$/g, '').split(',') : value
       this.filters.push([column, 'not.in', parsed])
     } else if (operator === 'is') {
       this.filters.push([column, 'not.is', value])
@@ -195,7 +201,10 @@ export class MockQueryBuilder {
       case 'upsert':
         return this.executeUpsert()
       default:
-        return { data: null, error: { code: 'UNKNOWN', message: 'Unknown operation', details: '', hint: '' } }
+        return {
+          data: null,
+          error: { code: 'UNKNOWN', message: 'Unknown operation', details: '', hint: '' },
+        }
     }
   }
 
@@ -208,7 +217,12 @@ export class MockQueryBuilder {
     for (const [col, op, val] of this.filters) {
       const dotIdx = col.indexOf('.')
       if (dotIdx !== -1) {
-        joinedFilters.push({ relation: col.slice(0, dotIdx), column: col.slice(dotIdx + 1), op, value: val })
+        joinedFilters.push({
+          relation: col.slice(0, dotIdx),
+          column: col.slice(dotIdx + 1),
+          op,
+          value: val,
+        })
       } else {
         directFilters.push([col, op, val])
       }
@@ -254,9 +268,10 @@ export class MockQueryBuilder {
           if (aVal == null) return ascending ? -1 : 1
           if (bVal == null) return ascending ? 1 : -1
 
-          const cmp = typeof aVal === 'number' && typeof bVal === 'number'
-            ? aVal - bVal
-            : String(aVal).localeCompare(String(bVal))
+          const cmp =
+            typeof aVal === 'number' && typeof bVal === 'number'
+              ? aVal - bVal
+              : String(aVal).localeCompare(String(bVal))
 
           return ascending ? cmp : -cmp
         }
@@ -285,7 +300,15 @@ export class MockQueryBuilder {
 
     if (this.isSingle) {
       if (rows.length === 0) {
-        return { data: null, error: { code: 'PGRST116', message: 'JSON object requested, multiple (or no) rows returned', details: '', hint: '' } }
+        return {
+          data: null,
+          error: {
+            code: 'PGRST116',
+            message: 'JSON object requested, multiple (or no) rows returned',
+            details: '',
+            hint: '',
+          },
+        }
       }
       const result = this.countOption
         ? { data: rows[0], count: totalCount, error: null }
@@ -308,7 +331,10 @@ export class MockQueryBuilder {
 
   private executeInsert(): PostgrestResponse<unknown> {
     const dataArr = Array.isArray(this.insertData) ? this.insertData : [this.insertData!]
-    const inserted = demoDataStore.insertRows(this.tableName, dataArr.map((d) => ({ ...d })))
+    const inserted = demoDataStore.insertRows(
+      this.tableName,
+      dataArr.map((d) => ({ ...d })),
+    )
 
     if (this.mutationSelectColumns) {
       const result = this.applyColumnSelection(this.applyJoins(inserted))
@@ -347,7 +373,11 @@ export class MockQueryBuilder {
 
   private executeUpsert(): PostgrestResponse<unknown> {
     const dataArr = Array.isArray(this.insertData) ? this.insertData : [this.insertData!]
-    const upserted = demoDataStore.upsertRows(this.tableName, dataArr.map((d) => ({ ...d })), this.upsertConflictColumns)
+    const upserted = demoDataStore.upsertRows(
+      this.tableName,
+      dataArr.map((d) => ({ ...d })),
+      this.upsertConflictColumns,
+    )
 
     if (this.mutationSelectColumns) {
       const result = this.applyColumnSelection(this.applyJoins(upserted))
@@ -375,16 +405,22 @@ export class MockQueryBuilder {
     // 패턴3: table(columns)                예: profiles(*), projects(name)
     const joinRegex = /(?:(\w+):)?(\w+)(?:!(\w+))?\(([^)]*)\)/g
     let match: RegExpExecArray | null
-    const joins: { alias: string; relationName: string; fkHint: string | null; innerJoin: boolean; columns: string }[] = []
+    const joins: {
+      alias: string
+      relationName: string
+      fkHint: string | null
+      innerJoin: boolean
+      columns: string
+    }[] = []
 
     while ((match = joinRegex.exec(this.selectColumns)) !== null) {
-      const aliasOrNull = match[1] ?? null    // "actor" or null
-      const tableName = match[2]               // "profiles", "labels", "projects"
-      const modifier = match[3] ?? null        // FK name, "inner", or null
-      const columns = match[4]                 // "*", "project_id", "name"
+      const aliasOrNull = match[1] ?? null // "actor" or null
+      const tableName = match[2] // "profiles", "labels", "projects"
+      const modifier = match[3] ?? null // FK name, "inner", or null
+      const columns = match[4] // "*", "project_id", "name"
 
       const isInner = modifier === 'inner'
-      const fkHint = (modifier && !isInner) ? modifier : null
+      const fkHint = modifier && !isInner ? modifier : null
       const alias = aliasOrNull ?? tableName
 
       joins.push({ alias, relationName: alias, fkHint, innerJoin: isInner, columns })
@@ -392,40 +428,42 @@ export class MockQueryBuilder {
 
     if (joins.length === 0) return rows
 
-    return rows.map((row) => {
-      const newRow = { ...row }
-      for (const join of joins) {
-        const config = demoDataStore.getRelationConfig(this.tableName, join.alias)
-        if (config) {
-          const relatedTable = demoDataStore.getTable(config.table)
-          const fkValue = row[config.fkColumn]
+    return rows
+      .map((row) => {
+        const newRow = { ...row }
+        for (const join of joins) {
+          const config = demoDataStore.getRelationConfig(this.tableName, join.alias)
+          if (config) {
+            const relatedTable = demoDataStore.getTable(config.table)
+            const fkValue = row[config.fkColumn]
 
-          if (config.type === 'object') {
-            const found = relatedTable.find((r) => r['id'] === fkValue) ?? null
-            // 특정 컬럼만 선택 (e.g., projects(name))
-            if (found && join.columns !== '*') {
-              const cols = join.columns.split(',').map((c) => c.trim())
-              const filtered: Row = {}
-              for (const col of cols) {
-                if (col in found) filtered[col] = found[col]
+            if (config.type === 'object') {
+              const found = relatedTable.find((r) => r['id'] === fkValue) ?? null
+              // 특정 컬럼만 선택 (e.g., projects(name))
+              if (found && join.columns !== '*') {
+                const cols = join.columns.split(',').map((c) => c.trim())
+                const filtered: Row = {}
+                for (const col of cols) {
+                  if (col in found) filtered[col] = found[col]
+                }
+                newRow[join.alias] = filtered
+              } else {
+                newRow[join.alias] = found
               }
-              newRow[join.alias] = filtered
             } else {
-              newRow[join.alias] = found
+              newRow[join.alias] = relatedTable.filter((r) => r['id'] === fkValue)
             }
-          } else {
-            newRow[join.alias] = relatedTable.filter((r) => r['id'] === fkValue)
           }
         }
-      }
-      return newRow
-    }).filter((row) => {
-      // inner join: 관련 데이터가 없으면 해당 row 제외
-      for (const join of joins) {
-        if (join.innerJoin && !row[join.alias]) return false
-      }
-      return true
-    })
+        return newRow
+      })
+      .filter((row) => {
+        // inner join: 관련 데이터가 없으면 해당 row 제외
+        for (const join of joins) {
+          if (join.innerJoin && !row[join.alias]) return false
+        }
+        return true
+      })
   }
 
   // 컬럼 필터링

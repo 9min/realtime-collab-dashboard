@@ -9,7 +9,16 @@ type Task = Tables<'tasks'>
 type Column = Tables<'kanban_columns'>
 
 // 컬럼별 태스크 수 (파이 차트)
-const COLUMN_COLORS = ['#6366f1', '#f59e0b', '#10b981', '#f97316', '#8b5cf6', '#ec4899', '#06b6d4', '#84cc16']
+const COLUMN_COLORS = [
+  '#6366f1',
+  '#f59e0b',
+  '#10b981',
+  '#f97316',
+  '#8b5cf6',
+  '#ec4899',
+  '#06b6d4',
+  '#84cc16',
+]
 
 export async function getTaskStatusData(
   supabase: Client,
@@ -22,18 +31,20 @@ export async function getTaskStatusData(
       .eq('project_id', projectId)
       .order('position')
       .returns<Column[]>(),
-    supabase
-      .from('tasks')
-      .select('*')
-      .eq('project_id', projectId)
-      .returns<Task[]>(),
+    supabase.from('tasks').select('*').eq('project_id', projectId).returns<Task[]>(),
   ])
 
   if (columnsResult.error) {
-    return { data: null, error: { code: columnsResult.error.code, message: columnsResult.error.message } }
+    return {
+      data: null,
+      error: { code: columnsResult.error.code, message: columnsResult.error.message },
+    }
   }
   if (tasksResult.error) {
-    return { data: null, error: { code: tasksResult.error.code, message: tasksResult.error.message } }
+    return {
+      data: null,
+      error: { code: tasksResult.error.code, message: tasksResult.error.message },
+    }
   }
 
   const columns = columnsResult.data ?? []

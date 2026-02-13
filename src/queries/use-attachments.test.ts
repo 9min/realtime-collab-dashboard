@@ -15,7 +15,12 @@ vi.mock('@/services/attachment-service', () => ({
 
 import { getAttachments, uploadAttachment, deleteAttachment } from '@/services/attachment-service'
 import { mockAttachment } from '@/__tests__/helpers/fixtures'
-import { useAttachments, useUploadAttachment, useDeleteAttachment, attachmentKeys } from './use-attachments'
+import {
+  useAttachments,
+  useUploadAttachment,
+  useDeleteAttachment,
+  attachmentKeys,
+} from './use-attachments'
 
 describe('use-attachments', () => {
   let queryClient: QueryClient

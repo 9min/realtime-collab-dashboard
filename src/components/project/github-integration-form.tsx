@@ -11,7 +11,11 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
 import { Badge } from '@/components/ui/badge'
-import { useUpsertIntegration, useDeleteIntegration, useToggleIntegration } from '@/queries/use-integrations'
+import {
+  useUpsertIntegration,
+  useDeleteIntegration,
+  useToggleIntegration,
+} from '@/queries/use-integrations'
 import { INTEGRATION_EVENT } from '@/types/integration'
 import type { ProjectIntegration, GitHubConfig, IntegrationEvent } from '@/types/integration'
 
@@ -35,7 +39,11 @@ const EVENT_LABELS: Record<IntegrationEvent, string> = {
   task_deleted: '태스크 삭제',
 } as const
 
-export function GitHubIntegrationForm({ projectId, integration, isOwnerOrAdmin }: GitHubIntegrationFormProps) {
+export function GitHubIntegrationForm({
+  projectId,
+  integration,
+  isOwnerOrAdmin,
+}: GitHubIntegrationFormProps) {
   const config = integration?.config as GitHubConfig | undefined
   const [selectedEvents, setSelectedEvents] = useState<IntegrationEvent[]>(
     config?.events ?? [INTEGRATION_EVENT.TASK_CREATED],
@@ -118,26 +126,14 @@ export function GitHubIntegrationForm({ projectId, integration, isOwnerOrAdmin }
 
       <div className="space-y-2">
         <Label htmlFor="github-owner">저장소 소유자</Label>
-        <Input
-          id="github-owner"
-          {...register('owner')}
-          placeholder="username 또는 organization"
-        />
-        {errors.owner && (
-          <p className="text-destructive text-xs">{errors.owner.message}</p>
-        )}
+        <Input id="github-owner" {...register('owner')} placeholder="username 또는 organization" />
+        {errors.owner && <p className="text-destructive text-xs">{errors.owner.message}</p>}
       </div>
 
       <div className="space-y-2">
         <Label htmlFor="github-repo">리포지토리</Label>
-        <Input
-          id="github-repo"
-          {...register('repo')}
-          placeholder="repository-name"
-        />
-        {errors.repo && (
-          <p className="text-destructive text-xs">{errors.repo.message}</p>
-        )}
+        <Input id="github-repo" {...register('repo')} placeholder="repository-name" />
+        {errors.repo && <p className="text-destructive text-xs">{errors.repo.message}</p>}
       </div>
 
       <div className="space-y-2">
@@ -151,9 +147,7 @@ export function GitHubIntegrationForm({ projectId, integration, isOwnerOrAdmin }
         {hasExistingToken && (
           <p className="text-muted-foreground text-xs">비워두면 기존 토큰이 유지됩니다</p>
         )}
-        {errors.token && (
-          <p className="text-destructive text-xs">{errors.token.message}</p>
-        )}
+        {errors.token && <p className="text-destructive text-xs">{errors.token.message}</p>}
       </div>
 
       <div className="space-y-2">
@@ -168,7 +162,7 @@ export function GitHubIntegrationForm({ projectId, integration, isOwnerOrAdmin }
                 aria-checked={isActive}
                 tabIndex={0}
                 variant={isActive ? 'default' : 'outline'}
-                className="cursor-pointer select-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1"
+                className="focus-visible:ring-ring cursor-pointer select-none focus-visible:ring-2 focus-visible:ring-offset-1"
                 onClick={() => toggleEvent(value)}
                 onKeyDown={(e: React.KeyboardEvent) => {
                   if (e.key === 'Enter' || e.key === ' ') {

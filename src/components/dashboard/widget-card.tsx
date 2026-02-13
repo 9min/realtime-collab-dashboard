@@ -17,7 +17,8 @@ const TaskStatusChart = dynamic(
 )
 
 const WeeklyProgressChart = dynamic(
-  () => import('../charts/weekly-progress-chart').then((mod) => ({ default: mod.WeeklyProgressChart })),
+  () =>
+    import('../charts/weekly-progress-chart').then((mod) => ({ default: mod.WeeklyProgressChart })),
   { loading: () => <WidgetSkeleton /> },
 )
 
@@ -52,13 +53,7 @@ interface WidgetCardProps {
   onRemove: (widgetId: string) => void
 }
 
-export function WidgetCard({
-  widgetId,
-  type,
-  projectId,
-  isEditMode,
-  onRemove,
-}: WidgetCardProps) {
+export function WidgetCard({ widgetId, type, projectId, isEditMode, onRemove }: WidgetCardProps) {
   const config = WIDGET_REGISTRY.find((w) => w.type === type)
   const title = config?.title ?? '위젯'
 
@@ -66,7 +61,7 @@ export function WidgetCard({
     <Card className={cn('flex h-full flex-col border-t-2 shadow-sm', WIDGET_ACCENT[type])}>
       <CardHeader className="flex flex-row items-center gap-2 space-y-0 pb-2">
         {isEditMode && (
-          <div className="drag-handle cursor-grab active:cursor-grabbing p-1">
+          <div className="drag-handle cursor-grab p-1 active:cursor-grabbing">
             <GripVertical className="text-muted-foreground h-4 w-4" />
           </div>
         )}
@@ -114,7 +109,15 @@ function WidgetContent({ type, projectId }: { type: WidgetType; projectId: strin
   }
 }
 
-function WidgetTitleText({ type, title, projectId }: { type: WidgetType; title: string; projectId: string }) {
+function WidgetTitleText({
+  type,
+  title,
+  projectId,
+}: {
+  type: WidgetType
+  title: string
+  projectId: string
+}) {
   if (type === WIDGET_TYPE.MEMBER_LIST) {
     return <MemberCountTitle title={title} projectId={projectId} />
   }
@@ -127,9 +130,7 @@ function MemberCountTitle({ title, projectId }: { title: string; projectId: stri
   return (
     <>
       {title}
-      {count > 0 && (
-        <span className="text-muted-foreground ml-1 font-normal">({count})</span>
-      )}
+      {count > 0 && <span className="text-muted-foreground ml-1 font-normal">({count})</span>}
     </>
   )
 }
@@ -138,12 +139,12 @@ function WidgetSkeleton() {
   return (
     <div className="flex h-full min-h-[200px] flex-col gap-3 p-4">
       <div className="flex items-end gap-2">
-        <div className="h-20 flex-1 animate-pulse rounded bg-muted" />
-        <div className="h-14 flex-1 animate-pulse rounded bg-muted" />
-        <div className="h-24 flex-1 animate-pulse rounded bg-muted" />
-        <div className="h-16 flex-1 animate-pulse rounded bg-muted" />
+        <div className="bg-muted h-20 flex-1 animate-pulse rounded" />
+        <div className="bg-muted h-14 flex-1 animate-pulse rounded" />
+        <div className="bg-muted h-24 flex-1 animate-pulse rounded" />
+        <div className="bg-muted h-16 flex-1 animate-pulse rounded" />
       </div>
-      <div className="h-3 w-2/3 animate-pulse rounded bg-muted" />
+      <div className="bg-muted h-3 w-2/3 animate-pulse rounded" />
     </div>
   )
 }

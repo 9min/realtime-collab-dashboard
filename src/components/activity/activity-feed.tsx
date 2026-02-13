@@ -157,10 +157,7 @@ export function ActivityFeed({ projectId }: ActivityFeedProps) {
       </CardHeader>
       <CardContent>
         <div ref={parentRef} className="h-[400px] overflow-y-auto md:h-[600px]">
-          <div
-            className="relative w-full"
-            style={{ height: `${virtualizer.getTotalSize()}px` }}
-          >
+          <div className="relative w-full" style={{ height: `${virtualizer.getTotalSize()}px` }}>
             {virtualizer.getVirtualItems().map((virtualItem) => {
               const item = flatItems[virtualItem.index]
               return (
@@ -168,7 +165,7 @@ export function ActivityFeed({ projectId }: ActivityFeedProps) {
                   key={virtualItem.key}
                   ref={virtualizer.measureElement}
                   data-index={virtualItem.index}
-                  className="absolute left-0 top-0 w-full"
+                  className="absolute top-0 left-0 w-full"
                   style={{ transform: `translateY(${virtualItem.start}px)` }}
                 >
                   {item.type === 'header' ? (

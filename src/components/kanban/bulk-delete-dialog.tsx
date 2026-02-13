@@ -37,7 +37,12 @@ interface BulkDeleteDialogProps {
   onExternalOpenChange?: (open: boolean) => void
 }
 
-export function BulkDeleteDialog({ projectId, tasks, externalOpen, onExternalOpenChange }: BulkDeleteDialogProps) {
+export function BulkDeleteDialog({
+  projectId,
+  tasks,
+  externalOpen,
+  onExternalOpenChange,
+}: BulkDeleteDialogProps) {
   const [internalOpen, setInternalOpen] = useState(false)
   const [confirmOpen, setConfirmOpen] = useState(false)
   const [beforeDate, setBeforeDate] = useState('')
@@ -86,9 +91,7 @@ export function BulkDeleteDialog({ projectId, tasks, externalOpen, onExternalOpe
       <DialogContent>
         <DialogHeader>
           <DialogTitle>태스크 일괄 삭제</DialogTitle>
-          <DialogDescription>
-            선택한 날짜 이전에 생성된 태스크를 일괄 삭제합니다.
-          </DialogDescription>
+          <DialogDescription>선택한 날짜 이전에 생성된 태스크를 일괄 삭제합니다.</DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4">
@@ -114,7 +117,7 @@ export function BulkDeleteDialog({ projectId, tasks, externalOpen, onExternalOpe
                 <ScrollArea className="h-40 rounded-md border p-2">
                   <ul className="space-y-1">
                     {targetTasks.map((task) => (
-                      <li key={task.id} className="text-sm truncate">
+                      <li key={task.id} className="truncate text-sm">
                         {task.title}
                       </li>
                     ))}
@@ -143,10 +146,7 @@ export function BulkDeleteDialog({ projectId, tasks, externalOpen, onExternalOpe
               </AlertDialogHeader>
               <AlertDialogFooter>
                 <AlertDialogCancel>취소</AlertDialogCancel>
-                <AlertDialogAction
-                  variant="destructive"
-                  onClick={handleConfirmDelete}
-                >
+                <AlertDialogAction variant="destructive" onClick={handleConfirmDelete}>
                   삭제
                 </AlertDialogAction>
               </AlertDialogFooter>

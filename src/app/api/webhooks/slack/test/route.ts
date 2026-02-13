@@ -8,7 +8,10 @@ export async function POST(req: NextRequest) {
   if (isDemoRequest(req)) return demoModeResponse()
   const supabase = await createServerClient()
 
-  const { data: { user }, error: authError } = await supabase.auth.getUser()
+  const {
+    data: { user },
+    error: authError,
+  } = await supabase.auth.getUser()
   if (authError || !user) {
     return NextResponse.json({ error: '인증이 필요합니다' }, { status: 401 })
   }
@@ -48,17 +51,11 @@ export async function POST(req: NextRequest) {
     })
 
     if (!response.ok) {
-      return NextResponse.json(
-        { error: `Slack 응답 오류: ${response.status}` },
-        { status: 502 },
-      )
+      return NextResponse.json({ error: `Slack 응답 오류: ${response.status}` }, { status: 502 })
     }
 
     return NextResponse.json({ success: true })
   } catch {
-    return NextResponse.json(
-      { error: 'Slack 웹훅 전송에 실패했습니다' },
-      { status: 502 },
-    )
+    return NextResponse.json({ error: 'Slack 웹훅 전송에 실패했습니다' }, { status: 502 })
   }
 }

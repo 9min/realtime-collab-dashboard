@@ -52,7 +52,10 @@ export function FileUploadButton({ onFileSelect, isPending }: FileUploadButtonPr
         'border-border rounded-md border-2 border-dashed p-3 text-center transition-colors',
         isDragOver && 'border-primary bg-primary/5',
       )}
-      onDragOver={(e) => { e.preventDefault(); setIsDragOver(true) }}
+      onDragOver={(e) => {
+        e.preventDefault()
+        setIsDragOver(true)
+      }}
       onDragLeave={() => setIsDragOver(false)}
       onDrop={handleDrop}
     >
