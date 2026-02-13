@@ -1,5 +1,7 @@
 import type { Metadata } from 'next'
 
+import { getMaintenanceConfig } from '@/lib/maintenance'
+
 export const metadata: Metadata = {
   title: '시스템 점검 중 | 실시간 협업 일정관리 도구',
   description: '현재 시스템 점검 중입니다. 잠시 후 다시 접속해 주세요.',
@@ -27,11 +29,10 @@ function CautionStripe() {
 
 // Next.js App Router 규약: page.tsx는 default export 필수
 export default function MaintenancePage() {
-  const customMessage = process.env.MAINTENANCE_MESSAGE
-  const maintenanceUntil = process.env.MAINTENANCE_UNTIL
+  const { message, until } = getMaintenanceConfig()
 
-  const formattedUntil = maintenanceUntil
-    ? formatMaintenanceUntil(maintenanceUntil) ?? maintenanceUntil
+  const formattedUntil = until
+    ? formatMaintenanceUntil(until) ?? until
     : null
 
   return (
@@ -67,8 +68,7 @@ export default function MaintenancePage() {
           </h1>
 
           <p className="mx-auto mt-4 max-w-sm text-base leading-relaxed text-muted-foreground whitespace-pre-line">
-            {customMessage?.replaceAll('\\n', '\n') ??
-              '더 나은 서비스 제공을 위해 시스템 점검을 진행하고 있습니다. 잠시 후 다시 접속해 주세요.'}
+            {message}
           </p>
 
           {/* 복구 시간 카드 */}

@@ -2,16 +2,28 @@ import { describe, it, expect, afterEach, vi } from 'vitest'
 
 import {
   isMaintenanceEnabled,
+  getMaintenanceConfig,
   verifyBypassKey,
   MAINTENANCE_BYPASS_COOKIE,
   MAINTENANCE_PATH,
 } from './maintenance'
+
+// maintenance.json mock
+vi.mock('../../maintenance.json', () => ({
+  default: { enabled: false, message: '', until: '' },
+}))
+
+import config from '../../maintenance.json'
 
 describe('maintenance', () => {
   const originalEnv = process.env
 
   afterEach(() => {
     process.env = originalEnv
+    // reset config
+    config.enabled = false
+    config.message = ''
+    config.until = ''
     vi.restoreAllMocks()
   })
 
@@ -26,29 +38,40 @@ describe('maintenance', () => {
   })
 
   describe('isMaintenanceEnabled', () => {
-    it('MAINTENANCE_MODE가 "true"이면 true를 반환한다', () => {
-      process.env = { ...originalEnv, MAINTENANCE_MODE: 'true' }
+    it('enabled가 true이면 true를 반환한다', () => {
+      config.enabled = true
       expect(isMaintenanceEnabled()).toBe(true)
     })
 
-    it('MAINTENANCE_MODE가 "false"이면 false를 반환한다', () => {
-      process.env = { ...originalEnv, MAINTENANCE_MODE: 'false' }
+    it('enabled가 false이면 false를 반환한다', () => {
+      config.enabled = false
       expect(isMaintenanceEnabled()).toBe(false)
     })
+  })
 
-    it('MAINTENANCE_MODE가 미설정이면 false를 반환한다', () => {
-      process.env = { ...originalEnv, MAINTENANCE_MODE: undefined }
-      expect(isMaintenanceEnabled()).toBe(false)
+  describe('getMaintenanceConfig', () => {
+    it('설정값을 올바르게 반환한다', () => {
+      config.enabled = true
+      config.message = '서버 점검 중'
+      config.until = '오후 6시'
+      const result = getMaintenanceConfig()
+      expect(result).toEqual({
+        enabled: true,
+        message: '서버 점검 중',
+        until: '오후 6시',
+      })
     })
 
-    it('MAINTENANCE_MODE가 빈 문자열이면 false를 반환한다', () => {
-      process.env = { ...originalEnv, MAINTENANCE_MODE: '' }
-      expect(isMaintenanceEnabled()).toBe(false)
+    it('message가 빈 문자열이면 기본 메시지를 반환한다', () => {
+      config.message = ''
+      const result = getMaintenanceConfig()
+      expect(result.message).toContain('시스템 점검')
     })
 
-    it('MAINTENANCE_MODE가 "TRUE"(대문자)이면 false를 반환한다', () => {
-      process.env = { ...originalEnv, MAINTENANCE_MODE: 'TRUE' }
-      expect(isMaintenanceEnabled()).toBe(false)
+    it('until이 빈 문자열이면 빈 문자열을 반환한다', () => {
+      config.until = ''
+      const result = getMaintenanceConfig()
+      expect(result.until).toBe('')
     })
   })
 

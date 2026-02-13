@@ -1,15 +1,31 @@
 /**
  * 점검 모드 (Maintenance Mode) 유틸리티
  *
- * 환경변수 기반으로 점검 모드를 제어하며,
+ * maintenance.json 파일로 점검 모드를 제어하며,
  * 관리자 우회키 검증을 위한 상수 시간 비교를 제공한다.
  */
+
+import config from '../../maintenance.json'
 
 export const MAINTENANCE_BYPASS_COOKIE = 'maintenance_bypass'
 export const MAINTENANCE_PATH = '/maintenance'
 
+export interface MaintenanceConfig {
+  enabled: boolean
+  message: string
+  until: string
+}
+
+export function getMaintenanceConfig(): MaintenanceConfig {
+  return {
+    enabled: config.enabled ?? false,
+    message: config.message || '더 나은 서비스 제공을 위해 시스템 점검을 진행하고 있습니다.\n잠시 후 다시 접속해 주세요.',
+    until: config.until || '',
+  }
+}
+
 export function isMaintenanceEnabled(): boolean {
-  return process.env.MAINTENANCE_MODE === 'true'
+  return config.enabled === true
 }
 
 /**
