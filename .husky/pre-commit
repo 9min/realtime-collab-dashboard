@@ -1,1 +1,12 @@
+branch=$(git rev-parse --abbrev-ref HEAD)
+
+if [ "$branch" = "master" ] || [ "$branch" = "main" ]; then
+  echo "❌ master/main 브랜치에 직접 커밋할 수 없습니다."
+  echo "   feature 브랜치를 생성한 후 작업하세요:"
+  echo "   git checkout -b feat/<기능명>"
+  echo ""
+  echo "   긴급 시 --no-verify 옵션으로 우회할 수 있습니다."
+  exit 1
+fi
+
 pnpm type-check && pnpm lint-staged

@@ -327,9 +327,10 @@ chore: Vitest 커버리지 임계값 설정
 ## Branch Strategy (GitHub Flow)
 
 ### 기본 원칙
-- **master 브랜치에 직접 커밋 금지** — 모든 신규 기능/버그 수정은 feature 브랜치에서 작업
+- **master 브랜치에 직접 커밋 절대 금지** — 모든 변경(코드, 문서, 설정 포함)은 feature 브랜치에서 작업
 - PR(Pull Request)을 통해서만 master에 머지
-- 단, 문서 수정(`docs`), 설정 변경(`chore`) 등 비코드 변경은 master 직접 커밋 허용
+- pre-commit 훅이 master 브랜치 커밋을 자동 차단함 (긴급 시 `--no-verify`로 우회 가능)
+- GitHub ruleset에 의해 master 직접 push도 차단됨
 
 ### 워크플로우
 
@@ -350,6 +351,9 @@ fix/<버그-설명>      # 버그 수정 (예: fix/calendar-crash)
 refactor/<대상>      # 리팩토링 (예: refactor/auth-hooks)
 test/<대상>          # 테스트 추가 (예: test/task-service)
 perf/<대상>          # 성능 개선 (예: perf/virtualized-list)
+docs/<대상>          # 문서 수정 (예: docs/update-architecture)
+chore/<대상>         # 설정/의존성 (예: chore/update-deps)
+style/<대상>         # 포맷팅/UI (예: style/settings-ux)
 ```
 
 ### PR 생성 규칙
@@ -370,7 +374,7 @@ git push origin --delete <브랜치명>   # 원격 브랜치 삭제 (gh pr merge
 ```
 
 ### AI 동작
-- 신규 기능 요청 시 → 자동으로 feature 브랜치 생성 제안
+- **모든 작업 요청 시** → 현재 브랜치 확인, master라면 feature 브랜치 생성 먼저 실행
 - 커밋 완료 후 → "PR 생성할까요?" 확인
 - PR 생성 후 → 변경 사항 요약 + 셀프 코드 리뷰 제공
 - 머지 승인 후 → 브랜치 정리 + master 최신화
