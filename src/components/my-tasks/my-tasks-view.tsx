@@ -8,8 +8,13 @@ import {
   CalendarClock,
   CalendarDays,
   CalendarOff,
+  CheckCircle2,
+  ChevronDown,
   Inbox,
 } from 'lucide-react'
+
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
+import { cn } from '@/lib/utils'
 
 import { useAuth } from '@/hooks/use-auth'
 import { useMyTasks } from '@/queries/use-my-tasks'
@@ -66,6 +71,7 @@ export function MyTasksView() {
   const { user } = useAuth()
   const { data: tasks, isLoading } = useMyTasks(user?.id)
   const [selectedTask, setSelectedTask] = useState<MyTaskWithProject | null>(null)
+  const [isDoneOpen, setIsDoneOpen] = useState(false)
 
   const grouped = useMemo(() => {
     if (!tasks) return null
@@ -113,6 +119,26 @@ export function MyTasksView() {
             </section>
           )
         })}
+
+      {grouped && grouped.done.length > 0 && (
+        <Collapsible open={isDoneOpen} onOpenChange={setIsDoneOpen}>
+          <CollapsibleTrigger className="flex w-full items-center gap-2 text-sm font-semibold text-green-600 dark:text-green-400">
+            <CheckCircle2 className="h-4 w-4" />
+            완료됨
+            <span className="text-muted-foreground font-normal">({grouped.done.length})</span>
+            <ChevronDown
+              className={cn('ml-auto h-4 w-4 transition-transform', isDoneOpen && 'rotate-180')}
+            />
+          </CollapsibleTrigger>
+          <CollapsibleContent>
+            <div className="mt-3 space-y-2">
+              {grouped.done.map((task) => (
+                <MyTaskItem key={task.id} task={task} onTaskClick={setSelectedTask} isDone />
+              ))}
+            </div>
+          </CollapsibleContent>
+        </Collapsible>
+      )}
 
       {selectedTask && (
         <TaskDetailDialog

@@ -6,6 +6,7 @@ export interface GroupedMyTasks {
   thisWeek: MyTaskWithProject[]
   upcoming: MyTaskWithProject[]
   noDueDate: MyTaskWithProject[]
+  done: MyTaskWithProject[]
 }
 
 export function groupMyTasks(tasks: MyTaskWithProject[]): GroupedMyTasks {
@@ -24,10 +25,13 @@ export function groupMyTasks(tasks: MyTaskWithProject[]): GroupedMyTasks {
     thisWeek: [],
     upcoming: [],
     noDueDate: [],
+    done: [],
   }
 
   for (const task of tasks) {
-    if (!task.due_date) {
+    if (task.is_done_column) {
+      result.done.push(task)
+    } else if (!task.due_date) {
       result.noDueDate.push(task)
     } else if (task.due_date < todayStr) {
       result.overdue.push(task)
