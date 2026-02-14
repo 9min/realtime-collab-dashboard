@@ -10,20 +10,24 @@ import type { MyTaskWithProject } from '@/services/my-tasks-service'
 interface MyTaskItemProps {
   task: MyTaskWithProject
   onTaskClick?: (task: MyTaskWithProject) => void
+  isDone?: boolean
 }
 
-export function MyTaskItem({ task, onTaskClick }: MyTaskItemProps) {
+export function MyTaskItem({ task, onTaskClick, isDone }: MyTaskItemProps) {
   const handleClick = () => {
     onTaskClick?.(task)
   }
 
   return (
     <button
-      className="bg-card hover:bg-accent/50 focus-visible:ring-ring flex w-full cursor-pointer items-center gap-3 rounded-lg border px-4 py-3 text-left transition-colors outline-none focus-visible:ring-2"
+      className={cn(
+        'bg-card hover:bg-accent/50 focus-visible:ring-ring flex w-full cursor-pointer items-center gap-3 rounded-lg border px-4 py-3 text-left transition-colors outline-none focus-visible:ring-2',
+        isDone && 'opacity-60',
+      )}
       onClick={handleClick}
     >
       <div className="min-w-0 flex-1">
-        <p className="truncate text-sm font-medium">{task.title}</p>
+        <p className={cn('truncate text-sm font-medium', isDone && 'line-through')}>{task.title}</p>
         <div className="mt-1 flex items-center gap-2">
           <Badge variant="outline" className="text-xs">
             {task.project_name}

@@ -21,6 +21,7 @@ function createTask(overrides: Partial<MyTaskWithProject> = {}): MyTaskWithProje
     estimated_minutes: null,
     project_name: 'Project',
     column_title: 'Column',
+    is_done_column: false,
     ...overrides,
   }
 }
@@ -50,6 +51,23 @@ describe('groupMyTasks', () => {
     expect(grouped.today[0].id).toBe('2')
   })
 
+  it('should separate done tasks into done group', () => {
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date('2025-06-15T10:00:00Z'))
+
+    const tasks = [
+      createTask({ id: '1', due_date: '2025-06-15' }), // today (active)
+      createTask({ id: '2', due_date: '2025-06-10', is_done_column: true }), // done (not overdue)
+      createTask({ id: '3', due_date: null, is_done_column: true }), // done (not noDueDate)
+    ]
+
+    const grouped = groupMyTasks(tasks)
+    expect(grouped.today).toHaveLength(1)
+    expect(grouped.done).toHaveLength(2)
+    expect(grouped.overdue).toHaveLength(0)
+    expect(grouped.noDueDate).toHaveLength(0)
+  })
+
   it('should return empty groups for empty array', () => {
     const grouped = groupMyTasks([])
     expect(grouped.overdue).toHaveLength(0)
@@ -57,5 +75,6 @@ describe('groupMyTasks', () => {
     expect(grouped.thisWeek).toHaveLength(0)
     expect(grouped.upcoming).toHaveLength(0)
     expect(grouped.noDueDate).toHaveLength(0)
+    expect(grouped.done).toHaveLength(0)
   })
 })
