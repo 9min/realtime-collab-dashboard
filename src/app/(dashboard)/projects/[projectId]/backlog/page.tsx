@@ -58,12 +58,13 @@ export default function BacklogPage() {
       <Card>
         <CardHeader className="pb-2">
           <CardTitle className="flex items-center gap-2 text-base">
-            <TrendingUp className="text-muted-foreground h-4 w-4" />
+            <TrendingUp className="h-4 w-4 text-blue-500" />
             벨로시티
           </CardTitle>
+          <p className="text-muted-foreground text-xs">스프린트별 태스크 완료 추이</p>
         </CardHeader>
         <CardContent>
-          <div className="h-64">
+          <div className="h-80">
             <VelocityChart projectId={params.projectId} />
           </div>
         </CardContent>
