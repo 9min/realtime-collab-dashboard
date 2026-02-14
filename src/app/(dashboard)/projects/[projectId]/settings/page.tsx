@@ -143,8 +143,8 @@ export default function ProjectSettingsPage({ params }: ProjectSettingsPageProps
     return (
       <div className="max-w-2xl space-y-8">
         <div>
-          <h2 className="text-xl font-bold">프로젝트 설정</h2>
-          <p className="text-muted-foreground text-sm">프로젝트 정보 수정 및 멤버 관리</p>
+          <h2 className="text-2xl font-bold">프로젝트 설정</h2>
+          <p className="text-muted-foreground mt-1 text-sm">프로젝트 정보 수정 및 멤버 관리</p>
         </div>
         <div className="space-y-3 rounded-xl border p-6">
           <div className="bg-muted h-6 w-32 animate-pulse rounded" />
@@ -165,8 +165,8 @@ export default function ProjectSettingsPage({ params }: ProjectSettingsPageProps
     return (
       <div className="max-w-2xl space-y-8">
         <div>
-          <h2 className="text-xl font-bold">프로젝트 설정</h2>
-          <p className="text-muted-foreground text-sm">프로젝트 정보 수정 및 멤버 관리</p>
+          <h2 className="text-2xl font-bold">프로젝트 설정</h2>
+          <p className="text-muted-foreground mt-1 text-sm">프로젝트 정보 수정 및 멤버 관리</p>
         </div>
         <div className="bg-destructive/10 rounded-xl border p-6">
           <p className="text-destructive">
@@ -223,10 +223,10 @@ export default function ProjectSettingsPage({ params }: ProjectSettingsPageProps
   ] as const
 
   return (
-    <div className="max-w-2xl space-y-10 pb-8">
+    <div className="max-w-2xl space-y-6 pb-8">
       <div>
-        <h2 className="text-xl font-bold">프로젝트 설정</h2>
-        <p className="text-muted-foreground text-sm">프로젝트 정보와 기능을 관리합니다</p>
+        <h2 className="text-2xl font-bold">프로젝트 설정</h2>
+        <p className="text-muted-foreground mt-1 text-sm">프로젝트 정보와 기능을 관리합니다</p>
       </div>
 
       {/* ── 일반 ── */}
