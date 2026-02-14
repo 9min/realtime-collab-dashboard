@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import dynamic from 'next/dynamic'
 import { CalendarDays, CalendarRange } from 'lucide-react'
 
@@ -65,6 +65,7 @@ export function GanttChart({ projectId }: GanttChartProps) {
   const { viewMode, setViewMode } = useGanttStore()
   const { data: dependencies } = useDependencies(projectId)
   const [selectedTask, setSelectedTask] = useState<Tables<'tasks'> | null>(null)
+  const scrollContainerRef = useRef<HTMLDivElement>(null)
   const isDesktop = useMediaQuery('(min-width: 768px)')
   const labelWidth = isDesktop ? LABEL_WIDTH_DESKTOP : LABEL_WIDTH_MOBILE
 
@@ -171,6 +172,20 @@ export function GanttChart({ projectId }: GanttChartProps) {
     return (days / totalDays) * 100
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [timelineStart, totalDays])
+
+  // 마운트 시 오늘 날짜가 가운데 오도록 가로 스크롤
+  useEffect(() => {
+    if (tasksLoading || !scrollContainerRef.current) return
+    const viewport = scrollContainerRef.current.querySelector<HTMLElement>(
+      '[data-radix-scroll-area-viewport]',
+    )
+    if (!viewport) return
+
+    const todayPixelInTimeline = (todayOffset / 100) * timelineTotalWidth
+    const visibleTimelineWidth = viewport.clientWidth - labelWidth
+    const scrollLeft = todayPixelInTimeline - visibleTimelineWidth / 2
+    viewport.scrollLeft = Math.max(0, scrollLeft)
+  }, [tasksLoading, todayOffset, timelineTotalWidth, labelWidth])
 
   // 주말 컬럼 인덱스 (주 단위 뷰에서만)
   const weekendColumns = useMemo(() => {
@@ -307,11 +322,11 @@ export function GanttChart({ projectId }: GanttChartProps) {
       {/* 간트 차트 */}
       <div className="border-border bg-card overflow-hidden rounded-lg border">
         <TooltipProvider delayDuration={300}>
-          <ScrollArea className="w-full">
+          <ScrollArea className="w-full" ref={scrollContainerRef}>
             <div className="flex">
-              {/* 왼쪽: 태스크 레이블 */}
+              {/* 왼쪽: 태스크 레이블 (가로 스크롤 시 고정) */}
               <div
-                className="border-border bg-card shrink-0 border-r"
+                className="border-border bg-card sticky left-0 z-20 shrink-0 border-r"
                 style={{ width: labelWidth }}
               >
                 {/* 헤더 스페이서 (2행 헤더 높이 매칭) */}
