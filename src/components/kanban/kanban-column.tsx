@@ -109,7 +109,7 @@ export function KanbanColumn({
   return (
     <div
       className={cn(
-        'bg-muted/60 dark:bg-muted/30 flex w-72 shrink-0 flex-col overflow-hidden rounded-lg border shadow-sm',
+        'bg-muted/60 dark:bg-muted/30 flex min-w-0 flex-1 flex-col overflow-hidden rounded-lg border shadow-sm',
         isOverWipLimit && 'border-red-400 dark:border-red-600',
       )}
       style={{ height: 'calc(100vh - 220px)', minHeight: 300 }}
