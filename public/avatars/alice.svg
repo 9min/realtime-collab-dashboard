@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#ec4899"/>
+      <stop offset="100%" style="stop-color:#f43f5e"/>
+    </linearGradient>
+  </defs>
+  <circle cx="64" cy="64" r="64" fill="url(#bg)"/>
+  <!-- face -->
+  <circle cx="64" cy="50" r="22" fill="#fde8ef"/>
+  <!-- hair -->
+  <path d="M42 48 Q42 26 64 26 Q86 26 86 48 Q86 38 78 34 Q70 30 64 30 Q58 30 50 34 Q42 38 42 48Z" fill="#1e1b3a"/>
+  <path d="M38 50 Q36 38 42 32 Q38 42 40 50Z" fill="#1e1b3a"/>
+  <path d="M90 50 Q92 38 86 32 Q90 42 88 50Z" fill="#1e1b3a"/>
+  <!-- eyes -->
+  <ellipse cx="54" cy="48" rx="3" ry="3.5" fill="#1e1b3a"/>
+  <ellipse cx="74" cy="48" rx="3" ry="3.5" fill="#1e1b3a"/>
+  <!-- smile -->
+  <path d="M56 58 Q64 66 72 58" stroke="#d1466a" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  <!-- blush -->
+  <circle cx="48" cy="56" r="5" fill="#f9a8c9" opacity="0.5"/>
+  <circle cx="80" cy="56" r="5" fill="#f9a8c9" opacity="0.5"/>
+  <!-- body -->
+  <path d="M36 128 Q36 88 64 84 Q92 88 92 128Z" fill="#fde8ef"/>
+  <!-- top -->
+  <path d="M42 128 Q42 94 64 90 Q86 94 86 128Z" fill="#fbbfd0"/>
+</svg>

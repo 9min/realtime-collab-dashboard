@@ -10,7 +10,7 @@ const DEMO_USER: User = {
   email: 'demo@example.com',
   email_confirmed_at: new Date().toISOString(),
   app_metadata: { provider: 'demo', providers: ['demo'] },
-  user_metadata: { full_name: '데모 사용자', avatar_url: '' },
+  user_metadata: { full_name: '데모 사용자', avatar_url: '/avatars/demo-user.svg' },
   identities: [],
   created_at: new Date().toISOString(),
   updated_at: new Date().toISOString(),
