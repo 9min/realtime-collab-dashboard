@@ -78,7 +78,7 @@ function LoadingSkeleton() {
     <div className="space-y-6">
       <div>
         <h2 className="text-2xl font-bold">서비스 통계</h2>
-        <p className="text-muted-foreground mt-1">서비스 현황 요약</p>
+        <p className="text-muted-foreground mt-1 text-sm">서비스 현황 요약</p>
       </div>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {Array.from({ length: 4 }).map((_, i) => (
@@ -110,7 +110,7 @@ export default function MonitoringPage() {
       <div className="space-y-6">
         <div>
           <h2 className="text-2xl font-bold">서비스 통계</h2>
-          <p className="text-muted-foreground mt-1">서비스 현황 요약</p>
+          <p className="text-muted-foreground mt-1 text-sm">서비스 현황 요약</p>
         </div>
         <Card className="border-destructive/50">
           <CardContent>
@@ -127,7 +127,7 @@ export default function MonitoringPage() {
     <div className="space-y-6">
       <div>
         <h2 className="text-2xl font-bold">서비스 통계</h2>
-        <p className="text-muted-foreground mt-1">서비스 현황 요약</p>
+        <p className="text-muted-foreground mt-1 text-sm">서비스 현황 요약</p>
       </div>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">

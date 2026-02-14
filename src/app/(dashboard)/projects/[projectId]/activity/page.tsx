@@ -59,7 +59,9 @@ export default function ActivityPage() {
       {/* Header */}
       <div>
         <h2 className="text-2xl font-bold">활동 로그</h2>
-        <p className="text-muted-foreground mt-1">프로젝트 내 모든 활동 내역을 확인합니다</p>
+        <p className="text-muted-foreground mt-1 text-sm">
+          프로젝트 내 모든 활동 내역을 확인합니다
+        </p>
       </div>
 
       {/* Stat Cards */}

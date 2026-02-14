@@ -89,7 +89,9 @@ function LoadingSkeleton() {
     <div className="mx-auto max-w-3xl space-y-6">
       <div>
         <h2 className="text-2xl font-bold">사용자 관리</h2>
-        <p className="text-muted-foreground mt-1">전체 사용자 및 프로젝트 참여 현황을 관리합니다</p>
+        <p className="text-muted-foreground mt-1 text-sm">
+          전체 사용자 및 프로젝트 참여 현황을 관리합니다
+        </p>
       </div>
       <div className="grid grid-cols-3 gap-4">
         {Array.from({ length: 3 }).map((_, i) => (
@@ -224,7 +226,7 @@ export default function AdminPage() {
       <div className="mx-auto max-w-3xl space-y-6">
         <div>
           <h2 className="text-2xl font-bold">사용자 관리</h2>
-          <p className="text-muted-foreground mt-1">
+          <p className="text-muted-foreground mt-1 text-sm">
             전체 사용자 및 프로젝트 참여 현황을 관리합니다
           </p>
         </div>
@@ -258,7 +260,9 @@ export default function AdminPage() {
       {/* Header */}
       <div>
         <h2 className="text-2xl font-bold">사용자 관리</h2>
-        <p className="text-muted-foreground mt-1">전체 사용자 및 프로젝트 참여 현황을 관리합니다</p>
+        <p className="text-muted-foreground mt-1 text-sm">
+          전체 사용자 및 프로젝트 참여 현황을 관리합니다
+        </p>
       </div>
 
       {/* Stat Cards */}

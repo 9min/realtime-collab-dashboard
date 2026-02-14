@@ -38,8 +38,10 @@ export default function BacklogPage() {
     <div className="space-y-6">
       {/* 페이지 헤더 */}
       <div>
-        <h2 className="text-xl font-bold">백로그</h2>
-        <p className="text-muted-foreground text-sm">스프린트를 계획하고 태스크를 관리합니다</p>
+        <h2 className="text-2xl font-bold">백로그</h2>
+        <p className="text-muted-foreground mt-1 text-sm">
+          스프린트를 계획하고 태스크를 관리합니다
+        </p>
       </div>
 
       <SprintHeader projectId={params.projectId} canManage={canManage} />
