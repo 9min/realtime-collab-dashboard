@@ -4,6 +4,7 @@ import { useMemo, useState } from 'react'
 import dynamic from 'next/dynamic'
 import { CalendarDays, CalendarRange } from 'lucide-react'
 
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { EmptyState } from '@/components/ui/empty-state'
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'
@@ -183,12 +184,11 @@ export function GanttChart({ projectId }: GanttChartProps) {
     return member?.profiles.full_name ?? member?.profiles.email ?? null
   }
 
-  const getMemberInitials = (assigneeId: string | null) => {
+  const getMemberProfile = (assigneeId: string | null) => {
     if (!assigneeId || !members) return null
     const member = members.find((m) => m.user_id === assigneeId)
-    const name = member?.profiles.full_name ?? member?.profiles.email
-    if (!name) return null
-    return name.slice(0, 2).toUpperCase()
+    if (!member) return null
+    return member.profiles
   }
 
   if (tasksLoading) {
@@ -351,11 +351,19 @@ export function GanttChart({ projectId }: GanttChartProps) {
                               )}
                             />
                             <span className="flex-1 truncate">{task.title}</span>
-                            {isDesktop && getMemberInitials(task.assignee_id) && (
-                              <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-blue-100 text-[9px] font-medium text-blue-700 dark:bg-blue-900/50 dark:text-blue-300">
-                                {getMemberInitials(task.assignee_id)}
-                              </span>
-                            )}
+                            {isDesktop &&
+                              (() => {
+                                const profile = getMemberProfile(task.assignee_id)
+                                if (!profile) return null
+                                return (
+                                  <Avatar className="h-5 w-5 shrink-0">
+                                    <AvatarImage src={profile.avatar_url ?? undefined} />
+                                    <AvatarFallback className="text-[9px]">
+                                      {(profile.full_name ?? profile.email).charAt(0).toUpperCase()}
+                                    </AvatarFallback>
+                                  </Avatar>
+                                )
+                              })()}
                           </div>
                         )
                       })}
