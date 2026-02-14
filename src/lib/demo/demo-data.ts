@@ -69,6 +69,15 @@ export const DEMO_PROFILES = [
     created_at: isoAgo(20),
     updated_at: NOW,
   },
+  {
+    id: DEMO_MEMBER_IDS.DAVID,
+    email: 'david@example.com',
+    full_name: '최도윤',
+    avatar_url: '/avatars/david.svg',
+    is_admin: false,
+    created_at: isoAgo(18),
+    updated_at: NOW,
+  },
 ]
 
 // ── Projects ──
@@ -126,6 +135,13 @@ export const DEMO_PROJECT_MEMBERS = [
     role: 'member' as const,
     joined_at: isoAgo(10),
   },
+  {
+    id: 'demo-pm-005',
+    project_id: DEMO_PROJECT_ID,
+    user_id: DEMO_MEMBER_IDS.DAVID,
+    role: 'member' as const,
+    joined_at: isoAgo(8),
+  },
 ]
 
 // ── Kanban Columns ──
@@ -173,7 +189,7 @@ export const DEMO_KANBAN_COLUMNS = [
   },
 ]
 
-// ── Tasks (10개) ──
+// ── Tasks (14개) ──
 
 export const DEMO_TASKS = [
   // To Do (4개)
@@ -530,6 +546,132 @@ Google 및 Kakao OAuth 소셜 로그인을 Supabase Auth로 구현 완료했습�
     created_at: isoAgo(12),
     updated_at: isoAgo(6),
   },
+  // 추가 태스크 (4개)
+  {
+    id: 'demo-task-011',
+    project_id: DEMO_PROJECT_ID,
+    column_id: DEMO_COLUMN_IDS.TODO,
+    sprint_id: DEMO_SPRINT_IDS.SPRINT_2,
+    estimated_minutes: 240,
+    title: '모바일 반응형 레이아웃 최적화',
+    description: `## 목표
+모바일 환경(768px 이하)에서 대시보드, 칸반 보드, 간트 차트 등 핵심 화면의 UX를 개선합니다.
+
+## 개선 대상
+| 화면 | 현재 문제 | 개선 방향 |
+|------|-----------|-----------|
+| 칸반 보드 | 컬럼이 좁아서 카드 내용 잘림 | 수평 스와이프로 컬럼 전환 |
+| 간트 차트 | 타임라인이 화면에 맞지 않음 | 주 단위 뷰 + 핀치 줌 |
+| 대시보드 | 위젯이 2열로 깨짐 | 1열 스택 레이아웃으로 전환 |
+| 사이드바 | 항상 열려 있음 | 햄버거 메뉴로 토글 전환 |
+
+## 기술 요구사항
+- Tailwind CSS \`md:\`, \`lg:\` 브레이크포인트 활용
+- \`useMediaQuery\` 훅으로 디바이스별 렌더링 분기
+- 터치 제스처 지원 (스와이프, 핀치 줌)
+- Lighthouse 모바일 성능 점수 90+ 유지`,
+    priority: 'medium' as const,
+    assignee_id: DEMO_MEMBER_IDS.DAVID,
+    due_date: daysFromNow(7),
+    position: 3,
+    created_by: DEMO_USER_ID,
+    created_at: isoAgo(4),
+    updated_at: isoAgo(4),
+  },
+  {
+    id: 'demo-task-012',
+    project_id: DEMO_PROJECT_ID,
+    column_id: DEMO_COLUMN_IDS.IN_PROGRESS,
+    sprint_id: DEMO_SPRINT_IDS.SPRINT_2,
+    estimated_minutes: 180,
+    title: '접근성(a11y) 감사 및 개선',
+    description: `## 목표
+WCAG 2.1 AA 기준을 충족하도록 전체 앱의 접근성을 점검하고 개선합니다.
+
+## 점검 항목
+1. **키보드 네비게이션** — 모든 인터랙티브 요소에 Tab/Enter/Escape로 접근 가능
+2. **스크린 리더** — aria-label, aria-describedby, role 속성 점검
+3. **색상 대비** — 텍스트/배경 대비 4.5:1 이상 (WCAG AA)
+4. **포커스 표시** — 포커스 링이 모든 버튼, 입력 필드에 표시
+5. **대체 텍스트** — 모든 이미지에 의미 있는 alt 속성
+
+## 진행 상황
+- [x] axe-core 자동 접근성 검사 설정
+- [x] 칸반 보드 키보드 DnD 지원 확인
+- [ ] 스크린 리더 테스트 (NVDA/VoiceOver)
+- [ ] 색상 대비 미달 요소 수정
+- [ ] 포커스 트랩 모달/다이얼로그 적용`,
+    priority: 'high' as const,
+    assignee_id: DEMO_MEMBER_IDS.DAVID,
+    due_date: daysFromNow(5),
+    position: 3,
+    created_by: DEMO_MEMBER_IDS.ALICE,
+    created_at: isoAgo(6),
+    updated_at: isoAgo(2),
+  },
+  {
+    id: 'demo-task-013',
+    project_id: DEMO_PROJECT_ID,
+    column_id: DEMO_COLUMN_IDS.TODO,
+    sprint_id: DEMO_SPRINT_IDS.SPRINT_3,
+    estimated_minutes: 360,
+    title: '성능 모니터링 대시보드 추가',
+    description: `## 목표
+프로젝트 관리자가 앱의 핵심 성능 지표를 실시간으로 확인할 수 있는 모니터링 위젯을 추가합니다.
+
+## 모니터링 지표
+- **페이지 로드 시간**: FCP, LCP, CLS (Core Web Vitals)
+- **API 응답 시간**: Supabase REST API 평균/P95 응답 시간
+- **실시간 연결 상태**: WebSocket 연결 수, 재연결 횟수
+- **에러율**: 클라이언트/서버 에러 발생 빈도
+
+## 기술 구현
+- \`web-vitals\` 라이브러리로 Core Web Vitals 수집
+- Recharts 기반 실시간 라인 차트 렌더링
+- 대시보드 위젯 시스템에 통합 (드래그 가능)
+- 임계값 초과 시 시각적 경고 표시 (빨간색 하이라이트)`,
+    priority: 'low' as const,
+    assignee_id: DEMO_MEMBER_IDS.ALICE,
+    due_date: daysFromNow(20),
+    position: 4,
+    created_by: DEMO_USER_ID,
+    created_at: isoAgo(3),
+    updated_at: isoAgo(3),
+  },
+  {
+    id: 'demo-task-014',
+    project_id: DEMO_PROJECT_ID,
+    column_id: DEMO_COLUMN_IDS.DISCUSSION,
+    sprint_id: DEMO_SPRINT_IDS.SPRINT_2,
+    estimated_minutes: null,
+    title: '태스크 일괄 편집 기능 논의',
+    description: `## 배경
+태스크가 많아지면서 하나씩 수정하는 방식이 비효율적이라는 피드백이 있었습니다.
+
+## 제안된 기능
+- 체크박스로 여러 태스크 선택
+- 선택된 태스크에 대해 일괄 작업 수행:
+  - 우선순위 일괄 변경
+  - 담당자 일괄 할당
+  - 컬럼(상태) 일괄 이동
+  - 라벨 일괄 추가/제거
+  - 스프린트 일괄 할당
+  - 일괄 삭제
+
+## 논의 포인트
+- **방안 A**: 칸반 보드 상단에 일괄 편집 툴바 표시 (선택 모드 전환)
+- **방안 B**: 백로그 뷰에서만 지원 (테이블 형태에서 체크박스 활용)
+- **방안 C**: 두 뷰 모두 지원 (UI 통일 필요)
+- 일괄 작업 시 Undo 지원 여부
+- 최대 선택 가능 태스크 수 제한 필요 여부`,
+    priority: 'medium' as const,
+    assignee_id: null,
+    due_date: null,
+    position: 1,
+    created_by: DEMO_MEMBER_IDS.DAVID,
+    created_at: isoAgo(2),
+    updated_at: isoAgo(2),
+  },
 ]
 
 // ── Labels ──
@@ -575,6 +717,10 @@ export const DEMO_TASK_LABELS = [
   { task_id: 'demo-task-005', label_id: DEMO_LABEL_IDS.FEATURE },
   { task_id: 'demo-task-006', label_id: DEMO_LABEL_IDS.FEATURE },
   { task_id: 'demo-task-007', label_id: DEMO_LABEL_IDS.FEATURE },
+  { task_id: 'demo-task-011', label_id: DEMO_LABEL_IDS.DESIGN },
+  { task_id: 'demo-task-012', label_id: DEMO_LABEL_IDS.BUG },
+  { task_id: 'demo-task-013', label_id: DEMO_LABEL_IDS.FEATURE },
+  { task_id: 'demo-task-014', label_id: DEMO_LABEL_IDS.FEATURE },
 ]
 
 // ── Subtasks ──
@@ -987,6 +1133,46 @@ export const DEMO_ACTIVITY_LOGS = [
     metadata: { title: '간트 차트 뷰 개발', field: 'priority', from: 'low', to: 'medium' },
     created_at: isoAgo(1),
   },
+  {
+    id: 'demo-log-009',
+    project_id: DEMO_PROJECT_ID,
+    user_id: DEMO_USER_ID,
+    action_type: 'create',
+    entity_type: 'task',
+    entity_id: 'demo-task-011',
+    metadata: { title: '모바일 반응형 레이아웃 최적화' },
+    created_at: isoAgo(4),
+  },
+  {
+    id: 'demo-log-010',
+    project_id: DEMO_PROJECT_ID,
+    user_id: DEMO_MEMBER_IDS.ALICE,
+    action_type: 'create',
+    entity_type: 'task',
+    entity_id: 'demo-task-012',
+    metadata: { title: '접근성(a11y) 감사 및 개선' },
+    created_at: isoAgo(6),
+  },
+  {
+    id: 'demo-log-011',
+    project_id: DEMO_PROJECT_ID,
+    user_id: DEMO_MEMBER_IDS.DAVID,
+    action_type: 'update',
+    entity_type: 'task',
+    entity_id: 'demo-task-012',
+    metadata: { title: '접근성(a11y) 감사 및 개선', field: 'column', from: '할 일', to: '진행 중' },
+    created_at: isoAgo(3),
+  },
+  {
+    id: 'demo-log-012',
+    project_id: DEMO_PROJECT_ID,
+    user_id: DEMO_MEMBER_IDS.DAVID,
+    action_type: 'create',
+    entity_type: 'task',
+    entity_id: 'demo-task-014',
+    metadata: { title: '태스크 일괄 편집 기능 논의' },
+    created_at: isoAgo(2),
+  },
 ]
 
 // ── Dashboard Layouts ──
@@ -1127,6 +1313,34 @@ export const DEMO_TASK_ASSIGNEES = [
     task_id: 'demo-task-004',
     user_id: DEMO_USER_ID,
     role: 'watcher',
+    created_at: isoAgo(3),
+  },
+  {
+    id: 'demo-ta-0000-000000000011',
+    task_id: 'demo-task-011',
+    user_id: DEMO_MEMBER_IDS.DAVID,
+    role: 'assignee',
+    created_at: isoAgo(4),
+  },
+  {
+    id: 'demo-ta-0000-000000000012',
+    task_id: 'demo-task-012',
+    user_id: DEMO_MEMBER_IDS.DAVID,
+    role: 'assignee',
+    created_at: isoAgo(6),
+  },
+  {
+    id: 'demo-ta-0000-000000000013',
+    task_id: 'demo-task-012',
+    user_id: DEMO_MEMBER_IDS.CHARLIE,
+    role: 'watcher',
+    created_at: isoAgo(5),
+  },
+  {
+    id: 'demo-ta-0000-000000000014',
+    task_id: 'demo-task-013',
+    user_id: DEMO_MEMBER_IDS.ALICE,
+    role: 'assignee',
     created_at: isoAgo(3),
   },
 ]
@@ -1380,6 +1594,30 @@ export const DEMO_CUSTOM_FIELD_VALUES = [
     value: '5',
     created_at: isoAgo(12),
     updated_at: isoAgo(12),
+  },
+  {
+    id: 'demo-cfv-011',
+    task_id: 'demo-task-011',
+    field_id: DEMO_CUSTOM_FIELD_IDS.STORY_POINTS,
+    value: '5',
+    created_at: isoAgo(4),
+    updated_at: isoAgo(4),
+  },
+  {
+    id: 'demo-cfv-012',
+    task_id: 'demo-task-012',
+    field_id: DEMO_CUSTOM_FIELD_IDS.STORY_POINTS,
+    value: '5',
+    created_at: isoAgo(6),
+    updated_at: isoAgo(6),
+  },
+  {
+    id: 'demo-cfv-013',
+    task_id: 'demo-task-013',
+    field_id: DEMO_CUSTOM_FIELD_IDS.STORY_POINTS,
+    value: '8',
+    created_at: isoAgo(3),
+    updated_at: isoAgo(3),
   },
 ]
 
