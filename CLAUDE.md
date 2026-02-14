@@ -339,9 +339,9 @@ chore: Vitest 커버리지 임계값 설정
 2. 개발 & 커밋    → 기능 구현 후 커밋 (type-check + lint 통과)
 3. 푸시           → git push -u origin <브랜치명> (사용자 명시 요청 시)
 4. PR 생성        → gh pr create (사용자 확인 후)
-5. 코드 리뷰      → PR diff 분석 + 셀프 리뷰 제공
-6. 머지           → 사용자 승인 후 gh pr merge
-7. 정리           → 로컬/원격 브랜치 삭제 + master 최신화
+5. 자동 머지 예약 → gh pr merge --auto --squash --delete-branch
+6. CI 통과        → 자동 squash merge + 원격 브랜치 자동 삭제
+7. 정리           → 로컬 브랜치 삭제 + master 최신화
 ```
 
 ### 브랜치 네이밍
@@ -361,22 +361,24 @@ style/<대상>         # 포맷팅/UI (예: style/settings-ux)
 - PR 제목: 커밋 메시지 형식과 동일 (`<type>: <subject>`)
 - PR 본문: Summary (변경 요약) + Test plan (검증 방법) 포함
 - PR 생성은 사용자가 변경 내용을 확인한 후에만 진행
-- CI 통과 필수 (Lint & Type Check, Unit Tests, Build) — 통과 후 수동 머지
+- CI 통과 필수 (Lint & Type Check, Unit Tests, Build) — 통과 시 자동 머지
 - 리뷰 스레드(코멘트)는 모두 resolve 후 머지 가능
+- PR 생성 후 `gh pr merge --auto --squash --delete-branch`로 자동 머지 예약
+- 머지 후 원격 브랜치 자동 삭제 (repo 설정: `delete_branch_on_merge: true`)
 
 ### 머지 후 정리
 ```bash
 git checkout master
 git pull origin master
-git branch -d <브랜치명>              # 로컬 브랜치 삭제
-git push origin --delete <브랜치명>   # 원격 브랜치 삭제 (gh pr merge --delete-branch 사용 시 자동)
+git branch -d <브랜치명>              # 로컬 브랜치 삭제 (원격은 자동 삭제됨)
 ```
 
 ### AI 동작
 - **모든 작업 요청 시** → 현재 브랜치 확인, master라면 feature 브랜치 생성 먼저 실행
 - 커밋 완료 후 → "PR 생성할까요?" 확인
-- PR 생성 후 → 변경 사항 요약 + 셀프 코드 리뷰 제공
-- 머지 승인 후 → 브랜치 정리 + master 최신화
+- PR 생성 후 → `gh pr merge --auto --squash --delete-branch` 실행 + 셀프 코드 리뷰 제공
+- CI 통과 시 → 자동 머지 + 원격 브랜치 삭제
+- 머지 확인 후 → 로컬 브랜치 정리 + master 최신화
 
 
 <claude-mem-context>
