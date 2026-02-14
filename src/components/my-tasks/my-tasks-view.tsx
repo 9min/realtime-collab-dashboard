@@ -121,23 +121,27 @@ export function MyTasksView() {
         })}
 
       {grouped && grouped.done.length > 0 && (
-        <Collapsible open={isDoneOpen} onOpenChange={setIsDoneOpen}>
-          <CollapsibleTrigger className="flex w-full items-center gap-2 text-sm font-semibold text-green-600 dark:text-green-400">
-            <CheckCircle2 className="h-4 w-4" />
-            완료됨
-            <span className="text-muted-foreground font-normal">({grouped.done.length})</span>
-            <ChevronDown
-              className={cn('ml-auto h-4 w-4 transition-transform', isDoneOpen && 'rotate-180')}
-            />
-          </CollapsibleTrigger>
-          <CollapsibleContent>
-            <div className="mt-3 space-y-2">
-              {grouped.done.map((task) => (
-                <MyTaskItem key={task.id} task={task} onTaskClick={setSelectedTask} isDone />
-              ))}
-            </div>
-          </CollapsibleContent>
-        </Collapsible>
+        <section>
+          <div className="border-t pt-4">
+            <Collapsible open={isDoneOpen} onOpenChange={setIsDoneOpen}>
+              <CollapsibleTrigger className="hover:bg-accent/50 flex w-full cursor-pointer items-center gap-2 rounded-md px-1 py-1 text-sm font-semibold text-green-600 transition-colors dark:text-green-400">
+                <CheckCircle2 className="h-4 w-4" />
+                완료됨
+                <span className="text-muted-foreground font-normal">({grouped.done.length})</span>
+                <ChevronDown
+                  className={cn('ml-auto h-4 w-4 transition-transform', isDoneOpen && 'rotate-180')}
+                />
+              </CollapsibleTrigger>
+              <CollapsibleContent>
+                <div className="mt-3 space-y-2">
+                  {grouped.done.map((task) => (
+                    <MyTaskItem key={task.id} task={task} onTaskClick={setSelectedTask} isDone />
+                  ))}
+                </div>
+              </CollapsibleContent>
+            </Collapsible>
+          </div>
+        </section>
       )}
 
       {selectedTask && (
