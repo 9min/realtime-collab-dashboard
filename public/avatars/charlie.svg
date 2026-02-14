@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#f59e0b"/>
+      <stop offset="100%" style="stop-color:#ef4444"/>
+    </linearGradient>
+  </defs>
+  <circle cx="64" cy="64" r="64" fill="url(#bg)"/>
+  <!-- face -->
+  <circle cx="64" cy="50" r="22" fill="#fde8d8"/>
+  <!-- hair - long wavy -->
+  <path d="M38 48 Q36 24 64 22 Q92 24 90 48 Q88 30 64 28 Q40 30 38 48Z" fill="#3d1f0a"/>
+  <path d="M38 48 Q34 56 36 68 Q38 56 40 48Z" fill="#3d1f0a"/>
+  <path d="M90 48 Q94 56 92 68 Q90 56 88 48Z" fill="#3d1f0a"/>
+  <!-- eyes -->
+  <ellipse cx="54" cy="48" rx="3.5" ry="4" fill="#1e1b3a"/>
+  <ellipse cx="74" cy="48" rx="3.5" ry="4" fill="#1e1b3a"/>
+  <!-- eyelashes -->
+  <path d="M50 44 L48 42" stroke="#1e1b3a" stroke-width="1.5" stroke-linecap="round"/>
+  <path d="M78 44 L80 42" stroke="#1e1b3a" stroke-width="1.5" stroke-linecap="round"/>
+  <!-- eye highlights -->
+  <circle cx="55.5" cy="46.5" r="1.5" fill="white"/>
+  <circle cx="75.5" cy="46.5" r="1.5" fill="white"/>
+  <!-- smile -->
+  <path d="M58 59 Q64 64 70 59" stroke="#d44e5c" stroke-width="2" fill="none" stroke-linecap="round"/>
+  <!-- blush -->
+  <circle cx="48" cy="56" r="4.5" fill="#f9a8a8" opacity="0.4"/>
+  <circle cx="80" cy="56" r="4.5" fill="#f9a8a8" opacity="0.4"/>
+  <!-- body -->
+  <path d="M36 128 Q36 88 64 84 Q92 88 92 128Z" fill="#fde8d8"/>
+  <!-- top -->
+  <path d="M42 128 Q42 94 64 90 Q86 94 86 128Z" fill="#fde68a"/>
+  <!-- neckline -->
+  <path d="M54 92 Q64 98 74 92" stroke="#fbbf24" stroke-width="2" fill="none" stroke-linecap="round"/>
+</svg>
