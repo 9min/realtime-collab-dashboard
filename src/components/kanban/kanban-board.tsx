@@ -421,9 +421,9 @@ export function KanbanBoard({ projectId }: KanbanBoardProps) {
 
   if (columnsLoading || tasksLoading) {
     return (
-      <div className="flex gap-4 overflow-hidden">
-        {Array.from({ length: 3 }).map((_, colIdx) => (
-          <div key={colIdx} className="w-72 shrink-0 rounded-lg border">
+      <div className="flex gap-4">
+        {Array.from({ length: 4 }).map((_, colIdx) => (
+          <div key={colIdx} className="min-w-0 flex-1 rounded-lg border">
             <div className="border-b px-3 py-2">
               <div className="bg-muted h-5 w-24 animate-pulse rounded" />
             </div>
@@ -479,7 +479,7 @@ export function KanbanBoard({ projectId }: KanbanBoardProps) {
             recurringTaskIds={recurringTaskIds}
           />
         ) : (
-          <div className="flex gap-4 overflow-x-auto pb-4">
+          <div className="flex gap-4 pb-4">
             {columnsWithTasks.map((column) => (
               <KanbanColumn
                 key={column.id}
@@ -510,7 +510,7 @@ export function KanbanBoard({ projectId }: KanbanBoardProps) {
             {canDeleteAll && (columns?.length ?? 0) < DEFAULT_COLUMNS.length && (
               <Button
                 variant="outline"
-                className="h-12 w-72 shrink-0 border-dashed"
+                className="h-12 min-w-0 flex-1 border-dashed"
                 onClick={handleAddColumn}
               >
                 <Plus className="mr-2 h-4 w-4" />
