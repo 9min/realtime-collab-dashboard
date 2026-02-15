@@ -339,9 +339,10 @@ chore: Vitest 커버리지 임계값 설정
 2. 개발 & 커밋    → 기능 구현 후 커밋 (type-check + lint 통과)
 3. 푸시           → git push -u origin <브랜치명> (사용자 명시 요청 시)
 4. PR 생성        → gh pr create (사용자 확인 후)
-5. 자동 머지 예약 → gh pr merge --auto --squash --delete-branch
-6. CI 통과        → 자동 squash merge + 원격 브랜치 자동 삭제
-7. 정리           → 로컬 브랜치 삭제 + master 최신화
+5. CodeRabbit 리뷰 → 자동 AI 코드 리뷰 (코멘트 확인 & resolve)
+6. 자동 머지 예약 → gh pr merge --auto --squash --delete-branch
+7. CI 통과        → 자동 squash merge + 원격 브랜치 자동 삭제
+8. 정리           → 로컬 브랜치 삭제 + master 최신화
 ```
 
 ### 브랜치 네이밍
@@ -362,9 +363,19 @@ style/<대상>         # 포맷팅/UI (예: style/settings-ux)
 - PR 본문: Summary (변경 요약) + Test plan (검증 방법) 포함
 - PR 생성은 사용자가 변경 내용을 확인한 후에만 진행
 - CI 통과 필수 (Lint & Type Check, Unit Tests, Build) — 통과 시 자동 머지
+- CodeRabbit AI 리뷰 코멘트는 모두 확인 후 resolve (필요시 코드 수정)
 - 리뷰 스레드(코멘트)는 모두 resolve 후 머지 가능
 - PR 생성 후 `gh pr merge --auto --squash --delete-branch`로 자동 머지 예약
 - 머지 후 원격 브랜치 자동 삭제 (repo 설정: `delete_branch_on_merge: true`)
+
+### CodeRabbit AI 리뷰
+- PR 생성 시 CodeRabbit이 자동으로 코드 리뷰 수행 (`.coderabbit.yaml` 설정 기반)
+- 리뷰 언어: 한국어 (`language: ko-KR`)
+- 프로필: `chill` (건설적인 피드백, 과도한 니트피킹 방지)
+- 경로별 맞춤 리뷰 규칙 적용 (컴포넌트, 훅, 쿼리, 스토어, 서비스, 테스트)
+- CodeRabbit 코멘트에 답글로 `@coderabbitai` 멘션하여 대화 가능
+- `@coderabbitai resolve` — 코멘트 일괄 resolve
+- `@coderabbitai summary` — PR 요약 재생성
 
 ### 머지 후 정리
 ```bash
@@ -377,6 +388,7 @@ git branch -d <브랜치명>              # 로컬 브랜치 삭제 (원격은 �
 - **모든 작업 요청 시** → 현재 브랜치 확인, master라면 feature 브랜치 생성 먼저 실행
 - 커밋 완료 후 → "PR 생성할까요?" 확인
 - PR 생성 후 → `gh pr merge --auto --squash --delete-branch` 실행 + 셀프 코드 리뷰 제공
+- CodeRabbit 리뷰 도착 시 → 피드백 확인 후 필요한 수정 제안
 - CI 통과 시 → 자동 머지 + 원격 브랜치 삭제
 - 머지 확인 후 → 로컬 브랜치 정리 + master 최신화
 
