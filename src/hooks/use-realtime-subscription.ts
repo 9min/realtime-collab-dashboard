@@ -9,7 +9,6 @@ import { useSupabase } from '@/components/providers/supabase-provider'
 import { CHANNEL_PREFIX } from '@/lib/constants'
 import { activityKeys } from '@/queries/use-activity-logs'
 import { automationKeys } from '@/queries/use-automations'
-import { chartKeys } from '@/queries/use-chart-data'
 import { columnKeys } from '@/queries/use-columns'
 import { commentKeys } from '@/queries/use-comments'
 import { customFieldKeys } from '@/queries/use-custom-fields'
@@ -103,9 +102,12 @@ export function useRealtimeSubscription(projectId: string) {
           },
           (payload) => {
             queryClient.invalidateQueries({ queryKey: taskKeys.list(projectId) })
-            queryClient.invalidateQueries({ queryKey: chartKeys.taskStatus(projectId) })
-            queryClient.invalidateQueries({ queryKey: chartKeys.weeklyProgress(projectId) })
-            queryClient.invalidateQueries({ queryKey: chartKeys.burndown(projectId) })
+            queryClient.invalidateQueries({
+              predicate: (query) => {
+                const key = query.queryKey
+                return key[0] === 'chart' && key[2] === projectId
+              },
+            })
             queryClient.invalidateQueries({ queryKey: activityKeys.list(projectId) })
 
             const record = payload.new as Record<string, unknown> | undefined

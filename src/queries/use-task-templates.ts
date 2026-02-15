@@ -34,7 +34,7 @@ export function useTaskTemplates(projectId: string) {
       if (result.error) throw new Error(result.error.message)
       return result.data
     },
-    refetchInterval: QUERY_CONFIG.REALTIME_POLL_INTERVAL,
+    refetchInterval: QUERY_CONFIG.TEMPLATE_POLL_INTERVAL,
   })
 }
 

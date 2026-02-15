@@ -13,7 +13,6 @@ import {
   addTaskLabel,
   removeTaskLabel,
 } from '@/services/label-service'
-import { QUERY_CONFIG } from '@/lib/constants'
 import type { InsertTables, UpdateTables, Tables } from '@/types/database'
 
 type Label = Tables<'labels'>
@@ -35,7 +34,6 @@ export function useLabels(projectId: string) {
       if (result.error) throw new Error(result.error.message)
       return result.data
     },
-    refetchInterval: QUERY_CONFIG.REALTIME_POLL_INTERVAL,
   })
 }
 
@@ -142,7 +140,6 @@ export function useTaskLabels(projectId: string) {
       if (result.error) throw new Error(result.error.message)
       return result.data
     },
-    refetchInterval: QUERY_CONFIG.REALTIME_POLL_INTERVAL,
   })
 }
 

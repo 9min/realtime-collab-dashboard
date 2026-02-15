@@ -1,11 +1,12 @@
 'use client'
 
+import { memo } from 'react'
 import { Draggable } from '@hello-pangea/dnd'
 import { Calendar, Lock } from 'lucide-react'
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { PRIORITY_LABELS, PRIORITY_DOT_COLORS } from '@/lib/constants'
 import { cn } from '@/lib/utils'
 import type { Tables } from '@/types/database'
@@ -34,7 +35,7 @@ interface TaskCardProps {
   taskAssignees?: TaskAssigneeWithProfile[]
 }
 
-export function TaskCard({
+export const TaskCard = memo(function TaskCard({
   task,
   index,
   onClick,
@@ -88,19 +89,17 @@ export function TaskCard({
               )}
               <span className="flex min-w-0 items-center gap-1 text-sm leading-snug font-medium">
                 {isBlocked && (
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <span className="inline-flex shrink-0 items-center gap-0.5 rounded bg-amber-100 px-1 py-0.5 text-[10px] font-medium text-amber-700 dark:bg-amber-900/40 dark:text-amber-400">
-                          <Lock className="h-3 w-3" />
-                          대기 중
-                        </span>
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p>선행 작업 완료 후 진행 가능</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <span className="inline-flex shrink-0 items-center gap-0.5 rounded bg-amber-100 px-1 py-0.5 text-[10px] font-medium text-amber-700 dark:bg-amber-900/40 dark:text-amber-400">
+                        <Lock className="h-3 w-3" />
+                        대기 중
+                      </span>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>선행 작업 완료 후 진행 가능</p>
+                    </TooltipContent>
+                  </Tooltip>
                 )}
                 <RecurrenceBadge isRecurring={isRecurring} />
                 <span className="break-words">{task.title}</span>
@@ -136,21 +135,19 @@ export function TaskCard({
                 </div>
               ) : (
                 assignee && (
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Avatar className="ml-auto h-6 w-6">
-                          <AvatarImage src={assignee.avatar_url ?? undefined} />
-                          <AvatarFallback className="text-[10px]">
-                            {(assignee.full_name ?? assignee.email).charAt(0).toUpperCase()}
-                          </AvatarFallback>
-                        </Avatar>
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p>{assignee.full_name ?? assignee.email}</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Avatar className="ml-auto h-6 w-6">
+                        <AvatarImage src={assignee.avatar_url ?? undefined} />
+                        <AvatarFallback className="text-[10px]">
+                          {(assignee.full_name ?? assignee.email).charAt(0).toUpperCase()}
+                        </AvatarFallback>
+                      </Avatar>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>{assignee.full_name ?? assignee.email}</p>
+                    </TooltipContent>
+                  </Tooltip>
                 )
               )}
             </CardContent>
@@ -159,4 +156,4 @@ export function TaskCard({
       )}
     </Draggable>
   )
-}
+})

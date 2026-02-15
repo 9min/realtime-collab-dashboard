@@ -1,5 +1,6 @@
 'use client'
 
+import { memo } from 'react'
 import dynamic from 'next/dynamic'
 import { X, GripVertical } from 'lucide-react'
 
@@ -59,7 +60,13 @@ interface WidgetCardProps {
   onRemove: (widgetId: string) => void
 }
 
-export function WidgetCard({ widgetId, type, projectId, isEditMode, onRemove }: WidgetCardProps) {
+export const WidgetCard = memo(function WidgetCard({
+  widgetId,
+  type,
+  projectId,
+  isEditMode,
+  onRemove,
+}: WidgetCardProps) {
   const config = WIDGET_REGISTRY.find((w) => w.type === type)
   const title = config?.title ?? '위젯'
 
@@ -91,7 +98,7 @@ export function WidgetCard({ widgetId, type, projectId, isEditMode, onRemove }: 
       </CardContent>
     </Card>
   )
-}
+})
 
 // 위젯 타입에 따라 적절한 컴포넌트 렌더링
 function WidgetContent({ type, projectId }: { type: WidgetType; projectId: string }) {

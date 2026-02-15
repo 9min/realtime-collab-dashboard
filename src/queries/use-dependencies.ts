@@ -4,7 +4,6 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 
 import { useSupabase } from '@/components/providers/supabase-provider'
-import { QUERY_CONFIG } from '@/lib/constants'
 import {
   getDependencies,
   createDependency,
@@ -29,7 +28,6 @@ export function useDependencies(projectId: string) {
       if (result.error) throw new Error(result.error.message)
       return result.data
     },
-    refetchInterval: QUERY_CONFIG.REALTIME_POLL_INTERVAL,
   })
 }
 
