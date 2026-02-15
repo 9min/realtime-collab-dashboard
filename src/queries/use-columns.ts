@@ -10,7 +10,6 @@ import {
   deleteColumn,
   reorderColumns,
 } from '@/services/column-service'
-import { QUERY_CONFIG } from '@/lib/constants'
 import type { InsertTables, UpdateTables } from '@/types/database'
 
 export const columnKeys = {
@@ -28,7 +27,6 @@ export function useColumns(projectId: string) {
       if (result.error) throw new Error(result.error.message)
       return result.data
     },
-    refetchInterval: QUERY_CONFIG.REALTIME_POLL_INTERVAL,
   })
 }
 

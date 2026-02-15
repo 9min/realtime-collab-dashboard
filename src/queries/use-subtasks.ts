@@ -10,7 +10,6 @@ import {
   updateSubtask,
   deleteSubtask,
 } from '@/services/subtask-service'
-import { QUERY_CONFIG } from '@/lib/constants'
 import type { InsertTables, UpdateTables, Tables } from '@/types/database'
 
 type Subtask = Tables<'subtasks'>
@@ -30,7 +29,6 @@ export function useSubtasks(taskId: string) {
       if (result.error) throw new Error(result.error.message)
       return result.data
     },
-    refetchInterval: QUERY_CONFIG.REALTIME_POLL_INTERVAL,
   })
 }
 

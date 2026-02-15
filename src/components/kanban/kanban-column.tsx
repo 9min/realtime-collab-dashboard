@@ -1,6 +1,6 @@
 'use client'
 
-import { useRef, useState } from 'react'
+import { memo, useRef, useState } from 'react'
 import { Droppable } from '@hello-pangea/dnd'
 import { CheckCircle2, Gauge, MoreHorizontal, Pencil, Plus, Trash2 } from 'lucide-react'
 
@@ -54,7 +54,7 @@ interface KanbanColumnProps {
   taskAssigneeMap?: Map<string, TaskAssigneeWithProfile[]>
 }
 
-export function KanbanColumn({
+export const KanbanColumn = memo(function KanbanColumn({
   column,
   tasks,
   onAddTask,
@@ -286,4 +286,4 @@ export function KanbanColumn({
       </Droppable>
     </div>
   )
-}
+})

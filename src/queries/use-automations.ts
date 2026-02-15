@@ -12,7 +12,6 @@ import {
   toggleAutomationRule,
   getAutomationExecutions,
 } from '@/services/automation-service'
-import { QUERY_CONFIG } from '@/lib/constants'
 import type {
   AutomationRule,
   CreateAutomationRuleInput,
@@ -35,7 +34,6 @@ export function useAutomationRules(projectId: string) {
       if (result.error) throw new Error(result.error.message)
       return result.data
     },
-    refetchInterval: QUERY_CONFIG.REALTIME_POLL_INTERVAL,
   })
 }
 

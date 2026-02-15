@@ -80,6 +80,7 @@ export const QUERY_CONFIG = {
   STALE_TIME: 1000 * 60 * 5, // 5분
   GC_TIME: 1000 * 60 * 30, // 30분
   REALTIME_POLL_INTERVAL: 1000 * 5, // 5초 — Realtime WebSocket 폴백용
+  TEMPLATE_POLL_INTERVAL: 1000 * 30, // 30초 — Realtime 구독 없는 리소스용
 } as const
 
 // 페이지네이션

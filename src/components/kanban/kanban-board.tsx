@@ -9,6 +9,7 @@ import { Plus } from 'lucide-react'
 import { toast } from 'sonner'
 
 import { Button } from '@/components/ui/button'
+import { TooltipProvider } from '@/components/ui/tooltip'
 import { useAuth } from '@/hooks/use-auth'
 import {
   DEFAULT_COLUMNS,
@@ -464,62 +465,64 @@ export function KanbanBoard({ projectId }: KanbanBoardProps) {
         </div>
       )}
 
-      <DragDropContext onDragEnd={handleDragEnd}>
-        {swimlaneGroups ? (
-          <SwimlaneBoard
-            groups={swimlaneGroups}
-            columns={columns ?? []}
-            onTaskClick={setSelectedTask}
-            canMoveAll={canDeleteAll}
-            currentUserId={user?.id}
-            members={members}
-            labels={projectFeatures.feature_labels ? labels : undefined}
-            taskLabelMap={projectFeatures.feature_labels ? taskLabelMap : new Map()}
-            blockedTaskIds={blockedTaskIds}
-            recurringTaskIds={recurringTaskIds}
-          />
-        ) : (
-          <div className="flex gap-4 pb-4">
-            {columnsWithTasks.map((column) => (
-              <KanbanColumn
-                key={column.id}
-                column={column}
-                tasks={column.tasks}
-                onAddTask={setCreateTaskColumnId}
-                onTaskClick={setSelectedTask}
-                onRenameColumn={handleRenameColumn}
-                onDeleteColumn={handleDeleteColumn}
-                onSetWipLimit={canDeleteAll ? setWipLimitColumnId : undefined}
-                onToggleDone={canDeleteAll ? handleToggleDone : undefined}
-                canEdit={canEdit}
-                canDeleteColumn={canDeleteAll}
-                canMoveAll={canDeleteAll}
-                currentUserId={user?.id}
-                members={members}
-                labels={projectFeatures.feature_labels ? labels : undefined}
-                taskLabelMap={projectFeatures.feature_labels ? taskLabelMap : new Map()}
-                blockedTaskIds={blockedTaskIds}
-                recurringTaskIds={recurringTaskIds}
-                taskAssigneeMap={
-                  projectFeatures.feature_multi_assignees !== false ? taskAssigneeMap : undefined
-                }
-              />
-            ))}
+      <TooltipProvider>
+        <DragDropContext onDragEnd={handleDragEnd}>
+          {swimlaneGroups ? (
+            <SwimlaneBoard
+              groups={swimlaneGroups}
+              columns={columns ?? []}
+              onTaskClick={setSelectedTask}
+              canMoveAll={canDeleteAll}
+              currentUserId={user?.id}
+              members={members}
+              labels={projectFeatures.feature_labels ? labels : undefined}
+              taskLabelMap={projectFeatures.feature_labels ? taskLabelMap : new Map()}
+              blockedTaskIds={blockedTaskIds}
+              recurringTaskIds={recurringTaskIds}
+            />
+          ) : (
+            <div className="flex gap-4 pb-4">
+              {columnsWithTasks.map((column) => (
+                <KanbanColumn
+                  key={column.id}
+                  column={column}
+                  tasks={column.tasks}
+                  onAddTask={setCreateTaskColumnId}
+                  onTaskClick={setSelectedTask}
+                  onRenameColumn={handleRenameColumn}
+                  onDeleteColumn={handleDeleteColumn}
+                  onSetWipLimit={canDeleteAll ? setWipLimitColumnId : undefined}
+                  onToggleDone={canDeleteAll ? handleToggleDone : undefined}
+                  canEdit={canEdit}
+                  canDeleteColumn={canDeleteAll}
+                  canMoveAll={canDeleteAll}
+                  currentUserId={user?.id}
+                  members={members}
+                  labels={projectFeatures.feature_labels ? labels : undefined}
+                  taskLabelMap={projectFeatures.feature_labels ? taskLabelMap : new Map()}
+                  blockedTaskIds={blockedTaskIds}
+                  recurringTaskIds={recurringTaskIds}
+                  taskAssigneeMap={
+                    projectFeatures.feature_multi_assignees !== false ? taskAssigneeMap : undefined
+                  }
+                />
+              ))}
 
-            {/* 컬럼 추가 버튼 — owner/admin만, 기본 컬럼 수 미만일 때만 표시 */}
-            {canDeleteAll && (columns?.length ?? 0) < DEFAULT_COLUMNS.length && (
-              <Button
-                variant="outline"
-                className="h-12 min-w-0 flex-1 border-dashed"
-                onClick={handleAddColumn}
-              >
-                <Plus className="mr-2 h-4 w-4" />
-                컬럼 추가
-              </Button>
-            )}
-          </div>
-        )}
-      </DragDropContext>
+              {/* 컬럼 추가 버튼 — owner/admin만, 기본 컬럼 수 미만일 때만 표시 */}
+              {canDeleteAll && (columns?.length ?? 0) < DEFAULT_COLUMNS.length && (
+                <Button
+                  variant="outline"
+                  className="h-12 min-w-0 flex-1 border-dashed"
+                  onClick={handleAddColumn}
+                >
+                  <Plus className="mr-2 h-4 w-4" />
+                  컬럼 추가
+                </Button>
+              )}
+            </div>
+          )}
+        </DragDropContext>
+      </TooltipProvider>
 
       {/* 태스크 생성 다이얼로그 */}
       <CreateTaskForm

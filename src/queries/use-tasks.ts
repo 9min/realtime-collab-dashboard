@@ -14,7 +14,6 @@ import {
   moveTask,
 } from '@/services/task-service'
 import { chartKeys } from '@/queries/use-chart-data'
-import { QUERY_CONFIG } from '@/lib/constants'
 import { DEMO_COOKIE_NAME } from '@/lib/demo/constants'
 import type { InsertTables, UpdateTables } from '@/types/database'
 import type { Task, MoveTaskPayload } from '@/types/kanban'
@@ -47,7 +46,6 @@ export function useTasks(projectId: string) {
       if (result.error) throw new Error(result.error.message)
       return result.data
     },
-    refetchInterval: QUERY_CONFIG.REALTIME_POLL_INTERVAL,
   })
 }
 

@@ -12,7 +12,6 @@ import {
   getTaskCustomFieldValues,
   setTaskCustomFieldValue,
 } from '@/services/custom-field-service'
-import { QUERY_CONFIG } from '@/lib/constants'
 import type {
   CustomFieldDefinition,
   TaskCustomFieldValue,
@@ -36,7 +35,6 @@ export function useCustomFieldDefinitions(projectId: string) {
       if (result.error) throw new Error(result.error.message)
       return result.data
     },
-    refetchInterval: QUERY_CONFIG.REALTIME_POLL_INTERVAL,
   })
 }
 
@@ -149,7 +147,6 @@ export function useTaskCustomFieldValues(projectId: string) {
       if (result.error) throw new Error(result.error.message)
       return result.data
     },
-    refetchInterval: QUERY_CONFIG.REALTIME_POLL_INTERVAL,
   })
 }
 

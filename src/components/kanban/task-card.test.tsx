@@ -2,6 +2,7 @@ import { describe, it, expect, vi } from 'vitest'
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
+import { TooltipProvider } from '@/components/ui/tooltip'
 import { renderWithProviders } from '@/__tests__/helpers/render-with-providers'
 import { mockTasks, mockLabels, MOCK_USER_ID, MOCK_USER_ID_2 } from '@/__tests__/helpers/fixtures'
 
@@ -103,7 +104,9 @@ describe('TaskCard', () => {
 
   it('담당자 아바타를 렌더링한다', () => {
     renderWithProviders(
-      <TaskCard task={mockTasks[0]} index={0} onClick={onClick} members={mockMembers} />,
+      <TooltipProvider>
+        <TaskCard task={mockTasks[0]} index={0} onClick={onClick} members={mockMembers} />
+      </TooltipProvider>,
     )
     // Task 1의 assignee_id = MOCK_USER_ID → 'Test User' → fallback 'T'
     expect(screen.getByText('T')).toBeInTheDocument()

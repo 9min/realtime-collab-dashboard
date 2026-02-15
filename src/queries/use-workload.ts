@@ -4,8 +4,6 @@ import { useQuery } from '@tanstack/react-query'
 
 import { useSupabase } from '@/components/providers/supabase-provider'
 import { getWorkload } from '@/services/workload-service'
-import { QUERY_CONFIG } from '@/lib/constants'
-
 export const workloadKeys = {
   detail: (projectId: string) => ['workload', projectId] as const,
 }
@@ -21,6 +19,5 @@ export function useWorkload(projectId: string) {
       if (result.error) throw new Error(result.error.message)
       return result.data
     },
-    refetchInterval: QUERY_CONFIG.REALTIME_POLL_INTERVAL,
   })
 }
