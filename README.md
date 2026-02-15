@@ -123,3 +123,7 @@ pnpm test:e2e         # E2E 테스트 (Playwright)
 
 - [PRD](./docs/PRD.md) - 제품 요구사항
 - [Architecture](./docs/ARCHITECTURE.md) - 기술 설계
+
+## License
+
+Copyright (c) 2026 9min. All Rights Reserved. See [LICENSE](./LICENSE) for details.
