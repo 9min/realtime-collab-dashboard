@@ -8,6 +8,7 @@ import type { RealtimeChannel } from '@supabase/supabase-js'
 import { useSupabase } from '@/components/providers/supabase-provider'
 import { CHANNEL_PREFIX } from '@/lib/constants'
 import { activityKeys } from '@/queries/use-activity-logs'
+import { chartKeys } from '@/queries/use-chart-data'
 import { automationKeys } from '@/queries/use-automations'
 import { columnKeys } from '@/queries/use-columns'
 import { commentKeys } from '@/queries/use-comments'
@@ -103,10 +104,7 @@ export function useRealtimeSubscription(projectId: string) {
           (payload) => {
             queryClient.invalidateQueries({ queryKey: taskKeys.list(projectId) })
             queryClient.invalidateQueries({
-              predicate: (query) => {
-                const key = query.queryKey
-                return key[0] === 'chart' && key[2] === projectId
-              },
+              predicate: (query) => chartKeys.isProjectChart(query.queryKey, projectId),
             })
             queryClient.invalidateQueries({ queryKey: activityKeys.list(projectId) })
 
