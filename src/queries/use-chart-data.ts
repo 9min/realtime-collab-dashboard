@@ -10,6 +10,9 @@ export const chartKeys = {
   taskStatus: (projectId: string) => ['chart', 'task-status', projectId] as const,
   weeklyProgress: (projectId: string) => ['chart', 'weekly-progress', projectId] as const,
   burndown: (projectId: string) => ['chart', 'burndown', projectId] as const,
+  /** 주어진 queryKey가 해당 프로젝트의 chart 쿼리인지 판별 */
+  isProjectChart: (queryKey: readonly unknown[], projectId: string) =>
+    queryKey[0] === 'chart' && queryKey[2] === projectId,
 }
 
 export function useTaskStatusChart(projectId: string) {
