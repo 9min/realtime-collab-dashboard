@@ -182,7 +182,7 @@ src/
 │   ├── maintenance.ts                # 점검 모드 설정 로드
 │   ├── task-filter.ts                # 태스크 필터링 로직
 │   ├── mention-utils.ts              # @멘션 파싱/감지
-│   ├── gantt-utils.ts                # 간트 차트 계산
+│   ├── gantt-utils.ts                # 간트 차트 계산 + 날짜 범위 포맷 (formatDateRange)
 │   ├── activity-constants.ts         # 활동 로그 상수
 │   ├── activity-filter.ts            # 활동 필터링 로직
 │   ├── api-middleware.ts             # API 미들웨어 유틸
@@ -455,10 +455,12 @@ CREATE TABLE tasks (
   priority task_priority NOT NULL DEFAULT 'medium',
   assignee_id UUID REFERENCES profiles(id) ON DELETE SET NULL,
   position INTEGER NOT NULL,
+  start_date DATE,
   due_date DATE,
   created_by UUID NOT NULL REFERENCES profiles(id),
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
-  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  CONSTRAINT chk_start_before_due CHECK (start_date IS NULL OR due_date IS NULL OR start_date <= due_date)
 );
 
 CREATE INDEX idx_tasks_column ON tasks(column_id);

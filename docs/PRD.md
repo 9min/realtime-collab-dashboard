@@ -26,7 +26,7 @@
 | Time to Interactive (TTI) | < 3s | Web Vitals |
 | Realtime Latency | < 500ms | Supabase Realtime 측정 |
 | Test Coverage | 80%+ | Vitest coverage report |
-| Total Tests | 800+ | Vitest (단위) + Playwright (E2E) |
+| Total Tests | 840+ | Vitest (단위) + Playwright (E2E) |
 | Accessibility | WCAG 2.1 AA | axe-core 자동 검사 |
 | API Rate Limit | 60 req/min | Sliding Window 측정 |
 | Cache Hit Rate | 70%+ | Redis hit/miss 카운터 |
@@ -79,7 +79,7 @@ When 태스크 카드를 다른 컬럼으로 드래그하면
 Then 태스크 상태가 변경되고 다른 사용자에게 실시간 반영된다
 
 Given 사용자가 새 태스크를 생성할 때
-When 제목, 설명, 우선순위, 담당자, 마감일을 입력하면
+When 제목, 설명, 우선순위, 담당자, 시작일, 마감일을 입력하면
 Then 해당 컬럼에 태스크가 추가된다
 ```
 
@@ -133,12 +133,12 @@ Then 해당 팀원에게 알림이 전송된다
 ### US-10: Timeline Views
 ```
 Given 사용자가 프로젝트의 간트 차트를 볼 때
-When 태스크에 마감일이 설정되어 있으면
-Then 타임라인 바 형태로 일정이 시각화된다
+When 태스크에 시작일/마감일이 설정되어 있으면
+Then 타임라인 바 형태로 일정이 시각화되고, 툴팁에 시작일/마감일이 표시된다
 
 Given 사용자가 캘린더 뷰를 볼 때
 When 월별 캘린더가 표시되면
-Then 마감일 기준으로 태스크가 달력에 배치된다
+Then 시작일~마감일 범위 바와 마감일 기준 태스크가 달력에 배치된다
 ```
 
 ### US-11: Global Search
@@ -252,7 +252,7 @@ Then 폴링 폴백으로 전환되어 데이터 동기화가 유지된다
 - **컬럼 최대 4개 제한**
 - **완료 컬럼 플래그**: `is_done_column` — 선행 작업 완료 판정 기준
 - **태스크 CRUD**: 생성, 조회, 수정, 삭제
-- **태스크 속성**: 제목, 설명 (Markdown), 우선순위 (low/medium/high/urgent), 담당자, 마감일
+- **태스크 속성**: 제목, 설명 (Markdown), 우선순위 (low/medium/high/urgent), 담당자, 시작일, 마감일
 - **Drag & Drop**: 컬럼 간 태스크 이동, 컬럼 내 순서 변경, 컬럼 순서 변경
 - **태스크 카드 전체 영역 드래그 가능**
 - **삭제 시 AlertDialog 컨펌 통일**
@@ -263,7 +263,7 @@ Then 폴링 폴백으로 전환되어 데이터 동기화가 유지된다
   - [x] 태스크 CRUD
   - [x] DnD로 태스크 이동 (컬럼 간 + 컬럼 내)
   - [x] 컬럼 순서 DnD
-  - [x] 우선순위/담당자/마감일 설정
+  - [x] 우선순위/담당자/시작일/마감일 설정
   - [x] Markdown 설명 지원
 
 #### F5. Realtime Sync ✅
@@ -403,7 +403,7 @@ Then 폴링 폴백으로 전환되어 데이터 동기화가 유지된다
 - **스윔레인**: None / By Assignee / By Priority
 - **WIP 제한**: 컬럼별 진행 중 태스크 수 제한
 - **일괄 작업**: 태스크 일괄 삭제
-- **내보내기**: CSV 형식 태스크 내보내기
+- **내보내기**: CSV 형식 태스크 내보내기 (시작일 컬럼 포함)
 - **Acceptance Criteria**:
   - [x] 다중 필터 조합
   - [x] 스윔레인 뷰 전환
@@ -416,23 +416,29 @@ Then 폴링 폴백으로 전환되어 데이터 동기화가 유지된다
 ### Phase 4: Views & Navigation — ✅ 구현 완료
 
 #### F17. Gantt Chart ✅
-- **타임라인 바**: 태스크별 시작일~마감일 시각화
+- **타임라인 바**: 태스크별 시작일~마감일 시각화 (시작일 미설정 시 생성일 기준)
+- **툴팁**: 태스크명, 우선순위, 담당자, 시작일, 마감일 표시
 - **의존성 화살표**: 태스크 간 의존 관계 화살표 표시
 - **날짜 헤더**: 월 단위 기반 컬럼 (실제 월 기준)
 - **Dynamic Import**: 코드 스플리팅으로 초기 번들 최적화
 - **Acceptance Criteria**:
-  - [x] 타임라인 바 렌더링
+  - [x] 타임라인 바 렌더링 (시작일~마감일)
+  - [x] 툴팁에 시작일/마감일 표시
   - [x] 의존성 화살표
   - [x] 날짜 네비게이션
   - [x] 태스크 상세 연결
 
 #### F18. Calendar View ✅
 - **월별 캘린더 그리드**: 마감일 기준 태스크 배치
+- **날짜 범위 바**: 시작일~마감일이 설정된 태스크를 범위 바로 시각화 (우선순위별 색상)
+- **주간 뷰**: 주 단위 캘린더 전환
 - **월 네비게이션**: 이전/다음 달 이동
 - **태스크 카운트**: 일별 태스크 수 표시
 - **Acceptance Criteria**:
   - [x] 월별 캘린더 렌더링
   - [x] 마감일 기준 태스크 표시
+  - [x] 시작일~마감일 범위 바 표시
+  - [x] 월/주 뷰 전환
   - [x] 월 네비게이션
   - [x] 태스크 상세 연결
 
@@ -776,9 +782,11 @@ Then 폴링 폴백으로 전환되어 데이터 동기화가 유지된다
 
 #### F44. My Tasks (내 태스크) ✅
 - **전체 프로젝트 태스크 통합 조회**: 사용자에게 할당된 모든 태스크를 한 화면에서 확인
+- **날짜 범위 표시**: 시작일~마감일 범위 표시 (시작일만, 마감일만, 둘 다 있는 경우 처리)
 - **경로**: `/my-tasks`
 - **Acceptance Criteria**:
   - [x] 전체 프로젝트 내 태스크 통합 목록
+  - [x] 시작일~마감일 날짜 범위 표시
 
 #### F45. Kanban Filter Presets (칸반 필터 프리셋) ✅
 - **필터 자동 저장**: 칸반 보드 필터 설정을 프로젝트별/유저별 DB에 영구 저장
@@ -1015,7 +1023,7 @@ Then 폴링 폴백으로 전환되어 데이터 동기화가 유지된다
 | `projects` | 프로젝트 (+ feature flag 컬럼) |
 | `project_members` | 프로젝트 멤버십 (N:N) |
 | `kanban_columns` | 칸반 컬럼 (+ is_done_column, wip_limit) |
-| `tasks` | 태스크 |
+| `tasks` | 태스크 (+ start_date 컬럼) |
 | `task_comments` | 태스크 댓글 |
 | `task_attachments` | 파일 첨부 |
 | `labels` | 프로젝트 라벨 |
@@ -1045,8 +1053,8 @@ Then 폴링 폴백으로 전환되어 데이터 동기화가 유지된다
 - 프로젝트 스코프 기반 정책
 - 헬퍼 함수: `is_project_member()`, `has_project_role()`, `is_admin()`
 
-### Migrations (48개)
-001~048 순차 마이그레이션으로 스키마 관리
+### Migrations (49개)
+001~049 순차 마이그레이션으로 스키마 관리
 
 ---
 
