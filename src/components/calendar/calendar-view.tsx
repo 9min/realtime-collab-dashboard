@@ -26,8 +26,8 @@ interface CalendarViewProps {
 function groupTasksByDate(tasks: Task[]): Map<string, Task[]> {
   const map = new Map<string, Task[]>()
   for (const task of tasks) {
-    if (!task.due_date) continue
-    const key = task.due_date // YYYY-MM-DD format
+    const key = task.due_date ?? task.start_date
+    if (!key) continue
     const list = map.get(key) ?? []
     list.push(task)
     map.set(key, list)
@@ -61,7 +61,11 @@ export function CalendarView({ projectId }: CalendarViewProps) {
     <div className="space-y-4">
       <CalendarHeader />
       <div className="bg-card overflow-hidden rounded-lg border shadow-sm">
-        <CalendarGrid tasksByDate={tasksByDate} onTaskClick={setSelectedTask} />
+        <CalendarGrid
+          tasksByDate={tasksByDate}
+          allTasks={tasks ?? []}
+          onTaskClick={setSelectedTask}
+        />
       </div>
 
       <TaskDetailDialog

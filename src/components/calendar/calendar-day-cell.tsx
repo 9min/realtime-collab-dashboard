@@ -4,6 +4,8 @@ import { PRIORITY_DOT_COLORS } from '@/lib/constants'
 import { cn } from '@/lib/utils'
 import type { Task } from '@/types/kanban'
 
+import { RANGE_LANE_HEIGHT } from './calendar-range-bar'
+
 const MAX_VISIBLE_TASKS = 3
 
 interface CalendarDayCellProps {
@@ -12,6 +14,7 @@ interface CalendarDayCellProps {
   isToday: boolean
   tasks: Task[]
   onTaskClick: (task: Task) => void
+  rangeLaneCount?: number
 }
 
 export function CalendarDayCell({
@@ -20,6 +23,7 @@ export function CalendarDayCell({
   isToday,
   tasks,
   onTaskClick,
+  rangeLaneCount = 0,
 }: CalendarDayCellProps) {
   const visibleTasks = tasks.slice(0, MAX_VISIBLE_TASKS)
   const remainingCount = tasks.length - MAX_VISIBLE_TASKS
@@ -41,6 +45,11 @@ export function CalendarDayCell({
       >
         {date.getDate()}
       </span>
+
+      {/* 범위 바가 배치되는 영역 확보 */}
+      {rangeLaneCount > 0 && (
+        <div style={{ height: `${rangeLaneCount * RANGE_LANE_HEIGHT + 4}px` }} />
+      )}
 
       <div className="mt-0.5 space-y-0.5">
         {visibleTasks.map((task) => (
