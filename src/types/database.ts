@@ -975,6 +975,7 @@ export interface Database {
           assignee_id: string | null
           position: number
           due_date: string | null
+          start_date: string | null
           sprint_id: string | null
           estimated_minutes: number | null
           created_by: string
@@ -991,6 +992,7 @@ export interface Database {
           assignee_id?: string | null
           position: number
           due_date?: string | null
+          start_date?: string | null
           sprint_id?: string | null
           estimated_minutes?: number | null
           created_by: string
@@ -1005,6 +1007,7 @@ export interface Database {
           assignee_id?: string | null
           position?: number
           due_date?: string | null
+          start_date?: string | null
           sprint_id?: string | null
           estimated_minutes?: number | null
           updated_at?: string

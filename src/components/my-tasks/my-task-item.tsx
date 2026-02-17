@@ -39,20 +39,21 @@ export function MyTaskItem({ task, onTaskClick, isDone }: MyTaskItemProps) {
         <Badge variant="secondary" className={cn('text-xs', PRIORITY_BADGE_STYLES[task.priority])}>
           {PRIORITY_LABELS[task.priority]}
         </Badge>
-        {task.due_date && (
+        {(task.start_date || task.due_date) && (
           <span
             className={cn(
               'flex items-center gap-1 text-xs',
-              task.due_date < new Date().toISOString().split('T')[0]
+              task.due_date && task.due_date < new Date().toISOString().split('T')[0]
                 ? 'font-medium text-rose-500'
                 : 'text-muted-foreground',
             )}
           >
             <Calendar className="h-3 w-3" />
-            {new Date(task.due_date).toLocaleDateString('ko-KR', {
-              month: 'short',
-              day: 'numeric',
-            })}
+            {task.start_date && task.due_date
+              ? `${new Date(task.start_date).toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' })} ~ ${new Date(task.due_date).toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' })}`
+              : task.start_date
+                ? `${new Date(task.start_date).toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' })} ~`
+                : `~ ${new Date(task.due_date!).toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' })}`}
           </span>
         )}
       </div>

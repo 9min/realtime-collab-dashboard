@@ -14,6 +14,7 @@ function createTask(overrides: Partial<MyTaskWithProject> = {}): MyTaskWithProje
     assignee_id: 'user-1',
     position: 0,
     due_date: null,
+    start_date: null,
     created_by: 'user-1',
     created_at: '2025-01-01T00:00:00Z',
     updated_at: '2025-01-01T00:00:00Z',

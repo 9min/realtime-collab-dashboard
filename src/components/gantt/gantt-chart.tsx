@@ -26,6 +26,7 @@ import {
   taskToBarPosition,
   daysBetween,
   addDays,
+  parseLocalDate,
 } from '@/lib/gantt-utils'
 import type { DateColumn, MonthViewColumn } from '@/lib/gantt-utils'
 import { MEMBER_ROLE, PRIORITY_LABELS, PRIORITY_DOT_COLORS } from '@/lib/constants'
@@ -89,8 +90,8 @@ export function GanttChart({ projectId }: GanttChartProps) {
     let taskMax: Date | null = null
     if (tasks && tasks.length > 0) {
       for (const t of tasks) {
-        const s = new Date(t.created_at)
-        const e = t.due_date ? new Date(t.due_date) : null
+        const s = parseLocalDate(t.start_date ?? t.created_at)
+        const e = t.due_date ? parseLocalDate(t.due_date) : null
         if (!taskMin || s < taskMin) taskMin = s
         if (e && (!taskMax || e > taskMax)) taskMax = e
       }
@@ -502,8 +503,8 @@ export function GanttChart({ projectId }: GanttChartProps) {
                                 assigneeName={getMemberName(task.assignee_id)}
                                 dueDate={task.due_date}
                                 position={taskToBarPosition(
-                                  new Date(task.created_at),
-                                  task.due_date ? new Date(task.due_date) : null,
+                                  parseLocalDate(task.start_date ?? task.created_at),
+                                  task.due_date ? parseLocalDate(task.due_date) : null,
                                   timelineStart,
                                   totalDays,
                                 )}

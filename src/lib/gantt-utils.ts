@@ -2,6 +2,22 @@
  * 간트 차트 날짜 계산 유틸
  */
 
+/**
+ * 날짜 문자열을 로컬 자정 기준 Date로 파싱합니다.
+ *
+ * `new Date('2026-02-20')`은 UTC 자정(00:00Z)으로 해석되지만,
+ * `new Date('2026-02-20T00:00:00')`은 로컬 자정으로 해석됩니다.
+ * 타임라인 기준점(startOfWeek 등)이 로컬 자정이므로
+ * date-only 문자열도 로컬 자정으로 맞춰야 daysBetween 계산이 정확합니다.
+ */
+export function parseLocalDate(value: string): Date {
+  // 날짜 전용 문자열 (YYYY-MM-DD) → 로컬 자정으로 강제
+  if (/^\d{4}-\d{2}-\d{2}$/.test(value)) {
+    return new Date(value + 'T00:00:00')
+  }
+  return new Date(value)
+}
+
 export function daysBetween(start: Date, end: Date): number {
   const diffTime = end.getTime() - start.getTime()
   return Math.ceil(diffTime / (1000 * 60 * 60 * 24))
@@ -176,7 +192,10 @@ export function taskToBarPosition(
   timelineStart: Date,
   totalDays: number,
 ): TaskBarPosition {
-  const effectiveEnd = taskEnd ?? addDays(taskStart, DEFAULT_TASK_DURATION_DAYS)
+  // taskEnd(마감일)는 해당 날짜를 포함(inclusive)해야 하므로 +1일
+  const effectiveEnd = taskEnd
+    ? addDays(taskEnd, 1)
+    : addDays(taskStart, DEFAULT_TASK_DURATION_DAYS)
   const startOffset = daysBetween(timelineStart, taskStart)
   const duration = Math.max(1, daysBetween(taskStart, effectiveEnd))
 

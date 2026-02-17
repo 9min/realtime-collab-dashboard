@@ -69,6 +69,7 @@ export async function getMyTasks(
       assignee_id: raw.assignee_id,
       position: raw.position,
       due_date: raw.due_date,
+      start_date: raw.start_date,
       created_by: raw.created_by,
       created_at: raw.created_at,
       updated_at: raw.updated_at,
