@@ -2,9 +2,10 @@
 
 import { Calendar } from 'lucide-react'
 
-import { Badge } from '@/components/ui/badge'
 import { PRIORITY_BADGE_STYLES, PRIORITY_LABELS } from '@/lib/constants'
+import { formatDateRange } from '@/lib/gantt-utils'
 import { cn } from '@/lib/utils'
+import { Badge } from '@/components/ui/badge'
 import type { MyTaskWithProject } from '@/services/my-tasks-service'
 
 interface MyTaskItemProps {
@@ -49,11 +50,7 @@ export function MyTaskItem({ task, onTaskClick, isDone }: MyTaskItemProps) {
             )}
           >
             <Calendar className="h-3 w-3" />
-            {task.start_date && task.due_date
-              ? `${new Date(task.start_date).toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' })} ~ ${new Date(task.due_date).toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' })}`
-              : task.start_date
-                ? `${new Date(task.start_date).toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' })} ~`
-                : `~ ${new Date(task.due_date!).toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' })}`}
+            {formatDateRange(task.start_date, task.due_date)}
           </span>
         )}
       </div>

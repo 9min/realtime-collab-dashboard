@@ -4,11 +4,12 @@ import { memo } from 'react'
 import { Draggable } from '@hello-pangea/dnd'
 import { Calendar, Lock } from 'lucide-react'
 
+import { PRIORITY_LABELS, PRIORITY_DOT_COLORS } from '@/lib/constants'
+import { formatDateRange } from '@/lib/gantt-utils'
+import { cn } from '@/lib/utils'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
-import { PRIORITY_LABELS, PRIORITY_DOT_COLORS } from '@/lib/constants'
-import { cn } from '@/lib/utils'
 import type { Tables } from '@/types/database'
 import type { Label } from '@/types/label'
 import type { TaskAssigneeWithProfile } from '@/types/task-assignee'
@@ -46,6 +47,8 @@ export const TaskCard = memo(function TaskCard({
   isRecurring = false,
   taskAssignees,
 }: TaskCardProps) {
+  const dateLabel = formatDateRange(task.start_date, task.due_date)
+
   // Multi-assignee mode: use taskAssignees if available, otherwise fallback to single assignee_id
   const hasMultiAssignees = taskAssignees && taskAssignees.length > 0
   const assignee =
@@ -120,14 +123,10 @@ export const TaskCard = memo(function TaskCard({
                 />
                 {PRIORITY_LABELS[task.priority]}
               </span>
-              {(task.start_date || task.due_date) && (
+              {dateLabel && (
                 <span className="text-muted-foreground flex items-center gap-1 text-xs">
                   <Calendar className="h-3 w-3" />
-                  {task.start_date && task.due_date
-                    ? `${new Date(task.start_date).toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' })} ~ ${new Date(task.due_date).toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' })}`
-                    : task.start_date
-                      ? `${new Date(task.start_date).toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' })} ~`
-                      : `~ ${new Date(task.due_date!).toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' })}`}
+                  {dateLabel}
                 </span>
               )}
               {hasMultiAssignees ? (
