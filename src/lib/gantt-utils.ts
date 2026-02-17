@@ -2,6 +2,8 @@
  * 간트 차트 날짜 계산 유틸
  */
 
+const DATE_RANGE_FORMAT_OPTIONS: Intl.DateTimeFormatOptions = { month: 'short', day: 'numeric' }
+
 /**
  * 날짜 문자열을 로컬 자정 기준 Date로 파싱합니다.
  *
@@ -206,8 +208,6 @@ export function taskToBarPosition(
 }
 
 // ── 날짜 범위 포맷 ──
-
-const DATE_RANGE_FORMAT_OPTIONS: Intl.DateTimeFormatOptions = { month: 'short', day: 'numeric' }
 
 export function formatDateRange(startDate: string | null, dueDate: string | null): string | null {
   if (startDate && dueDate) {
