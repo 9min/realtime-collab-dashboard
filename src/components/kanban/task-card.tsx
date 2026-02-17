@@ -4,12 +4,12 @@ import { memo } from 'react'
 import { Draggable } from '@hello-pangea/dnd'
 import { Calendar, Lock } from 'lucide-react'
 
+import { PRIORITY_LABELS, PRIORITY_DOT_COLORS } from '@/lib/constants'
+import { formatDateRange } from '@/lib/gantt-utils'
+import { cn } from '@/lib/utils'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
-import { PRIORITY_LABELS, PRIORITY_DOT_COLORS } from '@/lib/constants'
-import { parseLocalDate } from '@/lib/gantt-utils'
-import { cn } from '@/lib/utils'
 import type { Tables } from '@/types/database'
 import type { Label } from '@/types/label'
 import type { TaskAssigneeWithProfile } from '@/types/task-assignee'
@@ -34,21 +34,6 @@ interface TaskCardProps {
   isBlocked?: boolean
   isRecurring?: boolean
   taskAssignees?: TaskAssigneeWithProfile[]
-}
-
-const DATE_FORMAT_OPTIONS: Intl.DateTimeFormatOptions = { month: 'short', day: 'numeric' }
-
-function formatDateRange(startDate: string | null, dueDate: string | null): string | null {
-  if (startDate && dueDate) {
-    return `${parseLocalDate(startDate).toLocaleDateString('ko-KR', DATE_FORMAT_OPTIONS)} ~ ${parseLocalDate(dueDate).toLocaleDateString('ko-KR', DATE_FORMAT_OPTIONS)}`
-  }
-  if (startDate) {
-    return `${parseLocalDate(startDate).toLocaleDateString('ko-KR', DATE_FORMAT_OPTIONS)} ~`
-  }
-  if (dueDate) {
-    return `~ ${parseLocalDate(dueDate).toLocaleDateString('ko-KR', DATE_FORMAT_OPTIONS)}`
-  }
-  return null
 }
 
 export const TaskCard = memo(function TaskCard({

@@ -205,6 +205,23 @@ export function taskToBarPosition(
   return { left: Math.max(0, left), width: Math.max(0.5, width) }
 }
 
+// ── 날짜 범위 포맷 ──
+
+const DATE_RANGE_FORMAT_OPTIONS: Intl.DateTimeFormatOptions = { month: 'short', day: 'numeric' }
+
+export function formatDateRange(startDate: string | null, dueDate: string | null): string | null {
+  if (startDate && dueDate) {
+    return `${parseLocalDate(startDate).toLocaleDateString('ko-KR', DATE_RANGE_FORMAT_OPTIONS)} ~ ${parseLocalDate(dueDate).toLocaleDateString('ko-KR', DATE_RANGE_FORMAT_OPTIONS)}`
+  }
+  if (startDate) {
+    return `${parseLocalDate(startDate).toLocaleDateString('ko-KR', DATE_RANGE_FORMAT_OPTIONS)} ~`
+  }
+  if (dueDate) {
+    return `~ ${parseLocalDate(dueDate).toLocaleDateString('ko-KR', DATE_RANGE_FORMAT_OPTIONS)}`
+  }
+  return null
+}
+
 // ── 캘린더 유틸 ──
 
 export interface CalendarDay {
