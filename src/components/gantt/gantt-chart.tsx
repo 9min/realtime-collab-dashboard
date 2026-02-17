@@ -501,6 +501,7 @@ export function GanttChart({ projectId }: GanttChartProps) {
                                 title={task.title}
                                 priority={task.priority as 'low' | 'medium' | 'high' | 'urgent'}
                                 assigneeName={getMemberName(task.assignee_id)}
+                                startDate={task.start_date}
                                 dueDate={task.due_date}
                                 position={taskToBarPosition(
                                   parseLocalDate(task.start_date ?? task.created_at),

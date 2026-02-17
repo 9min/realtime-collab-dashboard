@@ -19,6 +19,7 @@ interface GanttBarProps {
   title: string
   priority: 'low' | 'medium' | 'high' | 'urgent'
   assigneeName: string | null
+  startDate: string | null
   dueDate: string | null
   position: TaskBarPosition
   onClick: () => void
@@ -28,6 +29,7 @@ export const GanttBar = memo(function GanttBar({
   title,
   priority,
   assigneeName,
+  startDate,
   dueDate,
   position,
   onClick,
@@ -66,6 +68,7 @@ export const GanttBar = memo(function GanttBar({
             </Badge>
           </div>
           {assigneeName && <p className="text-[11px] opacity-80">담당: {assigneeName}</p>}
+          {startDate && <p className="text-[11px] opacity-80">시작: {startDate}</p>}
           {dueDate && <p className="text-[11px] opacity-80">마감: {dueDate}</p>}
         </TooltipContent>
       </Tooltip>
