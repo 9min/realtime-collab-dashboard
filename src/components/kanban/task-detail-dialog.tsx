@@ -4,6 +4,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { Calendar, ChevronDown, Clock, Columns3, Trash2, User } from 'lucide-react'
+import { toast } from 'sonner'
 
 import {
   AlertDialog,
@@ -134,6 +135,7 @@ export function TaskDetailDialog({
   const [editDescription, setEditDescription] = useState('')
   const [editPriority, setEditPriority] = useState<Tables<'tasks'>['priority']>('medium')
   const [editAssigneeId, setEditAssigneeId] = useState('')
+  const [editStartDate, setEditStartDate] = useState('')
   const [editDueDate, setEditDueDate] = useState('')
 
   if (!task) return null
@@ -147,11 +149,17 @@ export function TaskDetailDialog({
     setEditDescription(task.description ?? '')
     setEditPriority(task.priority)
     setEditAssigneeId(task.assignee_id ?? '')
+    setEditStartDate(task.start_date ?? '')
     setEditDueDate(task.due_date ?? '')
     setIsEditing(true)
   }
 
   const handleSave = () => {
+    if (editStartDate && editDueDate && editStartDate > editDueDate) {
+      toast.error('시작일은 마감일 이전이어야 합니다')
+      return
+    }
+
     updateTaskMutation.mutate(
       {
         taskId: task.id,
@@ -160,6 +168,7 @@ export function TaskDetailDialog({
           description: editDescription || undefined,
           priority: editPriority,
           assignee_id: editAssigneeId || null,
+          start_date: editStartDate || null,
           due_date: editDueDate || undefined,
         },
       },
@@ -286,6 +295,26 @@ export function TaskDetailDialog({
               )}
             </div>
           )}
+
+          {/* 시작일 */}
+          <div className="flex items-center gap-2">
+            <span className="text-muted-foreground w-16 text-sm">시작일</span>
+            {isEditing ? (
+              <Input
+                type="date"
+                value={editStartDate}
+                onChange={(e) => setEditStartDate(e.target.value)}
+                className="w-40"
+              />
+            ) : task.start_date ? (
+              <span className="flex items-center gap-1 text-sm">
+                <Calendar className="h-4 w-4" />
+                {new Date(task.start_date).toLocaleDateString('ko-KR')}
+              </span>
+            ) : (
+              <span className="text-muted-foreground text-sm">없음</span>
+            )}
+          </div>
 
           {/* 마감일 */}
           <div className="flex items-center gap-2">

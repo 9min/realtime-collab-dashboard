@@ -16,6 +16,7 @@ export interface CreateTaskInput {
   description?: string
   priority: TaskPriority
   assignee_id?: string
+  start_date?: string
   due_date?: string
 }
 

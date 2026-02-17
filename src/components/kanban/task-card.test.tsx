@@ -80,12 +80,34 @@ describe('TaskCard', () => {
 
   it('마감일이 있으면 렌더링한다', () => {
     renderWithProviders(<TaskCard task={mockTasks[1]} index={0} onClick={onClick} />)
-    // Task 2의 due_date = 2026-02-28
-    const dateText = new Date('2026-02-28').toLocaleDateString('ko-KR', {
+    // Task 2의 start_date = 2026-02-20, due_date = 2026-02-28
+    const startText = new Date('2026-02-20').toLocaleDateString('ko-KR', {
       month: 'short',
       day: 'numeric',
     })
-    expect(screen.getByText(dateText)).toBeInTheDocument()
+    const endText = new Date('2026-02-28').toLocaleDateString('ko-KR', {
+      month: 'short',
+      day: 'numeric',
+    })
+    expect(screen.getByText(`${startText} ~ ${endText}`)).toBeInTheDocument()
+  })
+
+  it('시작일+마감일이 있으면 날짜 범위를 표시한다', () => {
+    const taskWithBothDates = {
+      ...mockTasks[0],
+      start_date: '2026-03-01',
+      due_date: '2026-03-15',
+    }
+    renderWithProviders(<TaskCard task={taskWithBothDates} index={0} onClick={onClick} />)
+    const startText = new Date('2026-03-01').toLocaleDateString('ko-KR', {
+      month: 'short',
+      day: 'numeric',
+    })
+    const endText = new Date('2026-03-15').toLocaleDateString('ko-KR', {
+      month: 'short',
+      day: 'numeric',
+    })
+    expect(screen.getByText(`${startText} ~ ${endText}`)).toBeInTheDocument()
   })
 
   it('마감일이 없으면 날짜를 표시하지 않는다', () => {

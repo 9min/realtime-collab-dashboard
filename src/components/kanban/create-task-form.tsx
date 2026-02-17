@@ -25,13 +25,19 @@ import type { TaskTemplate } from '@/types/task-template'
 // 폼 스키마
 const UNASSIGNED_VALUE = '__none__'
 
-const createTaskSchema = z.object({
-  title: z.string().min(1, '제목을 입력해주세요').max(100, '제목은 100자 이내'),
-  description: z.string().max(2000, '설명은 2000자 이내').optional(),
-  priority: z.enum(['low', 'medium', 'high', 'urgent']),
-  assignee_id: z.string().optional(),
-  due_date: z.string().optional(),
-})
+const createTaskSchema = z
+  .object({
+    title: z.string().min(1, '제목을 입력해주세요').max(100, '제목은 100자 이내'),
+    description: z.string().max(2000, '설명은 2000자 이내').optional(),
+    priority: z.enum(['low', 'medium', 'high', 'urgent']),
+    assignee_id: z.string().optional(),
+    start_date: z.string().optional(),
+    due_date: z.string().optional(),
+  })
+  .refine((data) => !data.start_date || !data.due_date || data.start_date <= data.due_date, {
+    message: '시작일은 마감일 이전이어야 합니다',
+    path: ['start_date'],
+  })
 
 type CreateTaskFormData = z.infer<typeof createTaskSchema>
 
@@ -62,6 +68,7 @@ export function CreateTaskForm({ projectId, columnId, open, onOpenChange }: Crea
       description: '',
       priority: 'medium',
       assignee_id: '',
+      start_date: '',
       due_date: '',
     },
   })
@@ -90,6 +97,7 @@ export function CreateTaskForm({ projectId, columnId, open, onOpenChange }: Crea
         priority: data.priority,
         assignee_id: data.assignee_id || undefined,
         position: nextPosition,
+        start_date: data.start_date || undefined,
         due_date: data.due_date || undefined,
         created_by: user.id,
       },
@@ -182,6 +190,15 @@ export function CreateTaskForm({ projectId, columnId, open, onOpenChange }: Crea
                 </Select>
               )}
             />
+          </div>
+
+          {/* 시작일 */}
+          <div className="space-y-1.5">
+            <Label htmlFor="task-start-date">시작일</Label>
+            <Input id="task-start-date" type="date" {...register('start_date')} />
+            {errors.start_date && (
+              <p className="text-destructive text-xs">{errors.start_date.message}</p>
+            )}
           </div>
 
           {/* 마감일 */}

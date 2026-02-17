@@ -120,13 +120,14 @@ export const TaskCard = memo(function TaskCard({
                 />
                 {PRIORITY_LABELS[task.priority]}
               </span>
-              {task.due_date && (
+              {(task.start_date || task.due_date) && (
                 <span className="text-muted-foreground flex items-center gap-1 text-xs">
                   <Calendar className="h-3 w-3" />
-                  {new Date(task.due_date).toLocaleDateString('ko-KR', {
-                    month: 'short',
-                    day: 'numeric',
-                  })}
+                  {task.start_date && task.due_date
+                    ? `${new Date(task.start_date).toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' })} ~ ${new Date(task.due_date).toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' })}`
+                    : task.start_date
+                      ? `${new Date(task.start_date).toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' })} ~`
+                      : `~ ${new Date(task.due_date!).toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' })}`}
                 </span>
               )}
               {hasMultiAssignees ? (

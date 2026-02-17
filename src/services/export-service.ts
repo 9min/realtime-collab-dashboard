@@ -10,6 +10,7 @@ interface ExportRow {
   priority: string
   assignee: string
   column: string
+  startDate: string
   dueDate: string
   subtasks: string
   labels: string
@@ -23,6 +24,7 @@ const CSV_HEADERS = [
   '우선순위',
   '담당자',
   '상태(컬럼)',
+  '시작일',
   '마감일',
   '서브태스크',
   '라벨',
@@ -44,6 +46,7 @@ function rowToCsv(row: ExportRow): string {
     row.priority,
     row.assignee,
     row.column,
+    row.startDate,
     row.dueDate,
     row.subtasks,
     row.labels,
@@ -123,6 +126,7 @@ async function fetchExportData(supabase: Client, projectId: string) {
       priority: task.priority,
       assignee: task.assignee_id ? (memberMap.get(task.assignee_id) ?? '') : '',
       column: columnMap.get(task.column_id) ?? '',
+      startDate: task.start_date ?? '',
       dueDate: task.due_date ?? '',
       subtasks: st ? `${st.completed}/${st.total}` : '',
       labels: tl ? tl.join(', ') : '',

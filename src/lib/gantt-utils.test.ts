@@ -189,6 +189,19 @@ describe('gantt-utils', () => {
 
       expect(result.width).toBeGreaterThanOrEqual(0.5)
     })
+
+    it('종료일은 inclusive로 처리된다 (2/16~2/20 → 5일)', () => {
+      const timelineStart = new Date(2026, 1, 1) // 2월 1일
+      const taskStart = new Date(2026, 1, 16) // 2월 16일
+      const taskEnd = new Date(2026, 1, 20) // 2월 20일
+      const totalDays = 28
+
+      const result = taskToBarPosition(taskStart, taskEnd, timelineStart, totalDays)
+
+      // duration = 5일 (16,17,18,19,20)
+      const expectedWidth = (5 / totalDays) * 100
+      expect(result.width).toBeCloseTo(expectedWidth, 1)
+    })
   })
 
   // ── isSameDay ──
