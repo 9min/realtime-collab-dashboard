@@ -4,8 +4,24 @@ import { Calendar } from 'lucide-react'
 
 import { Badge } from '@/components/ui/badge'
 import { PRIORITY_BADGE_STYLES, PRIORITY_LABELS } from '@/lib/constants'
+import { parseLocalDate } from '@/lib/gantt-utils'
 import { cn } from '@/lib/utils'
 import type { MyTaskWithProject } from '@/services/my-tasks-service'
+
+const DATE_FORMAT_OPTIONS: Intl.DateTimeFormatOptions = { month: 'short', day: 'numeric' }
+
+function formatDateRange(startDate: string | null, dueDate: string | null): string | null {
+  if (startDate && dueDate) {
+    return `${parseLocalDate(startDate).toLocaleDateString('ko-KR', DATE_FORMAT_OPTIONS)} ~ ${parseLocalDate(dueDate).toLocaleDateString('ko-KR', DATE_FORMAT_OPTIONS)}`
+  }
+  if (startDate) {
+    return `${parseLocalDate(startDate).toLocaleDateString('ko-KR', DATE_FORMAT_OPTIONS)} ~`
+  }
+  if (dueDate) {
+    return `~ ${parseLocalDate(dueDate).toLocaleDateString('ko-KR', DATE_FORMAT_OPTIONS)}`
+  }
+  return null
+}
 
 interface MyTaskItemProps {
   task: MyTaskWithProject
@@ -49,11 +65,7 @@ export function MyTaskItem({ task, onTaskClick, isDone }: MyTaskItemProps) {
             )}
           >
             <Calendar className="h-3 w-3" />
-            {task.start_date && task.due_date
-              ? `${new Date(task.start_date).toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' })} ~ ${new Date(task.due_date).toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' })}`
-              : task.start_date
-                ? `${new Date(task.start_date).toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' })} ~`
-                : `~ ${new Date(task.due_date!).toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' })}`}
+            {formatDateRange(task.start_date, task.due_date)}
           </span>
         )}
       </div>
