@@ -38,7 +38,10 @@ export function TemplatePicker({ projectId, onSelect }: TemplatePickerProps) {
             사용 가능한 템플릿이 없습니다
           </p>
         ) : (
-          <div className="space-y-1">
+          <div
+            className="max-h-64 space-y-1 overflow-y-auto overscroll-contain"
+            onWheel={(e) => e.stopPropagation()}
+          >
             {templates.map((template) => (
               <button
                 key={template.id}
