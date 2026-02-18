@@ -351,6 +351,24 @@ export async function inviteMemberById(
   return { data, error: null }
 }
 
+// 소유권 이전 (RPC)
+export async function transferOwnership(
+  supabase: Client,
+  projectId: string,
+  newOwnerId: string,
+): Promise<ServiceResult<null>> {
+  const { error } = await supabase.rpc('transfer_project_ownership', {
+    p_project_id: projectId,
+    p_new_owner_id: newOwnerId,
+  })
+
+  if (error) {
+    return { data: null, error: { code: error.code, message: error.message } }
+  }
+
+  return { data: null, error: null }
+}
+
 // 멤버 제거
 export async function removeMember(
   supabase: Client,

@@ -1168,6 +1168,10 @@ export interface Database {
         Args: { p_user_id: string; p_is_admin: boolean }
         Returns: undefined
       }
+      transfer_project_ownership: {
+        Args: { p_project_id: string; p_new_owner_id: string }
+        Returns: undefined
+      }
     }
     Enums: {
       member_role: 'owner' | 'admin' | 'member' | 'viewer'
