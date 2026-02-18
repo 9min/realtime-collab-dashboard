@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Pencil, Plus, Trash2 } from 'lucide-react'
+import { Download, Pencil, Plus, Trash2 } from 'lucide-react'
 
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -10,6 +10,7 @@ import { PRIORITY_LABELS, PRIORITY_BADGE_STYLES } from '@/lib/constants'
 import { cn } from '@/lib/utils'
 import { useTaskTemplates, useDeleteTaskTemplate } from '@/queries/use-task-templates'
 import { TemplateForm } from '@/components/project/template-form'
+import { TemplateImportDialog } from '@/components/project/template-import-dialog'
 import type { TaskTemplate } from '@/types/task-template'
 
 interface TemplateManagerProps {
@@ -21,6 +22,7 @@ export function TemplateManager({ projectId }: TemplateManagerProps) {
   const deleteMutation = useDeleteTaskTemplate(projectId)
 
   const [showCreate, setShowCreate] = useState(false)
+  const [showImport, setShowImport] = useState(false)
   const [editingTemplate, setEditingTemplate] = useState<TaskTemplate | null>(null)
 
   if (isLoading) {
@@ -91,11 +93,29 @@ export function TemplateManager({ projectId }: TemplateManagerProps) {
         </div>
       )}
 
-      {/* 추가 버튼 */}
-      <Button variant="outline" size="sm" className="h-8 gap-1" onClick={() => setShowCreate(true)}>
-        <Plus className="h-3 w-3" />
-        템플릿 추가
-      </Button>
+      {/* 추가 / 가져오기 버튼 */}
+      <div className="flex gap-2">
+        <Button
+          variant="outline"
+          size="sm"
+          className="h-8 gap-1"
+          onClick={() => setShowCreate(true)}
+        >
+          <Plus className="h-3 w-3" />
+          템플릿 추가
+        </Button>
+        <Button
+          variant="outline"
+          size="sm"
+          className="h-8 gap-1"
+          onClick={() => setShowImport(true)}
+        >
+          <Download className="h-3 w-3" />
+          가져오기
+        </Button>
+      </div>
+
+      <TemplateImportDialog projectId={projectId} open={showImport} onOpenChange={setShowImport} />
     </div>
   )
 }

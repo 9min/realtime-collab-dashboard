@@ -135,6 +135,26 @@ export function useDeleteTaskTemplate(projectId: string) {
   })
 }
 
+export function useImportTaskTemplate(projectId: string) {
+  const supabase = useSupabase()
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: async (input: CreateTaskTemplateInput & { created_by: string }) => {
+      const result = await createTaskTemplate(supabase, input)
+      if (result.error) throw new Error(result.error.message)
+      return result.data
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: templateKeys.list(projectId) })
+      toast.success('템플릿을 가져왔습니다')
+    },
+    onError: () => {
+      toast.error('템플릿 가져오기에 실패했습니다')
+    },
+  })
+}
+
 export function useCreateTaskFromTemplate(projectId: string) {
   const supabase = useSupabase()
   const queryClient = useQueryClient()
