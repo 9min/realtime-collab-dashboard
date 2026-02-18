@@ -34,7 +34,7 @@ export function useSubtasks(taskId: string) {
   })
 }
 
-export function useProjectSubtasks(projectId: string) {
+export function useProjectSubtasks(projectId: string, options?: { enabled?: boolean }) {
   const supabase = useSupabase()
 
   return useQuery({
@@ -45,6 +45,7 @@ export function useProjectSubtasks(projectId: string) {
       if (result.error) throw new Error(result.error.message)
       return result.data
     },
+    enabled: options?.enabled ?? true,
   })
 }
 

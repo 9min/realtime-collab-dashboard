@@ -106,7 +106,9 @@ export function KanbanBoard({ projectId }: KanbanBoardProps) {
   const { data: recurringTaskIds } = useProjectRecurrences(projectId)
 
   // 서브태스크 데이터 (feature_subtasks가 켜진 경우에만)
-  const { data: projectSubtasks } = useProjectSubtasks(projectId)
+  const { data: projectSubtasks } = useProjectSubtasks(projectId, {
+    enabled: projectFeatures.feature_subtasks,
+  })
 
   // task→subtasks[] 맵 생성
   const subtaskMap = useMemo(() => {
