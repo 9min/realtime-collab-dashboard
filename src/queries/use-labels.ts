@@ -11,6 +11,7 @@ import {
   deleteLabel,
   getTaskLabels,
   addTaskLabel,
+  addTaskLabels,
   removeTaskLabel,
 } from '@/services/label-service'
 import type { InsertTables, UpdateTables, Tables } from '@/types/database'
@@ -170,6 +171,22 @@ export function useAddTaskLabel(projectId: string) {
       if (context?.previous) {
         queryClient.setQueryData(labelKeys.taskLabels(projectId), context.previous)
       }
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: labelKeys.taskLabels(projectId) })
+    },
+  })
+}
+
+export function useAddTaskLabels(projectId: string) {
+  const supabase = useSupabase()
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: async ({ taskId, labelIds }: { taskId: string; labelIds: string[] }) => {
+      const result = await addTaskLabels(supabase, taskId, labelIds)
+      if (result.error) throw new Error(result.error.message)
+      return result.data
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: labelKeys.taskLabels(projectId) })

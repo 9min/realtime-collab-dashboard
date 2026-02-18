@@ -11,6 +11,7 @@ import {
   updateLabel,
   deleteLabel,
   addTaskLabel,
+  addTaskLabels,
   removeTaskLabel,
 } from './label-service'
 
@@ -126,6 +127,45 @@ describe('label-service', () => {
 
       expect(result.data).toBeNull()
       expect(result.error?.code).toBe('PGRST301')
+    })
+  })
+
+  describe('addTaskLabels', () => {
+    it('빈 배열이면 빈 결과를 반환한다', async () => {
+      const client = createMockSupabaseClient({
+        fromResponses: [],
+      }) as Client
+
+      const result = await addTaskLabels(client, MOCK_TASK_ID_1, [])
+
+      expect(result.error).toBeNull()
+      expect(result.data).toEqual([])
+    })
+
+    it('여러 라벨을 한 번에 할당한다', async () => {
+      const taskLabels = [
+        { task_id: MOCK_TASK_ID_1, label_id: 'label-aaa-111' },
+        { task_id: MOCK_TASK_ID_1, label_id: 'label-bbb-222' },
+      ]
+      const client = createMockSupabaseClient({
+        fromResponses: [{ data: taskLabels, error: null }],
+      }) as Client
+
+      const result = await addTaskLabels(client, MOCK_TASK_ID_1, ['label-aaa-111', 'label-bbb-222'])
+
+      expect(result.error).toBeNull()
+      expect(result.data).toEqual(taskLabels)
+    })
+
+    it('에러 시 error를 반환한다', async () => {
+      const client = createMockSupabaseClient({
+        fromResponses: [{ data: null, error: { code: '23505', message: 'Duplicate' } }],
+      }) as Client
+
+      const result = await addTaskLabels(client, MOCK_TASK_ID_1, ['label-aaa-111'])
+
+      expect(result.data).toBeNull()
+      expect(result.error).not.toBeNull()
     })
   })
 

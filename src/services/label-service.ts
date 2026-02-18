@@ -102,6 +102,29 @@ export async function getTaskLabels(
   return { data: taskLabels, error: null }
 }
 
+export async function addTaskLabels(
+  supabase: Client,
+  taskId: string,
+  labelIds: string[],
+): Promise<ServiceResult<TaskLabel[]>> {
+  if (labelIds.length === 0) return { data: [], error: null }
+
+  const { data, error } = await supabase
+    .from('task_labels')
+    .insert(labelIds.map((labelId) => ({ task_id: taskId, label_id: labelId })))
+    .select('*')
+    .returns<TaskLabel[]>()
+
+  if (error) {
+    return {
+      data: null,
+      error: { code: error.code, message: error.message },
+    }
+  }
+
+  return { data: data ?? [], error: null }
+}
+
 export async function addTaskLabel(
   supabase: Client,
   taskId: string,
