@@ -196,7 +196,7 @@ export function TaskDetailDialog({
       }}
     >
       <DialogContent
-        className="flex max-h-[85vh] flex-col sm:max-w-xl"
+        className="flex max-h-[85vh] flex-col caret-transparent sm:max-w-xl [&_input]:caret-current [&_textarea]:caret-current"
         onOpenAutoFocus={(e) => {
           e.preventDefault()
           ;(e.currentTarget as HTMLElement).focus()
