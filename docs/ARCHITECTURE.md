@@ -122,13 +122,19 @@ src/
 │   │   ├── kanban-column.tsx         # 단일 컬럼
 │   │   ├── task-card.tsx             # 태스크 카드
 │   │   ├── task-detail-dialog.tsx    # 태스크 상세/편집
+│   │   ├── create-task-form.tsx      # 태스크 생성 폼 (라벨 선택 포함)
 │   │   ├── task-filter-bar.tsx       # 필터 바 (검색, 우선순위, 담당자, 마감일, 라벨)
 │   │   ├── swimlane-board.tsx        # 스윔레인 뷰
 │   │   ├── favorite-button.tsx       # 즐겨찾기 토글
 │   │   ├── recurrence-section.tsx    # 반복 태스크 설정
+│   │   ├── recurrence-badge.tsx      # 반복 태스크 배지
 │   │   ├── label-manager.tsx         # 라벨 매니저
+│   │   ├── label-picker.tsx          # 라벨 선택 (태스크 생성 시)
 │   │   ├── dependency-section.tsx    # 의존성 관리
 │   │   ├── subtask-section.tsx       # 서브태스크
+│   │   ├── subtask-badge.tsx         # 서브태스크 진행률 배지 + 호버 팝오버
+│   │   ├── assignee-picker.tsx       # 다중 담당자 선택
+│   │   ├── template-picker.tsx       # 템플릿 기반 태스크 생성
 │   │   ├── comment-section.tsx       # 댓글 스레드
 │   │   ├── attachment-section.tsx    # 첨부파일
 │   │   └── ...                       # 기타 (bulk-delete, export, wip-limit 등)
@@ -209,7 +215,7 @@ src/
 │
 ├── services/
 │   ├── auth-service.ts               # 인증 관련 API
-│   ├── project-service.ts            # 프로젝트 CRUD
+│   ├── project-service.ts            # 프로젝트 CRUD + 소유권 이전
 │   ├── task-service.ts               # 태스크 CRUD
 │   ├── column-service.ts             # 컬럼 CRUD
 │   ├── dashboard-service.ts          # 레이아웃 저장/불러오기
