@@ -555,6 +555,7 @@ export function KanbanBoard({ projectId }: KanbanBoardProps) {
         onOpenChange={(open) => {
           if (!open) setCreateTaskColumnId(null)
         }}
+        labels={projectFeatures.feature_labels ? labels : undefined}
       />
 
       {/* 태스크 상세 다이얼로그 */}

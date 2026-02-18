@@ -1,8 +1,10 @@
 'use client'
 
+import { useState } from 'react'
 import { useForm, Controller } from 'react-hook-form'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { Check } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
@@ -16,10 +18,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { cn } from '@/lib/utils'
 import { useAuth } from '@/hooks/use-auth'
 import { useProjectMembers } from '@/queries/use-projects'
+import { useAddTaskLabels } from '@/queries/use-labels'
 import { useCreateTask, useTasks } from '@/queries/use-tasks'
 import { TemplatePicker } from '@/components/kanban/template-picker'
+import type { Tables } from '@/types/database'
 import type { TaskTemplate } from '@/types/task-template'
 
 // 폼 스키마
@@ -46,13 +51,22 @@ interface CreateTaskFormProps {
   columnId: string | null
   open: boolean
   onOpenChange: (open: boolean) => void
+  labels?: Tables<'labels'>[]
 }
 
-export function CreateTaskForm({ projectId, columnId, open, onOpenChange }: CreateTaskFormProps) {
+export function CreateTaskForm({
+  projectId,
+  columnId,
+  open,
+  onOpenChange,
+  labels,
+}: CreateTaskFormProps) {
   const { user } = useAuth()
   const createTaskMutation = useCreateTask(projectId)
+  const addTaskLabelsMutation = useAddTaskLabels(projectId)
   const { data: tasks } = useTasks(projectId)
   const { data: members } = useProjectMembers(projectId)
+  const [selectedLabelIds, setSelectedLabelIds] = useState<string[]>([])
 
   const {
     register,
@@ -81,15 +95,21 @@ export function CreateTaskForm({ projectId, columnId, open, onOpenChange }: Crea
     setValue('priority', template.priority)
   }
 
-  const onSubmit = (data: CreateTaskFormData) => {
+  const toggleLabel = (labelId: string) => {
+    setSelectedLabelIds((prev) =>
+      prev.includes(labelId) ? prev.filter((id) => id !== labelId) : [...prev, labelId],
+    )
+  }
+
+  const onSubmit = async (data: CreateTaskFormData) => {
     if (!columnId || !user) return
 
     // 해당 컬럼의 마지막 위치 계산
     const columnTasks = tasks?.filter((t) => t.column_id === columnId) ?? []
     const nextPosition = columnTasks.length
 
-    createTaskMutation.mutate(
-      {
+    try {
+      const createdTask = await createTaskMutation.mutateAsync({
         project_id: projectId,
         column_id: columnId,
         title: data.title,
@@ -100,14 +120,26 @@ export function CreateTaskForm({ projectId, columnId, open, onOpenChange }: Crea
         start_date: data.start_date || undefined,
         due_date: data.due_date || undefined,
         created_by: user.id,
-      },
-      {
-        onSuccess: () => {
-          reset()
-          onOpenChange(false)
-        },
-      },
-    )
+      })
+
+      // 선택된 라벨을 새 태스크에 할당
+      if (createdTask && selectedLabelIds.length > 0) {
+        try {
+          await addTaskLabelsMutation.mutateAsync({
+            taskId: createdTask.id,
+            labelIds: selectedLabelIds,
+          })
+        } catch {
+          // 라벨 할당 실패 시 태스크는 이미 생성됨 — 상세에서 재할당 가능
+        }
+      }
+
+      setSelectedLabelIds([])
+      reset()
+      onOpenChange(false)
+    } catch {
+      // 태스크 생성 실패 — mutation hook에서 toast 처리
+    }
   }
 
   return (
@@ -207,13 +239,57 @@ export function CreateTaskForm({ projectId, columnId, open, onOpenChange }: Crea
             <Input id="task-due-date" type="date" {...register('due_date')} />
           </div>
 
+          {/* 라벨 */}
+          {labels && labels.length > 0 && (
+            <div className="space-y-1.5">
+              <Label>라벨</Label>
+              <div className="flex flex-wrap gap-1.5">
+                {labels.map((label) => {
+                  const isSelected = selectedLabelIds.includes(label.id)
+                  return (
+                    <button
+                      key={label.id}
+                      type="button"
+                      onClick={() => toggleLabel(label.id)}
+                      className={cn(
+                        'inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs transition-colors',
+                        isSelected ? 'border-transparent' : 'border-border hover:bg-accent',
+                      )}
+                      style={
+                        isSelected
+                          ? {
+                              backgroundColor: `${label.color}25`,
+                              borderColor: `${label.color}50`,
+                              color: label.color,
+                            }
+                          : undefined
+                      }
+                    >
+                      <span
+                        className="h-2.5 w-2.5 shrink-0 rounded-full"
+                        style={{ backgroundColor: label.color }}
+                      />
+                      {label.name}
+                      {isSelected && <Check className="h-3 w-3" />}
+                    </button>
+                  )
+                })}
+              </div>
+            </div>
+          )}
+
           {/* 제출 */}
           <div className="flex justify-end gap-2">
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
               취소
             </Button>
-            <Button type="submit" disabled={createTaskMutation.isPending}>
-              {createTaskMutation.isPending ? '생성 중...' : '생성'}
+            <Button
+              type="submit"
+              disabled={createTaskMutation.isPending || addTaskLabelsMutation.isPending}
+            >
+              {createTaskMutation.isPending || addTaskLabelsMutation.isPending
+                ? '생성 중...'
+                : '생성'}
             </Button>
           </div>
         </form>
