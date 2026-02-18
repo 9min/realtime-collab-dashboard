@@ -52,6 +52,7 @@ interface KanbanColumnProps {
   blockedTaskIds?: Set<string>
   recurringTaskIds?: Set<string>
   taskAssigneeMap?: Map<string, TaskAssigneeWithProfile[]>
+  subtaskMap?: Map<string, Tables<'subtasks'>[]>
 }
 
 export const KanbanColumn = memo(function KanbanColumn({
@@ -73,6 +74,7 @@ export const KanbanColumn = memo(function KanbanColumn({
   blockedTaskIds,
   recurringTaskIds,
   taskAssigneeMap,
+  subtaskMap,
 }: KanbanColumnProps) {
   const [isEditing, setIsEditing] = useState(false)
   const [editTitle, setEditTitle] = useState(column.title)
@@ -276,6 +278,7 @@ export const KanbanColumn = memo(function KanbanColumn({
                     isBlocked={blockedTaskIds?.has(task.id)}
                     isRecurring={recurringTaskIds?.has(task.id)}
                     taskAssignees={taskAssigneeMap?.get(task.id)}
+                    subtasks={subtaskMap?.get(task.id)}
                   />
                 )
               })}

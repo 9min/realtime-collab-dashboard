@@ -29,6 +29,7 @@ import { useDependencies } from '@/queries/use-dependencies'
 import { useLabels, useTaskLabels } from '@/queries/use-labels'
 import { useProject, useProjectMembers } from '@/queries/use-projects'
 import { useProjectRecurrences } from '@/queries/use-recurrences'
+import { useProjectSubtasks } from '@/queries/use-subtasks'
 import { useProjectTaskAssignees } from '@/queries/use-task-assignees'
 import { useTasks, useMoveTask } from '@/queries/use-tasks'
 import { useKanbanFilterStore } from '@/stores/kanban-filter-store'
@@ -103,6 +104,24 @@ export function KanbanBoard({ projectId }: KanbanBoardProps) {
 
   // 반복 태스크 ID Set
   const { data: recurringTaskIds } = useProjectRecurrences(projectId)
+
+  // 서브태스크 데이터 (feature_subtasks가 켜진 경우에만)
+  const { data: projectSubtasks } = useProjectSubtasks(projectId)
+
+  // task→subtasks[] 맵 생성
+  const subtaskMap = useMemo(() => {
+    const map = new Map<string, NonNullable<typeof projectSubtasks>>()
+    if (!projectSubtasks || !projectFeatures.feature_subtasks) return map
+    for (const st of projectSubtasks) {
+      const existing = map.get(st.task_id)
+      if (existing) {
+        existing.push(st)
+      } else {
+        map.set(st.task_id, [st])
+      }
+    }
+    return map
+  }, [projectSubtasks, projectFeatures.feature_subtasks])
 
   // 다중 담당자 데이터
   const { data: projectTaskAssignees } = useProjectTaskAssignees(projectId)
@@ -479,6 +498,7 @@ export function KanbanBoard({ projectId }: KanbanBoardProps) {
               taskLabelMap={projectFeatures.feature_labels ? taskLabelMap : new Map()}
               blockedTaskIds={blockedTaskIds}
               recurringTaskIds={recurringTaskIds}
+              subtaskMap={projectFeatures.feature_subtasks ? subtaskMap : undefined}
             />
           ) : (
             <div className="flex gap-4 pb-4">
@@ -505,6 +525,7 @@ export function KanbanBoard({ projectId }: KanbanBoardProps) {
                   taskAssigneeMap={
                     projectFeatures.feature_multi_assignees !== false ? taskAssigneeMap : undefined
                   }
+                  subtaskMap={projectFeatures.feature_subtasks ? subtaskMap : undefined}
                 />
               ))}
 

@@ -68,6 +68,24 @@ export async function updateSubtask(
   return { data, error: null }
 }
 
+export async function getProjectSubtasks(
+  supabase: Client,
+  projectId: string,
+): Promise<ServiceResult<Subtask[]>> {
+  const { data, error } = await supabase
+    .from('subtasks')
+    .select('*')
+    .eq('project_id', projectId)
+    .order('position', { ascending: true })
+    .returns<Subtask[]>()
+
+  if (error) {
+    return { data: null, error: { code: error.code, message: error.message } }
+  }
+
+  return { data, error: null }
+}
+
 export async function deleteSubtask(
   supabase: Client,
   subtaskId: string,
