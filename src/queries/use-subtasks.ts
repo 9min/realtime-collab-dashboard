@@ -6,6 +6,7 @@ import { toast } from 'sonner'
 import { useSupabase } from '@/components/providers/supabase-provider'
 import {
   getSubtasks,
+  getProjectSubtasks,
   createSubtask,
   updateSubtask,
   deleteSubtask,
@@ -16,6 +17,7 @@ type Subtask = Tables<'subtasks'>
 
 export const subtaskKeys = {
   list: (taskId: string) => ['subtasks', taskId] as const,
+  byProject: (projectId: string) => ['subtasks', 'project', projectId] as const,
 }
 
 export function useSubtasks(taskId: string) {
@@ -26,6 +28,20 @@ export function useSubtasks(taskId: string) {
     queryKey: subtaskKeys.list(taskId),
     queryFn: async () => {
       const result = await getSubtasks(supabase, taskId)
+      if (result.error) throw new Error(result.error.message)
+      return result.data
+    },
+  })
+}
+
+export function useProjectSubtasks(projectId: string) {
+  const supabase = useSupabase()
+
+  return useQuery({
+    // eslint-disable-next-line @tanstack/query/exhaustive-deps
+    queryKey: subtaskKeys.byProject(projectId),
+    queryFn: async () => {
+      const result = await getProjectSubtasks(supabase, projectId)
       if (result.error) throw new Error(result.error.message)
       return result.data
     },

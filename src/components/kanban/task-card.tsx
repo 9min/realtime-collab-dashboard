@@ -18,6 +18,7 @@ import { AvatarGroup } from './assignee-picker'
 import { FavoriteButton } from './favorite-button'
 import { LabelBadge } from './label-badge'
 import { RecurrenceBadge } from './recurrence-badge'
+import { SubtaskBadge } from './subtask-badge'
 
 interface MemberProfile {
   user_id: string
@@ -34,6 +35,7 @@ interface TaskCardProps {
   isBlocked?: boolean
   isRecurring?: boolean
   taskAssignees?: TaskAssigneeWithProfile[]
+  subtasks?: Tables<'subtasks'>[]
 }
 
 export const TaskCard = memo(function TaskCard({
@@ -46,6 +48,7 @@ export const TaskCard = memo(function TaskCard({
   isBlocked = false,
   isRecurring = false,
   taskAssignees,
+  subtasks,
 }: TaskCardProps) {
   const dateLabel = formatDateRange(task.start_date, task.due_date)
 
@@ -83,13 +86,18 @@ export const TaskCard = memo(function TaskCard({
             }}
           >
             <CardHeader className="gap-0 px-2.5 pt-2 pb-0.5">
-              {taskLabels && taskLabels.length > 0 && (
-                <div className="mb-0.5 flex flex-wrap gap-1">
-                  {taskLabels.map((l) => (
+              {(taskLabels && taskLabels.length > 0) || (subtasks && subtasks.length > 0) ? (
+                <div className="mb-0.5 flex flex-wrap items-center gap-1">
+                  {taskLabels?.map((l) => (
                     <LabelBadge key={l.id} label={l} size="sm" />
                   ))}
+                  {subtasks && subtasks.length > 0 && (
+                    <div className="ml-auto">
+                      <SubtaskBadge subtasks={subtasks} />
+                    </div>
+                  )}
                 </div>
-              )}
+              ) : null}
               <span className="flex min-w-0 items-center gap-1 text-sm leading-snug font-medium">
                 {isBlocked && (
                   <Tooltip>
