@@ -3,6 +3,10 @@
 import { useState } from 'react'
 import { ChevronLeft, Download, Loader2 } from 'lucide-react'
 
+import { toast } from 'sonner'
+
+import { PRIORITY_LABELS, PRIORITY_BADGE_STYLES } from '@/lib/constants'
+import { cn } from '@/lib/utils'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import {
@@ -12,8 +16,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
-import { PRIORITY_LABELS, PRIORITY_BADGE_STYLES } from '@/lib/constants'
-import { cn } from '@/lib/utils'
 import { useProjects } from '@/queries/use-projects'
 import { useTaskTemplates, useImportTaskTemplate } from '@/queries/use-task-templates'
 import { useAuth } from '@/hooks/use-auth'
@@ -66,39 +68,49 @@ function ProjectSelectStep({ currentProjectId, onSelect }: ProjectSelectStepProp
       (p.current_user_role === 'admin' || p.current_user_role === 'owner'),
   )
 
+  const renderContent = () => {
+    if (isLoading) {
+      return (
+        <div className="flex items-center justify-center py-8">
+          <Loader2 className="text-muted-foreground h-5 w-5 animate-spin" />
+        </div>
+      )
+    }
+
+    if (!importableProjects || importableProjects.length === 0) {
+      return (
+        <p className="text-muted-foreground py-8 text-center text-sm">
+          가져올 수 있는 프로젝트가 없습니다
+        </p>
+      )
+    }
+
+    return (
+      <div className="space-y-1">
+        {importableProjects.map((project) => (
+          <button
+            key={project.id}
+            type="button"
+            className="hover:bg-accent w-full rounded-md px-3 py-2 text-left transition-colors"
+            onClick={() => onSelect(project.id)}
+          >
+            <p className="text-sm font-medium">{project.name}</p>
+            {project.description && (
+              <p className="text-muted-foreground truncate text-xs">{project.description}</p>
+            )}
+          </button>
+        ))}
+      </div>
+    )
+  }
+
   return (
     <>
       <DialogHeader>
         <DialogTitle>템플릿 가져오기</DialogTitle>
         <DialogDescription>템플릿을 가져올 프로젝트를 선택하세요</DialogDescription>
       </DialogHeader>
-      <div className="max-h-64 overflow-y-auto">
-        {isLoading ? (
-          <div className="flex items-center justify-center py-8">
-            <Loader2 className="text-muted-foreground h-5 w-5 animate-spin" />
-          </div>
-        ) : !importableProjects || importableProjects.length === 0 ? (
-          <p className="text-muted-foreground py-8 text-center text-sm">
-            가져올 수 있는 프로젝트가 없습니다
-          </p>
-        ) : (
-          <div className="space-y-1">
-            {importableProjects.map((project) => (
-              <button
-                key={project.id}
-                type="button"
-                className="hover:bg-accent w-full rounded-md px-3 py-2 text-left transition-colors"
-                onClick={() => onSelect(project.id)}
-              >
-                <p className="text-sm font-medium">{project.name}</p>
-                {project.description && (
-                  <p className="text-muted-foreground truncate text-xs">{project.description}</p>
-                )}
-              </button>
-            ))}
-          </div>
-        )}
-      </div>
+      <div className="max-h-64 overflow-y-auto">{renderContent()}</div>
     </>
   )
 }
@@ -115,7 +127,10 @@ function TemplateSelectStep({ sourceProjectId, targetProjectId, onBack }: Templa
   const importMutation = useImportTaskTemplate(targetProjectId)
 
   const handleImport = (template: TaskTemplate) => {
-    if (!user) return
+    if (!user) {
+      toast.error('로그인이 필요합니다')
+      return
+    }
 
     importMutation.mutate({
       project_id: targetProjectId,
@@ -127,6 +142,54 @@ function TemplateSelectStep({ sourceProjectId, targetProjectId, onBack }: Templa
       labels_template: [],
       is_personal: false,
     })
+  }
+
+  const renderContent = () => {
+    if (isLoading) {
+      return (
+        <div className="flex items-center justify-center py-8">
+          <Loader2 className="text-muted-foreground h-5 w-5 animate-spin" />
+        </div>
+      )
+    }
+
+    if (!templates || templates.length === 0) {
+      return (
+        <p className="text-muted-foreground py-8 text-center text-sm">
+          이 프로젝트에 템플릿이 없습니다
+        </p>
+      )
+    }
+
+    return (
+      <div className="space-y-1">
+        {templates.map((template) => (
+          <div key={template.id} className="flex items-center gap-2 rounded-md px-3 py-2">
+            <span className="flex-1 truncate text-sm font-medium">{template.name}</span>
+            <Badge
+              variant="secondary"
+              className={cn('shrink-0 text-xs', PRIORITY_BADGE_STYLES[template.priority])}
+            >
+              {PRIORITY_LABELS[template.priority]}
+            </Badge>
+            <Button
+              variant="outline"
+              size="sm"
+              className="h-7 shrink-0 gap-1"
+              disabled={importMutation.isPending}
+              onClick={() => handleImport(template)}
+            >
+              {importMutation.isPending ? (
+                <Loader2 className="h-3 w-3 animate-spin" />
+              ) : (
+                <Download className="h-3 w-3" />
+              )}
+              가져오기
+            </Button>
+          </div>
+        ))}
+      </div>
+    )
   }
 
   return (
@@ -142,45 +205,7 @@ function TemplateSelectStep({ sourceProjectId, targetProjectId, onBack }: Templa
           </div>
         </div>
       </DialogHeader>
-      <div className="max-h-64 overflow-y-auto">
-        {isLoading ? (
-          <div className="flex items-center justify-center py-8">
-            <Loader2 className="text-muted-foreground h-5 w-5 animate-spin" />
-          </div>
-        ) : !templates || templates.length === 0 ? (
-          <p className="text-muted-foreground py-8 text-center text-sm">
-            이 프로젝트에 템플릿이 없습니다
-          </p>
-        ) : (
-          <div className="space-y-1">
-            {templates.map((template) => (
-              <div key={template.id} className="flex items-center gap-2 rounded-md px-3 py-2">
-                <span className="flex-1 truncate text-sm font-medium">{template.name}</span>
-                <Badge
-                  variant="secondary"
-                  className={cn('shrink-0 text-xs', PRIORITY_BADGE_STYLES[template.priority])}
-                >
-                  {PRIORITY_LABELS[template.priority]}
-                </Badge>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="h-7 shrink-0 gap-1"
-                  disabled={importMutation.isPending}
-                  onClick={() => handleImport(template)}
-                >
-                  {importMutation.isPending ? (
-                    <Loader2 className="h-3 w-3 animate-spin" />
-                  ) : (
-                    <Download className="h-3 w-3" />
-                  )}
-                  가져오기
-                </Button>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
+      <div className="max-h-64 overflow-y-auto">{renderContent()}</div>
     </>
   )
 }
