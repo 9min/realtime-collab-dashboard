@@ -3,6 +3,7 @@
 import { use, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import {
+  ArrowRightLeft,
   Trash2,
   UserPlus,
   Shield,
@@ -54,6 +55,7 @@ import {
   useRemoveMember,
   useUpdateProject,
   useDeleteProject,
+  useTransferOwnership,
 } from '@/queries/use-projects'
 import { AutomationManager } from '@/components/automation/automation-manager'
 import { CustomFieldManager } from '@/components/custom-fields/custom-field-manager'
@@ -99,12 +101,14 @@ export default function ProjectSettingsPage({ params }: ProjectSettingsPageProps
   const removeMutation = useRemoveMember(projectId)
   const updateMutation = useUpdateProject(projectId)
   const deleteMutation = useDeleteProject()
+  const transferMutation = useTransferOwnership(projectId)
 
   const [isEditing, setIsEditing] = useState(false)
   const [projectName, setProjectName] = useState('')
   const [projectDescription, setProjectDescription] = useState('')
   const [selectedUser, setSelectedUser] = useState<SelectedUser | null>(null)
   const [inviteRole, setInviteRole] = useState<string>(MEMBER_ROLE.MEMBER)
+  const [transferTargetId, setTransferTargetId] = useState<string>('')
 
   // 현재 유저의 역할 확인
   const currentMember = members?.find((m) => m.user_id === user?.id)
@@ -606,6 +610,70 @@ export default function ProjectSettingsPage({ params }: ProjectSettingsPageProps
             위험 영역
           </h3>
 
+          {/* 소유권 이전 */}
+          <Card className="border-destructive/30 space-y-4 p-5">
+            <div>
+              <h4 className="text-base font-semibold">소유권 이전</h4>
+              <p className="text-muted-foreground mt-1 text-sm">
+                프로젝트 소유권을 다른 멤버에게 이전합니다. 이전 후 내 역할은 관리자로 변경됩니다.
+              </p>
+            </div>
+            <div className="flex gap-2">
+              <Select value={transferTargetId} onValueChange={setTransferTargetId}>
+                <SelectTrigger className="w-48">
+                  <SelectValue placeholder="멤버 선택" />
+                </SelectTrigger>
+                <SelectContent>
+                  {members
+                    ?.filter((m) => m.user_id !== user?.id)
+                    .map((m) => (
+                      <SelectItem key={m.user_id} value={m.user_id}>
+                        {m.profiles?.full_name ?? m.profiles?.email ?? '사용자'}
+                      </SelectItem>
+                    ))}
+                </SelectContent>
+              </Select>
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button
+                    variant="destructive"
+                    disabled={!transferTargetId || transferMutation.isPending}
+                  >
+                    <ArrowRightLeft className="mr-2 h-4 w-4" />
+                    소유권 이전
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>
+                      &quot;
+                      {members?.find((m) => m.user_id === transferTargetId)?.profiles?.full_name ??
+                        '사용자'}
+                      &quot;님에게 소유권을 이전하시겠습니까?
+                    </AlertDialogTitle>
+                    <AlertDialogDescription>
+                      소유권 이전 후 내 역할은 관리자로 변경되며, 이 작업은 되돌릴 수 없습니다.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel className="cursor-pointer">취소</AlertDialogCancel>
+                    <AlertDialogAction
+                      className="bg-destructive text-destructive-foreground hover:bg-destructive/90 cursor-pointer"
+                      onClick={() =>
+                        transferMutation.mutate(transferTargetId, {
+                          onSuccess: () => setTransferTargetId(''),
+                        })
+                      }
+                    >
+                      이전
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+            </div>
+          </Card>
+
+          {/* 프로젝트 삭제 */}
           <Card className="border-destructive/30 space-y-4 p-5">
             <div>
               <h4 className="text-base font-semibold">프로젝트 삭제</h4>

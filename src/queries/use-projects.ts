@@ -16,6 +16,7 @@ import {
   searchProfiles,
   updateMemberRole,
   removeMember,
+  transferOwnership,
 } from '@/services/project-service'
 import type { InsertTables, UpdateTables } from '@/types/database'
 import type { MemberRole } from '@/types/common'
@@ -221,6 +222,29 @@ export function useSearchProfiles(query: string, excludeUserIds: string[]) {
       return result.data
     },
     enabled: query.length >= 2,
+  })
+}
+
+// 소유권 이전
+export function useTransferOwnership(projectId: string) {
+  const supabase = useSupabase()
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: async (newOwnerId: string) => {
+      const result = await transferOwnership(supabase, projectId, newOwnerId)
+      if (result.error) throw new Error(result.error.message)
+      return result.data
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: projectKeys.all })
+      queryClient.invalidateQueries({ queryKey: projectKeys.detail(projectId) })
+      queryClient.invalidateQueries({ queryKey: projectKeys.members(projectId) })
+      toast.success('소유권이 이전되었습니다')
+    },
+    onError: () => {
+      toast.error('소유권 이전에 실패했습니다')
+    },
   })
 }
 
