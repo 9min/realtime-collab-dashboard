@@ -47,13 +47,14 @@ class DemoDataStore {
     const rows = this.getTable(table)
     const updated: Row[] = []
 
-    for (const row of rows) {
-      if (this.matchesFilters(row, filters)) {
-        Object.assign(row, data)
-        if (row['updated_at'] !== undefined) {
-          row['updated_at'] = new Date().toISOString()
+    for (let i = 0; i < rows.length; i++) {
+      if (this.matchesFilters(rows[i], filters)) {
+        const newRow: Row = { ...rows[i], ...data }
+        if (newRow['updated_at'] !== undefined) {
+          newRow['updated_at'] = new Date().toISOString()
         }
-        updated.push(row)
+        rows[i] = newRow
+        updated.push(newRow)
       }
     }
 
