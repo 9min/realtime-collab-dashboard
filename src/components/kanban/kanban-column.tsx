@@ -114,7 +114,7 @@ export const KanbanColumn = memo(function KanbanColumn({
         'bg-muted/60 dark:bg-muted/30 flex min-w-0 flex-1 flex-col overflow-hidden rounded-lg border shadow-sm',
         isOverWipLimit && 'border-red-400 dark:border-red-600',
       )}
-      style={{ height: 'calc(100vh - 220px)', minHeight: 300 }}
+      style={{ maxHeight: 'calc(100dvh - 19rem)', minHeight: 300 }}
     >
       {/* 컬럼 헤더 */}
       <div
@@ -244,7 +244,7 @@ export const KanbanColumn = memo(function KanbanColumn({
       {/* 태스크 목록 (드롭 영역) */}
       <Droppable droppableId={column.id}>
         {(provided, snapshot) => (
-          <ScrollArea className="flex-1">
+          <ScrollArea className="min-h-0 flex-1">
             <div
               ref={provided.innerRef}
               {...provided.droppableProps}
