@@ -11,11 +11,5 @@ export default function KanbanBoardPage() {
   // 실시간 동기화: tasks + kanban_columns 변경 구독
   useRealtimeSubscription(params.projectId)
 
-  return (
-    <div className="flex h-full flex-col">
-      <div className="flex-1 overflow-hidden">
-        <KanbanBoard projectId={params.projectId} />
-      </div>
-    </div>
-  )
+  return <KanbanBoard projectId={params.projectId} />
 }
