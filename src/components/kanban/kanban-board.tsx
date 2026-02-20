@@ -433,12 +433,50 @@ export function KanbanBoard({ projectId }: KanbanBoardProps) {
     [deleteColumnMutation],
   )
 
-  // 완료 컬럼 토글
+  // 완료 컬럼 토글 (프로젝트당 하나만 허용, 자동 전환)
   const handleToggleDone = useCallback(
-    (columnId: string, isDone: boolean) => {
-      updateColumnMutation.mutate({ columnId, input: { is_done_column: isDone } })
+    async (columnId: string, isDone: boolean) => {
+      const targetColumn = columns?.find((c) => c.id === columnId)
+      const existingDoneColumn = columns?.find((c) => c.is_done_column && c.id !== columnId)
+
+      try {
+        // 다른 컬럼이 이미 완료 컬럼이면 먼저 해제
+        if (isDone && existingDoneColumn) {
+          const unsetResult = await updateColumnMutation.mutateAsync({
+            columnId: existingDoneColumn.id,
+            input: { is_done_column: false },
+          })
+          if (unsetResult.error) {
+            toast.error('완료 컬럼 변경에 실패했습니다')
+            return
+          }
+        }
+
+        const result = await updateColumnMutation.mutateAsync({
+          columnId,
+          input: { is_done_column: isDone },
+        })
+        if (result.error) {
+          toast.error('완료 컬럼 변경에 실패했습니다')
+          return
+        }
+
+        if (isDone) {
+          if (existingDoneColumn) {
+            toast.success(
+              `완료 컬럼이 '${existingDoneColumn.title}'에서 '${targetColumn?.title}'(으)로 변경되었습니다`,
+            )
+          } else {
+            toast.success(`'${targetColumn?.title}'이(가) 완료 컬럼으로 지정되었습니다`)
+          }
+        } else {
+          toast.success(`'${targetColumn?.title}' 완료 컬럼 지정이 해제되었습니다`)
+        }
+      } catch {
+        toast.error('완료 컬럼 변경에 실패했습니다')
+      }
     },
-    [updateColumnMutation],
+    [columns, updateColumnMutation],
   )
 
   if (columnsLoading || tasksLoading) {
