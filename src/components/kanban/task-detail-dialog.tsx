@@ -197,6 +197,8 @@ export function TaskDetailDialog({
     )
   }
 
+  const DONE_COLUMN_INSERT_POSITION = 0
+
   const handleMoveToDone = () => {
     if (!doneColumn) return
     moveTaskMutation.mutate(
@@ -204,7 +206,7 @@ export function TaskDetailDialog({
         taskId: task.id,
         sourceColumnId: task.column_id,
         destinationColumnId: doneColumn.id,
-        newPosition: 0,
+        newPosition: DONE_COLUMN_INSERT_POSITION,
       },
       {
         onSuccess: () => {
