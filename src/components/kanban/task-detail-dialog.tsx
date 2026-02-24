@@ -45,9 +45,6 @@ import { useProjectMembers } from '@/queries/use-projects'
 import { useUpdateTask, useDeleteTask, useMoveTask } from '@/queries/use-tasks'
 import type { Tables } from '@/types/database'
 
-const UNASSIGNED_VALUE = '__none__'
-const DONE_COLUMN_INSERT_POSITION = 0
-
 import { CustomFieldSection } from '@/components/custom-fields/custom-field-section'
 import { TimeEntryForm } from '@/components/time/time-entry-form'
 import { TimeEntryList } from '@/components/time/time-entry-list'
@@ -65,6 +62,9 @@ import { LabelBadge } from './label-badge'
 import { LabelPicker } from './label-picker'
 import { RecurrenceSection } from './recurrence-section'
 import { SubtaskSection } from './subtask-section'
+
+const UNASSIGNED_VALUE = '__none__'
+const DONE_COLUMN_INSERT_POSITION = 0
 
 const PRIORITY_STYLES = {
   low: 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300',
