@@ -46,6 +46,7 @@ import { useUpdateTask, useDeleteTask, useMoveTask } from '@/queries/use-tasks'
 import type { Tables } from '@/types/database'
 
 const UNASSIGNED_VALUE = '__none__'
+const DONE_COLUMN_INSERT_POSITION = 0
 
 import { CustomFieldSection } from '@/components/custom-fields/custom-field-section'
 import { TimeEntryForm } from '@/components/time/time-entry-form'
@@ -196,8 +197,6 @@ export function TaskDetailDialog({
       },
     )
   }
-
-  const DONE_COLUMN_INSERT_POSITION = 0
 
   const handleMoveToDone = () => {
     if (!doneColumn) return
