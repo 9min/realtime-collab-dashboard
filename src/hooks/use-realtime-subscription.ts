@@ -134,6 +134,7 @@ export function useRealtimeSubscription(projectId: string) {
           () => {
             queryClient.invalidateQueries({ queryKey: columnKeys.list(projectId) })
             queryClient.invalidateQueries({ queryKey: activityKeys.list(projectId) })
+            queryClient.invalidateQueries({ queryKey: ['my-tasks'] })
           },
         )
         // projects 테이블 삭제 감지 (프로젝트 삭제 시 다른 멤버에게 알림)

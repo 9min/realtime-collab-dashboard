@@ -225,6 +225,7 @@ export function useMoveTask(projectId: string) {
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: taskKeys.list(projectId) })
+      queryClient.invalidateQueries({ queryKey: ['my-tasks'] })
     },
   })
 }

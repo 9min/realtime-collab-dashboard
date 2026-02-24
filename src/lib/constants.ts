@@ -47,22 +47,26 @@ export const DEFAULT_COLUMNS = [
 ] as const
 
 // 컬럼 헤더 색상 (타이틀 기반 매핑)
-export const COLUMN_COLORS: Record<string, { gradient: string; badge: string }> = {
+export const COLUMN_COLORS: Record<string, { gradient: string; badge: string; pill: string }> = {
   '할 일': {
     gradient: 'from-blue-50 to-sky-50 dark:from-blue-900/40 dark:to-sky-900/40',
     badge: 'bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300',
+    pill: 'border-blue-200 bg-blue-50 text-blue-700 hover:bg-blue-100 dark:border-blue-800 dark:bg-blue-950/50 dark:text-blue-400 dark:hover:bg-blue-900/50',
   },
   '진행 중': {
     gradient: 'from-amber-50 to-yellow-50 dark:from-amber-900/40 dark:to-yellow-900/40',
     badge: 'bg-amber-100 text-amber-700 dark:bg-amber-900/50 dark:text-amber-300',
+    pill: 'border-amber-200 bg-amber-50 text-amber-700 hover:bg-amber-100 dark:border-amber-800 dark:bg-amber-950/50 dark:text-amber-400 dark:hover:bg-amber-900/50',
   },
   완료: {
     gradient: 'from-green-50 to-emerald-50 dark:from-green-900/40 dark:to-emerald-900/40',
     badge: 'bg-green-100 text-green-700 dark:bg-green-900/50 dark:text-green-300',
+    pill: 'border-green-200 bg-green-50 text-green-700 hover:bg-green-100 dark:border-green-800 dark:bg-green-950/50 dark:text-green-400 dark:hover:bg-green-900/50',
   },
   '논의 필요': {
     gradient: 'from-rose-50 to-red-50 dark:from-rose-900/40 dark:to-red-900/40',
     badge: 'bg-rose-100 text-rose-700 dark:bg-rose-900/50 dark:text-rose-300',
+    pill: 'border-rose-200 bg-rose-50 text-rose-700 hover:bg-rose-100 dark:border-rose-800 dark:bg-rose-950/50 dark:text-rose-400 dark:hover:bg-rose-900/50',
   },
 } as const
 
@@ -70,6 +74,7 @@ export const COLUMN_COLORS: Record<string, { gradient: string; badge: string }> 
 export const COLUMN_DEFAULT_COLORS = {
   gradient: 'from-slate-50 to-gray-50 dark:from-slate-900/40 dark:to-gray-900/40',
   badge: 'bg-slate-100 text-slate-700 dark:bg-slate-900/50 dark:text-slate-300',
+  pill: 'border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100 dark:border-slate-800 dark:bg-slate-950/50 dark:text-slate-400 dark:hover:bg-slate-900/50',
 } as const
 
 // Realtime 채널 접두사

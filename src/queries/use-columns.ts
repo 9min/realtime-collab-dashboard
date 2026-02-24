@@ -57,6 +57,7 @@ export function useUpdateColumn(projectId: string) {
     }) => updateColumn(supabase, columnId, input),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: columnKeys.list(projectId) })
+      queryClient.invalidateQueries({ queryKey: ['my-tasks'] })
     },
   })
 }

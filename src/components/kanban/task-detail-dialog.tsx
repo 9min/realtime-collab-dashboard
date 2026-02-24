@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Calendar, ChevronDown, Clock, Columns3, Trash2, User } from 'lucide-react'
+import { Calendar, CheckCircle2, ChevronDown, Clock, Columns3, Trash2, User } from 'lucide-react'
 import { toast } from 'sonner'
 
 import {
@@ -38,9 +38,11 @@ import {
 } from '@/components/ui/select'
 import { Separator } from '@/components/ui/separator'
 import { useAuth } from '@/hooks/use-auth'
-import { useProjectMembers } from '@/queries/use-projects'
-import { useUpdateTask, useDeleteTask } from '@/queries/use-tasks'
+import { COLUMN_COLORS, COLUMN_DEFAULT_COLORS, MEMBER_ROLE } from '@/lib/constants'
 import { cn } from '@/lib/utils'
+import { useColumns } from '@/queries/use-columns'
+import { useProjectMembers } from '@/queries/use-projects'
+import { useUpdateTask, useDeleteTask, useMoveTask } from '@/queries/use-tasks'
 import type { Tables } from '@/types/database'
 
 const UNASSIGNED_VALUE = '__none__'
@@ -115,8 +117,15 @@ export function TaskDetailDialog({
   const pathname = usePathname()
   const updateTaskMutation = useUpdateTask(projectId)
   const deleteTaskMutation = useDeleteTask(projectId)
+  const moveTaskMutation = useMoveTask(projectId)
   const { data: members } = useProjectMembers(projectId)
+  const { data: columns } = useColumns(projectId)
   const isOnBoardPage = pathname.includes(`/projects/${projectId}/board`)
+
+  // 관리자 여부 판단
+  const currentMemberRole = members?.find((m) => m.user_id === user?.id)?.role
+  const isAdminOrOwner =
+    currentMemberRole === MEMBER_ROLE.OWNER || currentMemberRole === MEMBER_ROLE.ADMIN
 
   // 담당자 기반 권한: 담당자 없으면 모든 멤버 가능, 있으면 owner/admin/담당자만
   const canInteract =
@@ -139,6 +148,13 @@ export function TaskDetailDialog({
   const [editDueDate, setEditDueDate] = useState('')
 
   if (!task) return null
+
+  // 완료 컬럼 찾기 + 버튼 노출 조건
+  const doneColumn = columns?.find((c) => c.is_done_column)
+  const showMoveToDone = isAdminOrOwner && !!doneColumn && task.column_id !== doneColumn.id
+  const doneColumnColor = doneColumn
+    ? (COLUMN_COLORS[doneColumn.title] ?? COLUMN_DEFAULT_COLORS)
+    : COLUMN_DEFAULT_COLORS
 
   const assigneeProfile = task.assignee_id
     ? members?.find((m) => m.user_id === task.assignee_id)?.profiles
@@ -175,6 +191,24 @@ export function TaskDetailDialog({
       {
         onSuccess: () => {
           setIsEditing(false)
+          onOpenChange(false)
+        },
+      },
+    )
+  }
+
+  const handleMoveToDone = () => {
+    if (!doneColumn) return
+    moveTaskMutation.mutate(
+      {
+        taskId: task.id,
+        sourceColumnId: task.column_id,
+        destinationColumnId: doneColumn.id,
+        newPosition: 0,
+      },
+      {
+        onSuccess: () => {
+          toast.success('완료 컬럼으로 이동되었습니다')
           onOpenChange(false)
         },
       },
@@ -222,16 +256,34 @@ export function TaskDetailDialog({
         </DialogHeader>
 
         <div className="flex min-h-0 flex-col gap-4 overflow-y-auto pr-2">
-          {/* 칸반 보드 이동 링크 */}
-          {!isOnBoardPage && (
-            <Link
-              href={`/projects/${projectId}/board?taskId=${task.id}`}
-              className="inline-flex w-fit items-center gap-1.5 rounded-full border border-blue-200 bg-blue-50 px-2.5 py-1 text-xs font-medium text-blue-600 transition-colors hover:bg-blue-100 dark:border-blue-800 dark:bg-blue-950/50 dark:text-blue-400 dark:hover:bg-blue-900/50"
-              onClick={() => onOpenChange(false)}
-            >
-              <Columns3 className="h-3 w-3" />
-              칸반 보드에서 보기
-            </Link>
+          {/* 상단 퀵 액션 영역 */}
+          {(!isOnBoardPage || showMoveToDone) && (
+            <div className="flex flex-wrap items-center gap-2">
+              {!isOnBoardPage && (
+                <Link
+                  href={`/projects/${projectId}/board?taskId=${task.id}`}
+                  className="inline-flex w-fit items-center gap-1.5 rounded-full border border-blue-200 bg-blue-50 px-2.5 py-1 text-xs font-medium text-blue-600 transition-colors hover:bg-blue-100 dark:border-blue-800 dark:bg-blue-950/50 dark:text-blue-400 dark:hover:bg-blue-900/50"
+                  onClick={() => onOpenChange(false)}
+                >
+                  <Columns3 className="h-3 w-3" />
+                  칸반 보드에서 보기
+                </Link>
+              )}
+              {showMoveToDone && (
+                <button
+                  type="button"
+                  onClick={handleMoveToDone}
+                  disabled={moveTaskMutation.isPending}
+                  className={cn(
+                    'inline-flex w-fit cursor-pointer items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-medium transition-colors disabled:opacity-50',
+                    doneColumnColor.pill,
+                  )}
+                >
+                  <CheckCircle2 className="h-3 w-3" />
+                  완료 컬럼으로 이동하기
+                </button>
+              )}
+            </div>
           )}
 
           {/* 우선순위 */}
