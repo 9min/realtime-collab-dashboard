@@ -1,7 +1,16 @@
 'use client'
 
-import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type ReactNode,
+} from 'react'
 import type { SupabaseClient } from '@supabase/supabase-js'
+import { useQueryClient } from '@tanstack/react-query'
 
 import { createBrowserClient } from '@/lib/supabase/client'
 import { createMockSupabaseClient } from '@/lib/demo/mock-supabase-client'
@@ -27,6 +36,18 @@ export function SupabaseProvider({ children }: SupabaseProviderProps) {
   useEffect(() => {
     if (!hydrated) hydrate()
   }, [hydrated, hydrate])
+
+  // isDemoMode 전환 시 TanStack Query 캐시를 클리어하여
+  // 이전 인증 컨텍스트의 데이터가 새 컨텍스트에 노출되는 것을 방지
+  const queryClient = useQueryClient()
+  const prevDemoModeRef = useRef<boolean | null>(null)
+
+  useEffect(() => {
+    if (prevDemoModeRef.current !== null && prevDemoModeRef.current !== isDemoMode) {
+      queryClient.clear()
+    }
+    prevDemoModeRef.current = isDemoMode
+  }, [isDemoMode, queryClient])
 
   // hydration 완료 전에는 mock 클라이언트로 대체하여
   // Supabase 환경변수 미설정 시에도 크래시 방지

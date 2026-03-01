@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import { useQueryClient } from '@tanstack/react-query'
 import { BarChart3, Keyboard, ListTodo, LogOut, ShieldCheck, UserCog } from 'lucide-react'
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
@@ -41,8 +42,10 @@ export function Header() {
 
   const isDemoMode = useDemoModeStore((s) => s.isDemoMode)
   const exitDemoMode = useDemoModeStore((s) => s.exitDemoMode)
+  const queryClient = useQueryClient()
 
   const handleSignOut = async () => {
+    queryClient.clear()
     if (isDemoMode) {
       exitDemoMode()
       router.push('/login')
