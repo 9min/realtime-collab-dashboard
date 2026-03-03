@@ -1,0 +1,56 @@
+name: Keep Supabase Alive
+
+on:
+  schedule:
+    # 5일마다 실행 (매월 1, 6, 11, 16, 21, 26, 31일 UTC 00:00)
+    - cron: '0 0 */5 * *'
+  workflow_dispatch: # 수동 실행 지원
+
+jobs:
+  ping-supabase:
+    name: Ping Supabase Database
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions: {}
+    steps:
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 20
+
+      - name: Install supabase-js
+        run: npm install @supabase/supabase-js@2.97.0
+
+      - name: Ping Supabase
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+        run: |
+          node -e "
+            const { createClient } = require('@supabase/supabase-js');
+
+            async function main() {
+              const supabaseUrl = process.env.SUPABASE_URL;
+              const supabaseKey = process.env.SUPABASE_ANON_KEY;
+
+              if (!supabaseUrl || !supabaseKey) {
+                console.error('Missing SUPABASE_URL or SUPABASE_ANON_KEY secrets');
+                process.exit(1);
+              }
+
+              const supabase = createClient(supabaseUrl, supabaseKey);
+
+              const { data, error } = await supabase
+                .from('profiles')
+                .select('id')
+                .limit(1);
+
+              if (error) {
+                console.error('Supabase query failed:', error.message);
+                process.exit(1);
+              }
+
+              console.log('Supabase is alive. Rows returned:', data.length);
+            }
+
+            main();
+          "
