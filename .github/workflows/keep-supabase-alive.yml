@@ -10,13 +10,15 @@ jobs:
   ping-supabase:
     name: Ping Supabase Database
     runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions: {}
     steps:
       - uses: actions/setup-node@v6
         with:
           node-version: 20
 
       - name: Install supabase-js
-        run: npm install @supabase/supabase-js
+        run: npm install @supabase/supabase-js@2.97.0
 
       - name: Ping Supabase
         env:
