@@ -20,6 +20,9 @@ const eslintConfig = defineConfig([
 
       // Import 정렬은 Prettier에 위임
       'import/order': 'off',
+
+      // TanStack Query - supabase client는 싱글턴이므로 queryKey에 불필요
+      '@tanstack/query/exhaustive-deps': 'warn',
     },
   },
   globalIgnores(['.next/**', 'out/**', 'build/**', 'coverage/**', 'next-env.d.ts']),
