@@ -9,6 +9,7 @@ import {
   createTaskTemplate,
   updateTaskTemplate,
   deleteTaskTemplate,
+  reorderTaskTemplates,
   createTaskFromTemplate,
 } from '@/services/task-template-service'
 import { taskKeys } from '@/queries/use-tasks'
@@ -128,6 +129,45 @@ export function useDeleteTaskTemplate(projectId: string) {
     },
     onSuccess: () => {
       toast.success('템플릿이 삭제되었습니다')
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: templateKeys.list(projectId) })
+    },
+  })
+}
+
+export function useReorderTaskTemplates(projectId: string) {
+  const supabase = useSupabase()
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: async (orderedIds: string[]) => {
+      const result = await reorderTaskTemplates(supabase, projectId, orderedIds)
+      if (result.error) throw new Error(result.error.message)
+      return result.data
+    },
+    onMutate: async (orderedIds) => {
+      await queryClient.cancelQueries({ queryKey: templateKeys.list(projectId) })
+      const previous = queryClient.getQueryData<TaskTemplate[]>(templateKeys.list(projectId))
+
+      if (previous) {
+        const byId = new Map(previous.map((t) => [t.id, t]))
+        const reordered = orderedIds
+          .map((id, index) => {
+            const template = byId.get(id)
+            return template ? { ...template, position: index } : null
+          })
+          .filter((t): t is TaskTemplate => t !== null)
+        queryClient.setQueryData<TaskTemplate[]>(templateKeys.list(projectId), reordered)
+      }
+
+      return { previous }
+    },
+    onError: (_err, _vars, context) => {
+      if (context?.previous) {
+        queryClient.setQueryData(templateKeys.list(projectId), context.previous)
+      }
+      toast.error('템플릿 순서 변경에 실패했습니다')
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: templateKeys.list(projectId) })

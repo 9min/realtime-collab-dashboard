@@ -10,6 +10,7 @@ import {
   createTaskTemplate,
   updateTaskTemplate,
   deleteTaskTemplate,
+  reorderTaskTemplates,
   createTaskFromTemplate,
 } from './task-template-service'
 
@@ -137,6 +138,45 @@ describe('task-template-service', () => {
       }) as Client
 
       const result = await deleteTaskTemplate(client, 'nonexistent')
+
+      expect(result.data).toBeNull()
+      expect(result.error?.code).toBe('PGRST301')
+    })
+  })
+
+  describe('reorderTaskTemplates', () => {
+    it('순서대로 position을 업데이트하고 목록을 반환한다', async () => {
+      const reordered = [
+        { ...mockTemplate, id: 'template-bbb-222', position: 0 },
+        { ...mockTemplate, id: 'template-aaa-111', position: 1 },
+      ]
+      const client = createMockSupabaseClient({
+        fromResponses: [
+          // 1. update template-bbb-222 → position 0
+          { data: null, error: null },
+          // 2. update template-aaa-111 → position 1
+          { data: null, error: null },
+          // 3. getTaskTemplates 재조회
+          { data: reordered, error: null },
+        ],
+      }) as Client
+
+      const result = await reorderTaskTemplates(client, MOCK_PROJECT_ID, [
+        'template-bbb-222',
+        'template-aaa-111',
+      ])
+
+      expect(result.error).toBeNull()
+      expect(result.data?.[0].id).toBe('template-bbb-222')
+      expect(result.data?.[1].id).toBe('template-aaa-111')
+    })
+
+    it('업데이트 실패 시 에러를 반환한다', async () => {
+      const client = createMockSupabaseClient({
+        fromResponses: [{ data: null, error: { code: 'PGRST301', message: 'Update failed' } }],
+      }) as Client
+
+      const result = await reorderTaskTemplates(client, MOCK_PROJECT_ID, ['template-aaa-111'])
 
       expect(result.data).toBeNull()
       expect(result.error?.code).toBe('PGRST301')

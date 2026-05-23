@@ -134,6 +134,29 @@ export async function updateTaskTemplate(
   return { data: template, error: null }
 }
 
+// 템플릿 순서 일괄 업데이트 (DnD 후)
+export async function reorderTaskTemplates(
+  supabase: Client,
+  projectId: string,
+  orderedIds: string[],
+): Promise<ServiceResult<TaskTemplate[]>> {
+  const updates = orderedIds.map((id, index) =>
+    supabase
+      .from('task_templates')
+      .update({ position: index })
+      .eq('id', id)
+      .eq('project_id', projectId),
+  )
+
+  const results = await Promise.all(updates)
+  const failed = results.find((r) => r.error)
+  if (failed?.error) {
+    return { data: null, error: { code: failed.error.code, message: failed.error.message } }
+  }
+
+  return getTaskTemplates(supabase, projectId)
+}
+
 export async function deleteTaskTemplate(
   supabase: Client,
   templateId: string,
