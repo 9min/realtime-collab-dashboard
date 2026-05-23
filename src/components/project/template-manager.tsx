@@ -72,7 +72,7 @@ export function TemplateManager({ projectId }: TemplateManagerProps) {
     <div className="space-y-3">
       {/* 템플릿 목록 */}
       {templates && templates.length > 0 && (
-        <DragDropContext onDragEnd={handleDragEnd}>
+        <DragDropContext onDragEnd={handleDragEnd} autoScrollerOptions={{ disabled: true }}>
           <Droppable droppableId="template-list">
             {(provided) => (
               <div ref={provided.innerRef} {...provided.droppableProps} className="space-y-2">
