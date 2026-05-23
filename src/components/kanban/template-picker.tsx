@@ -1,5 +1,7 @@
 'use client'
 
+import { useState } from 'react'
+
 import { FileText } from 'lucide-react'
 
 import { Badge } from '@/components/ui/badge'
@@ -17,10 +19,11 @@ interface TemplatePickerProps {
 }
 
 export function TemplatePicker({ projectId, onSelect }: TemplatePickerProps) {
+  const [open, setOpen] = useState(false)
   const { data: templates, isLoading } = useTaskTemplates(projectId)
 
   return (
-    <Popover>
+    <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button variant="outline" size="sm" className="gap-1.5">
           <FileText className="h-4 w-4" />
@@ -47,7 +50,7 @@ export function TemplatePicker({ projectId, onSelect }: TemplatePickerProps) {
                 key={template.id}
                 type="button"
                 className="hover:bg-accent flex w-full items-center justify-between rounded-md px-3 py-2 text-left text-sm transition-colors"
-                onClick={() => onSelect(template)}
+                onClick={() => { onSelect(template); setOpen(false) }}
               >
                 <span className="truncate font-medium">{template.name}</span>
                 <Badge
