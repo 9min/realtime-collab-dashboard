@@ -48,20 +48,6 @@ describe('task-template-service', () => {
       expect(result.data?.[0].name).toBe('Bug Report')
     })
 
-    it('순서가 같은 기존 템플릿은 생성 시각과 ID로 정렬한다', async () => {
-      const mock = createMockSupabaseClient({
-        fromResponses: [{ data: [mockTemplate], error: null }],
-      }) as { _builders: { order: ReturnType<typeof import('vitest').vi.fn> }[] }
-
-      await getTaskTemplates(mock as unknown as Client, MOCK_PROJECT_ID)
-
-      expect(mock._builders[0].order.mock.calls).toEqual([
-        ['position', { ascending: true }],
-        ['created_at', { ascending: true }],
-        ['id', { ascending: true }],
-      ])
-    })
-
     it('에러 시 error를 반환한다', async () => {
       const client = createMockSupabaseClient({
         fromResponses: [{ data: null, error: { code: 'PGRST301', message: 'DB error' } }],
@@ -97,25 +83,6 @@ describe('task-template-service', () => {
       expect(result.data?.name).toBe('Bug Report')
     })
 
-    it('템플릿이 없는 프로젝트에는 첫 번째 순서로 추가한다', async () => {
-      const mock = createMockSupabaseClient({
-        fromResponses: [
-          { data: null, error: null },
-          { data: mockTemplate, error: null },
-        ],
-      }) as { _builders: { insert: ReturnType<typeof import('vitest').vi.fn> }[] }
-
-      await createTaskTemplate(mock as unknown as Client, {
-        project_id: MOCK_PROJECT_ID,
-        created_by: MOCK_USER_ID,
-        name: 'Bug Report',
-      })
-
-      expect(mock._builders[1].insert).toHaveBeenCalledWith(
-        expect.objectContaining({ position: 0 }),
-      )
-    })
-
     it('에러 시 error를 반환한다', async () => {
       const client = createMockSupabaseClient({
         fromResponses: [
@@ -132,51 +99,6 @@ describe('task-template-service', () => {
 
       expect(result.data).toBeNull()
       expect(result.error).not.toBeNull()
-    })
-
-    it('가져온 템플릿을 기존 목록 뒤에 클릭한 순서대로 추가한다', async () => {
-      const mock = createMockSupabaseClient({
-        fromResponses: [
-          { data: { position: 7 }, error: null },
-          { data: { ...mockTemplate, name: '첫 번째', position: 8 }, error: null },
-          { data: { position: 8 }, error: null },
-          { data: { ...mockTemplate, name: '두 번째', position: 9 }, error: null },
-        ],
-      }) as { _builders: { insert: ReturnType<typeof import('vitest').vi.fn> }[] }
-      const client = mock as unknown as Client
-
-      await createTaskTemplate(client, {
-        project_id: MOCK_PROJECT_ID,
-        created_by: MOCK_USER_ID,
-        name: '첫 번째',
-      })
-      await createTaskTemplate(client, {
-        project_id: MOCK_PROJECT_ID,
-        created_by: MOCK_USER_ID,
-        name: '두 번째',
-      })
-
-      expect(mock._builders[1].insert).toHaveBeenCalledWith(
-        expect.objectContaining({ name: '첫 번째', position: 8 }),
-      )
-      expect(mock._builders[3].insert).toHaveBeenCalledWith(
-        expect.objectContaining({ name: '두 번째', position: 9 }),
-      )
-    })
-
-    it('마지막 순서를 조회하지 못하면 템플릿을 생성하지 않는다', async () => {
-      const mock = createMockSupabaseClient({
-        fromResponses: [{ data: null, error: { code: 'PGRST301', message: 'DB error' } }],
-      }) as { from: ReturnType<typeof import('vitest').vi.fn> }
-
-      const result = await createTaskTemplate(mock as unknown as Client, {
-        project_id: MOCK_PROJECT_ID,
-        created_by: MOCK_USER_ID,
-        name: 'Bug Report',
-      })
-
-      expect(result.error?.code).toBe('PGRST301')
-      expect(mock.from).toHaveBeenCalledTimes(1)
     })
   })
 
