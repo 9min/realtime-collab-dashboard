@@ -63,7 +63,10 @@ describe('task-template-service', () => {
   describe('createTaskTemplate', () => {
     it('템플릿을 생성하고 반환한다', async () => {
       const client = createMockSupabaseClient({
-        fromResponses: [{ data: mockTemplate, error: null }],
+        fromResponses: [
+          { data: null, error: null },
+          { data: mockTemplate, error: null },
+        ],
       }) as Client
 
       const result = await createTaskTemplate(client, {
@@ -82,7 +85,10 @@ describe('task-template-service', () => {
 
     it('에러 시 error를 반환한다', async () => {
       const client = createMockSupabaseClient({
-        fromResponses: [{ data: null, error: { code: '23505', message: 'Duplicate' } }],
+        fromResponses: [
+          { data: null, error: null },
+          { data: null, error: { code: '23505', message: 'Duplicate' } },
+        ],
       }) as Client
 
       const result = await createTaskTemplate(client, {

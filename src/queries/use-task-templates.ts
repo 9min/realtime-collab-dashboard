@@ -28,7 +28,6 @@ export function useTaskTemplates(projectId: string) {
   const supabase = useSupabase()
 
   return useQuery({
-    // eslint-disable-next-line @tanstack/query/exhaustive-deps
     queryKey: templateKeys.list(projectId),
     queryFn: async () => {
       const result = await getTaskTemplates(supabase, projectId)
@@ -180,6 +179,7 @@ export function useImportTaskTemplate(projectId: string) {
   const queryClient = useQueryClient()
 
   return useMutation({
+    scope: { id: `import-task-template-${projectId}` },
     mutationFn: async (input: CreateTaskTemplateInput & { created_by: string }) => {
       const result = await createTaskTemplate(supabase, input)
       if (result.error) throw new Error(result.error.message)
