@@ -20,6 +20,8 @@ export async function getTaskTemplates(
     .select('*')
     .eq('project_id', projectId)
     .order('position', { ascending: true })
+    .order('created_at', { ascending: true })
+    .order('id', { ascending: true })
 
   if (error) {
     return { data: null, error: { code: error.code, message: error.message } }
@@ -47,6 +49,18 @@ export async function createTaskTemplate(
   supabase: Client,
   input: CreateTaskTemplateInput & { created_by: string },
 ): Promise<ServiceResult<TaskTemplate>> {
+  const { data: lastTemplate, error: positionError } = await supabase
+    .from('task_templates')
+    .select('position')
+    .eq('project_id', input.project_id)
+    .order('position', { ascending: false })
+    .limit(1)
+    .maybeSingle()
+
+  if (positionError) {
+    return { data: null, error: { code: positionError.code, message: positionError.message } }
+  }
+
   const { data, error } = await supabase
     .from('task_templates')
     .insert({
@@ -58,6 +72,7 @@ export async function createTaskTemplate(
       subtasks_template: (input.subtasks_template ?? []) as unknown as Json,
       labels_template: (input.labels_template ?? []) as unknown as Json,
       is_personal: input.is_personal ?? false,
+      position: lastTemplate ? lastTemplate.position + 1 : 0,
     })
     .select('*')
     .single()
