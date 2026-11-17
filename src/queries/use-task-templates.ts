@@ -28,7 +28,6 @@ export function useTaskTemplates(projectId: string) {
   const supabase = useSupabase()
 
   return useQuery({
-     
     queryKey: templateKeys.list(projectId),
     queryFn: async () => {
       const result = await getTaskTemplates(supabase, projectId)
